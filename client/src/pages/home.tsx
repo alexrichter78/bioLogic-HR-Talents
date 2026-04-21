@@ -7,6 +7,7 @@ import illustrationKiCoach from "@assets/ki_coach_v5.png";
 
 import GlobalNav from "@/components/global-nav";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useUI } from "@/lib/ui-texts";
 
 function FadeIn({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
   const [visible, setVisible] = useState(false);
@@ -26,6 +27,7 @@ function FadeIn({ children, delay = 0 }: { children: React.ReactNode; delay?: nu
 }
 
 function ConfirmResetModal({ onConfirm, onCancel }: { onConfirm: () => void; onCancel: () => void }) {
+  const ui = useUI();
   return (
     <>
       <div
@@ -50,10 +52,10 @@ function ConfirmResetModal({ onConfirm, onCancel }: { onConfirm: () => void; onC
         data-testid="modal-confirm-reset"
       >
         <h3 style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", marginBottom: 12 }}>
-          Bist du sicher?
+          {ui.home.resetTitle}
         </h3>
         <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.6, marginBottom: 24 }}>
-          Alle eingegebenen Daten werden gelöscht.
+          {ui.home.resetBody}
         </p>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 12 }}>
           <button
@@ -65,7 +67,7 @@ function ConfirmResetModal({ onConfirm, onCancel }: { onConfirm: () => void; onC
             }}
             data-testid="button-cancel-reset"
           >
-            Abbrechen
+            {ui.home.cancel}
           </button>
           <button
             onClick={onConfirm}
@@ -77,7 +79,7 @@ function ConfirmResetModal({ onConfirm, onCancel }: { onConfirm: () => void; onC
             }}
             data-testid="button-confirm-reset"
           >
-            Weiter
+            {ui.home.continue}
           </button>
         </div>
       </div>
@@ -90,6 +92,7 @@ export default function Home() {
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const isMobile = useIsMobile();
+  const ui = useUI();
 
   const handleFileLoad = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -114,7 +117,7 @@ export default function Home() {
         localStorage.setItem("rollenDnaCompleted", "true");
         window.dispatchEvent(new Event("rollenDnaUpdated"));
       } catch {
-        alert("Die Datei konnte nicht gelesen werden.");
+        alert(ui.home.fileError);
       }
     };
     reader.readAsText(file);
@@ -183,15 +186,15 @@ export default function Home() {
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ marginBottom: 12 }}>
                     <h2 style={{ fontSize: 24, fontWeight: 700, color: "#34C759", letterSpacing: "-0.02em", margin: 0 }} data-testid="text-no-profile">
-                      Stellenanalyse
+                      {ui.home.jobcheckTitle}
                     </h2>
                     <p style={{ fontSize: 14, color: "#48484A", margin: "3px 0 0", fontWeight: 450 }}>
-                      Strukturelle Passung für sichere Besetzungsentscheidungen
+                      {ui.home.jobcheckSubtitle}
                     </p>
                   </div>
 
                   <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.65, margin: "0 0 28px", fontWeight: 600 }} data-testid="text-profile-desc">
-                    Definiere eine Stelle und analysiere die strukturelle Passung. Die Analyse liefert klare Handlungsempfehlungen für Besetzung, Führung und Zusammenarbeit.
+                    {ui.home.jobcheckDesc}
                   </p>
 
                   <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
@@ -207,7 +210,7 @@ export default function Home() {
                       data-testid="button-analyse-starten"
                     >
                       <PlusCircle style={{ width: 17, height: 17 }} />
-                      Neue Analyse
+                      {ui.home.newAnalysis}
                     </button>
                     <button
                       onClick={() => fileInputRef.current?.click()}
@@ -220,7 +223,7 @@ export default function Home() {
                       data-testid="button-analyse-oeffnen"
                     >
                       <FolderOpen style={{ width: 17, height: 17 }} />
-                      Analyse öffnen
+                      {ui.home.openAnalysis}
                     </button>
                   </div>
                 </div>
@@ -228,14 +231,7 @@ export default function Home() {
 
               <div style={{ borderTop: "1px solid rgba(0,0,0,0.05)", paddingTop: 16, marginTop: 20 }}>
                 <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: "8px 24px" }}>
-                  {[
-                    "Wissenschaftlich fundierte Methodik",
-                    "Klare Entscheidungsstruktur",
-                    "Objektive Personalentscheidungen",
-                    "Transparente Ergebnislogik",
-                    "Reduziert Fehlbesetzungsrisiken",
-                    "Passgenaue Rollenbesetzung",
-                  ].map((text, i) => (
+                  {ui.home.jobcheckBullets.map((text, i) => (
                     <div key={i} style={{ display: "flex", alignItems: "center", gap: 8 }}>
                       <CheckCircle style={{ width: 13, height: 13, color: "#34C759", strokeWidth: 2, flexShrink: 0 }} />
                       <span style={{ fontSize: 14, color: "#48484A", fontWeight: 450 }}>{text}</span>
@@ -265,15 +261,15 @@ export default function Home() {
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ marginBottom: 12 }}>
                     <h3 style={{ fontSize: 24, fontWeight: 700, color: "#34C759", margin: 0, letterSpacing: "-0.02em" }}>
-                      Louis
+                      {ui.home.coachTitle}
                     </h3>
                     <p style={{ fontSize: 14, color: "#48484A", margin: "3px 0 0", fontWeight: 450 }}>
-                      Coach für Entscheidungen im richtigen Moment
+                      {ui.home.coachSubtitle}
                     </p>
                   </div>
 
                   <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.65, margin: "0 0 24px", fontWeight: 600 }}>
-                    Nutze Louis für Recruiting, Teamfragen, Gesprächsvorbereitung und konkrete Handlungsempfehlungen – jederzeit, auch ohne Analyse.
+                    {ui.home.coachDesc}
                   </p>
 
                   <div>
@@ -289,7 +285,7 @@ export default function Home() {
                       data-testid="button-ki-coach"
                     >
                       <Bot style={{ width: 17, height: 17 }} />
-                      Louis öffnen
+                      {ui.home.openCoach}
                     </button>
                   </div>
                 </div>
@@ -297,14 +293,7 @@ export default function Home() {
 
               <div style={{ borderTop: "1px solid rgba(0,0,0,0.05)", paddingTop: 16, marginTop: 20 }}>
                 <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: "8px 24px" }}>
-                  {[
-                    "Recruiting und Stellenanzeigen",
-                    "Gesprächsvorbereitung",
-                    "Analyse von Teamkonstellationen",
-                    "Konfliktmuster erkennen und lösen",
-                    "Rollenspiele und Gesprächssimulation",
-                    "Quellenbasierte Führungsberatung",
-                  ].map((text, i) => (
+                  {ui.home.coachBullets.map((text, i) => (
                     <div key={i} style={{ display: "flex", alignItems: "center", gap: 8 }}>
                       <CheckCircle style={{ width: 13, height: 13, color: "#34C759", strokeWidth: 2, flexShrink: 0 }} />
                       <span style={{ fontSize: 14, color: "#48484A", fontWeight: 450 }}>{text}</span>

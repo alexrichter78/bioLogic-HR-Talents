@@ -299,7 +299,7 @@ export default function Rollenprofil() {
         .map((t: any) => t.name)
         .sort()
         .join(",");
-      const cacheKey = `kandidatenProfil_${region}_${beruf}_${bereich}_${fuehrungstyp}_${hauptNamen.slice(0, 200)}`;
+      const cacheKey = `kandidatenProfil_v2_${region}_${beruf}_${bereich}_${fuehrungstyp}_${hauptNamen.slice(0, 200)}`;
       const cached = localStorage.getItem(cacheKey);
       if (cached) {
         setKandidatenText(cached);
