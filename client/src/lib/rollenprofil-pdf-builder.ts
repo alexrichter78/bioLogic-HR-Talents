@@ -1,4 +1,5 @@
 import { getLogoDataUrl } from "./logo-base64";
+import { REPORT_INTRO_DISCLAIMER } from "./report-texts";
 
 type RGB = [number, number, number];
 
@@ -256,7 +257,7 @@ export async function buildRollenprofilPdf(data: RollenprofilPdfData, filename: 
 
   printText(data.einleitung, ML, CW, 8.5, C.dark, 4.3);
   y += 5;
-  const introDisclaimerText = "Die Aussagen beschreiben dabei keine starren Persönlichkeitsbilder, sondern wiederkehrende und im Arbeitskontext erkennbare Tendenzen. Die Analyse ist wertfrei zu verstehen und dient als Orientierung für die Einschätzung von Passung und Wirksamkeit. Da jede Person individuell ist, ersetzt sie keine Einzelfallbetrachtung, sondern ergänzt diese um eine strukturierte und fundierte Entscheidungsgrundlage.";
+  const introDisclaimerText = REPORT_INTRO_DISCLAIMER;
   const introDiscLines = wrap(introDisclaimerText, CW - 8, 8);
   const introDiscPad = 4;
   const introDiscTotalH = introDiscLines.length * 4.3 + introDiscPad * 2 + 2;

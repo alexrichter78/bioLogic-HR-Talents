@@ -2396,7 +2396,7 @@ AUFGABE:
 Erzeuge das folgende JSON. Halte die Stilregeln strikt ein – besonders: KEINE Zahlen oder Prozentwerte im Text. KEINE Begriffe wie "impulsiv", "intuitiv", "analytisch". Verwende immer die Klartext-Bezeichnungen oben.
 
 {
-  "intro": "2 Absätze (mit \\n\\n getrennt). Erster Absatz: Was diese Stelle ausmacht und was der Bericht zeigt – in Alltagssprache, ohne Modellbegriffe. Zweiter Absatz: kurze Einordnung des Schwerpunkt-Bildes (welcher Schwerpunkt trägt, welche begleiten) und wofür der Leser den Bericht nutzen kann.",
+  "intro": "GENAU 2 Absätze (mit \\n\\n getrennt), nicht mehr. Erster Absatz: Was diese Stelle ausmacht und was der Bericht zeigt – in Alltagssprache, ohne Modellbegriffe. Zweiter Absatz: kurze Einordnung des Schwerpunkt-Bildes (welcher Schwerpunkt trägt, welche begleiten) und wofür der Leser den Bericht nutzen kann. KEIN Hinweis-Absatz zu 'wertfrei', 'Persönlichkeitsbild', 'Einzelfallbetrachtung' o.ä. – dieser Hinweis steht separat und darf hier nicht erscheinen.",
   "shortDescription": "2-3 Sätze. Welche Person diese Stelle braucht – in Alltagssprache, mit Bezug auf die Aufgaben.",
   "structureProfile": "2-3 Sätze. Was das Schwerpunkt-Bild für die Stelle bedeutet. Verwende Worte wie 'Hauptfokus', 'begleitet', 'im Hintergrund'. Keine Zahlen.",
   "componentMeaning": [

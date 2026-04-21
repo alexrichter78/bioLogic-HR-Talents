@@ -10,6 +10,7 @@ import {
 } from "@/lib/teamcheck-v3-engine";
 import { ArrowLeft, Download, Loader2 } from "lucide-react";
 import { COMP_HEX, BIO_COLORS } from "@/lib/bio-design";
+import { REPORT_INTRO_DISCLAIMER } from "@/lib/report-texts";
 import { buildTeamCheckPdf } from "@/lib/teamcheck-pdf-builder";
 import { useToast } from "@/hooks/use-toast";
 import logoPath from "@assets/LOGO_bio_1773853681939.png";
@@ -230,7 +231,7 @@ export default function TeamCheckReportV3() {
               </p>
               <div data-pdf-block style={{ background: "linear-gradient(135deg, rgba(255,59,48,0.06) 0%, rgba(255,59,48,0.03) 100%)", borderRadius: 10, padding: "16px 20px", border: "1px solid rgba(255,59,48,0.2)", marginBottom: 24 }}>
                 <p style={{ fontSize: 13, fontWeight: 700, color: "#FF3B30", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
-                  Die Aussagen beschreiben dabei keine starren Persönlichkeitsbilder, sondern wiederkehrende und im Arbeitskontext erkennbare Tendenzen. Die Analyse ist wertfrei zu verstehen und dient als Orientierung für die Einschätzung von Passung und Wirksamkeit. Da jede Person individuell ist, ersetzt sie keine Einzelfallbetrachtung, sondern ergänzt diese um eine strukturierte und fundierte Entscheidungsgrundlage.
+                  {REPORT_INTRO_DISCLAIMER}
                 </p>
               </div>
 
