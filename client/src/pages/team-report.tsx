@@ -1200,17 +1200,17 @@ export default function TeamReport() {
 
                       const resultCards: ResultCard[] = isFK
                         ? [
-                            { title: "Systemwirkung", label: la.systemImpact.label!, text: la.systemImpact.text!, colors: variantToColors(la.systemImpact.variant), testId: "v4-card-system-impact" },
-                            { title: "Integrationsaufwand", label: la.integrationEffort.label!, text: la.integrationEffort.text!, colors: variantToColors(la.integrationEffort.variant), testId: "v4-card-integration-effort" },
+                            { title: region === "EN" ? "System impact" : "Systemwirkung", label: la.systemImpact.label!, text: la.systemImpact.text!, colors: variantToColors(la.systemImpact.variant), testId: "v4-card-system-impact" },
+                            { title: region === "EN" ? "Integration effort" : "Integrationsaufwand", label: la.integrationEffort.label!, text: la.integrationEffort.text!, colors: variantToColors(la.integrationEffort.variant), testId: "v4-card-integration-effort" },
                             ...(la.teamGoalImpact.selectedGoal && la.teamGoalImpact.label !== "Kein Ziel gewählt"
-                              ? [{ title: "Wirkung aufs Teamziel", label: la.teamGoalImpact.label!, text: la.teamGoalImpact.reasons[0] || la.teamGoalImpact.text!, colors: variantToColors(la.teamGoalImpact.variant), testId: "v4-card-goal-impact" }]
+                              ? [{ title: region === "EN" ? "Impact on team goal" : "Wirkung aufs Teamziel", label: la.teamGoalImpact.label!, text: la.teamGoalImpact.reasons[0] || la.teamGoalImpact.text!, colors: variantToColors(la.teamGoalImpact.variant), testId: "v4-card-goal-impact" }]
                               : []),
                           ]
                         : [
-                            { title: "Teampassung", label: badgeLabels[teamFit], text: teamText, colors: tColors, testId: "v4-card-team" },
-                            { title: "Integrationsaufwand", label: bLabel, text: bDesc, colors: bBg, testId: "v4-card-integration" },
+                            { title: region === "EN" ? "Team fit" : "Teampassung", label: badgeLabels[teamFit], text: teamText, colors: tColors, testId: "v4-card-team" },
+                            { title: region === "EN" ? "Integration effort" : "Integrationsaufwand", label: bLabel, text: bDesc, colors: bBg, testId: "v4-card-integration" },
                             ...(fColors
-                              ? [{ title: "Passung zum Funktionsziel", label: badgeLabels[funcFit], text: funcText, colors: fColors, testId: "v4-card-func" }]
+                              ? [{ title: region === "EN" ? "Fit to functional goal" : "Passung zum Funktionsziel", label: badgeLabels[funcFit], text: funcText, colors: fColors, testId: "v4-card-func" }]
                               : []),
                           ];
 
