@@ -2401,7 +2401,7 @@ Erzeuge das folgende JSON. Halte die Stilregeln ein. Beziehe dich auf die konkre
 WICHTIG: tensionFields ist ein Array aus exakt 4 Strings. miscastRisks.bullets ist jeweils ein Array aus 3-4 Strings. Komponenten in componentMeaning müssen exakt die Reihenfolge und Keys (${t1}, ${t2}, ${t3}) einhalten.`;
 
       const fullPrompt = `${systemPrompt}\n\n${userPrompt}`;
-      const data = await callClaudeForJson("generate-stellenanalyse-text", fullPrompt, { temperature: 0.6, maxTokens: 4096 });
+      const data = await callClaudeForJson("generate-stellenanalyse-text", fullPrompt, { temperature: 0.6, maxTokens: 6144 });
       res.json(data);
       if (req.session.userId) trackUsageEvent(req.session.userId, "rollendna");
     } catch (error) {

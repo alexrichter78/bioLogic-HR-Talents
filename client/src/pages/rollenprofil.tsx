@@ -516,7 +516,7 @@ export default function Rollenprofil() {
     },
     enabled: !!narrativePayload,
     staleTime: Infinity,
-    retry: 1,
+    retry: false,
   });
 
   if (!data) {
