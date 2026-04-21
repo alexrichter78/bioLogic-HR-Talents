@@ -547,6 +547,27 @@ export default function Rollenprofil() {
     );
   }
 
+  // Solange die KI-Texte noch nicht da sind, zeigen wir einen Ladebildschirm
+  // (statt sofort die alten Engine-Templates zu rendern, was den Eindruck erweckt,
+  // es habe sich nichts geändert).
+  if (narrativeQuery.isLoading || (narrativeQuery.isFetching && !narrativeQuery.data)) {
+    return (
+      <div className="page-gradient-bg">
+        <GlobalNav />
+        <main style={{ maxWidth: 800, margin: "0 auto", padding: "80px 20px", textAlign: "center" }}>
+          <div style={{ background: "rgba(255,255,255,0.78)", backdropFilter: "blur(40px)", borderRadius: 20, padding: "40px 32px", boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)", border: "1px solid rgba(0,0,0,0.04)" }}>
+            <div style={{ width: 44, height: 44, margin: "0 auto 18px", border: "3px solid #E5E5E7", borderTopColor: "#0071E3", borderRadius: "50%", animation: "bio-spin 0.9s linear infinite" }} />
+            <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }} data-testid="text-report-loading-title">Stellenanalyse wird erstellt</h2>
+            <p style={{ fontSize: 14, color: "#48484A", margin: 0, lineHeight: 1.6 }}>
+              Die Texte werden gerade auf Basis deines Profils generiert. Das dauert in der Regel 15–25 Sekunden.
+            </p>
+            <style>{`@keyframes bio-spin { to { transform: rotate(360deg); } }`}</style>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
   const hauptTaetigkeiten = (data.taetigkeiten || []).filter((t: any) => t.kategorie === "haupt");
   const topTaetigkeiten = hauptTaetigkeiten.slice(0, 3).map((t: any) => cleanTaskName(t.name));
   const profilkonfliktRaw = buildProfilkonflikt(data);
