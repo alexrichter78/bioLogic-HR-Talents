@@ -486,6 +486,7 @@ function CollapsedStep({
   onEdit: () => void;
   icon?: React.ComponentType<{ style?: React.CSSProperties; strokeWidth?: number }>;
 }) {
+  const { region } = useRegion();
   return (
     <div
       className="flex items-center gap-4 px-5 py-4 rounded-xl bg-white/40 dark:bg-card/40 backdrop-blur-sm border border-card-border cursor-pointer hover:bg-white/60 dark:hover:bg-card/50 transition-all duration-200"
@@ -513,7 +514,7 @@ function CollapsedStep({
         data-testid={`button-edit-step-${step}`}
       >
         <Pencil style={{ width: 13, height: 13 }} />
-        Bearbeiten
+        {region === "EN" ? "Edit" : "Bearbeiten"}
       </button>
       <ChevronDown className="w-4 h-4 text-muted-foreground/40 flex-shrink-0" />
     </div>
@@ -1981,7 +1982,7 @@ export default function RollenDNA() {
                       }}
                       data-testid="button-step-1-weiter"
                     >
-                      {editingFromOverview ? "Übernehmen" : "Stelle analysieren"}
+                      {editingFromOverview ? (region === "EN" ? "Apply" : "Übernehmen") : (region === "EN" ? "Analyse role" : "Stelle analysieren")}
                       <ArrowRight className="w-4 h-4" />
                     </Button>
                   </div>
@@ -1990,7 +1991,7 @@ export default function RollenDNA() {
             ) : (
               <CollapsedStep
                 step={1}
-                title="Ausgewählte Stelle / Bezeichnung"
+                title={region === "EN" ? "Selected role / title" : "Ausgewählte Stelle / Bezeichnung"}
                 summary={beruf}
                 onEdit={() => goToStep(1)}
                 icon={Briefcase}
@@ -2006,10 +2007,10 @@ export default function RollenDNA() {
                     <div style={{ width: 28, height: 28, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, background: "rgba(0,0,0,0.06)", color: "#AEAEB2" }}>3</div>
                   </div>
                   <h2 style={{ fontSize: 28, fontWeight: 700, color: "#34C759", letterSpacing: "-0.02em" }} className="dark:text-foreground/90" data-testid="text-step-2-title">
-                    Rahmenbedingungen der Stelle
+                    {region === "EN" ? "Role framework conditions" : "Rahmenbedingungen der Stelle"}
                   </h2>
                   <p style={{ fontSize: 14, color: "#48484A", marginTop: 6 }}>
-                    Definiere die grundlegenden Merkmale dieser Stelle. Die Angaben helfen dabei, die strukturelle Stellenlogik zu bestimmen.
+                    {region === "EN" ? "Define the basic characteristics of this role. The details help determine the structural role logic." : "Definiere die grundlegenden Merkmale dieser Stelle. Die Angaben helfen dabei, die strukturelle Stellenlogik zu bestimmen."}
                   </p>
                 </div>
 
@@ -2033,14 +2034,14 @@ export default function RollenDNA() {
                         <div className="flex items-center gap-3">
                           <Layers style={{ width: 20, height: 20, color: "#34C759", strokeWidth: 1.5 }} />
                           <h3 style={{ fontSize: 22, fontWeight: 600, color: "#34C759" }} className="dark:text-foreground/90">
-                            Art der Aufgaben
+                            {region === "EN" ? "Type of tasks" : "Art der Aufgaben"}
                           </h3>
                         </div>
                         <p style={{ fontSize: 14, color: "#6E6E73", marginTop: 6, paddingLeft: 32 }}>
                           {SECTION_SUBTITLES.aufgabencharakter}
                         </p>
                         <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", marginTop: 4, paddingLeft: 32 }}>
-                          (Bitte ein Feld auswählen)
+                          {region === "EN" ? "(Please select one option)" : "(Bitte ein Feld auswählen)"}
                         </p>
                         <div style={{ marginTop: 20 }}>
                           <DescriptiveOptionGroup
@@ -2061,14 +2062,14 @@ export default function RollenDNA() {
                         <div className="flex items-center gap-3">
                           <Activity style={{ width: 20, height: 20, color: "#34C759", strokeWidth: 1.5 }} />
                           <h3 style={{ fontSize: 22, fontWeight: 600, color: "#34C759" }} className="dark:text-foreground/90">
-                            Arbeitsweise der Stelle
+                            {region === "EN" ? "Working style of the role" : "Arbeitsweise der Stelle"}
                           </h3>
                         </div>
                         <p style={{ fontSize: 14, color: "#6E6E73", marginTop: 6, paddingLeft: 32 }}>
                           {SECTION_SUBTITLES.arbeitslogik}
                         </p>
                         <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", marginTop: 4, paddingLeft: 32 }}>
-                          (Bitte ein Feld auswählen)
+                          {region === "EN" ? "(Please select one option)" : "(Bitte ein Feld auswählen)"}
                         </p>
                         <div style={{ marginTop: 20 }}>
                           <DescriptiveOptionGroup
@@ -2089,14 +2090,14 @@ export default function RollenDNA() {
                         <div className="flex items-center gap-3">
                           <Target style={{ width: 20, height: 20, color: "#34C759", strokeWidth: 1.5 }} />
                           <h3 style={{ fontSize: 22, fontWeight: 600, color: "#34C759" }} className="dark:text-foreground/90">
-                            Erfolgsfokus
+                            {region === "EN" ? "Success focus" : "Erfolgsfokus"}
                           </h3>
                         </div>
                         <p style={{ fontSize: 14, color: "#6E6E73", marginTop: 6, paddingLeft: 32 }}>
                           {SECTION_SUBTITLES.erfolgsfokus}
                         </p>
                         <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", marginTop: 4, paddingLeft: 32 }}>
-                          (Bitte zwei Felder auswählen)
+                          {region === "EN" ? "(Please select two options)" : "(Bitte zwei Felder auswählen)"}
                         </p>
                         <div style={{ marginTop: 20 }}>
                           <DescriptiveOptionGroupIndexed
@@ -2117,14 +2118,14 @@ export default function RollenDNA() {
                         <div className="flex items-center gap-3">
                           <Users style={{ width: 20, height: 20, color: "#34C759", strokeWidth: 1.5 }} />
                           <h3 style={{ fontSize: 22, fontWeight: 600, color: "#34C759" }} className="dark:text-foreground/90">
-                            Führungsverantwortung
+                            {region === "EN" ? "Leadership responsibility" : "Führungsverantwortung"}
                           </h3>
                         </div>
                         <p style={{ fontSize: 14, color: "#6E6E73", marginTop: 6, paddingLeft: 32 }}>
                           {SECTION_SUBTITLES.fuehrung}
                         </p>
                         <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", marginTop: 4, paddingLeft: 32 }}>
-                          (Bitte ein Feld auswählen)
+                          {region === "EN" ? "(Please select one option)" : "(Bitte ein Feld auswählen)"}
                         </p>
                         <div style={{ marginTop: 20 }}>
                           <DescriptiveOptionGroup
@@ -2180,7 +2181,7 @@ export default function RollenDNA() {
                       data-testid="button-step-2-zurueck"
                     >
                       <ArrowLeft className="w-5 h-5" />
-                      Zurück
+                      {region === "EN" ? "Back" : "Zurück"}
                     </Button>
                     <Button
                       disabled={!step2Valid}
@@ -2199,7 +2200,7 @@ export default function RollenDNA() {
                       className="gap-2"
                       data-testid="button-step-2-weiter"
                     >
-                      {editingFromOverview ? "Übernehmen" : "Weiter"}
+                      {editingFromOverview ? (region === "EN" ? "Apply" : "Übernehmen") : (region === "EN" ? "Next" : "Weiter")}
                       <ArrowRight className="w-5 h-5" />
                     </Button>
                   </div>
@@ -2208,20 +2209,22 @@ export default function RollenDNA() {
             ) : !allCollapsed && currentStep > 2 ? (
               <CollapsedStep
                 step={2}
-                title="Rahmenbedingungen der Stelle"
-                summary="Grundlegende Merkmale dieser Stelle / Bezeichnung."
+                title={region === "EN" ? "Role framework conditions" : "Rahmenbedingungen der Stelle"}
+                summary={region === "EN" ? "Basic characteristics of this role / title." : "Grundlegende Merkmale dieser Stelle / Bezeichnung."}
                 onEdit={() => goToStep(2)}
                 icon={Settings}
               />
             ) : (
-              <LockedStep step={2} title="Rahmenbedingungen der Stelle" />
+              <LockedStep step={2} title={region === "EN" ? "Role framework conditions" : "Rahmenbedingungen der Stelle"} />
             )}
 
             {allCollapsed ? null : currentStep >= 4 && taetigkeiten.length > 0 ? (
               <CollapsedStep
                 step={3}
-                title="Tätigkeiten & Kompetenzen"
-                summary={`${taetigkeiten.filter(t => t.kategorie === "haupt").length} Tätigkeiten · ${taetigkeiten.filter(t => t.kategorie === "neben").length} Humankompetenzen${taetigkeiten.filter(t => t.kategorie === "fuehrung").length > 0 ? ` · ${taetigkeiten.filter(t => t.kategorie === "fuehrung").length} Führung` : ""}`}
+                title={region === "EN" ? "Tasks & competencies" : "Tätigkeiten & Kompetenzen"}
+                summary={region === "EN"
+                  ? `${taetigkeiten.filter(t => t.kategorie === "haupt").length} tasks · ${taetigkeiten.filter(t => t.kategorie === "neben").length} human skills${taetigkeiten.filter(t => t.kategorie === "fuehrung").length > 0 ? ` · ${taetigkeiten.filter(t => t.kategorie === "fuehrung").length} leadership` : ""}`
+                  : `${taetigkeiten.filter(t => t.kategorie === "haupt").length} Tätigkeiten · ${taetigkeiten.filter(t => t.kategorie === "neben").length} Humankompetenzen${taetigkeiten.filter(t => t.kategorie === "fuehrung").length > 0 ? ` · ${taetigkeiten.filter(t => t.kategorie === "fuehrung").length} Führung` : ""}`}
                 onEdit={() => goToStep(3)}
                 icon={Layers}
               />
@@ -2235,10 +2238,10 @@ export default function RollenDNA() {
                       <div style={{ width: 28, height: 28, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, background: "#34C759", color: "#fff" }}>3</div>
                     </div>
                     <h2 style={{ fontSize: 28, fontWeight: 700, color: "#34C759", letterSpacing: "-0.02em" }} className="dark:text-foreground/90" data-testid="text-step-3-title">
-                      Tätigkeiten & Kompetenzen
+                      {region === "EN" ? "Tasks & competencies" : "Tätigkeiten & Kompetenzen"}
                     </h2>
                     <p style={{ fontSize: 14, color: "#48484A", marginTop: 4 }}>
-                      Forme die konkrete Struktur dieser Stelle.
+                      {region === "EN" ? "Shape the concrete structure of this role." : "Forme die konkrete Struktur dieser Stelle."}
                     </p>
                   </div>
                   <div style={{ textAlign: "right", fontSize: 14, color: "#48484A", lineHeight: 1.8 }}>
@@ -2940,7 +2943,7 @@ export default function RollenDNA() {
                 </div>
               </div>
             ) : (
-              <LockedStep step={3} title="Tätigkeiten & Kompetenzen" />
+              <LockedStep step={3} title={region === "EN" ? "Tasks & competencies" : "Tätigkeiten & Kompetenzen"} />
             )}
 
             {allCollapsed && (
