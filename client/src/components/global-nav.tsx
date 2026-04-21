@@ -3,18 +3,10 @@ import { useLocation } from "wouter";
 import { Home, Briefcase, GitCompareArrows, Users, Bot, GraduationCap, Settings, LogOut, Globe, Building2 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { useRegion, type Region } from "@/lib/region";
+import { useUI } from "@/lib/ui-texts";
 import logoSrc from "@assets/1_1773849007741.png";
 import { useIsMobile } from "@/hooks/use-mobile";
 
-const BASE_NAV_ITEMS = [
-  { label: "Home", subtitle: "", path: "/", icon: Home, disabled: false },
-  { label: "JobCheck", subtitle: "Stellenanalyse", path: "/rollen-dna", icon: Briefcase, disabled: false },
-  { label: "MatchCheck", subtitle: "Stelle \u2194 Person", path: "/soll-ist", icon: GitCompareArrows, disabled: false },
-  { label: "TeamCheck", subtitle: "Teamstruktur", path: "/team-report", icon: Users, disabled: false },
-  { label: "Louis (KI-Coach)", subtitle: "Führung & Entwicklung", path: "/ki-coach", icon: Bot, disabled: false },
-];
-
-const COURSE_NAV_ITEM = { label: "Kursbereich", subtitle: "Lernmodule", path: "/kurs", icon: GraduationCap, disabled: false };
 const RESET_KEYS = [
   "rollenDnaState",
   "berichtCache",
@@ -25,31 +17,41 @@ const RESET_KEYS = [
 const NAV_HEIGHT = 56;
 const MOBILE_NAV_HEIGHT = 60;
 
-const REGION_OPTIONS: { value: Region; label: string }[] = [
-  { value: "DE", label: "Deutschland" },
-  { value: "CH", label: "Schweiz" },
-  { value: "AT", label: "Österreich" },
-  { value: "EN", label: "English" },
-];
-
 export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }) {
   const [location, setLocation] = useLocation();
   const { user, logout } = useAuth();
   const { region, setRegion } = useRegion();
+  const ui = useUI();
   const [regionOpen, setRegionOpen] = useState(false);
   const regionRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
 
+  const REGION_OPTIONS: { value: Region; label: string }[] = useMemo(() => [
+    { value: "DE", label: ui.region.DE },
+    { value: "CH", label: ui.region.CH },
+    { value: "AT", label: ui.region.AT },
+    { value: "EN", label: ui.region.EN },
+  ], [ui]);
+
   const NAV_ITEMS = useMemo(() => {
+    type NavItem = { label: string; subtitle: string; path: string; icon: typeof Home; disabled: boolean };
+    const BASE: NavItem[] = [
+      { label: ui.nav.home, subtitle: ui.nav.homeSub, path: "/", icon: Home, disabled: false },
+      { label: ui.nav.jobcheck, subtitle: ui.nav.jobcheckSub, path: "/rollen-dna", icon: Briefcase, disabled: false },
+      { label: ui.nav.matchcheck, subtitle: ui.nav.matchcheckSub, path: "/soll-ist", icon: GitCompareArrows, disabled: false },
+      { label: ui.nav.teamcheck, subtitle: ui.nav.teamcheckSub, path: "/team-report", icon: Users, disabled: false },
+      { label: ui.nav.coach, subtitle: ui.nav.coachSub, path: "/ki-coach", icon: Bot, disabled: false },
+    ];
+    const COURSE_ITEM: NavItem = { label: ui.nav.courses, subtitle: ui.nav.coursesSub, path: "/kurs", icon: GraduationCap, disabled: false };
     if (user?.coachOnly) {
-      return [BASE_NAV_ITEMS.find(i => i.path === "/ki-coach")!];
+      return [BASE.find(i => i.path === "/ki-coach")!];
     }
-    const items = [...BASE_NAV_ITEMS];
+    const items = [...BASE];
     if (user?.courseAccess || user?.role === "subadmin" || user?.role === "admin") {
-      items.push(COURSE_NAV_ITEM);
+      items.push(COURSE_ITEM);
     }
     return items;
-  }, [user?.courseAccess, user?.role, user?.coachOnly]);
+  }, [user?.courseAccess, user?.role, user?.coachOnly, ui]);
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -96,7 +98,7 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
                 <button
                   onClick={(e) => { e.stopPropagation(); setRegionOpen(!regionOpen); }}
                   data-testid="nav-region-toggle"
-                  title={`Sprachregion: ${REGION_OPTIONS.find(r => r.value === region)?.label}`}
+                  title={ui.nav.regionLabel(REGION_OPTIONS.find(r => r.value === region)?.label || "")}
                   style={{
                     height: 32, paddingLeft: 8, paddingRight: 10, borderRadius: 8,
                     border: regionOpen ? "1px solid rgba(0,113,227,0.2)" : "1px solid transparent",
@@ -118,7 +120,7 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
                     padding: 4, minWidth: 170, zIndex: 9999,
                   }}>
                     <div style={{ padding: "6px 12px 4px", fontSize: 10, fontWeight: 600, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                      Sprachregion
+                      {ui.nav.regionTitle}
                     </div>
                     {REGION_OPTIONS.map(opt => (
                       <button
@@ -321,7 +323,7 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
               <button
                 onClick={(e) => { e.stopPropagation(); setRegionOpen(!regionOpen); }}
                 data-testid="nav-region-toggle"
-                title={`Sprachregion: ${REGION_OPTIONS.find(r => r.value === region)?.label}`}
+                title={ui.nav.regionLabel(REGION_OPTIONS.find(r => r.value === region)?.label || "")}
                 style={{
                   height: 32, paddingLeft: 8, paddingRight: 10, borderRadius: 8,
                   border: regionOpen ? "1px solid rgba(0,113,227,0.2)" : "1px solid transparent",
@@ -345,7 +347,7 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
                   padding: 4, minWidth: 170, zIndex: 9999,
                 }}>
                   <div style={{ padding: "6px 12px 4px", fontSize: 10, fontWeight: 600, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                    Sprachregion
+                    {ui.nav.regionTitle}
                   </div>
                   {REGION_OPTIONS.map(opt => (
                     <button
@@ -374,7 +376,7 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
               <button
                 onClick={() => setLocation("/firma-dashboard")}
                 data-testid="nav-firma-dashboard"
-                title="Firmen-Dashboard"
+                title={ui.nav.firmaDashboard}
                 style={{
                   width: 32, height: 32, borderRadius: 8,
                   border: "none", cursor: "pointer",
@@ -392,7 +394,7 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
               <button
                 onClick={() => setLocation("/admin")}
                 data-testid="nav-admin"
-                title="Benutzerverwaltung"
+                title={ui.nav.userManagement}
                 style={{
                   width: 32, height: 32, borderRadius: 8,
                   border: "none", cursor: "pointer",
@@ -409,7 +411,7 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
             <button
               onClick={logout}
               data-testid="nav-logout"
-              title="Abmelden"
+              title={ui.nav.logout}
               style={{
                 width: 32, height: 32, borderRadius: 8,
                 border: "none", cursor: "pointer",
@@ -432,6 +434,8 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
 
 export function StatusFooter() {
   const { user } = useAuth();
+  const ui = useUI();
+  const { region } = useRegion();
   if (!user) return null;
 
   const isAdmin = user.role === "admin";
@@ -439,7 +443,8 @@ export function StatusFooter() {
   const pct = user.aiRequestLimit > 0 ? (user.aiRequestsUsed / user.aiRequestLimit) * 100 : 0;
   const color = pct >= 100 ? "#FF3B30" : pct >= 80 ? "#FF9500" : "#34C759";
   const nextReset = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1);
-  const resetStr = nextReset.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" });
+  const dateLocale = region === "EN" ? "en-US" : "de-DE";
+  const resetStr = nextReset.toLocaleDateString(dateLocale, { day: "2-digit", month: "2-digit", year: "numeric" });
 
   return (
     <div
@@ -456,31 +461,31 @@ export function StatusFooter() {
       {!isAdmin && (
         <span
           data-testid="footer-ai-quota"
-          title={`${user.aiRequestsUsed} von ${user.aiRequestLimit} KI-Anfragen genutzt\nAutomatische Zurücksetzung am ${resetStr}`}
+          title={ui.footer.aiQuotaTitle(user.aiRequestsUsed, user.aiRequestLimit, resetStr)}
           style={{ display: "flex", alignItems: "center", gap: 5, cursor: "default" }}
         >
           <span style={{ width: 6, height: 6, borderRadius: "50%", background: color, flexShrink: 0 }} />
-          <span>KI:&nbsp;<span style={{ fontWeight: 600, color: pct >= 100 ? "#FF3B30" : "#636366" }}>{remaining}</span>&nbsp;von {user.aiRequestLimit} übrig</span>
+          <span>{ui.footer.aiPrefix}&nbsp;<span style={{ fontWeight: 600, color: pct >= 100 ? "#FF3B30" : "#636366" }}>{remaining}</span>&nbsp;{ui.footer.aiOf} {user.aiRequestLimit} {ui.footer.aiLeft}</span>
           <span style={{ color: "#C7C7CC" }}>·</span>
-          <span>Reset am {resetStr}</span>
+          <span>{ui.footer.resetOn} {resetStr}</span>
         </span>
       )}
       {!isAdmin && user.accessUntil && (
         <>
           <span style={{ color: "#C7C7CC" }}>|</span>
           <span data-testid="footer-access-until">
-            Freigeschaltet bis:&nbsp;
+            {ui.footer.accessUntil}&nbsp;
             <span style={{ fontWeight: 600, color: "#636366" }}>
-              {new Date(user.accessUntil).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })}
+              {new Date(user.accessUntil).toLocaleDateString(dateLocale, { day: "2-digit", month: "2-digit", year: "numeric" })}
             </span>
           </span>
         </>
       )}
       {!isAdmin && <span style={{ color: "#C7C7CC" }}>|</span>}
       <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <a href="/impressum" data-testid="footer-link-impressum" className="footer-link" style={{ fontSize: 11 }}>Impressum</a>
-        <a href="/datenschutz" data-testid="footer-link-datenschutz" className="footer-link" style={{ fontSize: 11 }}>Datenschutz</a>
-        <a href="/disclaimer" data-testid="footer-link-disclaimer" className="footer-link" style={{ fontSize: 11 }}>Disclaimer</a>
+        <a href="/impressum" data-testid="footer-link-impressum" className="footer-link" style={{ fontSize: 11 }}>{ui.footer.imprint}</a>
+        <a href="/datenschutz" data-testid="footer-link-datenschutz" className="footer-link" style={{ fontSize: 11 }}>{ui.footer.privacy}</a>
+        <a href="/disclaimer" data-testid="footer-link-disclaimer" className="footer-link" style={{ fontSize: 11 }}>{ui.footer.disclaimer}</a>
       </span>
     </div>
   );

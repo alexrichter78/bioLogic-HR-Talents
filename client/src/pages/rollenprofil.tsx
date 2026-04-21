@@ -163,10 +163,15 @@ type ReportData = {
   erfolgsfokusIndices: number[];
 };
 
-function buildProfilkonflikt(data: ReportData): string | null {
+function buildProfilkonflikt(data: ReportData, lang: "de" | "en" = "de"): string | null {
   const hauptDom = dominant(data.haupt);
   const { dom } = data;
   if (hauptDom.key === dom.key) return null;
+  if (lang === "en") {
+    const hauptBehavior = hauptDom.key === "imp" ? "fast action and execution" : hauptDom.key === "int" ? "personal contact and relationship work" : "structured analysis and diligence";
+    const gesamtBehavior = dom.key === "imp" ? "decisiveness and pace" : dom.key === "int" ? "relationship building and communication" : "methodical work and quality assurance";
+    return `Note: The core tasks of this role primarily call for ${hauptBehavior}. The overall profile, however, shifts towards ${gesamtBehavior}. Framework conditions and additional requirements change the demand profile. During the hiring process, it should be checked whether the candidate can primarily cover the core tasks or the full package.`;
+  }
   const hauptBehavior = hauptDom.key === "imp" ? "schnelles Handeln und Umsetzung" : hauptDom.key === "int" ? "persönlichen Kontakt und Beziehungsarbeit" : "strukturierte Analyse und Sorgfalt";
   const gesamtBehavior = dom.key === "imp" ? "Entscheidungskraft und Tempo" : dom.key === "int" ? "Beziehungsgestaltung und Kommunikation" : "methodisches Arbeiten und Qualitätssicherung";
   return `Hinweis: Die Kerntätigkeiten der Stelle verlangen vor allem ${hauptBehavior}. Das Gesamtprofil verschiebt sich jedoch in Richtung ${gesamtBehavior}. Rahmenbedingungen und ergänzende Anforderungen verändern das Anforderungsprofil. Im Besetzungsprozess sollte geprüft werden, ob die Person primär die Kerntätigkeiten oder das Gesamtpaket abbilden kann.`;
@@ -589,7 +594,7 @@ export default function Rollenprofil() {
   const displayTopTaetigkeiten = tasksTranslated && tasksTranslated.length >= topTaetigkeiten.length
     ? tasksTranslated.slice(0, 3)
     : topTaetigkeiten;
-  const profilkonfliktRaw = buildProfilkonflikt(data);
+  const profilkonfliktRaw = buildProfilkonflikt(data, region === "EN" ? "en" : "de");
   const profilkonflikt = profilkonfliktRaw ? t(profilkonfliktRaw) : null;
 
   const engineInput = preEngineInput!;
