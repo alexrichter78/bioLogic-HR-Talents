@@ -2294,6 +2294,48 @@ Antworte als JSON:
         return res.status(400).json({ error: "jobTitle, triad und meta sind erforderlich" });
       }
 
+      // Rollen-Kategorie aus Titel + Aufgaben grob ableiten, damit der Prompt
+      // konkretes Branchen-Vokabular bekommt (statt generischer Floskeln).
+      const detectRoleCategory = (title: string, taskList: string[]): { category: string; vocab: string } => {
+        const hay = `${title} ${(taskList || []).join(" ")}`.toLowerCase();
+        const has = (...words: string[]) => words.some(w => hay.includes(w));
+        if (has("vertrieb", "sales", "account", "akquise", "business development", "key account")) {
+          return { category: "Vertrieb", vocab: "Abschlüsse, Pipeline, Umsatz, Akquise, Conversion, Kundengespräche, Angebote nachfassen" };
+        }
+        if (has("pflege", "betreu", "krankenpfleg", "altenpfleg", "station")) {
+          return { category: "Pflege", vocab: "Versorgungsqualität, Betreuungsschlüssel, Schichtübergabe, Dokumentationspflicht, Angehörigengespräche" };
+        }
+        if (has("produkt", "fertigung", "schicht", "montage", "werker", "maschinenführ")) {
+          return { category: "Produktion", vocab: "Durchlaufzeit, Ausschuss, Schichtübergabe, Anlagenverfügbarkeit, Qualitätsprüfung" };
+        }
+        if (has("entwickl", "developer", "engineer", "devops", "software", "it-", "system", "admin", "techniker")) {
+          return { category: "Technik/IT", vocab: "Systemstabilität, Codequalität, Deployments, Incidents, Tickets, Rollout, Reviews" };
+        }
+        if (has("finanz", "controlling", "buchhalt", "accounting", "audit", "bilanz")) {
+          return { category: "Finanzen", vocab: "Abschlussqualität, Audit-Sicherheit, Reporting-Disziplin, Forecast, Belegprüfung" };
+        }
+        if (has(" hr", "personal", "recruit", "talent", "people")) {
+          return { category: "HR", vocab: "Besetzungszeit, Fluktuation, Candidate Experience, Mitarbeitergespräche, Onboarding" };
+        }
+        if (has("marketing", "kampagne", "brand", "content", "seo", "social")) {
+          return { category: "Marketing", vocab: "Kampagnen-Performance, Conversion, Reichweite, Content-Pipeline, Markenkonsistenz" };
+        }
+        if (has("lehr", "ausbild", "dozent", "trainer", "schul", "kita", "erzieh")) {
+          return { category: "Bildung", vocab: "Lernfortschritt, Förderplan, Elterngespräche, Ausbildungsqualität, Gruppendynamik" };
+        }
+        if (has("einkauf", "procurement", "supplier", "lieferant")) {
+          return { category: "Einkauf", vocab: "Lieferantenbewertung, Verhandlungsergebnisse, Lieferzeiten, Total Cost of Ownership" };
+        }
+        if (has("logist", "lager", "disposition", "spediti")) {
+          return { category: "Logistik", vocab: "Lieferquote, Lagerumschlag, Tourenplanung, Reklamationsquote" };
+        }
+        if (has("geschäftsführ", "ceo", "cfo", "cto", "vorstand", "leiter", "leitung", "head of", "director")) {
+          return { category: "Führung/Leitung", vocab: "Steuerungsgrößen, Quartalsziele, Eskalationen, Stakeholder-Abstimmung, Teamverantwortung" };
+        }
+        return { category: "Allgemein", vocab: "konkrete Wochenziele, Termine, Übergaben, Kollegen, Stakeholder" };
+      };
+      const roleCategory = detectRoleCategory(jobTitle, tasks);
+
       if (req.session.userId) {
         const limitCheck = await checkAiLimit(req.session.userId);
         if (!limitCheck.allowed) {
@@ -2468,26 +2510,60 @@ IMPORTANT:
       } else {
         const taskLine = Array.isArray(tasks) && tasks.length > 0 ? tasks.join("; ") : "(keine Hauptaufgaben angegeben)";
 
-        systemPrompt = `Du bist ein erfahrener Berater, der Stellenanalyse-Berichte schreibt. Die Leser kennen weder das bioLogic-Modell noch Begriffe wie "impulsiv", "intuitiv" oder "analytisch". Schreibe so, dass eine fremde Person ohne Vorwissen den Bericht versteht.
+        systemPrompt = `Du bist interner Berater. Du schreibst einen Stellenanalyse-Bericht für HR-Verantwortliche und Führungskräfte, die schnell entscheiden müssen. Die Leser kennen das bioLogic-Modell nicht. Schreibe so, dass eine fremde Person ohne Vorwissen den Bericht versteht. Du hast eine Haltung und sprichst sie aus. Kein Akademiker-Ton, kein Lehrstuhl, kein HR-Handbuch.
 
 STIL-REGELN (verbindlich):
-- Klare, leicht verständliche Alltagssprache. Kurze Sätze. Aktiv. Kein Passiv.
-- KEINE Zahlen, keine Prozentwerte, keine Punktzahlen, keine Werte wie "52 %", "Abstand 3 Punkte" oder "knapp 40". Stattdessen Worte: "deutlich im Vordergrund", "klar mitprägend", "spürbar vorhanden", "im Hintergrund", "praktisch gleichauf", "knapp davor", "deutlich davor".
-- KEINE Fachbegriffe aus dem bioLogic-Modell: niemals "impulsiv", "intuitiv", "analytisch", "Komponente", "Triade", "Profilklasse", "BAL_FULL", "DUAL_TOP", "CLEAR_TOP", "ORDER", "top1/top2/top3", "Gap". Stattdessen Klartext: "Tempo und Entscheidung", "Kommunikation und Beziehung", "Struktur und Sorgfalt", "Schwerpunkt", "Hauptfokus", "begleitet die Stelle".
-- Keine Floskeln, kein Lehrbuch-Sound, keine Coaching-Sprache, keine Verstärker ("wirklich", "extrem", "absolut").
-- Jeder Abschnitt: Kernaussage zuerst → kurze Begründung anhand der konkreten Aufgaben/Rahmen → eine konkrete Handlungsempfehlung am Ende.
-- Konkrete Bezüge auf Rollentitel, genannte Aufgaben, Erfolgsfokus und Rahmenbedingungen herstellen – nicht generisch.
-- Keine Wiederholungen zwischen Abschnitten.
-- Antworten auf ${languageName}.
+
+1) Aktiv schreiben. Kein Passiv, keine Konjunktive ohne Grund.
+   Falsch: "Es sollte sichergestellt werden, dass die Person kommunizieren kann."
+   Richtig: "Wer hier sitzt, führt täglich Gespräche, in denen Klarheit und Vertrauen gleichzeitig gefragt sind."
+
+2) Konkret und rollenspezifisch. Jeder Satz muss für DIESE Stelle gelten, nicht für Führungskräfte allgemein.
+   Falsch: "Diese Person muss gut kommunizieren können."
+   Richtig: "Ein Teamleiter in dieser Rolle holt sein Team täglich ab, im Gespräch und nicht per Anweisung."
+
+3) KEINE Zahlen, keine Prozentwerte, keine Punktzahlen. Keine Werte wie "52 %", "Abstand 3 Punkte" oder "knapp 40". Stattdessen Worte: "deutlich im Vordergrund", "klar mitprägend", "spürbar vorhanden", "im Hintergrund", "praktisch gleichauf", "knapp davor", "deutlich davor".
+
+4) KEINE Fachbegriffe aus dem bioLogic-Modell: niemals "impulsiv", "intuitiv", "analytisch", "Komponente", "Triade", "Profilklasse", "BAL_FULL", "DUAL_TOP", "CLEAR_TOP", "ORDER", "top1/top2/top3", "Gap", "duale Dominanz". Stattdessen Klartext: "Tempo und Entscheidung", "Kommunikation und Beziehung", "Struktur und Sorgfalt", "Schwerpunkt", "Hauptfokus", "begleitet die Stelle".
+
+5) KEINE Disclaimer, keine Absicherungsformeln. Verboten:
+   - "wertfrei zu verstehen"
+   - "ersetzt keine Einzelfallbetrachtung"
+   - "Tendenzen, keine starren Bilder"
+   - "die Analyse dient als Orientierung"
+   - "jeder Mensch ist individuell"
+   Der Hinweistext steht separat im Bericht. Du schreibst die Aussage, nicht die Einschränkung.
+
+6) KEINE Floskeln. Verboten: "im Rahmen eines ganzheitlichen Ansatzes", "es gilt zu beachten", "vor dem Hintergrund der aktuellen Entwicklungen", "ein signifikanter Mehrwert", "die Maßnahmen wurden implementiert".
+
+7) KEINE Gedankenstriche. Weder "–" noch "—" im Fließtext. Sätze umformulieren oder aufteilen.
+
+8) Jeder Abschnitt endet mit einer klaren Aussage. Was bedeutet das für die Besetzung? Was muss der Leser wissen oder entscheiden? Kein Abschnitt endet in der Luft.
+
+9) Kein Lehrbuch-Sound. Keine Definitionen. Der Leser kennt seinen Job, er braucht keine Einführung in Führungsmodelle.
+
+10) Antworten auf ${languageName}.
 
 WIE DIE DREI SCHWERPUNKTE ZU BENENNEN SIND (immer Klartext):
 - "Tempo und Entscheidung" = anpacken, schnell entscheiden, Tempo machen, Dinge umsetzen
 - "Kommunikation und Beziehung" = auf Menschen zugehen, abstimmen, vermitteln, Beziehungen aufbauen
 - "Struktur und Sorgfalt" = ordnen, prüfen, analysieren, Sorgfalt und Genauigkeit sicherstellen
 
-Antworte ausschließlich mit gültigem JSON gemäß dem geforderten Schema. Kein Fließtext um das JSON herum.`;
+VORHER (so soll es NICHT klingen):
+"Der Aufgabencharakter passt zur Schwerpunktstruktur. Die Führungsrolle mit Ergebnisverantwortung verlangt nach schnellen Entscheidungen und klarer Kommunikation, beides ist im Profil stark verankert. Strukturarbeit könnte bei komplexeren Planungsaufgaben zum Risiko werden, hier sollte Unterstützung geprüft werden."
+
+NACHHER (so SOLL es klingen):
+"Die Stelle braucht jemanden, der schnell entscheidet und klar kommuniziert. Das sind keine optionalen Eigenschaften, sondern die Grundbedingung für wirksame Führung hier. Planungsaufgaben mit hoher Sorgfalt liegen außerhalb des Schwerpunkts. Wer besetzt wird, braucht dafür Unterstützung, entweder durch den Stellvertreter oder durch eine Stabsfunktion. Das ist kein Makel, das ist ein konkreter Organisationsbedarf, den HR vor der Besetzung klären sollte."
+
+Antworte ausschließlich mit gültigem JSON gemäß dem geforderten Schema. Kein Fließtext um das JSON herum.
+
+CHECKLISTE VOR DER AUSGABE: jeden Textblock prüfen.
+- Kein Passiv? - Keine Zahlen oder Prozente? - Keine Modellbegriffe (impulsiv/intuitiv/analytisch/Komponente/...)? - Kein Disclaimer? - Keine Gedankenstriche? - Jeder Abschnitt endet mit einer klaren Aussage? - Konkret auf "${jobTitle}" und die genannten Aufgaben bezogen?`;
 
         userPrompt = `STELLE: ${jobTitle}
+ROLLEN-KATEGORIE: ${roleCategory.category}
+PASSENDES VOKABULAR (nutze davon, was in den Stellenkontext passt – nicht erzwingen): ${roleCategory.vocab}
+
 HAUPTAUFGABEN: ${taskLine}
 
 SCHWERPUNKTE FÜR DIESE STELLE (qualitativ – KEINE Zahlen im Bericht verwenden):
@@ -2528,9 +2604,9 @@ Erzeuge das folgende JSON. Halte die Stilregeln strikt ein – besonders: KEINE 
   "teamImpact": "2 Sätze. Welche Wirkung die Stelle auf das Team hat.",
   "tensionFields": ["4 prägnante Spannungsfelder im Format 'X vs. Y' aus dem konkreten Stellenkontext (z. B. 'Tempo vs. Sorgfalt', 'Nähe zum Team vs. klare Ansage'). Alltagssprache, keine Modellbegriffe."],
   "miscastRisks": [
-    { "label": "Wenn ${componentLabel[t1]} zu stark wird", "bullets": ["3-4 konkrete Risiken als kurze Alltagssätze. Was passiert dann im Team, mit den Aufgaben, mit Kollegen?"] },
-    { "label": "Wenn ${componentLabel[t2]} die Stelle übernimmt", "bullets": ["3-4 konkrete Risiken als kurze Alltagssätze."] },
-    { "label": "Wenn ${componentLabel[t3]} zu stark wird", "bullets": ["3-4 konkrete Risiken als kurze Alltagssätze."] }
+    { "label": "Wenn ${componentLabel[t1]} zu stark wird", "bullets": ["3-4 konkrete Risiken als kurze Alltagssätze. Was passiert dann im Team, mit den Aufgaben, mit Kollegen? Der LETZTE Bullet beginnt zwingend mit 'Im Alltag entsteht ' und beschreibt EIN beobachtbares Verhalten."] },
+    { "label": "Wenn ${componentLabel[t2]} die Stelle übernimmt", "bullets": ["3-4 konkrete Risiken. Letzter Bullet beginnt zwingend mit 'Im Alltag entsteht ' und beschreibt ein beobachtbares Verhalten."] },
+    { "label": "Wenn ${componentLabel[t3]} zu stark wird", "bullets": ["3-4 konkrete Risiken. Letzter Bullet beginnt zwingend mit 'Im Alltag entsteht ' und beschreibt ein beobachtbares Verhalten."] }
   ],
   "typicalPerson": "2-3 Sätze. Aus welchen Rollen oder Berufswegen passende Kandidatinnen und Kandidaten typischerweise kommen – konkret und in Alltagssprache.",
   "finalDecision": "2-3 Sätze. Klare Besetzungsempfehlung in Alltagssprache, mit Bezug auf den Hauptfokus dieser Stelle. Ende mit einer prüfbaren Empfehlung."
@@ -2538,8 +2614,12 @@ Erzeuge das folgende JSON. Halte die Stilregeln strikt ein – besonders: KEINE 
 
 WICHTIG:
 - KEINE Zahlen, KEINE Prozentwerte, KEINE Punkte irgendwo im Output. Auch nicht in tensionFields oder miscastRisks.
-- KEINE Begriffe "impulsiv", "intuitiv", "analytisch", "Komponente", "Triade", "Profilklasse", "Gap", "top1", "top2", "top3", "bioLogic".
-- tensionFields = exakt 4 Strings. miscastRisks.bullets jeweils 3-4 Strings.
+- KEINE Begriffe "impulsiv", "intuitiv", "analytisch", "Komponente", "Triade", "Profilklasse", "Gap", "top1", "top2", "top3", "bioLogic", "duale Dominanz".
+- KEINE Gedankenstriche ("–" oder "—") im Fließtext.
+- KEINE Disclaimer-Floskeln ("wertfrei", "ersetzt keine Einzelfallbetrachtung", "Tendenzen, keine starren Bilder" etc.).
+- Jeder Abschnitt endet mit einer klaren, prüfbaren Aussage – nicht in der Luft.
+- Konkreter Bezug auf die Rollen-Kategorie "${roleCategory.category}" und das passende Vokabular oben, wenn es zur Stelle passt.
+- tensionFields = exakt 4 Strings. miscastRisks.bullets jeweils 3-4 Strings, der LETZTE Bullet beginnt mit "Im Alltag entsteht ".
 - componentMeaning in genau dieser Reihenfolge mit den keys ${t1}, ${t2}, ${t3}.`;
       }
 
