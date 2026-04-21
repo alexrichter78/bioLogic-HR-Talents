@@ -3529,7 +3529,21 @@ Du befindest dich GERADE in einer aktiven Gesprächssimulation. WICHTIGE REGELN:
         .map((t) => t.name)
         .slice(0, 8);
 
-      const prompt = `Du bist ein erfahrener Personalberater. Beschreibe in 2-3 Sätzen, aus welchen Rollen und Arbeitsumfeldern typische Personen für die Position "${safeBeruf}"${safeBereich ? ` (${safeBereich})` : ""} kommen.
+      const prompt = region === "EN"
+        ? `You are an experienced HR consultant. In 2-3 sentences, describe from which ROLES and WORK ENVIRONMENTS typical candidates for the position "${safeBeruf}"${safeBereich ? ` (${safeBereich})` : ""} usually come.
+
+Context:
+- Core tasks: ${alleTaetigkeiten.join(", ") || "not specified"}
+${safeFuehrungstyp && safeFuehrungstyp !== "Keine" ? `- Leadership responsibility: ${safeFuehrungstyp}` : "- No leadership responsibility"}
+
+Rules:
+- Describe ROLES and WORK ENVIRONMENTS the candidates typically come from (e.g. "roles with intensive guest interaction and responsibility for the beverage offering").
+- DO NOT mention formal degrees, certificates, or qualifications (no "certified", "with a degree in", "trained as").
+- DO NOT use filler like "ideally", "in the best case", "as a rule", "they bring", "they possess".
+- No em-dashes, no bullet lists.
+- Plain everyday English. Short, concrete, maximum 3 sentences.
+- Output the text only, no preamble.`
+        : `Du bist ein erfahrener Personalberater. Beschreibe in 2-3 Sätzen, aus welchen Rollen und Arbeitsumfeldern typische Personen für die Position "${safeBeruf}"${safeBereich ? ` (${safeBereich})` : ""} kommen.
 ${getRegionInstruction(region)}
 
 Kontext:
