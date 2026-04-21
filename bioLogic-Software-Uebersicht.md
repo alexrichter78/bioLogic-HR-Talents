@@ -9,7 +9,7 @@ Das System basiert auf dem **bioLogic-Modell** -- einem Drei-Dimensionen-Ansatz,
 | Prägung | Fokus | Farbe |
 |---|---|---|
 | **Impulsiv** | Handlung, Entscheidung, Umsetzung | Rot |
-| **Intuitiv** | Kommunikation, Empathie, Zusammenarbeit | Grün |
+| **Intuitiv** | Kommunikation, Empathie, Zusammenarbeit | Gelb |
 | **Analytisch** | Struktur, Planung, Systematik | Blau |
 
 Aus diesen drei Prägungen ergibt sich ein individuelles Profil -- die sogenannte **Rollen-DNA** bzw. das **Persönlichkeitsprofil** -- das die Grundlage für alle weiteren Analysen bildet.
