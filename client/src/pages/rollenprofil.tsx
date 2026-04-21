@@ -1,12 +1,14 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useLocation } from "wouter";
+import { useQuery } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 import { AlertTriangle, Sun, Gauge, Flame, Printer } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useRegion, useLocalizedText } from "@/lib/region";
 import { BERUFE } from "@/data/berufe";
 import logoSrc from "@assets/LOGO_bio_1773853681939.png";
-import { generateJobCheckRoleReport, type SuccessFocusKey, type ComponentKey } from "@/lib/entscheidungsbericht-engine";
+import { generateJobCheckRoleReport, getForbiddenPhrases, type SuccessFocusKey, type ComponentKey, type JobCheckReportTexts } from "@/lib/entscheidungsbericht-engine";
 
 const COLORS = { imp: "#C41E3A", int: "#F39200", ana: "#1A5DAB" };
 
@@ -464,6 +466,59 @@ export default function Rollenprofil() {
 
   const subCircleCache = useRef<Record<string, string>>({});
 
+  // Engine-Berechnung defensiv (auch ohne data, damit Hook-Reihenfolge stabil bleibt)
+  const FOKUS_TO_KEY_PRE: Record<number, ComponentKey> = {
+    0: "imp", 1: "int", 2: "imp", 3: "ana", 4: "ana", 5: "int",
+  };
+  const preEngineInput = useMemo(() => {
+    if (!data) return null;
+    const haupt = (data.taetigkeiten || []).filter((x: any) => x.kategorie === "haupt");
+    const top = haupt.slice(0, 3).map((x: any) => cleanTaskName(x.name));
+    const focusIdx: number[] = data.erfolgsfokusIndices || [];
+    const focusKey: SuccessFocusKey = focusIdx.length > 0 ? (FOKUS_TO_KEY_PRE[focusIdx[0]] ?? null) : null;
+    return {
+      jobTitle: data.beruf,
+      tasks: top,
+      triad: { imp: Math.round(data.gesamt.imp), int: Math.round(data.gesamt.int), ana: Math.round(data.gesamt.ana) },
+      successFocus: focusKey,
+      environment: {
+        taskCharacter: data.aufgabencharakter || null,
+        workLogic: data.arbeitslogik || null,
+        leadershipType: data.isLeadership ? data.fuehrungstyp : null,
+      },
+    };
+  }, [data]);
+
+  const preEngineReport = useMemo(
+    () => preEngineInput ? generateJobCheckRoleReport(preEngineInput) : null,
+    [preEngineInput]
+  );
+
+  const narrativePayload = useMemo(() => {
+    if (!preEngineInput || !preEngineReport) return null;
+    return {
+      jobTitle: preEngineInput.jobTitle,
+      tasks: preEngineInput.tasks,
+      triad: preEngineInput.triad,
+      successFocus: preEngineInput.successFocus,
+      environment: preEngineInput.environment,
+      meta: preEngineReport.meta,
+      forbiddenPhrases: getForbiddenPhrases(preEngineReport.meta.profileClass),
+      locale: "de",
+    };
+  }, [preEngineInput, preEngineReport]);
+
+  const narrativeQuery = useQuery<Partial<JobCheckReportTexts>>({
+    queryKey: ["/api/generate-stellenanalyse-text", narrativePayload ? JSON.stringify(narrativePayload) : "none"],
+    queryFn: async () => {
+      const res = await apiRequest("POST", "/api/generate-stellenanalyse-text", narrativePayload);
+      return await res.json();
+    },
+    enabled: !!narrativePayload,
+    staleTime: Infinity,
+    retry: 1,
+  });
+
   if (!data) {
     return (
       <div className="page-gradient-bg">
@@ -497,26 +552,34 @@ export default function Rollenprofil() {
   const profilkonfliktRaw = buildProfilkonflikt(data);
   const profilkonflikt = profilkonfliktRaw ? t(profilkonfliktRaw) : null;
 
-  const FOKUS_TO_KEY: Record<number, ComponentKey> = {
-    0: "imp", 1: "int", 2: "imp", 3: "ana", 4: "ana", 5: "int",
+  const engineInput = preEngineInput!;
+  const engineReport = preEngineReport!;
+  const llm = narrativeQuery.data || {};
+  const pick = <K extends keyof JobCheckReportTexts>(key: K): JobCheckReportTexts[K] => {
+    const v = (llm as any)[key];
+    if (v == null) return engineReport[key];
+    if (Array.isArray(v) && v.length === 0) return engineReport[key];
+    return v;
   };
-  const erfolgsfokusIndices: number[] = data.erfolgsfokusIndices || [];
-  const successFocusKey: SuccessFocusKey = erfolgsfokusIndices.length > 0
-    ? (FOKUS_TO_KEY[erfolgsfokusIndices[0]] ?? null)
-    : null;
 
-  const engineInput = {
-    jobTitle: data.beruf,
-    tasks: topTaetigkeiten,
-    triad: { imp: Math.round(data.gesamt.imp), int: Math.round(data.gesamt.int), ana: Math.round(data.gesamt.ana) },
-    successFocus: successFocusKey,
-    environment: {
-      taskCharacter: data.aufgabencharakter || null,
-      workLogic: data.arbeitslogik || null,
-      leadershipType: data.isLeadership ? data.fuehrungstyp : null,
-    },
+  const report: JobCheckReportTexts = {
+    meta: engineReport.meta,
+    intro: pick("intro"),
+    shortDescription: pick("shortDescription"),
+    structureProfile: pick("structureProfile"),
+    componentMeaning: pick("componentMeaning"),
+    workLogic: pick("workLogic"),
+    framework: pick("framework"),
+    successFocus: pick("successFocus"),
+    behaviourDaily: pick("behaviourDaily"),
+    behaviourPressure: pick("behaviourPressure"),
+    behaviourStress: pick("behaviourStress"),
+    teamImpact: pick("teamImpact"),
+    tensionFields: pick("tensionFields"),
+    miscastRisks: pick("miscastRisks"),
+    typicalPerson: pick("typicalPerson"),
+    finalDecision: pick("finalDecision"),
   };
-  const report = generateJobCheckRoleReport(engineInput);
 
   const rollenBeschreibungIntro = t(report.shortDescription);
 
