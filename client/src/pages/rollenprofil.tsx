@@ -9,7 +9,7 @@ import { useRegion, useLocalizedText } from "@/lib/region";
 import { BERUFE } from "@/data/berufe";
 import logoSrc from "@assets/LOGO_bio_1773853681939.png";
 import { generateJobCheckRoleReport, getForbiddenPhrases, type SuccessFocusKey, type ComponentKey, type JobCheckReportTexts } from "@/lib/entscheidungsbericht-engine";
-import { REPORT_INTRO_DISCLAIMER } from "@/lib/report-texts";
+import { REPORT_INTRO_DISCLAIMER, REPORT_INTRO_DISCLAIMER_EN } from "@/lib/report-texts";
 
 const COLORS = { imp: "#C41E3A", int: "#F39200", ana: "#1A5DAB" };
 
@@ -505,9 +505,9 @@ export default function Rollenprofil() {
       environment: preEngineInput.environment,
       meta: preEngineReport.meta,
       forbiddenPhrases: getForbiddenPhrases(preEngineReport.meta.profileClass),
-      locale: "de",
+      locale: region === "EN" ? "en" : "de",
     };
-  }, [preEngineInput, preEngineReport]);
+  }, [preEngineInput, preEngineReport, region]);
 
   const narrativeQuery = useQuery<Partial<JobCheckReportTexts>>({
     queryKey: ["/api/generate-stellenanalyse-text", narrativePayload ? JSON.stringify(narrativePayload) : "none"],
@@ -558,9 +558,11 @@ export default function Rollenprofil() {
         <main style={{ maxWidth: 800, margin: "0 auto", padding: "80px 20px", textAlign: "center" }}>
           <div style={{ background: "rgba(255,255,255,0.78)", backdropFilter: "blur(40px)", borderRadius: 20, padding: "40px 32px", boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)", border: "1px solid rgba(0,0,0,0.04)" }}>
             <div style={{ width: 44, height: 44, margin: "0 auto 18px", border: "3px solid #E5E5E7", borderTopColor: "#0071E3", borderRadius: "50%", animation: "bio-spin 0.9s linear infinite" }} />
-            <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }} data-testid="text-report-loading-title">Stellenanalyse wird erstellt</h2>
+            <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }} data-testid="text-report-loading-title">{region === "EN" ? "Generating job analysis" : "Stellenanalyse wird erstellt"}</h2>
             <p style={{ fontSize: 14, color: "#48484A", margin: 0, lineHeight: 1.6 }}>
-              Die Texte werden gerade auf Basis deines Profils generiert. Das dauert in der Regel 15–25 Sekunden.
+              {region === "EN"
+                ? "We're writing the report based on your profile. This usually takes 15–25 seconds."
+                : "Die Texte werden gerade auf Basis deines Profils generiert. Das dauert in der Regel 15–25 Sekunden."}
             </p>
             <style>{`@keyframes bio-spin { to { transform: rotate(360deg); } }`}</style>
           </div>
@@ -715,7 +717,7 @@ export default function Rollenprofil() {
             ))}
             <div style={{ background: "linear-gradient(135deg, rgba(255,59,48,0.06) 0%, rgba(255,59,48,0.03) 100%)", borderRadius: 10, padding: "16px 20px", border: "1px solid rgba(255,59,48,0.2)" }}>
               <p style={{ fontSize: 13, fontWeight: 700, color: "#FF3B30", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto", MozHyphens: "auto", msHyphens: "auto", overflowWrap: "break-word", wordBreak: "break-word" } as any} lang="de">
-                {REPORT_INTRO_DISCLAIMER}
+                {region === "EN" ? REPORT_INTRO_DISCLAIMER_EN : REPORT_INTRO_DISCLAIMER}
               </p>
             </div>
           </div>

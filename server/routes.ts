@@ -2301,20 +2301,41 @@ Antworte als JSON:
         }
       }
 
+      const isEN = locale === "en";
+
       // Klartext-Labels: keine Fachbegriffe wie "impulsiv/intuitiv/analytisch" im Bericht
-      const componentLabel: Record<string, string> = {
-        imp: "Tempo und Entscheidung",
-        int: "Kommunikation und Beziehung",
-        ana: "Struktur und Sorgfalt",
-      };
-      const componentLong: Record<string, string> = {
-        imp: "anpacken, schnell entscheiden, Tempo machen, Dinge umsetzen",
-        int: "auf Menschen zugehen, abstimmen, vermitteln, Beziehungen aufbauen",
-        ana: "ordnen, prüfen, analysieren, Sorgfalt und Genauigkeit sicherstellen",
-      };
+      const componentLabel: Record<string, string> = isEN
+        ? {
+            imp: "Pace and Decision",
+            int: "Communication and Relationships",
+            ana: "Structure and Diligence",
+          }
+        : {
+            imp: "Tempo und Entscheidung",
+            int: "Kommunikation und Beziehung",
+            ana: "Struktur und Sorgfalt",
+          };
+      const componentLong: Record<string, string> = isEN
+        ? {
+            imp: "taking action, deciding quickly, driving pace, getting things done",
+            int: "engaging with people, aligning, mediating, building relationships",
+            ana: "organising, checking, analysing, ensuring care and accuracy",
+          }
+        : {
+            imp: "anpacken, schnell entscheiden, Tempo machen, Dinge umsetzen",
+            int: "auf Menschen zugehen, abstimmen, vermitteln, Beziehungen aufbauen",
+            ana: "ordnen, prüfen, analysieren, Sorgfalt und Genauigkeit sicherstellen",
+          };
 
       // Prozentwerte in qualitative Bänder übersetzen, damit Claude in Worten arbeitet
       const toBand = (v: number): string => {
+        if (isEN) {
+          if (v >= 45) return "clearly the dominant focus";
+          if (v >= 38) return "clearly shaping the role";
+          if (v >= 30) return "noticeably present";
+          if (v >= 22) return "more of a supporting role";
+          return "clearly in the background";
+        }
         if (v >= 45) return "deutlich der Schwerpunkt";
         if (v >= 38) return "klar mitprägend";
         if (v >= 30) return "spürbar vorhanden";
@@ -2326,6 +2347,12 @@ Antworte als JSON:
       const bandAna = toBand(triad.ana);
 
       const gapWord = (g: number): string => {
+        if (isEN) {
+          if (g <= 3) return "practically on par with";
+          if (g <= 7) return "just ahead of";
+          if (g <= 14) return "clearly ahead of";
+          return "well ahead of";
+        }
         if (g <= 3) return "praktisch gleichauf";
         if (g <= 7) return "knapp davor";
         if (g <= 14) return "deutlich davor";
@@ -2343,14 +2370,105 @@ Antworte als JSON:
 
       const focusLabel = successFocus ? componentLabel[successFocus] : null;
 
-      const profileClassExplanation: Record<string, string> = {
-        BAL_FULL: "Alle drei Schwerpunkte sind etwa gleich stark – kein klarer Hauptfokus.",
-        DUAL_TOP: "Zwei Schwerpunkte tragen die Stelle gemeinsam, der dritte begleitet eher.",
-        CLEAR_TOP: "Ein Schwerpunkt trägt die Stelle, die anderen beiden begleiten.",
-        ORDER: "Klare Reihenfolge: ein erster Schwerpunkt vor einem zweiten vor einem dritten.",
-      };
+      const profileClassExplanation: Record<string, string> = isEN
+        ? {
+            BAL_FULL: "All three focus areas are roughly equal — no single dominant focus.",
+            DUAL_TOP: "Two focus areas carry the role together, the third is more of a companion.",
+            CLEAR_TOP: "One focus area carries the role, the other two support it.",
+            ORDER: "Clear ranking: a first focus, ahead of a second, ahead of a third.",
+          }
+        : {
+            BAL_FULL: "Alle drei Schwerpunkte sind etwa gleich stark – kein klarer Hauptfokus.",
+            DUAL_TOP: "Zwei Schwerpunkte tragen die Stelle gemeinsam, der dritte begleitet eher.",
+            CLEAR_TOP: "Ein Schwerpunkt trägt die Stelle, die anderen beiden begleiten.",
+            ORDER: "Klare Reihenfolge: ein erster Schwerpunkt vor einem zweiten vor einem dritten.",
+          };
 
-      const systemPrompt = `Du bist ein erfahrener Berater, der Stellenanalyse-Berichte schreibt. Die Leser kennen weder das bioLogic-Modell noch Begriffe wie "impulsiv", "intuitiv" oder "analytisch". Schreibe so, dass eine fremde Person ohne Vorwissen den Bericht versteht.
+      const t1 = meta.top1, t2 = meta.top2, t3 = meta.top3;
+
+      let systemPrompt: string;
+      let userPrompt: string;
+
+      if (isEN) {
+        const taskLineEN = Array.isArray(tasks) && tasks.length > 0 ? tasks.join("; ") : "(no main tasks specified)";
+
+        systemPrompt = `You are an experienced consultant writing job-analysis reports. The readers know neither the bioLogic model nor terms like "impulsive", "intuitive" or "analytical". Write so that a stranger without prior knowledge can understand the report.
+
+STYLE RULES (mandatory):
+- Clear, easy-to-read everyday English. Short sentences. Active voice. No passive.
+- NO numbers, NO percentages, NO scores, no values like "52 %", "gap of 3 points" or "around 40". Use words instead: "clearly in the foreground", "clearly shaping the role", "noticeably present", "in the background", "practically on par", "just ahead", "clearly ahead".
+- NO bioLogic model jargon: never use "impulsive", "intuitive", "analytical", "component", "triad", "profile class", "BAL_FULL", "DUAL_TOP", "CLEAR_TOP", "ORDER", "top1/top2/top3", "gap". Always use plain labels: "Pace and Decision", "Communication and Relationships", "Structure and Diligence", "focus area", "main focus", "supports the role".
+- No empty phrases, no textbook tone, no coaching-speak, no intensifiers ("really", "extremely", "absolutely").
+- Each section: key statement first → short justification based on the concrete tasks/context → one concrete recommendation at the end.
+- Refer concretely to the role title, named tasks, success focus and conditions — not generic.
+- No repetition between sections.
+- Reply in ${languageName}.
+
+HOW TO NAME THE THREE FOCUS AREAS (always plain English):
+- "Pace and Decision" = taking action, deciding quickly, driving pace, getting things done
+- "Communication and Relationships" = engaging with people, aligning, mediating, building relationships
+- "Structure and Diligence" = organising, checking, analysing, ensuring care and accuracy
+
+Reply only with valid JSON matching the requested schema. No prose around the JSON.`;
+
+        userPrompt = `ROLE: ${jobTitle}
+MAIN TASKS: ${taskLineEN}
+
+FOCUS AREAS FOR THIS ROLE (qualitative — DO NOT use any numbers in the report):
+- "${componentLabel.imp}" (${componentLong.imp}): ${bandImp}
+- "${componentLabel.int}" (${componentLong.int}): ${bandInt}
+- "${componentLabel.ana}" (${componentLong.ana}): ${bandAna}
+
+PROFILE PICTURE: ${profileClassExplanation[meta.profileClass] || ""}
+- Main focus: "${componentLabel[t1]}"
+- Second focus: "${componentLabel[t2]}" (${gapWord(meta.gap1)} the main focus)
+- Third focus: "${componentLabel[t3]}" (${gapWord(meta.gap2)} the second focus)
+
+SUCCESS FOCUS OF THE ROLE: ${focusLabel ? `"${focusLabel}"` : "not specified"}
+
+CONTEXT:
+- Task character: ${environment.taskCharacter || "not specified"}
+- Work logic: ${environment.workLogic || "not specified"}
+- Leadership type: ${environment.leadershipType || "not specified"}
+
+TASK:
+Produce the JSON below. Strictly follow the style rules — especially: NO numbers or percentages in the text. NO terms like "impulsive", "intuitive", "analytical". Always use the plain labels above.
+
+{
+  "intro": "EXACTLY 2 paragraphs (separated by \\n\\n), no more. First paragraph: what this role is about and what the report shows — in everyday English, no model jargon. Second paragraph: short framing of the focus picture (which focus carries, which support) and what the reader can use the report for. NO disclaimer paragraph about 'value-free', 'personality profile', 'individual case' etc. — that disclaimer is shown separately and must not appear here.",
+  "shortDescription": "2-3 sentences. What kind of person this role needs — everyday English, with reference to the tasks.",
+  "structureProfile": "2-3 sentences. What the focus picture means for the role. Use words like 'main focus', 'supports', 'in the background'. No numbers.",
+  "componentMeaning": [
+    { "component": "${t1}", "title": "${componentLabel[t1]}", "text": "1-2 sentences: what this focus stands for in the role '${jobTitle}' — anchored in one of the concrete tasks." },
+    { "component": "${t2}", "title": "${componentLabel[t2]}", "text": "1-2 sentences: what additional role this focus plays." },
+    { "component": "${t3}", "title": "${componentLabel[t3]}", "text": "1-2 sentences: what role this focus plays in the background." }
+  ],
+  "workLogic": "1-2 sentences. How the focus areas must work together so the role functions.",
+  "framework": "2-3 sentences. How task character, work logic and leadership type fit the focus picture. If something is not specified, briefly name it.",
+  "successFocus": "1-2 sentences. What the success focus means for the day-to-day steering of this role.",
+  "behaviourDaily": "2 sentences. How the role shows up in normal everyday work — everyday English.",
+  "behaviourPressure": "2 sentences. How the role reacts under normal work pressure.",
+  "behaviourStress": "2 sentences. How the role reacts when pressure becomes too high.",
+  "teamImpact": "2 sentences. The impact of the role on the team.",
+  "tensionFields": ["4 sharp tension pairs in the format 'X vs. Y' from this concrete role context (e.g. 'Pace vs. Diligence', 'Closeness to the team vs. clear directives'). Everyday English, no model jargon."],
+  "miscastRisks": [
+    { "label": "When ${componentLabel[t1]} becomes too strong", "bullets": ["3-4 concrete risks as short everyday sentences. What happens then in the team, with the tasks, with colleagues?"] },
+    { "label": "When ${componentLabel[t2]} takes over the role", "bullets": ["3-4 concrete risks as short everyday sentences."] },
+    { "label": "When ${componentLabel[t3]} becomes too strong", "bullets": ["3-4 concrete risks as short everyday sentences."] }
+  ],
+  "typicalPerson": "2-3 sentences. From which roles or career paths suitable candidates typically come — concrete and in everyday English.",
+  "finalDecision": "2-3 sentences. Clear hiring recommendation in everyday English, referring to the main focus of this role. End with a verifiable recommendation."
+}
+
+IMPORTANT:
+- NO numbers, NO percentages, NO points anywhere in the output. Not in tensionFields, not in miscastRisks.
+- NO terms "impulsive", "intuitive", "analytical", "component", "triad", "profile class", "gap", "top1", "top2", "top3", "bioLogic".
+- tensionFields = exactly 4 strings. miscastRisks.bullets each 3-4 strings.
+- componentMeaning in exactly this order with the keys ${t1}, ${t2}, ${t3}.`;
+      } else {
+        const taskLine = Array.isArray(tasks) && tasks.length > 0 ? tasks.join("; ") : "(keine Hauptaufgaben angegeben)";
+
+        systemPrompt = `Du bist ein erfahrener Berater, der Stellenanalyse-Berichte schreibt. Die Leser kennen weder das bioLogic-Modell noch Begriffe wie "impulsiv", "intuitiv" oder "analytisch". Schreibe so, dass eine fremde Person ohne Vorwissen den Bericht versteht.
 
 STIL-REGELN (verbindlich):
 - Klare, leicht verständliche Alltagssprache. Kurze Sätze. Aktiv. Kein Passiv.
@@ -2369,10 +2487,7 @@ WIE DIE DREI SCHWERPUNKTE ZU BENENNEN SIND (immer Klartext):
 
 Antworte ausschließlich mit gültigem JSON gemäß dem geforderten Schema. Kein Fließtext um das JSON herum.`;
 
-      const taskLine = Array.isArray(tasks) && tasks.length > 0 ? tasks.join("; ") : "(keine Hauptaufgaben angegeben)";
-      const t1 = meta.top1, t2 = meta.top2, t3 = meta.top3;
-
-      const userPrompt = `STELLE: ${jobTitle}
+        userPrompt = `STELLE: ${jobTitle}
 HAUPTAUFGABEN: ${taskLine}
 
 SCHWERPUNKTE FÜR DIESE STELLE (qualitativ – KEINE Zahlen im Bericht verwenden):
@@ -2426,6 +2541,7 @@ WICHTIG:
 - KEINE Begriffe "impulsiv", "intuitiv", "analytisch", "Komponente", "Triade", "Profilklasse", "Gap", "top1", "top2", "top3", "bioLogic".
 - tensionFields = exakt 4 Strings. miscastRisks.bullets jeweils 3-4 Strings.
 - componentMeaning in genau dieser Reihenfolge mit den keys ${t1}, ${t2}, ${t3}.`;
+      }
 
       const fullPrompt = `${systemPrompt}\n\n${userPrompt}`;
       const data = await callClaudeForJson("generate-stellenanalyse-text", fullPrompt, {

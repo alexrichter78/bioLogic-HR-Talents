@@ -29,6 +29,7 @@ const REGION_OPTIONS: { value: Region; label: string }[] = [
   { value: "DE", label: "Deutschland" },
   { value: "CH", label: "Schweiz" },
   { value: "AT", label: "Österreich" },
+  { value: "EN", label: "English" },
 ];
 
 export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }) {

@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
 
-export type Region = "DE" | "CH" | "AT";
+export type Region = "DE" | "CH" | "AT" | "EN";
 
 interface RegionContextType {
   region: Region;
@@ -13,6 +13,7 @@ const REGION_MAP: Record<Region, { locale: string; label: string }> = {
   DE: { locale: "de-DE", label: "Deutschland" },
   CH: { locale: "de-CH", label: "Schweiz" },
   AT: { locale: "de-AT", label: "Österreich" },
+  EN: { locale: "en-US", label: "English" },
 };
 
 const RegionContext = createContext<RegionContextType | null>(null);
@@ -20,7 +21,7 @@ const RegionContext = createContext<RegionContextType | null>(null);
 export function RegionProvider({ children }: { children: ReactNode }) {
   const [region, setRegionState] = useState<Region>(() => {
     const stored = localStorage.getItem("appRegion");
-    if (stored === "DE" || stored === "CH" || stored === "AT") return stored;
+    if (stored === "DE" || stored === "CH" || stored === "AT" || stored === "EN") return stored;
     return "DE";
   });
 
@@ -87,13 +88,13 @@ function ssToSz(text: string): string {
 export function useLocalizedText() {
   const { region } = useRegion();
   return (text: string) => {
-    if (region === "CH") return text;
+    if (region === "CH" || region === "EN") return text;
     return ssToSz(text);
   };
 }
 
 export function localizeStr(text: string, region: Region): string {
-  if (region === "CH") return text;
+  if (region === "CH" || region === "EN") return text;
   return ssToSz(text);
 }
 
