@@ -568,7 +568,7 @@ input[type="range"].bio-slider::-moz-range-track {
   top: auto;
   left: auto;
   margin-left: 20px;
-  margin-bottom: 2px;
+  margin-bottom: 14px;
 }
 
 .report-subtitle--flow {
