@@ -9,7 +9,7 @@ import { useRegion, useLocalizedText } from "@/lib/region";
 import { BERUFE } from "@/data/berufe";
 import logoSrc from "@assets/LOGO_bio_1773853681939.png";
 import { generateJobCheckRoleReport, getForbiddenPhrases, type SuccessFocusKey, type ComponentKey, type JobCheckReportTexts } from "@/lib/entscheidungsbericht-engine";
-import { REPORT_INTRO_DISCLAIMER, REPORT_INTRO_DISCLAIMER_EN } from "@/lib/report-texts";
+import { REPORT_INTRO_DISCLAIMER, REPORT_INTRO_DISCLAIMER_EN, REPORT_LABELS } from "@/lib/report-texts";
 
 const COLORS = { imp: "#C41E3A", int: "#F39200", ana: "#1A5DAB" };
 
@@ -236,6 +236,7 @@ export default function Rollenprofil() {
   const [, setLocation] = useLocation();
   const { region } = useRegion();
   const t = useLocalizedText();
+  const L = REPORT_LABELS[region === "EN" ? "en" : "de"];
   const isMobile = useIsMobile();
   const [data, setData] = useState<ReportData | null>(null);
   const reportRef = useRef<HTMLDivElement>(null);
@@ -527,9 +528,9 @@ export default function Rollenprofil() {
         <main style={{ maxWidth: 800, margin: "0 auto", padding: "60px 20px", textAlign: "center" }}>
           <div style={{ background: "rgba(255,255,255,0.78)", backdropFilter: "blur(40px)", borderRadius: 20, padding: "28px 32px", boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)", border: "1px solid rgba(0,0,0,0.04)" }}>
             <AlertTriangle style={{ width: 40, height: 40, color: "#FF9500", margin: "0 auto 16px" }} />
-            <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }}>Kein Stellenprofil vorhanden</h2>
+            <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }}>{L.noProfileTitle}</h2>
             <p style={{ fontSize: 14, color: "#48484A", margin: "0 0 24px", lineHeight: 1.6 }}>
-              Bitte erstelle zuerst ein Stellenprofil, um den Bericht generieren zu können.
+              {L.noProfileBody}
             </p>
             <button
               onClick={() => setLocation("/rollen-dna")}
@@ -540,7 +541,7 @@ export default function Rollenprofil() {
                 cursor: "pointer",
               }}
             >
-              Stellenprofil erstellen
+              {L.noProfileButton}
             </button>
           </div>
         </main>
@@ -558,11 +559,9 @@ export default function Rollenprofil() {
         <main style={{ maxWidth: 800, margin: "0 auto", padding: "80px 20px", textAlign: "center" }}>
           <div style={{ background: "rgba(255,255,255,0.78)", backdropFilter: "blur(40px)", borderRadius: 20, padding: "40px 32px", boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)", border: "1px solid rgba(0,0,0,0.04)" }}>
             <div style={{ width: 44, height: 44, margin: "0 auto 18px", border: "3px solid #E5E5E7", borderTopColor: "#0071E3", borderRadius: "50%", animation: "bio-spin 0.9s linear infinite" }} />
-            <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }} data-testid="text-report-loading-title">{region === "EN" ? "Generating job analysis" : "Stellenanalyse wird erstellt"}</h2>
+            <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }} data-testid="text-report-loading-title">{L.loadingTitle}</h2>
             <p style={{ fontSize: 14, color: "#48484A", margin: 0, lineHeight: 1.6 }}>
-              {region === "EN"
-                ? "We're writing the report based on your profile. This usually takes 15–25 seconds."
-                : "Die Texte werden gerade auf Basis deines Profils generiert. Das dauert in der Regel 15–25 Sekunden."}
+              {L.loadingBody}
             </p>
             <style>{`@keyframes bio-spin { to { transform: rotate(360deg); } }`}</style>
           </div>
@@ -573,6 +572,23 @@ export default function Rollenprofil() {
 
   const hauptTaetigkeiten = (data.taetigkeiten || []).filter((t: any) => t.kategorie === "haupt");
   const topTaetigkeiten = hauptTaetigkeiten.slice(0, 3).map((t: any) => cleanTaskName(t.name));
+
+  // Wenn EN gewählt ist, nutzen wir die KI-Übersetzungen für Stellentitel und
+  // Aufgaben-Bullets, falls die KI-Antwort sie geliefert hat. Fallback ist der
+  // Originaltext, damit nichts leer bleibt.
+  const llmAny = (narrativeQuery.data || {}) as any;
+  const jobTitleTranslated: string | undefined =
+    region === "EN" && typeof llmAny.jobTitleEnglish === "string" && llmAny.jobTitleEnglish.trim()
+      ? llmAny.jobTitleEnglish.trim()
+      : undefined;
+  const tasksTranslated: string[] | undefined =
+    region === "EN" && Array.isArray(llmAny.tasksEnglish) && llmAny.tasksEnglish.length > 0
+      ? (llmAny.tasksEnglish as string[]).map(s => cleanTaskName(String(s)))
+      : undefined;
+  const displayBeruf = jobTitleTranslated ?? data.beruf;
+  const displayTopTaetigkeiten = tasksTranslated && tasksTranslated.length >= topTaetigkeiten.length
+    ? tasksTranslated.slice(0, 3)
+    : topTaetigkeiten;
   const profilkonfliktRaw = buildProfilkonflikt(data);
   const profilkonflikt = profilkonfliktRaw ? t(profilkonfliktRaw) : null;
 
@@ -616,7 +632,7 @@ export default function Rollenprofil() {
   const teamwirkung = t(report.teamImpact);
   const spannungsfelder = report.tensionFields.map(f => t(f));
   const fehlbesetzung = report.miscastRisks.map(f => ({ label: t(f.label), bullets: f.bullets.map(b => t(b)) }));
-  const fazit = { titel: "Entscheidungsfazit", absaetze: [t(report.finalDecision)] };
+  const fazit = { titel: L.section4, absaetze: [t(report.finalDecision)] };
 
   const COMP_COLORS: Record<string, string> = { imp: COLORS.imp, int: COLORS.int, ana: COLORS.ana };
   const komponentenBedeutung = report.componentMeaning.map(k => ({
@@ -662,7 +678,7 @@ export default function Rollenprofil() {
   );
 
   return (
-    <div className="page-gradient-bg" lang="de">
+    <div className="page-gradient-bg" lang={L.pageLang}>
       <GlobalNav />
 
       <main style={{ maxWidth: 820, margin: "0 auto", padding: isMobile ? "16px 12px 80px" : "24px 16px 48px" }}>
@@ -682,7 +698,7 @@ export default function Rollenprofil() {
                   if (!reportEl) return;
                   const styles = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
                     .map(el => el.outerHTML).join("\n");
-                  printWin.document.write(`<!DOCTYPE html><html lang="de"><head><meta charset="utf-8"><title>Stellenprofil – ${data.beruf || "Bericht"}</title>${styles}<style>body{margin:0;padding:20px 0;background:#fff}
+                  printWin.document.write(`<!DOCTYPE html><html lang="${L.pageLang}"><head><meta charset="utf-8"><title>${L.title} – ${displayBeruf || L.title}</title>${styles}<style>body{margin:0;padding:20px 0;background:#fff}
 .report-header-btn,.report-pdf-btn,.no-print,nav{display:none!important}
 *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
 [data-pdf-block]{break-inside:avoid!important}
@@ -692,16 +708,16 @@ export default function Rollenprofil() {
                 }}
                 data-testid="button-print-stellenprofil"
                 className="report-header-btn"
-                title="1:1 Qualität — im Druckdialog 'Als PDF speichern' wählen"
+                title={L.printTooltip}
               >
                 <Printer style={{ width: 15, height: 15 }} />
-                <span>Drucken</span>
+                <span>{L.printButton}</span>
               </button>
             </div>
 
-            <div className="report-kicker">STELLENANALYSE</div>
-            <h1 className="report-title" data-testid="text-report-title">Stellenprofil</h1>
-            <div className="report-subtitle">{data.beruf}</div>
+            <div className="report-kicker">{L.kicker}</div>
+            <h1 className="report-title" data-testid="text-report-title">{L.title}</h1>
+            <div className="report-subtitle">{displayBeruf}</div>
             <div className="report-rings" />
           </div>
 
@@ -726,26 +742,26 @@ export default function Rollenprofil() {
           <div data-section="struktur" style={{ marginBottom: 40 }} data-testid="bericht-section-gesamtprofil">
             {/* 1. Kurzbeschreibung */}
             <div style={{ marginBottom: 28 }} data-pdf-block>
-              <SectionHead num={1} title="Stellenprofil · Entscheidungsgrundlage" color={SECTION_COLORS.rollenDna} />
-              <p style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 4px" }}>Welche Persönlichkeit braucht diese Stelle?</p>
+              <SectionHead num={1} title={L.section1} color={SECTION_COLORS.rollenDna} />
+              <p style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 4px" }}>{L.section1Headline}</p>
               <div style={{ marginTop: 24 }}>
-                <SubHead num={1} title="Kurzbeschreibung der Stelle" color={SECTION_COLORS.rollenDna} />
+                <SubHead num={1} title={L.sub1ShortDescription} color={SECTION_COLORS.rollenDna} />
               </div>
 
-              {topTaetigkeiten.length > 0 && (
+              {displayTopTaetigkeiten.length > 0 && (
                 <>
                   <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: "0 0 8px" }}>
-                    Die zentralen Aufgaben dieser Stelle:
+                    {L.coreTasksIntro}
                   </p>
                   <ul style={{ margin: "0 0 14px", paddingLeft: 20, listStyleType: "disc" }}>
-                    {topTaetigkeiten.map((t, i) => (
+                    {displayTopTaetigkeiten.map((t, i) => (
                       <li key={i} style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, marginBottom: 3 }}>{t}</li>
                     ))}
                   </ul>
                 </>
               )}
 
-              <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
+              <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang={L.pageLang}>
                 {rollenBeschreibungIntro}
               </p>
             </div>
@@ -753,37 +769,37 @@ export default function Rollenprofil() {
             {/* 2. Strukturprofil */}
             <div style={{ marginBottom: 28 }}>
               <div data-pdf-block>
-                <SubHead num={2} title="Strukturprofil der Stelle" color={SECTION_COLORS.rollenDna} />
+                <SubHead num={2} title={L.sub2StructureProfile} color={SECTION_COLORS.rollenDna} />
                 <div style={{ marginBottom: 16 }}>
-                  <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, fontWeight: 400, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
+                  <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, fontWeight: 400, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang={L.pageLang}>
                     {strukturprofilText}
                   </p>
                 </div>
               </div>
               <div data-pdf-block>
                 <div style={{ padding: "18px 20px", borderRadius: 12, background: "#F8F9FA", border: "1px solid rgba(0,0,0,0.06)", marginBottom: 16 }}>
-                  <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.75, margin: "0 0 16px", fontWeight: 400, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
-                    Jeder Mensch verfügt über die drei grundlegenden Denk- und Handlungsweisen Impulsiv, Intuitiv und Analytisch. Alle drei Anteile sind immer vorhanden. Der Unterschied liegt in ihrer Reihenfolge und Gewichtung.
+                  <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.75, margin: "0 0 16px", fontWeight: 400, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang={L.pageLang}>
+                    {L.structureExplanation}
                     <br /><br />
-                    Diese Struktur prägt, wie Menschen im Alltag entscheiden, kommunizieren und handeln. Je nach Situation kann sich die sichtbare Wirkung verändern: im Arbeitsalltag, unter Stress oder in entspannten Situationen.
+                    {L.structureExplanation2}
                   </p>
-                  <ProfileBar label="Impulsiv" value={data.gesamt.imp} color={COLORS.imp} />
+                  <ProfileBar label={L.barLabelImp} value={data.gesamt.imp} color={COLORS.imp} />
                   <div style={{ height: 8 }} />
-                  <ProfileBar label="Intuitiv" value={data.gesamt.int} color={COLORS.int} />
+                  <ProfileBar label={L.barLabelInt} value={data.gesamt.int} color={COLORS.int} />
                   <div style={{ height: 8 }} />
-                  <ProfileBar label="Analytisch" value={data.gesamt.ana} color={COLORS.ana} />
+                  <ProfileBar label={L.barLabelAna} value={data.gesamt.ana} color={COLORS.ana} />
                 </div>
               </div>
               <div data-pdf-block>
                 <div style={{ padding: "18px 20px", borderRadius: 12, background: "#F8F9FA", border: "1px solid rgba(0,0,0,0.06)", marginBottom: 16 }}>
-                  <p style={{ fontSize: 13, fontWeight: 600, color: "#48484A", margin: "0 0 12px" }}>Bedeutung der Komponenten</p>
+                  <p style={{ fontSize: 13, fontWeight: 600, color: "#48484A", margin: "0 0 12px" }}>{L.componentMeaning}</p>
                   <div style={{ display: "flex", gap: 12 }}>
                     {komponentenBedeutung.map((kb, i) => (
                       <div key={i} style={{ flex: 1, display: "flex", flexDirection: "column" }}>
                         <div style={{ flex: 1, padding: "14px 16px", borderRadius: 10, background: `linear-gradient(135deg, ${kb.color}12, ${kb.color}06)`, border: `1px solid ${kb.color}20`, display: "flex", flexDirection: "column" }}>
                           <div style={{ flex: 1 }}>
                             <span style={{ fontSize: 13, fontWeight: 700, color: kb.color, marginBottom: 8, display: "block" }}>{kb.label}</span>
-                            <p style={{ fontSize: 12.5, lineHeight: 1.65, margin: 0, color: "#48484A", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de" data-testid={`text-bedeutung-${kb.key}`}>
+                            <p style={{ fontSize: 12.5, lineHeight: 1.65, margin: 0, color: "#48484A", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang={L.pageLang} data-testid={`text-bedeutung-${kb.key}`}>
                               {kb.text}
                             </p>
                           </div>
@@ -799,7 +815,7 @@ export default function Rollenprofil() {
                   marginTop: 14, padding: "12px 16px", borderRadius: 12,
                   background: "rgba(255,149,0,0.06)", border: "1px solid rgba(255,149,0,0.15)",
                 }}>
-                  <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: 0, fontWeight: 450 }} data-testid="text-profilkonflikt" lang="de">
+                  <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: 0, fontWeight: 450 }} data-testid="text-profilkonflikt" lang={L.pageLang}>
                     {profilkonflikt}
                   </p>
                 </div>
@@ -808,8 +824,8 @@ export default function Rollenprofil() {
 
             {/* 3. Arbeitslogik */}
             <div style={{ marginBottom: 28 }} data-pdf-block>
-              <SubHead num={3} title="Arbeitslogik der Stelle" color={SECTION_COLORS.rollenDna} />
-              <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
+              <SubHead num={3} title={L.sub3WorkLogic} color={SECTION_COLORS.rollenDna} />
+              <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang={L.pageLang}>
                 {arbeitslogikText}
               </p>
             </div>
@@ -817,8 +833,8 @@ export default function Rollenprofil() {
             {/* 4. Rahmenbedingungen */}
             {rahmenText && (
               <div style={{ marginBottom: 28 }} data-testid="bericht-section-rahmen" data-pdf-block>
-                <SubHead num={4} title="Rahmenbedingungen" color={SECTION_COLORS.rollenDna} />
-                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de" data-testid="text-rahmenbedingungen">
+                <SubHead num={4} title={L.sub4Framework} color={SECTION_COLORS.rollenDna} />
+                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang={L.pageLang} data-testid="text-rahmenbedingungen">
                   {rahmenText}
                 </p>
               </div>
@@ -827,8 +843,8 @@ export default function Rollenprofil() {
             {/* 5. Erfolgsfokus */}
             {erfolgsfokusText && (
               <div style={{ marginBottom: 0 }} data-testid="bericht-section-kompetenz" data-pdf-block>
-                <SubHead num={rahmenText ? 5 : 4} title="Erfolgsfokus" color={SECTION_COLORS.rollenDna} />
-                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de" data-testid="text-erfolgsfokus">
+                <SubHead num={rahmenText ? 5 : 4} title={L.successFocusLabel} color={SECTION_COLORS.rollenDna} />
+                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang={L.pageLang} data-testid="text-erfolgsfokus">
                   {erfolgsfokusText}
                 </p>
               </div>
@@ -839,15 +855,15 @@ export default function Rollenprofil() {
           <div data-section="position" style={{ marginBottom: 40 }} data-testid="bericht-section-struktur">
             {/* Verhalten im Alltag */}
             <div style={{ marginBottom: 20 }} data-pdf-block>
-              <SectionHead num={2} title="Verhalten · Alltag und Stress" color={SECTION_COLORS.verhalten} />
-              <p style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>Verhalten im Alltag und unter Druck</p>
-              <p style={{ fontSize: 14, color: "#6E6E73", margin: "0 0 20px", lineHeight: 1.6 }}>Die folgende Darstellung zeigt, wie sich die Stellenanforderung im regulären Arbeitsalltag, unter Druck und bei starkem Stress typischerweise ausdrückt.</p>
+              <SectionHead num={2} title={L.section2} color={SECTION_COLORS.verhalten} />
+              <p style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>{L.section2Headline}</p>
+              <p style={{ fontSize: 14, color: "#6E6E73", margin: "0 0 20px", lineHeight: 1.6 }}>{L.section2Sub}</p>
               <div style={{ borderLeft: "4px solid #34C759", borderRadius: 8, background: "rgba(52,199,89,0.04)", padding: "16px 20px" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
                   <span style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 18, height: 18, flexShrink: 0 }}><Sun size={18} color="#34C759" strokeWidth={2.2} /></span>
-                  <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0, lineHeight: 1 }}>Verhalten im Alltag</p>
+                  <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0, lineHeight: 1 }}>{L.behaviourDaily}</p>
                 </div>
-                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
+                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang={L.pageLang}>
                   {alltagsverhalten}
                 </p>
               </div>
@@ -857,9 +873,9 @@ export default function Rollenprofil() {
             <div style={{ marginBottom: 20, borderLeft: "4px solid #FF9500", borderRadius: 8, background: "rgba(255,149,0,0.04)", padding: "16px 20px" }} data-pdf-block>
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
                 <span style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 18, height: 18, flexShrink: 0 }}><Gauge size={18} color="#FF9500" strokeWidth={2.2} /></span>
-                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0, lineHeight: 1 }}>Verhalten unter Druck</p>
+                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0, lineHeight: 1 }}>{L.behaviourPressure}</p>
               </div>
-              <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
+              <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang={L.pageLang}>
                 {stress.controlled}
               </p>
             </div>
@@ -868,9 +884,9 @@ export default function Rollenprofil() {
             <div style={{ marginBottom: 0, borderLeft: "4px solid #FF3B30", borderRadius: 8, background: "rgba(255,59,48,0.04)", padding: "16px 20px" }} data-pdf-block>
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
                 <span style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 18, height: 18, flexShrink: 0 }}><Flame size={18} color="#FF3B30" strokeWidth={2.2} /></span>
-                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0, lineHeight: 1 }}>Verhalten bei starkem Stress</p>
+                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0, lineHeight: 1 }}>{L.behaviourStress}</p>
               </div>
-              <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
+              <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang={L.pageLang}>
                 {stress.uncontrolled}
               </p>
             </div>
@@ -880,20 +896,20 @@ export default function Rollenprofil() {
           <div data-section="anforderung" data-testid="bericht-section-risiko">
             {/* Führungswirkung / Teamwirkung */}
             <div style={{ marginBottom: 28 }} data-pdf-block>
-              <SectionHead num={3} title="Teamwirkung & Fehlbesetzungsrisiken" color={SECTION_COLORS.teamwirkung} />
-              <p style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>Wirkung, Spannungsfelder und Risiken</p>
-              <p style={{ fontSize: 14, color: "#6E6E73", margin: "0 0 20px", lineHeight: 1.6 }}>{data.isLeadership ? "Dieser Abschnitt beschreibt, welche Wirkung von der Stelle im Team ausgeht, welche typischen Spannungsfelder sich ergeben und welche Risiken bei einer Fehlbesetzung entstehen können." : "Dieser Abschnitt beschreibt, welche Wirkung die Stelle im Arbeitsumfeld entfaltet, welche typischen Spannungsfelder sich ergeben und welche Risiken bei einer Fehlbesetzung entstehen können."}</p>
-              <SubHead num={1} title={data.isLeadership ? "Führungswirkung der Stelle" : "Teamwirkung der Stelle"} color={SECTION_COLORS.teamwirkung} />
-              <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
+              <SectionHead num={3} title={L.section3} color={SECTION_COLORS.teamwirkung} />
+              <p style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>{L.section3Headline}</p>
+              <p style={{ fontSize: 14, color: "#6E6E73", margin: "0 0 20px", lineHeight: 1.6 }}>{data.isLeadership ? L.section3SubLeadership : L.section3SubNonLeadership}</p>
+              <SubHead num={1} title={data.isLeadership ? L.sub1LeadershipImpact : L.sub1TeamImpact} color={SECTION_COLORS.teamwirkung} />
+              <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang={L.pageLang}>
                 {teamwirkung}
               </p>
             </div>
 
             {/* Spannungsfelder */}
             <div style={{ marginBottom: 28 }} data-pdf-block>
-              <SubHead num={2} title="Spannungsfelder der Stelle" color={SECTION_COLORS.teamwirkung} />
+              <SubHead num={2} title={L.sub2Tensions} color={SECTION_COLORS.teamwirkung} />
               <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.6, margin: "0 0 12px" }}>
-                Typische Spannungen dieser Stelle sind:
+                {L.tensionsIntro}
               </p>
               <div style={{ paddingLeft: 4 }}>
                 {spannungsfelder.map((sf, i) => (
@@ -907,7 +923,7 @@ export default function Rollenprofil() {
 
             {/* Fehlbesetzungsrisiken */}
             <div style={{ marginBottom: 28 }} data-pdf-block>
-              <SubHead num={3} title="Fehlbesetzungsrisiken" color={SECTION_COLORS.teamwirkung} />
+              <SubHead num={3} title={L.sub3MiscastRisks} color={SECTION_COLORS.teamwirkung} />
               {fehlbesetzung.map((risk, i) => (
                 <div key={i} style={{ marginBottom: 16 }}>
                   <p style={{ fontSize: 14, fontWeight: 700, color: "#3A3A3C", margin: "0 0 8px", fontStyle: "italic" }}>{risk.label}</p>
@@ -926,7 +942,7 @@ export default function Rollenprofil() {
             {/* Typischer Kandidat (AI-generiert) */}
             {(kandidatenText || kandidatenLoading || kandidatenError) && (
               <div style={{ marginBottom: 28 }} data-testid="section-kandidatenprofil" data-pdf-block>
-                <SubHead num={4} title="Typische Person für diese Stelle" color={SECTION_COLORS.teamwirkung} />
+                <SubHead num={4} title={L.sub4TypicalPerson} color={SECTION_COLORS.teamwirkung} />
                 {kandidatenLoading ? (
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <div style={{
@@ -935,15 +951,15 @@ export default function Rollenprofil() {
                       borderTopColor: "#0071E3",
                       animation: "spin 0.8s linear infinite",
                     }} />
-                    <span style={{ fontSize: 13, color: "#8E8E93" }}>Wird generiert...</span>
+                    <span style={{ fontSize: 13, color: "#8E8E93" }}>{L.candidateLoading}</span>
                     <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
                   </div>
                 ) : kandidatenError ? (
                   <p style={{ fontSize: 13, color: "#8E8E93", margin: 0, fontStyle: "italic" }}>
-                    Personenprofil konnte nicht geladen werden.
+                    {L.candidateError}
                   </p>
                 ) : (
-                  <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de" data-testid="text-kandidatenprofil">
+                  <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang={L.pageLang} data-testid="text-kandidatenprofil">
                     {kandidatenText}
                   </p>
                 )}
@@ -955,10 +971,10 @@ export default function Rollenprofil() {
           {/* ── SEITE 4: ENTSCHEIDUNGSFAZIT ── */}
           <div data-section="fazit" style={{ marginBottom: 40 }} data-testid="bericht-section-fazit">
             <div data-pdf-block>
-              <SectionHead num={4} title="Entscheidungsfazit" color={SECTION_COLORS.fazit} />
+              <SectionHead num={4} title={L.section4} color={SECTION_COLORS.fazit} />
               <p style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", margin: "0 0 14px" }}>{fazit.titel}</p>
               {fazit.absaetze.map((absatz, i) => (
-                <p key={i} style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: i < fazit.absaetze.length - 1 ? "0 0 10px" : "0", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
+                <p key={i} style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: i < fazit.absaetze.length - 1 ? "0 0 10px" : "0", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang={L.pageLang}>
                   {absatz}
                 </p>
               ))}
@@ -968,7 +984,7 @@ export default function Rollenprofil() {
           {/* ── FOOTER ── */}
           <div style={{ marginTop: 40, paddingTop: 16, borderTop: "1px solid rgba(0,0,0,0.06)", textAlign: "center" }}>
             <p style={{ fontSize: 10, color: "#C7C7CC", margin: 0, letterSpacing: "0.02em" }}>
-              © {new Date().getFullYear()} bioLogic Talent Navigator · Stellenanalyse · Erstellt am {new Date().toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })}
+              © {new Date().getFullYear()} bioLogic Talent Navigator · {L.footerLabel} · {L.footerCreatedOn} {new Date().toLocaleDateString(L.dateLocale, { day: "2-digit", month: "2-digit", year: "numeric" })}
             </p>
           </div>
           </div>

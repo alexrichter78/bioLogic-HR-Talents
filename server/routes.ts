@@ -2499,14 +2499,17 @@ Produce the JSON below. Strictly follow the style rules — especially: NO numbe
     { "label": "When ${componentLabel[t3]} becomes too strong", "bullets": ["3-4 concrete risks as short everyday sentences."] }
   ],
   "typicalPerson": "2-3 sentences. From which roles or career paths suitable candidates typically come — concrete and in everyday English.",
-  "finalDecision": "2-3 sentences. Clear hiring recommendation in everyday English, referring to the main focus of this role. End with a verifiable recommendation."
+  "finalDecision": "2-3 sentences. Clear hiring recommendation in everyday English, referring to the main focus of this role. End with a verifiable recommendation.",
+  "jobTitleEnglish": "Natural, idiomatic English version of the role title '${jobTitle}'. Translate meaningfully (not word-for-word). If the title is already English, return it unchanged. Just the title, no quotes, no extra words.",
+  "tasksEnglish": ["Natural English translation of EACH provided main task, in the SAME order as MAIN TASKS above. One string per task. Translate meaningfully so a native English-speaking HR manager understands what is actually done. Keep them concise. If a task is already in English, keep it as-is."]
 }
 
 IMPORTANT:
 - NO numbers, NO percentages, NO points anywhere in the output. Not in tensionFields, not in miscastRisks.
 - NO terms "impulsive", "intuitive", "analytical", "component", "triad", "profile class", "gap", "top1", "top2", "top3", "bioLogic".
 - tensionFields = exactly 4 strings. miscastRisks.bullets each 3-4 strings.
-- componentMeaning in exactly this order with the keys ${t1}, ${t2}, ${t3}.`;
+- componentMeaning in exactly this order with the keys ${t1}, ${t2}, ${t3}.
+- tasksEnglish must contain EXACTLY ${Array.isArray(tasks) ? tasks.length : 0} strings, in the same order as MAIN TASKS.`;
       } else {
         const taskLine = Array.isArray(tasks) && tasks.length > 0 ? tasks.join("; ") : "(keine Hauptaufgaben angegeben)";
 
