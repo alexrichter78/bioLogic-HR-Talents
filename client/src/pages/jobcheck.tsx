@@ -3,6 +3,7 @@ import { useLocation } from "wouter";
 import { FileText, AlertTriangle, Check, TrendingUp, Zap, Scale, ChevronRight, ChevronDown, CircleAlert, CircleCheck, CircleMinus, Lightbulb, CalendarDays, ClipboardCheck, BarChart3, CheckCircle2, Briefcase, LayoutGrid, Wrench, Target, UserCheck, Hash, Compass, Shield, Gauge, Award, ArrowUpRight, Layers, Printer } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 import { useRegion, localizeDeep } from "@/lib/region";
+import { useUI } from "@/lib/ui-texts";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { hyphenateText } from "@/lib/hyphenate";
 import { BERUFE } from "@/data/berufe";
@@ -436,6 +437,29 @@ export default function JobCheck() {
   const [, setLocation] = useLocation();
   const isMobile = useIsMobile();
   const { region } = useRegion();
+  const ui = useUI();
+  const jc = ui.jobcheck;
+  const labelCompUI = (k: ComponentKey) =>
+    k === "impulsiv" ? jc.labelImpulsiv : k === "intuitiv" ? jc.labelIntuitiv : jc.labelAnalytisch;
+  const dominanceLabelUI = (dom: ReturnType<typeof dominanceModeOf>) => {
+    if (region !== "EN") return dominanceLabel(dom);
+    const { mode, top1, top2 } = dom;
+    const k1 = labelCompUI(top1.key);
+    const k2 = labelCompUI(top2.key);
+    switch (mode) {
+      case "EXTREME_I": case "EXTREME_N": case "EXTREME_A":
+        return `${k1} extremely dominant`;
+      case "DOM_I": case "DOM_N": case "DOM_A":
+        return `${k1} dominant`;
+      case "DUAL_I_A": return "Dual focus: Impulsive–Analytical";
+      case "DUAL_I_N": return "Dual focus: Impulsive–Intuitive";
+      case "DUAL_N_A": return "Dual focus: Intuitive–Analytical";
+      case "BAL_I": case "BAL_N": case "BAL_A":
+        return `Balanced with ${k1.toLowerCase()} tendency`;
+      case "BAL_FULL": return "Fully balanced";
+      default: return `${k1} / ${k2}`;
+    }
+  };
   const [analyseOpen, setAnalyseOpen] = useState(true);
   const [berichtOpen, setBerichtOpen] = useState(false);
   const [roleAnalysis, setRoleAnalysis] = useState<RoleAnalysis | null>(null);
@@ -533,14 +557,14 @@ export default function JobCheck() {
               <div style={{ width: 56, height: 56, borderRadius: 18, background: "linear-gradient(135deg, #E8F0FA, #FDEAED)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
                 <FileText style={{ width: 24, height: 24, color: "#6E6E73" }} />
               </div>
-              <p style={{ fontSize: 17, fontWeight: 600, color: "#1D1D1F", marginBottom: 8 }}>Keine Analyse vorhanden</p>
-              <p style={{ fontSize: 14, color: "#6E6E73", marginBottom: 20, maxWidth: 260 }}>Erstelle zuerst ein Stellenprofil, um den JobCheck durchzuführen.</p>
+              <p style={{ fontSize: 17, fontWeight: 600, color: "#1D1D1F", marginBottom: 8 }}>{jc.noAnalysisTitle}</p>
+              <p style={{ fontSize: 14, color: "#6E6E73", marginBottom: 20, maxWidth: 260 }}>{jc.noAnalysisDesc}</p>
               <button
                 onClick={() => setLocation("/rollen-dna")}
                 style={{ background: "linear-gradient(135deg, #0071E3, #34AADC)", color: "white", border: "none", borderRadius: 14, padding: "12px 28px", fontSize: 14, fontWeight: 600, cursor: "pointer", boxShadow: "0 4px 12px rgba(0,113,227,0.25)" }}
                 data-testid="button-goto-rollen-dna"
               >
-                Zur Datenerfassung
+                {jc.gotoDataEntry}
               </button>
             </div>
           </GlassCard>
@@ -550,7 +574,7 @@ export default function JobCheck() {
   }
 
   return (
-    <div className="page-gradient-bg" lang="de" data-testid="jobcheck-page">
+    <div className="page-gradient-bg" lang={region === "EN" ? "en" : "de"} data-testid="jobcheck-page">
       <style>{`
         input[type="range"]::-webkit-slider-runnable-track { height: 24px; cursor: ew-resize; background: transparent; }
         input[type="range"]::-moz-range-track { height: 24px; cursor: ew-resize; background: transparent; }
@@ -564,10 +588,10 @@ export default function JobCheck() {
             <div className="w-full mx-auto" style={{ maxWidth: 1100, paddingLeft: isMobile ? 12 : 24, paddingRight: isMobile ? 12 : 24 }}>
               <div className="text-center">
                 <h1 style={{ fontSize: 24, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 2px", color: "#34C759" }} data-testid="text-jobcheck-title">
-                  bioLogic JobCheck
+                  {jc.pageTitle}
                 </h1>
                 <p style={{ fontSize: 14, color: "#48484A", fontWeight: 450, margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }} data-testid="text-jobcheck-subtitle">
-                  Bewerte die strukturelle Passung zwischen Stellenprofil und Personenprofil.
+                  {jc.pageSubtitle}
                 </p>
               </div>
             </div>
@@ -587,7 +611,7 @@ export default function JobCheck() {
                   const styles = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
                     .map(el => el.outerHTML).join("\n");
                   const jobTitle = roleAnalysis?.job_title || "JobCheck";
-                  printWin.document.write(`<!DOCTYPE html><html lang="de"><head><meta charset="utf-8"><title>JobCheck – ${jobTitle}</title>${styles}<style>body{margin:0;padding:20px 32px;background:#fff;font-family:Inter,Arial,Helvetica,sans-serif}
+                  printWin.document.write(`<!DOCTYPE html><html lang="${region === "EN" ? "en" : "de"}"><head><meta charset="utf-8"><title>JobCheck – ${jobTitle}</title>${styles}<style>body{margin:0;padding:20px 32px;background:#fff;font-family:Inter,Arial,Helvetica,sans-serif}
 .no-print{display:none!important}
 *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
 [data-pdf-block]{break-inside:avoid!important}
@@ -597,22 +621,22 @@ export default function JobCheck() {
                 }}
                 className="no-print"
                 data-testid="button-print-jobcheck"
-                title="Im Druckdialog 'Als PDF speichern' wählen"
+                title={jc.printTooltip}
                 style={{ position: "absolute", top: 16, right: 16, height: 36, padding: "0 14px", borderRadius: 10, border: "1px solid rgba(0,0,0,0.08)", background: "rgba(0,0,0,0.03)", color: "#1D1D1F", display: "flex", alignItems: "center", justifyContent: "center", gap: 7, fontSize: 13, fontWeight: 600, cursor: "pointer", transition: "all 0.15s ease", zIndex: 2 }}
               >
                 <Printer style={{ width: 14, height: 14 }} />
-                <span>Drucken</span>
+                <span>{jc.printButton}</span>
               </button>
 
               {dnaSummary && (
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }} data-testid="dna-summary-grid">
                   {[
-                    { icon: Briefcase, label: "Stelle", value: dnaSummary.beruf || roleAnalysis.job_title, testId: "summary-rolle" },
-                    { icon: LayoutGrid, label: "Aufgabenstruktur", value: AUFGABENCHARAKTER_LABELS[dnaSummary.aufgabencharakter] || dnaSummary.aufgabencharakter, testId: "summary-aufgaben" },
-                    { icon: Wrench, label: "Arbeitsweise", value: ARBEITSLOGIK_LABELS[dnaSummary.arbeitslogik] || dnaSummary.arbeitslogik, testId: "summary-arbeitsweise" },
-                    { icon: Target, label: "Erfolgsfokus", value: (Array.isArray(dnaSummary.erfolgsfokusIndices) ? dnaSummary.erfolgsfokusIndices : []).map(i => ERFOLGSFOKUS_DISPLAY_LABELS[i]).filter(Boolean).join(", ") || "Nicht definiert", testId: "summary-erfolgsfokus" },
-                    { icon: UserCheck, label: "Führung", value: FUEHRUNG_LABELS[dnaSummary.fuehrung] || dnaSummary.fuehrung, testId: "summary-fuehrung" },
-                    { icon: Hash, label: "Kompetenzanzahl", value: null, testId: "summary-kompetenz" },
+                    { icon: Briefcase, label: jc.summaryRole, value: dnaSummary.beruf || roleAnalysis.job_title, testId: "summary-rolle" },
+                    { icon: LayoutGrid, label: jc.summaryTaskStructure, value: jc.taskStructureLabels[dnaSummary.aufgabencharakter] || dnaSummary.aufgabencharakter, testId: "summary-aufgaben" },
+                    { icon: Wrench, label: jc.summaryWorkStyle, value: jc.workStyleLabels[dnaSummary.arbeitslogik] || dnaSummary.arbeitslogik, testId: "summary-arbeitsweise" },
+                    { icon: Target, label: jc.summarySuccessFocus, value: (Array.isArray(dnaSummary.erfolgsfokusIndices) ? dnaSummary.erfolgsfokusIndices : []).map(i => jc.successFocusLabels[i]).filter(Boolean).join(", ") || jc.summaryNotDefined, testId: "summary-erfolgsfokus" },
+                    { icon: UserCheck, label: jc.summaryLeadership, value: jc.leadershipLabels[dnaSummary.fuehrung] || dnaSummary.fuehrung, testId: "summary-fuehrung" },
+                    { icon: Hash, label: jc.summaryCompetenceCount, value: null, testId: "summary-kompetenz" },
                   ].map(card => (
                     <div
                       key={card.testId}
@@ -634,9 +658,9 @@ export default function JobCheck() {
                         <p style={{ fontSize: 14, color: "#48484A", margin: 0, lineHeight: 1.5, paddingLeft: 32 }}>{card.value}</p>
                       ) : (
                         <div style={{ display: "flex", gap: 14, paddingLeft: 32, flexWrap: "wrap" }}>
-                          <span style={{ fontSize: 14, color: "#48484A" }}><strong style={{ color: "#1D1D1F" }}>{dnaSummary.taetigkeitenCount}</strong> Tätigkeiten</span>
-                          <span style={{ fontSize: 14, color: "#48484A" }}><strong style={{ color: "#1D1D1F" }}>{dnaSummary.humanCount}</strong> Humankompetenzen</span>
-                          <span style={{ fontSize: 14, color: "#48484A" }}><strong style={{ color: "#1D1D1F" }}>{dnaSummary.fuehrungCount}</strong> Führung</span>
+                          <span style={{ fontSize: 14, color: "#48484A" }}><strong style={{ color: "#1D1D1F" }}>{dnaSummary.taetigkeitenCount}</strong> {jc.countActivities}</span>
+                          <span style={{ fontSize: 14, color: "#48484A" }}><strong style={{ color: "#1D1D1F" }}>{dnaSummary.humanCount}</strong> {jc.countHumanSkills}</span>
+                          <span style={{ fontSize: 14, color: "#48484A" }}><strong style={{ color: "#1D1D1F" }}>{dnaSummary.fuehrungCount}</strong> {jc.countLeadership}</span>
                         </div>
                       )}
                     </div>
@@ -646,7 +670,7 @@ export default function JobCheck() {
             </GlassCard>
 
             <AccordionCard
-              title="Analyse – Soll / Ist Profil"
+              title={jc.analyseAccordionTitle}
               icon={ClipboardCheck}
               open={analyseOpen}
               onToggle={() => setAnalyseOpen(!analyseOpen)}
@@ -654,17 +678,17 @@ export default function JobCheck() {
             >
               <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
                 <div>
-                  <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", marginBottom: 14 }}>Sollprofil (Stelle)</p>
+                  <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", marginBottom: 14 }}>{jc.sollHeader}</p>
                   {roleProfile && (
                     <SoftBar items={[
-                      { label: "Impulsiv", value: roleProfile.impulsiv, color: COLORS.imp },
-                      { label: "Intuitiv", value: roleProfile.intuitiv, color: COLORS.int },
-                      { label: "Analytisch", value: roleProfile.analytisch, color: COLORS.ana },
+                      { label: jc.labelImpulsiv, value: roleProfile.impulsiv, color: COLORS.imp },
+                      { label: jc.labelIntuitiv, value: roleProfile.intuitiv, color: COLORS.int },
+                      { label: jc.labelAnalytisch, value: roleProfile.analytisch, color: COLORS.ana },
                     ]} />
                   )}
                   <div style={{ marginTop: 10 }}>
                     <CalloutBox
-                      text={`Die dominante Logik der Stelle ist ${roleProfile ? labelComponent(dominanceModeOf(roleProfile).top1.key) : ""} geprägt: ${roleProfile ? dominanceLabel(dominanceModeOf(roleProfile)) : ""}.`}
+                      text={roleProfile ? jc.roleDominanceText(labelCompUI(dominanceModeOf(roleProfile).top1.key), dominanceLabelUI(dominanceModeOf(roleProfile))) : ""}
                       color={roleProfile ? (dominanceModeOf(roleProfile).top1.key === "impulsiv" ? COLORS.imp : dominanceModeOf(roleProfile).top1.key === "intuitiv" ? COLORS.int : COLORS.ana) : "#0071E3"}
                       icon={Zap}
                     />
@@ -674,24 +698,24 @@ export default function JobCheck() {
                 <div style={{ height: 1, background: "rgba(0,0,0,0.06)", margin: "0 -4px" }} />
 
                 <div>
-                  <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", marginBottom: 6 }}>Istprofil (Person)</p>
-                  <p style={{ fontSize: 14, color: "#48484A", marginBottom: 16 }}>Verschiebe die Regler, um das Personenprofil einzugeben. Die Werte werden automatisch normalisiert.</p>
+                  <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", marginBottom: 6 }}>{jc.istHeader}</p>
+                  <p style={{ fontSize: 14, color: "#48484A", marginBottom: 16 }}>{jc.istDescription}</p>
 
                   <div style={{ background: "#F0F0F2", borderRadius: 16, padding: "16px 18px", display: "flex", flexDirection: "column", gap: 14 }}>
-                    <BarSlider label="Impulsiv" value={candImp} color={COLORS.imp} onChange={setCandImp} />
-                    <BarSlider label="Intuitiv" value={candInt} color={COLORS.int} onChange={setCandInt} />
-                    <BarSlider label="Analytisch" value={candAna} color={COLORS.ana} onChange={setCandAna} />
+                    <BarSlider label={jc.labelImpulsiv} value={candImp} color={COLORS.imp} onChange={setCandImp} />
+                    <BarSlider label={jc.labelIntuitiv} value={candInt} color={COLORS.int} onChange={setCandInt} />
+                    <BarSlider label={jc.labelAnalytisch} value={candAna} color={COLORS.ana} onChange={setCandAna} />
                   </div>
-                  <p style={{ fontSize: 11, color: "#6E6E73", marginTop: 8, textAlign: "center" }}>Normalisiertes Profil (max. 67 % pro Komponente)</p>
+                  <p style={{ fontSize: 11, color: "#6E6E73", marginTop: 8, textAlign: "center" }}>{jc.normalizedNote}</p>
                   {(() => {
                     const candDom = dominanceModeOf(normalizedCand);
                     return (
                       <div style={{ marginTop: 10, padding: "10px 14px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>
-                        <p style={{ fontSize: 14, color: "#48484A", margin: 0, lineHeight: 1.6 }} lang="de" data-testid="text-cand-dominance">
-                          {"Die dominante Logik der Person ist "}
-                          {labelComponent(candDom.top1.key)}
-                          {" geprägt: "}
-                          {dominanceLabel(candDom)}.
+                        <p style={{ fontSize: 14, color: "#48484A", margin: 0, lineHeight: 1.6 }} lang={region === "EN" ? "en" : "de"} data-testid="text-cand-dominance">
+                          {jc.candDominancePrefix}
+                          {labelCompUI(candDom.top1.key)}
+                          {jc.candDominanceMiddle}
+                          {dominanceLabelUI(candDom)}.
                         </p>
                       </div>
                     );
@@ -712,13 +736,13 @@ export default function JobCheck() {
                   onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = "translateY(0)"; (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 4px 16px rgba(0,113,227,0.3)"; }}
                 >
                   <FileText style={{ width: 17, height: 17 }} />
-                  Bericht erstellen
+                  {jc.createReportButton}
                 </button>
               </div>
             </AccordionCard>
 
             <AccordionCard
-              title="JobCheck Bericht"
+              title={jc.reportAccordionTitle}
               icon={BarChart3}
               open={berichtOpen}
               onToggle={() => { if (engine) setBerichtOpen(!berichtOpen); }}
@@ -729,7 +753,7 @@ export default function JobCheck() {
             >
               {!engine ? (
                 <div style={{ textAlign: "center", padding: "30px 0" }}>
-                  <p style={{ fontSize: 14, color: "#6E6E73" }}>Bitte zuerst das Ist-Profil eingeben und „Bericht erstellen" klicken.</p>
+                  <p style={{ fontSize: 14, color: "#6E6E73" }}>{jc.reportEmptyHint}</p>
                 </div>
               ) : (
                 <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
