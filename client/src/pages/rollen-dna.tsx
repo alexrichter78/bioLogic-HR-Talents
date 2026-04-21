@@ -935,26 +935,55 @@ function SummaryBar({ beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, a
   region: string;
 }) {
   const localizeText = (text: string) => localizeStr(text, region as any);
-  const arbeitsOpt = ARBEITSLOGIK_OPTIONS.find(o => o.value === arbeitslogik);
-  const fuehrungOpt = FUEHRUNG_OPTIONS.find(o => o.value === fuehrung);
-  const fokusLabels = erfolgsfokusIndices.map(i => ERFOLGSFOKUS_DISPLAY[i]?.label).filter(Boolean);
-  const rollenName = beruf || "diese Stelle";
+  const isEN = region === "EN";
+  const _ro = getRegionOptions(region);
+  const arbeitsOpt = _ro.arbeit.find(o => o.value === arbeitslogik);
+  const fuehrungOpt = _ro.fuehrung.find(o => o.value === fuehrung);
+  const fokusLabels = erfolgsfokusIndices.map(i => _ro.erfolg[i]?.label).filter(Boolean);
+  const rollenName = beruf || (isEN ? "this role" : "diese Stelle");
 
-  const aufgabenSatz: Record<string, string> = {
+  const aufgabenSatz: Record<string, string> = isEN ? {
+    "überwiegend operativ": `combines practical work with direct execution in day-to-day business`,
+    "überwiegend systemisch": `combines practical work with structured planning and steering`,
+    "überwiegend strategisch": `is shaped by analysis, planning and strategic decisions`,
+    "Gemischt": `combines practical work with analysis and coordination within the team`,
+  } : {
     "überwiegend operativ": `verbindet praktische Arbeit mit direkter Umsetzung im Tagesgeschäft`,
     "überwiegend systemisch": `verbindet praktische Arbeit mit strukturierter Planung und Steuerung`,
     "überwiegend strategisch": `ist geprägt durch Analyse, Planung und strategische Entscheidungen`,
     "Gemischt": `verbindet praktische Arbeit mit Analyse und Abstimmung im Team`,
   };
 
-  const arbeitsSatz: Record<string, string> = {
+  const arbeitsSatz: Record<string, string> = isEN ? {
+    "Umsetzungsorientiert": `delivering tasks and achieving concrete results`,
+    "Daten-/prozessorientiert": `evaluating data, planning workflows and proceeding systematically`,
+    "Menschenorientiert": `coordination, collaboration and communication within the team`,
+    "Ausgewogen": `a balanced combination of different working styles is at the centre`,
+  } : {
     "Umsetzungsorientiert": `Aufgaben umzusetzen und konkrete Ergebnisse zu erreichen`,
     "Daten-/prozessorientiert": `Daten auszuwerten, Abläufe zu planen und systematisch vorzugehen`,
     "Menschenorientiert": `Abstimmung, Zusammenarbeit und Kommunikation im Team`,
     "Ausgewogen": `eine ausgewogene Kombination verschiedener Arbeitsweisen im Vordergrund steht`,
   };
 
-  const arbeitsDetail: Record<string, [string, string]> = {
+  const arbeitsDetail: Record<string, [string, string]> = isEN ? {
+    "Umsetzungsorientiert": [
+      "The role works in a strongly practical and solution-oriented way.",
+      "Tasks are tackled directly and translated into concrete results.",
+    ],
+    "Daten-/prozessorientiert": [
+      "The work is based on data, clear structures and systematic procedures.",
+      "Decisions are prepared analytically and implemented in a comprehensible way.",
+    ],
+    "Menschenorientiert": [
+      "Communication and relationship building are at the centre of daily work.",
+      "Results emerge through coordination, trust and collaboration.",
+    ],
+    "Ausgewogen": [
+      "The working style combines execution, analysis and communication.",
+      "Flexibility in approach is decisive for success.",
+    ],
+  } : {
     "Umsetzungsorientiert": [
       "Die Stelle arbeitet stark praktisch und lösungsorientiert.",
       "Aufgaben werden direkt angegangen und in konkrete Ergebnisse überführt.",
@@ -973,14 +1002,32 @@ function SummaryBar({ beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, a
     ],
   };
 
-  const fuehrungDetail: Record<string, string> = {
+  const fuehrungDetail: Record<string, string> = isEN ? {
+    "Keine": "The role works independently without directly leading other employees.",
+    "Projekt-/Teamkoordination": "The role coordinates tasks and projects and ensures smooth collaboration within the team.",
+    "Fachliche Führung": "The role takes technical responsibility within the team and ensures that work and quality are reliably delivered.",
+    "Disziplinarische Führung mit Ergebnisverantwortung": "The role carries responsibility for employees, their development and the achievement of concrete results.",
+  } : {
     "Keine": "Die Stelle arbeitet eigenverantwortlich ohne direkte Führung von Mitarbeitenden.",
     "Projekt-/Teamkoordination": "Die Stelle koordiniert Aufgaben und Projekte und sorgt für eine reibungslose Zusammenarbeit im Team.",
     "Fachliche Führung": "Die Stelle übernimmt fachliche Verantwortung im Team und stellt sicher, dass Arbeit und Qualität zuverlässig umgesetzt werden.",
     "Disziplinarische Führung mit Ergebnisverantwortung": "Die Stelle trägt Verantwortung für Mitarbeitende, deren Entwicklung und die Erreichung konkreter Ergebnisse.",
   };
 
-  const fokusKurz: Record<string, string> = {
+  const fokusKurz: Record<string, string> = isEN ? {
+    "Ergebnisse und Zielerreichung": "concrete results and measurable performance",
+    "Zusammenarbeit und Netzwerk": "stable collaboration and reliable relationships",
+    "Innovation und Veränderung": "new ideas and the active implementation of change",
+    "Prozesse und Effizienz": "reliable workflows and efficient ways of working",
+    "Fachliche Qualität und Expertise": "high technical quality and expertise",
+    "Kommunikation und Einfluss": "convincing communication and reaching people",
+    "Results and goal achievement": "concrete results and measurable performance",
+    "Collaboration and network": "stable collaboration and reliable relationships",
+    "Innovation and change": "new ideas and the active implementation of change",
+    "Processes and efficiency": "reliable workflows and efficient ways of working",
+    "Technical quality and expertise": "high technical quality and expertise",
+    "Communication and influence": "convincing communication and reaching people",
+  } : {
     "Ergebnisse und Zielerreichung": "konkreten Resultaten und messbarer Leistung",
     "Zusammenarbeit und Netzwerk": "stabiler Zusammenarbeit und verlässlichen Beziehungen",
     "Innovation und Veränderung": "neuen Ideen und der aktiven Umsetzung von Veränderungen",
@@ -989,15 +1036,21 @@ function SummaryBar({ beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, a
     "Kommunikation und Einfluss": "überzeugender Kommunikation und dem Erreichen von Menschen",
   };
 
-  const aufgText = aufgabenSatz[aufgabencharakter] || "verbindet verschiedene Aufgabenbereiche";
-  const arbText = arbeitsSatz[arbeitslogik] || "unterschiedliche Arbeitsweisen";
-  const fokusTeile = fokusLabels.map(l => fokusKurz[l] || l.toLowerCase()).filter(Boolean);
+  const aufgText = aufgabenSatz[aufgabencharakter] || (isEN ? "combines various task areas" : "verbindet verschiedene Aufgabenbereiche");
+  const arbText = arbeitsSatz[arbeitslogik] || (isEN ? "different working styles" : "unterschiedliche Arbeitsweisen");
+  const fokusTeile = (fokusLabels as string[]).map(l => fokusKurz[l] || l.toLowerCase()).filter(Boolean);
   let fokusSatz = "";
-  if (fokusTeile.length === 1) fokusSatz = `Der Erfolg dieser Stelle zeigt sich vor allem in ${fokusTeile[0]}.`;
-  else if (fokusTeile.length === 2) fokusSatz = `Der Erfolg dieser Stelle zeigt sich vor allem in ${fokusTeile[0]} und ${fokusTeile[1]}.`;
-  else if (fokusTeile.length > 2) fokusSatz = `Der Erfolg dieser Stelle zeigt sich vor allem in ${fokusTeile.slice(0, -1).join(", ")} und ${fokusTeile[fokusTeile.length - 1]}.`;
+  if (isEN) {
+    if (fokusTeile.length === 1) fokusSatz = `The success of this role shows above all in ${fokusTeile[0]}.`;
+    else if (fokusTeile.length === 2) fokusSatz = `The success of this role shows above all in ${fokusTeile[0]} and ${fokusTeile[1]}.`;
+    else if (fokusTeile.length > 2) fokusSatz = `The success of this role shows above all in ${fokusTeile.slice(0, -1).join(", ")} and ${fokusTeile[fokusTeile.length - 1]}.`;
+  } else {
+    if (fokusTeile.length === 1) fokusSatz = `Der Erfolg dieser Stelle zeigt sich vor allem in ${fokusTeile[0]}.`;
+    else if (fokusTeile.length === 2) fokusSatz = `Der Erfolg dieser Stelle zeigt sich vor allem in ${fokusTeile[0]} und ${fokusTeile[1]}.`;
+    else if (fokusTeile.length > 2) fokusSatz = `Der Erfolg dieser Stelle zeigt sich vor allem in ${fokusTeile.slice(0, -1).join(", ")} und ${fokusTeile[fokusTeile.length - 1]}.`;
+  }
 
-  const arbDetail = arbeitsDetail[arbeitslogik] || ["Die Arbeitsweise ist vielseitig und situationsabhängig.", ""];
+  const arbDetail = arbeitsDetail[arbeitslogik] || (isEN ? ["The working style is versatile and situation-dependent.", ""] as [string, string] : ["Die Arbeitsweise ist vielseitig und situationsabhängig.", ""]);
   const fuehDetail = fuehrungDetail[fuehrung] || fuehrungOpt?.desc || "";
 
   return (
@@ -1024,16 +1077,18 @@ function SummaryBar({ beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, a
           <CheckCircle2 style={{ width: 16, height: 16, color: "#fff", strokeWidth: 2.5 }} />
         </div>
         <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.01em" }}>
-          Zusammenfassung
+          {isEN ? "Summary" : "Zusammenfassung"}
         </span>
       </div>
 
-      <p lang="de" style={{ fontSize: 14, color: "#3A3A3C", lineHeight: 1.7, margin: "0 0 4px", ...reportTextStyle }}>
-        {localizeText(`Die Stelle ${rollenName} ${aufgText}. Im Alltag geht es vor allem darum, ${arbText}.`)}
+      <p lang={isEN ? "en" : "de"} style={{ fontSize: 14, color: "#3A3A3C", lineHeight: 1.7, margin: "0 0 4px", ...reportTextStyle }}>
+        {isEN
+          ? `The role ${rollenName} ${aufgText}. Day-to-day, the focus is above all on ${arbText}.`
+          : localizeText(`Die Stelle ${rollenName} ${aufgText}. Im Alltag geht es vor allem darum, ${arbText}.`)}
       </p>
       {fokusSatz && (
-        <p lang="de" style={{ fontSize: 14, color: "#3A3A3C", lineHeight: 1.7, margin: "8px 0 0", ...reportTextStyle }}>
-          {localizeText(fokusSatz)}
+        <p lang={isEN ? "en" : "de"} style={{ fontSize: 14, color: "#3A3A3C", lineHeight: 1.7, margin: "8px 0 0", ...reportTextStyle }}>
+          {isEN ? fokusSatz : localizeText(fokusSatz)}
         </p>
       )}
 
@@ -1058,7 +1113,7 @@ function SummaryBar({ beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, a
             }}>
               <Activity style={{ width: 17, height: 17, color: "#0071E3", strokeWidth: 2 }} />
             </div>
-            <span style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F" }}>Arbeitsweise</span>
+            <span style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F" }}>{isEN ? "Working style" : "Arbeitsweise"}</span>
           </div>
           <p style={{
             fontSize: 14, fontWeight: 600, color: "#1D1D1F",
@@ -1086,7 +1141,7 @@ function SummaryBar({ beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, a
             }}>
               <Users style={{ width: 17, height: 17, color: "#34C759", strokeWidth: 2 }} />
             </div>
-            <span style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F" }}>{localizeText("Führungsrolle")}</span>
+            <span style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F" }}>{isEN ? "Leadership role" : localizeText("Führungsrolle")}</span>
           </div>
           <p style={{
             fontSize: 14, fontWeight: 600, color: "#1D1D1F",
