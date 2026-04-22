@@ -1240,6 +1240,7 @@ export default function RollenDNA() {
   const [activeTab, setActiveTab] = useState<TaetigkeitKategorie>(saved.current?.activeTab ?? "haupt");
   const [taetigkeiten, setTaetigkeiten] = useState<Taetigkeit[]>(saved.current?.taetigkeiten ?? []);
   const [nextId, setNextId] = useState(saved.current?.nextId ?? 1);
+  const [generatedRegion, setGeneratedRegion] = useState<string>(saved.current?.generatedRegion ?? "");
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const originalNames = useRef<Map<number, string>>(
@@ -1518,7 +1519,7 @@ export default function RollenDNA() {
   useEffect(() => {
     const state = {
       currentStep, allCollapsed, beruf, fuehrung, erfolgsfokusIndices,
-      aufgabencharakter, arbeitslogik, zusatzInfo, activeTab, taetigkeiten, nextId,
+      aufgabencharakter, arbeitslogik, zusatzInfo, activeTab, taetigkeiten, nextId, generatedRegion,
       bioGramGesamt: { imp: bioGramGesamt.imp, int: bioGramGesamt.int, ana: bioGramGesamt.ana },
       bioGramHaupt: { imp: bioGramHaupt.imp, int: bioGramHaupt.int, ana: bioGramHaupt.ana },
       bioGramNeben: { imp: bioGramNeben.imp, int: bioGramNeben.int, ana: bioGramNeben.ana },
@@ -1526,7 +1527,7 @@ export default function RollenDNA() {
       bioGramRahmen: { imp: bioGramRahmen.imp, int: bioGramRahmen.int, ana: bioGramRahmen.ana },
     };
     localStorage.setItem("rollenDnaState", JSON.stringify(state));
-  }, [currentStep, allCollapsed, beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, arbeitslogik, zusatzInfo, activeTab, taetigkeiten, nextId, bioGramGesamt, bioGramHaupt, bioGramNeben, bioGramFuehrung, bioGramRahmen]);
+  }, [currentStep, allCollapsed, beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, arbeitslogik, zusatzInfo, activeTab, taetigkeiten, nextId, generatedRegion, bioGramGesamt, bioGramHaupt, bioGramNeben, bioGramFuehrung, bioGramRahmen]);
 
   const isLeadershipRole = fuehrung !== "Keine";
   const bioCheckTextGenerated = generateBioCheckText(bioGramGesamt, isLeadershipRole, isLeadershipRole ? bioGramFuehrung : undefined);
@@ -1665,7 +1666,7 @@ export default function RollenDNA() {
       .map(i => ERFOLGSFOKUS_LABELS[i]?.replace(/\n/g, " "))
       .filter(Boolean)
       .join(", ");
-    return JSON.stringify({ beruf, fuehrung, erfolgsfokus: erfolgsfokusText, aufgabencharakter, arbeitslogik, zusatzInfo });
+    return JSON.stringify({ beruf, fuehrung, erfolgsfokus: erfolgsfokusText, aufgabencharakter, arbeitslogik, zusatzInfo, region });
   };
 
   const generateKompetenzen = async (forceRegenerate = false) => {
@@ -1682,6 +1683,7 @@ export default function RollenDNA() {
             setTaetigkeiten(cacheData.taetigkeiten);
             setNextId(Math.max(...cacheData.taetigkeiten.map((t: Taetigkeit) => t.id)) + 1);
             originalNames.current = new Map(cacheData.taetigkeiten.map((t: Taetigkeit) => [t.id, t.name]));
+            if (cacheData.generatedRegion) setGeneratedRegion(cacheData.generatedRegion);
             return;
           }
         }
@@ -1731,9 +1733,10 @@ export default function RollenDNA() {
       }
       setTaetigkeiten(generated);
       setNextId(id);
+      setGeneratedRegion(region);
       originalNames.current = new Map(generated.map(t => [t.id, t.name]));
 
-      localStorage.setItem("kompetenzenCache", JSON.stringify({ key: cacheKey, taetigkeiten: generated }));
+      localStorage.setItem("kompetenzenCache", JSON.stringify({ key: cacheKey, taetigkeiten: generated, generatedRegion: region }));
     } catch (err) {
       console.error("KI-Generierung fehlgeschlagen:", err);
     } finally {
@@ -2374,6 +2377,54 @@ export default function RollenDNA() {
                     )}
                   </div>
                 </div>
+
+                {taetigkeiten.length > 0 && generatedRegion && generatedRegion !== region && !isGenerating && (
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 12,
+                      background: region === "EN" ? "rgba(52,199,89,0.08)" : "rgba(0,122,255,0.08)",
+                      border: `1px solid ${region === "EN" ? "rgba(52,199,89,0.25)" : "rgba(0,122,255,0.25)"}`,
+                      borderRadius: 14,
+                      padding: "12px 18px",
+                      marginBottom: 16,
+                    }}
+                    data-testid="banner-regenerate-region"
+                  >
+                    <span style={{ fontSize: 20 }}>🌐</span>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", marginBottom: 2 }} className="dark:text-foreground">
+                        {region === "EN"
+                          ? "Tasks were generated in German"
+                          : "Tätigkeiten wurden auf Englisch generiert"}
+                      </div>
+                      <div style={{ fontSize: 13, color: "#48484A" }} className="dark:text-muted-foreground">
+                        {region === "EN"
+                          ? "Regenerate via AI to get semantically correct English task names — not just a translation."
+                          : "Über KI neu generieren für inhaltlich korrekte deutsche Bezeichnungen — keine reine Übersetzung."}
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => generateKompetenzen(true)}
+                      data-testid="button-regenerate-region"
+                      style={{
+                        padding: "8px 16px",
+                        borderRadius: 10,
+                        border: "none",
+                        background: region === "EN" ? "#34C759" : "#007AFF",
+                        color: "#fff",
+                        fontSize: 13,
+                        fontWeight: 600,
+                        cursor: "pointer",
+                        whiteSpace: "nowrap",
+                        flexShrink: 0,
+                      }}
+                    >
+                      {region === "EN" ? "Regenerate in English" : "Neu generieren auf Deutsch"}
+                    </button>
+                  </div>
+                )}
 
                 <div
                   style={{
