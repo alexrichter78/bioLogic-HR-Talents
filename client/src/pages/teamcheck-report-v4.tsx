@@ -78,13 +78,65 @@ export default function TeamCheckReportV4() {
   const [result, setResult] = useState<TeamCheckV4Result | null>(null);
   const reportRef = useRef<HTMLDivElement>(null);
   const [isExportingPdf, setIsExportingPdf] = useState(false);
+  const [aiNarrative, setAiNarrative] = useState<{
+    fuehrungsprofil: string;
+    teamdynamikAlltag: string;
+    systemwirkung: string;
+    kulturwirkung: string;
+    chancen: string;
+    risiken: string;
+    systemfazit: string;
+  } | null>(null);
+  const [aiLoading, setAiLoading] = useState(true);
+  const [aiError, setAiError] = useState<string | null>(null);
 
   useEffect(() => {
     const raw = sessionStorage.getItem("teamcheckV4Input");
     if (!raw) { navigate("/team-report"); return; }
     try {
       const parsed = JSON.parse(raw) as TeamCheckV4Input;
-      setResult(localizeDeep(computeTeamCheckV4({ ...parsed, lang: region === "EN" ? "en" : "de" }), region));
+      const computed = computeTeamCheckV4({ ...parsed, lang: region === "EN" ? "en" : "de" });
+      setResult(localizeDeep(computed, region));
+
+      const tp = parsed.teamProfile;
+      const pp = parsed.personProfile;
+      const gap = Math.round((Math.abs(tp.impulsiv - pp.impulsiv) + Math.abs(tp.intuitiv - pp.intuitiv) + Math.abs(tp.analytisch - pp.analytisch)) / 2);
+      const devLevel = computed.begleitungsbedarf === "gering" ? 1 : computed.begleitungsbedarf === "mittel" ? 2 : 3;
+
+      fetch("/api/generate-team-narrative", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          context: {
+            roleName: parsed.roleTitle || "",
+            candidateName: parsed.candidateName || "",
+            isLeadership: parsed.roleType === "fuehrung",
+            teamGoal: parsed.teamGoal || null,
+            roleLevel: parsed.roleLevel,
+            taskStructure: parsed.taskStructure,
+            workStyle: parsed.workStyle,
+          },
+          profiles: {
+            person: { impulsiv: pp.impulsiv, intuitiv: pp.intuitiv, analytisch: pp.analytisch },
+            team: { impulsiv: tp.impulsiv, intuitiv: tp.intuitiv, analytisch: tp.analytisch },
+          },
+          calculated: {
+            gesamtpassung: computed.gesamteinschaetzung,
+            gesamtpassungLabel: computed.gesamteinschaetzung,
+            teamIstGap: gap,
+            controlIntensity: computed.begleitungsbedarf,
+            developmentLevel: devLevel,
+            teamConstellationLabel: computed.teamKontext,
+            istConstellationLabel: computed.gesamtbewertungText.substring(0, 120),
+            teamGoalLabel: computed.teamGoalLabel || null,
+          },
+          region,
+        }),
+      })
+        .then(r => r.json())
+        .then(data => { if (data.error) { setAiError(data.error); } else { setAiNarrative(data); } })
+        .catch(err => setAiError(err.message))
+        .finally(() => setAiLoading(false));
     } catch { navigate("/team-report"); }
   }, [navigate, region]);
 
@@ -259,11 +311,24 @@ export default function TeamCheckReportV4() {
     }
   }, [isExportingPdf, result]);
 
-  if (!result) {
+  if (!result || aiLoading) {
     return (
       <div style={{ minHeight: "100vh", background: "#f5f7fb" }}>
         <GlobalNav />
-        <div style={{ maxWidth: 1120, margin: "80px auto", padding: "0 20px", textAlign: "center", color: "#6E6E73" }}>Lade Bericht...</div>
+        <main style={{ maxWidth: 800, margin: "0 auto", padding: "80px 20px", textAlign: "center" }}>
+          <div style={{ background: "rgba(255,255,255,0.78)", backdropFilter: "blur(40px)", borderRadius: 20, padding: "40px 32px", boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)", border: "1px solid rgba(0,0,0,0.04)" }}>
+            <div style={{ width: 44, height: 44, margin: "0 auto 18px", border: "3px solid #E5E5E7", borderTopColor: "#0071E3", borderRadius: "50%", animation: "bio-spin 0.9s linear infinite" }} />
+            <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }}>
+              {isEN ? "Generating team analysis" : "TeamCheck wird erstellt"}
+            </h2>
+            <p style={{ fontSize: 14, color: "#48484A", margin: 0, lineHeight: 1.6 }}>
+              {isEN
+                ? "We're writing the report based on the profile. This usually takes 15–25 seconds."
+                : "Die Texte werden gerade auf Basis des Profils generiert. Das dauert in der Regel 15–25 Sekunden."}
+            </p>
+            <style>{`@keyframes bio-spin { to { transform: rotate(360deg); } }`}</style>
+          </div>
+        </main>
       </div>
     );
   }
@@ -347,7 +412,7 @@ export default function TeamCheckReportV4() {
               <SectionHead num={1} title="Gesamtbewertung" id="gesamtbewertung" />
 
               <div style={{ margin: "0 0 24px" }} data-testid="v4-hero-bewertung">
-                <TextBlock text={result.gesamtbewertungText} />
+                <TextBlock text={aiNarrative?.fuehrungsprofil || result.gesamtbewertungText} />
 
                 <div data-pdf-block style={{ display: "flex", gap: 16, marginTop: 16, breakInside: "avoid" }} data-testid="v4-two-axis">
                   <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: `${bCol}08`, border: `1px solid ${bCol}25` }} data-testid="v4-gesamt-card">
@@ -496,13 +561,13 @@ export default function TeamCheckReportV4() {
               {/* === Section 3: Warum dieses Ergebnis entsteht === */}
               <div data-pdf-block style={sectionStyle} data-testid="v4-section-warum">
                 <SectionHead num={3} title={t("Warum dieses Ergebnis entsteht", "Why this result occurs")} id="warum" />
-                <TextBlock text={result.warumText} />
+                <TextBlock text={aiNarrative?.systemwirkung || result.warumText} />
               </div>
 
               {/* === Section 4: Wirkung im Arbeitsalltag === */}
               <div data-pdf-block style={sectionStyle} data-testid="v4-section-wirkung">
                 <SectionHead num={4} title={t("Wirkung im Arbeitsalltag", "Day-to-day impact")} id="wirkung" />
-                <TextBlock text={result.wirkungAlltagText} />
+                <TextBlock text={aiNarrative?.teamdynamikAlltag || result.wirkungAlltagText} />
               </div>
 
               {/* === Section 5: Chancen und Risiken === */}
@@ -535,14 +600,14 @@ export default function TeamCheckReportV4() {
                   </div>
                 </div>
                 <div style={{ padding: "14px 20px", borderRadius: 10, background: "rgba(0,0,0,0.02)", borderLeft: "3px solid rgba(0,0,0,0.08)" }}>
-                  <p style={{ fontSize: 14, lineHeight: 1.85, color: "#48484A", margin: 0, fontStyle: "italic" }} data-testid="v4-chancen-einordnung">{result.chancenRisikenEinordnung}</p>
+                  <p style={{ fontSize: 14, lineHeight: 1.85, color: "#48484A", margin: 0, fontStyle: "italic" }} data-testid="v4-chancen-einordnung">{aiNarrative ? `${aiNarrative.chancen} ${aiNarrative.risiken}` : result.chancenRisikenEinordnung}</p>
                 </div>
               </div>
 
               {/* === Section 5: Verhalten unter Druck === */}
               <div data-pdf-block style={sectionStyle} data-testid="v4-section-druck">
                 <SectionHead num={6} title={t("Verhalten unter Druck", "Behaviour under pressure")} id="druck" />
-                <TextBlock text={result.druckText} />
+                <TextBlock text={aiNarrative?.kulturwirkung || result.druckText} />
               </div>
 
               {/* === Section 6 (only Führungskraft): Führungshinweis === */}
@@ -742,7 +807,7 @@ export default function TeamCheckReportV4() {
                   <div data-pdf-block style={{ marginBottom: 36 }} data-testid="v4-section-schlussfazit">
                     <SectionHead num={fazitNum} title={t("Fazit", "Conclusion")} id="schlussfazit" />
                     <div style={{ padding: "20px 24px", borderRadius: 14, background: "#F8F9FA", border: "1px solid rgba(0,0,0,0.06)" }} data-testid="v4-schlussfazit-text">
-                      {result.schlussfazit.split("\n\n").map((p, i, arr) => (
+                      {(aiNarrative?.systemfazit || result.schlussfazit).split("\n\n").map((p, i, arr) => (
                         <p key={i} style={{ fontSize: 14, lineHeight: 1.85, color: "#1D1D1F", margin: i < arr.length - 1 ? "0 0 12px" : 0, textAlign: "justify", textAlignLast: "left", hyphens: "auto", WebkitHyphens: "auto" } as any}>{p}</p>
                       ))}
                     </div>
