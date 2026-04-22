@@ -296,12 +296,8 @@ export default function SollIstBericht() {
     candidate: { impulsiv: candTriad.impulsiv, intuitiv: candTriad.intuitiv, analytisch: candTriad.analytisch },
   }), [roleName, candidateName, fuehrungsArt, region, roleTriad, candTriad.impulsiv, candTriad.intuitiv, candTriad.analytisch]);
 
-  useEffect(() => {
-    if (lastInputHash && currentInputHash !== lastInputHash) {
-      setReportGenerated(false);
-      setLastInputHash(null);
-    }
-  }, [currentInputHash, lastInputHash]);
+  const reportIsValid = reportGenerated && lastInputHash !== null && currentInputHash === lastInputHash;
+
   const updateRoleTriad = useCallback((key: ComponentKey, newVal: number) => {
     setRoleTriad(prev => {
       if (!prev) return prev;
@@ -360,11 +356,11 @@ export default function SollIstBericht() {
   const candDom = dominanceModeOf(candidateProfile);
 
   const result: SollIstResult | null = useMemo(() => {
-    if (!roleTriad || !reportGenerated) return null;
+    if (!roleTriad || !reportIsValid) return null;
     const raw = computeSollIst(roleName, candidateName || "Person", roleTriad, candidateProfile, fuehrungsArt, roleAnalysisObj, region === "EN" ? "en" : "de");
     const base = localizeDeep(raw, region);
     return aiNarrative ? { ...base, ...aiNarrative } : base;
-  }, [roleTriad, roleName, candidateName, candidateProfile.impulsiv, candidateProfile.intuitiv, candidateProfile.analytisch, reportGenerated, fuehrungsArt, region, roleAnalysisObj, aiNarrative]);
+  }, [roleTriad, roleName, candidateName, candidateProfile.impulsiv, candidateProfile.intuitiv, candidateProfile.analytisch, reportIsValid, fuehrungsArt, region, roleAnalysisObj, aiNarrative]);
 
   const exportPdf = useCallback(async () => {
     if (!result || isExportingPdf || !roleTriad || !reportRef.current) return;
@@ -575,7 +571,7 @@ export default function SollIstBericht() {
     <div className="page-gradient-bg">
       <GlobalNav />
 
-      {!reportGenerated && (
+      {!reportIsValid && (
         <div style={{ position: "fixed", top: isMobile ? 48 : 56, left: 0, right: 0, zIndex: 8999 }}>
           <div className="dark:!bg-background" style={{ background: "rgba(255,255,255,0.65)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", borderBottom: "1px solid rgba(0,0,0,0.06)", padding: isMobile ? "4px 0 6px" : "5px 0 10px", minHeight: isMobile ? 48 : 62 }}>
             <div className="w-full mx-auto" style={{ maxWidth: 1100, padding: isMobile ? "0 12px" : "0 24px" }}>
@@ -592,10 +588,10 @@ export default function SollIstBericht() {
         </div>
       )}
 
-      <div className="mx-auto" style={{ maxWidth: 1100, paddingTop: !reportGenerated ? (isMobile ? 110 : 135) : 40, paddingBottom: isMobile ? 100 : 40, paddingLeft: isMobile ? 8 : 24, paddingRight: isMobile ? 8 : 24 }}>
+      <div className="mx-auto" style={{ maxWidth: 1100, paddingTop: !reportIsValid ? (isMobile ? 110 : 135) : 40, paddingBottom: isMobile ? 100 : 40, paddingLeft: isMobile ? 8 : 24, paddingRight: isMobile ? 8 : 24 }}>
 
         {/* === INPUT: Slider area before report === */}
-        {!reportGenerated && (<>
+        {!reportIsValid && (<>
           <div style={{ background: "#FFFFFF", borderRadius: 20, boxShadow: "0 8px 30px rgba(0,0,0,0.04)", border: "1px solid rgba(0,0,0,0.04)", overflow: "hidden", marginBottom: 32 }}>
             <button
               onClick={() => setProfilvergleichOpen(!profilvergleichOpen)}

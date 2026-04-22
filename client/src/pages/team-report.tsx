@@ -614,12 +614,6 @@ export default function TeamReport() {
     team:   { impulsiv: teamTriad.impulsiv, intuitiv: teamTriad.intuitiv, analytisch: teamTriad.analytisch },
   }), [roleName, candidateName, teamGoal, roleTypeForCard, region, istTriad.impulsiv, istTriad.intuitiv, istTriad.analytisch, teamTriad.impulsiv, teamTriad.intuitiv, teamTriad.analytisch]);
 
-  useEffect(() => {
-    if (lastInputHash && currentInputHash !== lastInputHash) {
-      setReportGenerated(false);
-      setLastInputHash(null);
-    }
-  }, [currentInputHash, lastInputHash]);
 
   const syncFromLocalStorage = useCallback((force = false) => {
     if (!force && sessionStorage.getItem("tc_istTriad")) return;
@@ -822,7 +816,8 @@ export default function TeamReport() {
     return calculateLeadershipAssessment(istTriad, teamTriad, roleTypeForCard, teamGoal || null, region);
   }, [istTriad.impulsiv, istTriad.intuitiv, istTriad.analytisch, teamTriad.impulsiv, teamTriad.intuitiv, teamTriad.analytisch, roleTypeForCard, teamGoal, region]);
 
-  const resultBase: TeamReportResult | null = reportGenerated ? liveResult : null;
+  const reportIsValid = reportGenerated && lastInputHash !== null && currentInputHash === lastInputHash;
+  const resultBase: TeamReportResult | null = reportIsValid ? liveResult : null;
   const result: TeamReportResult | null = resultBase && aiNarrative
     ? { ...resultBase, ...aiNarrative }
     : resultBase;
@@ -1568,7 +1563,7 @@ export default function TeamReport() {
           );
         })()}
 
-        {!reportGenerated && (
+        {!reportIsValid && (
           <div style={{ marginTop: 24, display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }} data-testid="section-generate-cta">
             <button
               onClick={handleGenerateReport}
@@ -1946,7 +1941,7 @@ export default function TeamReport() {
             </section>
 
             <div className="flex justify-center no-print pb-8">
-              <button onClick={() => { setReportGenerated(false); setAiNarrative(null); setAiError(null); }}
+              <button onClick={() => { setReportGenerated(false); setLastInputHash(null); setAiNarrative(null); setAiError(null); }}
                 className="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 text-sm font-semibold text-slate-600 shadow-sm hover:bg-slate-50 transition-colors"
                 data-testid="button-reconfigure">
                 {region === "EN" ? "Reconfigure" : "Profil anpassen"}
