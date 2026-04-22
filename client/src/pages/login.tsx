@@ -1,13 +1,20 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useLocation } from "wouter";
 import { useAuth } from "@/lib/auth";
-import { useRegion } from "@/lib/region";
+import { useRegion, type Region } from "@/lib/region";
 import { Lock, User, Eye, EyeOff, AlertCircle, ArrowLeft, Mail, CheckCircle } from "lucide-react";
 import logoPath from "@assets/Logo_bioLogic_1774652440525.gif";
 
+const FLAG_OPTIONS: { value: Region; label: string; flag: JSX.Element }[] = [
+  { value: "DE", label: "DE", flag: <svg viewBox="0 0 20 14" style={{ width: 20, height: 14, borderRadius: 2, overflow: "hidden", display: "block" }}><rect y="0" width="20" height="4.67" fill="#000"/><rect y="4.67" width="20" height="4.67" fill="#D00"/><rect y="9.33" width="20" height="4.67" fill="#FFCE00"/></svg> },
+  { value: "CH", label: "CH", flag: <svg viewBox="0 0 20 14" style={{ width: 20, height: 14, borderRadius: 2, overflow: "hidden", display: "block" }}><rect width="20" height="14" fill="#D52B1E"/><rect x="8" y="2.5" width="4" height="9" fill="#FFF"/><rect x="5.5" y="5" width="9" height="4" fill="#FFF"/></svg> },
+  { value: "AT", label: "AT", flag: <svg viewBox="0 0 20 14" style={{ width: 20, height: 14, borderRadius: 2, overflow: "hidden", display: "block" }}><rect y="0" width="20" height="4.67" fill="#ED2939"/><rect y="4.67" width="20" height="4.67" fill="#FFF"/><rect y="9.33" width="20" height="4.67" fill="#ED2939"/></svg> },
+  { value: "EN", label: "EN", flag: <svg viewBox="0 0 20 14" style={{ width: 20, height: 14, borderRadius: 2, overflow: "hidden", display: "block" }}><rect width="20" height="14" fill="#012169"/><polygon points="0,0 20,14 20,11.5 2.5,0" fill="#FFF"/><polygon points="20,0 0,14 0,11.5 17.5,0" fill="#FFF"/><polygon points="0,0 20,14 20,12.6 1.4,0" fill="#C8102E"/><polygon points="20,0 0,14 0,12.6 18.6,0" fill="#C8102E"/><polygon points="0,0 20,14 20,14 0,0" fill="none"/><rect x="8" y="0" width="4" height="14" fill="#FFF"/><rect x="0" y="5" width="20" height="4" fill="#FFF"/><rect x="9" y="0" width="2" height="14" fill="#C8102E"/><rect x="0" y="6" width="20" height="2" fill="#C8102E"/></svg> },
+];
+
 export default function Login() {
   const { login } = useAuth();
-  const { region } = useRegion();
+  const { region, setRegion } = useRegion();
   const en = region === "EN";
   const [, setLocation] = useLocation();
   const [username, setUsername] = useState("");
@@ -73,7 +80,9 @@ export default function Login() {
                 <CheckCircle style={{ width: 40, height: 40, color: "#34C759", margin: "0 auto 16px" }} />
                 <h2 style={{ fontSize: 18, fontWeight: 700, color: "#1F2937", margin: "0 0 8px" }}>{en ? "Request sent" : "Anfrage gesendet"}</h2>
                 <p style={{ fontSize: 14, color: "#6B7280", margin: "0 0 24px", lineHeight: 1.5 }}>
-                  Falls ein Konto mit dieser E-Mail existiert, erhältst du einen Link zum Zurücksetzen des Passworts.
+                  {en
+                    ? "If an account with this email exists, you will receive a link to reset your password."
+                    : "Falls ein Konto mit dieser E-Mail existiert, erhältst du einen Link zum Zurücksetzen des Passworts."}
                 </p>
                 <button
                   onClick={() => { setShowReset(false); setResetSent(false); setResetEmail(""); }}
@@ -81,7 +90,7 @@ export default function Login() {
                   style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 14, fontWeight: 600, color: "#3B82F6", background: "none", border: "none", cursor: "pointer" }}
                 >
                   <ArrowLeft style={{ width: 16, height: 16 }} />
-                  Zurück zur Anmeldung
+                  {en ? "Back to sign in" : "Zurück zur Anmeldung"}
                 </button>
               </div>
             ) : (
@@ -142,16 +151,36 @@ export default function Login() {
                     style={{ fontSize: 13, fontWeight: 600, color: "#3B82F6", background: "none", border: "none", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 4 }}
                   >
                     <ArrowLeft style={{ width: 14, height: 14 }} />
-                    Zurück zur Anmeldung
+                    {en ? "Back to sign in" : "Zurück zur Anmeldung"}
                   </button>
                 </div>
               </>
             )}
           </div>
 
-          <div style={{ display: "flex", justifyContent: "center", gap: 20, marginTop: 20 }}>
-            <a href="/impressum" data-testid="link-impressum-reset" className="footer-link">Impressum</a>
-            <a href="/datenschutz" data-testid="link-datenschutz-reset" className="footer-link">Datenschutz</a>
+          <div style={{ display: "flex", justifyContent: "center", gap: 8, marginTop: 16, marginBottom: 4 }}>
+            {FLAG_OPTIONS.map(opt => (
+              <button
+                key={opt.value}
+                onClick={() => setRegion(opt.value)}
+                data-testid={`login-region-${opt.value.toLowerCase()}`}
+                title={opt.label}
+                style={{
+                  display: "inline-flex", flexDirection: "column", alignItems: "center", gap: 3,
+                  padding: "5px 8px", borderRadius: 8, border: "none", cursor: "pointer",
+                  background: region === opt.value ? "rgba(0,113,227,0.1)" : "transparent",
+                  boxShadow: region === opt.value ? "0 0 0 1.5px rgba(0,113,227,0.3)" : "none",
+                  transition: "all 0.15s ease",
+                }}
+              >
+                {opt.flag}
+                <span style={{ fontSize: 10, fontWeight: 600, color: region === opt.value ? "#0071E3" : "#9CA3AF", letterSpacing: "0.04em" }}>{opt.label}</span>
+              </button>
+            ))}
+          </div>
+          <div style={{ display: "flex", justifyContent: "center", gap: 20, marginTop: 12 }}>
+            <a href="/impressum" data-testid="link-impressum-reset" className="footer-link">{en ? "Legal Notice" : "Impressum"}</a>
+            <a href="/datenschutz" data-testid="link-datenschutz-reset" className="footer-link">{en ? "Privacy Policy" : "Datenschutz"}</a>
             <a href="/disclaimer" data-testid="link-disclaimer-reset" className="footer-link">Disclaimer</a>
           </div>
         </div>
@@ -230,7 +259,7 @@ export default function Login() {
                 data-testid="button-forgot-password"
                 style={{ fontSize: 13, fontWeight: 500, color: "#3B82F6", background: "none", border: "none", cursor: "pointer", padding: 0 }}
               >
-                Passwort vergessen?
+                {en ? "Forgot password?" : "Passwort vergessen?"}
               </button>
             </div>
 
@@ -262,9 +291,29 @@ export default function Login() {
           </form>
         </div>
 
-        <div style={{ display: "flex", justifyContent: "center", gap: 20, marginTop: 20 }}>
-          <a href="/impressum" data-testid="link-impressum" className="footer-link">Impressum</a>
-          <a href="/datenschutz" data-testid="link-datenschutz" className="footer-link">Datenschutz</a>
+        <div style={{ display: "flex", justifyContent: "center", gap: 8, marginTop: 16, marginBottom: 4 }}>
+          {FLAG_OPTIONS.map(opt => (
+            <button
+              key={opt.value}
+              onClick={() => setRegion(opt.value)}
+              data-testid={`login-region-${opt.value.toLowerCase()}`}
+              title={opt.label}
+              style={{
+                display: "inline-flex", flexDirection: "column", alignItems: "center", gap: 3,
+                padding: "5px 8px", borderRadius: 8, border: "none", cursor: "pointer",
+                background: region === opt.value ? "rgba(0,113,227,0.1)" : "transparent",
+                boxShadow: region === opt.value ? "0 0 0 1.5px rgba(0,113,227,0.3)" : "none",
+                transition: "all 0.15s ease",
+              }}
+            >
+              {opt.flag}
+              <span style={{ fontSize: 10, fontWeight: 600, color: region === opt.value ? "#0071E3" : "#9CA3AF", letterSpacing: "0.04em" }}>{opt.label}</span>
+            </button>
+          ))}
+        </div>
+        <div style={{ display: "flex", justifyContent: "center", gap: 20, marginTop: 12 }}>
+          <a href="/impressum" data-testid="link-impressum" className="footer-link">{en ? "Legal Notice" : "Impressum"}</a>
+          <a href="/datenschutz" data-testid="link-datenschutz" className="footer-link">{en ? "Privacy Policy" : "Datenschutz"}</a>
           <a href="/disclaimer" data-testid="link-disclaimer" className="footer-link">Disclaimer</a>
         </div>
       </div>
