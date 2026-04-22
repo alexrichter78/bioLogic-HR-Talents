@@ -3500,6 +3500,258 @@ Du befindest dich GERADE in einer aktiven Gesprächssimulation. WICHTIGE REGELN:
     }
   });
 
+  // ─── Team narrative (bilingual) ────────────────────────────────────────────
+  app.post("/api/generate-team-narrative", requireAuth, requireFullAccess, async (req, res) => {
+    try {
+      const { context, profiles, calculated, region } = req.body as {
+        context: {
+          roleName: string;
+          candidateName: string;
+          isLeadership: boolean;
+          teamGoal?: string | null;
+          roleLevel?: string;
+          taskStructure?: string;
+          workStyle?: string;
+        };
+        profiles: {
+          person: { impulsiv: number; intuitiv: number; analytisch: number };
+          team:   { impulsiv: number; intuitiv: number; analytisch: number };
+        };
+        calculated: {
+          gesamtpassung: string;
+          gesamtpassungLabel: string;
+          teamIstGap: number;
+          controlIntensity: string;
+          developmentLevel: number;
+          teamConstellationLabel: string;
+          istConstellationLabel: string;
+          teamGoalLabel?: string | null;
+        };
+        region: string;
+      };
+
+      const isEN = region === "EN";
+
+      const systemPrompt = isEN
+        ? `You are a specialist in organizational psychology and behavioral diagnostics for the bioLogic HR analytics platform.
+Your task: write concise, professional narrative text sections for a team-fit report in ENGLISH.
+Rules:
+- Write NATIVELY in English. Do NOT translate from German.
+- Be objective and precise. No coaching-speak, no platitudes, no psychological diagnoses.
+- Each section: 2–4 sentences, factual, addressing real workplace implications.
+- Base your analysis on the provided profile numbers and calculated values ONLY.
+- Return ONLY valid JSON — no markdown, no code fences, no extra text.
+
+Output JSON schema (all fields required, all values English strings or arrays of English strings):
+{
+  "fuehrungsprofil": "string — how this person's behavioral pattern shapes their day-to-day working style and interactions",
+  "teamdynamikAlltag": "string — what tensions or synergies arise between person and team profile in daily work",
+  "systemwirkung": "string — broader systemic impact of this placement on team processes",
+  "kulturwirkung": "string — how the person's pattern influences team culture and shared norms",
+  "chancen": "string — 2–3 concrete opportunities this person brings to the team",
+  "risiken": "string — 2–3 concrete risks or friction points to monitor",
+  "systemfazit": "string — overall conclusion: fit quality and key recommendation for leadership"
+}`
+        : `Du bist Spezialist für Organisationspsychologie und Verhaltensdiagnostik der bioLogic HR-Analytics-Plattform.
+Deine Aufgabe: Schreibe prägnante, professionelle Narrative-Texte für einen Team-Fit-Bericht auf DEUTSCH.
+Regeln:
+- Sei sachlich und präzise. Keine Coaching-Phrasen, keine Floskeln, keine psychologischen Diagnosen.
+- Jeder Abschnitt: 2–4 Sätze, faktenbasiert, mit konkretem Bezug zu Arbeitssituationen.
+- Stütze dich ausschließlich auf die gegebenen Profilwerte und Berechnungen.
+- Gib NUR gültiges JSON zurück — kein Markdown, keine Code-Blöcke, kein Zusatztext.
+
+Ausgabe-JSON-Schema (alle Felder pflicht, alle Werte deutsche Strings oder String-Arrays):
+{
+  "fuehrungsprofil": "string — wie das Verhaltensmuster der Person ihren Arbeitsstil und die Interaktionen prägt",
+  "teamdynamikAlltag": "string — welche Spannungen oder Synergien zwischen Person und Teamprofil im Alltag entstehen",
+  "systemwirkung": "string — systemische Wirkung dieser Besetzung auf Teamprozesse",
+  "kulturwirkung": "string — wie das Muster der Person die Teamkultur beeinflusst",
+  "chancen": "string — 2–3 konkrete Chancen, die diese Person dem Team bringt",
+  "risiken": "string — 2–3 konkrete Risiken oder Reibungspunkte, die zu beachten sind",
+  "systemfazit": "string — Gesamtfazit: Qualität der Passung und zentrale Empfehlung für die Führung"
+}`;
+
+      const userMsg = isEN
+        ? `Generate the team-fit report narrative for the following data:
+
+Role: "${context.roleName}" | Person: "${context.candidateName}"
+Leadership role: ${context.isLeadership ? "Yes" : "No"}
+${context.teamGoal ? `Team goal: ${context.teamGoal}` : ""}
+${context.roleLevel ? `Role level: ${context.roleLevel}` : ""}
+${context.taskStructure ? `Task structure: ${context.taskStructure}` : ""}
+${context.workStyle ? `Work style: ${context.workStyle}` : ""}
+
+Team profile: Impulsive ${profiles.team.impulsiv}% / Intuitive ${profiles.team.intuitiv}% / Analytical ${profiles.team.analytisch}%
+Person profile: Impulsive ${profiles.person.impulsiv}% / Intuitive ${profiles.person.intuitiv}% / Analytical ${profiles.person.analytisch}%
+Team constellation: ${calculated.teamConstellationLabel}
+Person constellation: ${calculated.istConstellationLabel}
+
+Overall fit: ${calculated.gesamtpassungLabel} (${calculated.gesamtpassung})
+Profile gap: ${calculated.teamIstGap}%
+Management intensity: ${calculated.controlIntensity}
+Development level: ${calculated.developmentLevel}/4
+${calculated.teamGoalLabel ? `Team goal assessment: ${calculated.teamGoalLabel}` : ""}
+
+Return only the JSON object.`
+        : `Erstelle die Narrative-Texte für den folgenden Team-Fit-Bericht:
+
+Stelle: "${context.roleName}" | Person: "${context.candidateName}"
+Führungsrolle: ${context.isLeadership ? "Ja" : "Nein"}
+${context.teamGoal ? `Teamziel: ${context.teamGoal}` : ""}
+${context.roleLevel ? `Rollenniveau: ${context.roleLevel}` : ""}
+${context.taskStructure ? `Aufgabencharakter: ${context.taskStructure}` : ""}
+${context.workStyle ? `Arbeitslogik: ${context.workStyle}` : ""}
+
+Teamprofil: Impulsiv ${profiles.team.impulsiv}% / Intuitiv ${profiles.team.intuitiv}% / Analytisch ${profiles.team.analytisch}%
+Personenprofil: Impulsiv ${profiles.person.impulsiv}% / Intuitiv ${profiles.person.intuitiv}% / Analytisch ${profiles.person.analytisch}%
+Teamkonstellation: ${calculated.teamConstellationLabel}
+Personenkonstellation: ${calculated.istConstellationLabel}
+
+Gesamtpassung: ${calculated.gesamtpassungLabel} (${calculated.gesamtpassung})
+Profilabweichung: ${calculated.teamIstGap}%
+Steuerungsintensität: ${calculated.controlIntensity}
+Entwicklungsstufe: ${calculated.developmentLevel}/4
+${calculated.teamGoalLabel ? `Teamziel-Einschätzung: ${calculated.teamGoalLabel}` : ""}
+
+Gib nur das JSON-Objekt zurück.`;
+
+      const raw = await callClaudeForText("generate-team-narrative", systemPrompt, userMsg, { temperature: 0.6, maxTokens: 2000 });
+      const jsonStr = raw.replace(/```json\s*/gi, "").replace(/```\s*/g, "").trim();
+      const narrative = JSON.parse(jsonStr);
+
+      const required = ["fuehrungsprofil", "teamdynamikAlltag", "systemwirkung", "kulturwirkung", "chancen", "risiken", "systemfazit"];
+      for (const f of required) {
+        if (typeof narrative[f] !== "string") throw new Error(`Missing field: ${f}`);
+      }
+
+      res.json(narrative);
+    } catch (err: any) {
+      console.error("[generate-team-narrative]", err);
+      res.status(500).json({ error: err.message || "Generation failed" });
+    }
+  });
+
+  // ─── SollIst narrative (bilingual) ─────────────────────────────────────────
+  app.post("/api/generate-soll-ist-narrative", requireAuth, requireFullAccess, async (req, res) => {
+    try {
+      const { context, profiles, calculated, region } = req.body as {
+        context: {
+          roleName: string;
+          candidateName: string;
+        };
+        profiles: {
+          role:      { impulsiv: number; intuitiv: number; analytisch: number };
+          candidate: { impulsiv: number; intuitiv: number; analytisch: number };
+        };
+        calculated: {
+          fitLabel: string;
+          fitRating: string;
+          totalGap: number;
+          gapLevel: string;
+          developmentLabel: string;
+          developmentLevel: number;
+          controlIntensity: string;
+          roleConstellationLabel: string;
+          candConstellationLabel: string;
+        };
+        region: string;
+      };
+
+      const isEN = region === "EN";
+
+      const systemPrompt = isEN
+        ? `You are a specialist in organizational psychology and behavioral diagnostics for the bioLogic HR analytics platform.
+Your task: write concise, professional narrative text sections for a person-role fit report (MatchCheck) in ENGLISH.
+Rules:
+- Write NATIVELY in English. Do NOT translate from German.
+- Be objective and precise. No coaching-speak, no platitudes, no psychological diagnoses.
+- Base your analysis solely on the provided profile data and calculated values.
+- "executiveBullets" and "actions" must be arrays of short English strings (each max 2 sentences).
+- Return ONLY valid JSON — no markdown, no code fences, no extra text.
+
+Output JSON schema (all fields required):
+{
+  "summaryText": "string — 3–4 sentence executive summary of the person-role fit",
+  "executiveBullets": ["string", "string", "string"] — 3 key reasons for the fit result,
+  "constellationRisks": ["string", "string"] — 2 risks arising from the constellation difference,
+  "dominanceShiftText": "string — 2–3 sentences on how the dominant components interact or conflict",
+  "developmentText": "string — 2–3 sentences on development effort and management intensity needed",
+  "actions": ["string", "string", "string"] — 3 concrete recommended management actions,
+  "finalText": "string — 2–3 sentence overall conclusion and hiring recommendation"
+}`
+        : `Du bist Spezialist für Organisationspsychologie und Verhaltensdiagnostik der bioLogic HR-Analytics-Plattform.
+Deine Aufgabe: Schreibe prägnante, professionelle Narrative-Texte für einen Personen-Stellen-Passungs-Bericht (MatchCheck) auf DEUTSCH.
+Regeln:
+- Sei sachlich und präzise. Keine Coaching-Phrasen, keine Floskeln, keine psychologischen Diagnosen.
+- Stütze dich ausschließlich auf die gegebenen Profilwerte und Berechnungen.
+- "executiveBullets" und "actions" müssen Arrays kurzer deutscher Strings sein (je max. 2 Sätze).
+- Gib NUR gültiges JSON zurück — kein Markdown, keine Code-Blöcke, kein Zusatztext.
+
+Ausgabe-JSON-Schema (alle Felder pflicht):
+{
+  "summaryText": "string — 3–4 Sätze Managementzusammenfassung der Personen-Stellen-Passung",
+  "executiveBullets": ["string", "string", "string"] — 3 Hauptgründe für das Ergebnis,
+  "constellationRisks": ["string", "string"] — 2 Risiken aus dem Konstellationsunterschied,
+  "dominanceShiftText": "string — 2–3 Sätze zum Zusammenspiel der dominanten Komponenten",
+  "developmentText": "string — 2–3 Sätze zu Entwicklungsaufwand und nötiger Steuerungsintensität",
+  "actions": ["string", "string", "string"] — 3 konkrete Handlungsempfehlungen für die Führung,
+  "finalText": "string — 2–3 Sätze Gesamtfazit und Besetzungsempfehlung"
+}`;
+
+      const userMsg = isEN
+        ? `Generate the MatchCheck narrative for the following data:
+
+Role: "${context.roleName}" | Candidate: "${context.candidateName}"
+
+Role profile: Impulsive ${profiles.role.impulsiv}% / Intuitive ${profiles.role.intuitiv}% / Analytical ${profiles.role.analytisch}%
+Candidate profile: Impulsive ${profiles.candidate.impulsiv}% / Intuitive ${profiles.candidate.intuitiv}% / Analytical ${profiles.candidate.analytisch}%
+Role constellation: ${calculated.roleConstellationLabel}
+Candidate constellation: ${calculated.candConstellationLabel}
+
+Fit result: ${calculated.fitLabel} (${calculated.fitRating})
+Profile gap: ${calculated.totalGap}%
+Gap level: ${calculated.gapLevel}
+Development level: ${calculated.developmentLabel} (${calculated.developmentLevel}/4)
+Management intensity: ${calculated.controlIntensity}
+
+Return only the JSON object.`
+        : `Erstelle die Narrative-Texte für den folgenden MatchCheck-Bericht:
+
+Stelle: "${context.roleName}" | Kandidat: "${context.candidateName}"
+
+Sollprofil: Impulsiv ${profiles.role.impulsiv}% / Intuitiv ${profiles.role.intuitiv}% / Analytisch ${profiles.role.analytisch}%
+Istprofil: Impulsiv ${profiles.candidate.impulsiv}% / Intuitiv ${profiles.candidate.intuitiv}% / Analytisch ${profiles.candidate.analytisch}%
+Sollkonstellation: ${calculated.roleConstellationLabel}
+Istkonstellation: ${calculated.candConstellationLabel}
+
+Passungsergebnis: ${calculated.fitLabel} (${calculated.fitRating})
+Profilabweichung: ${calculated.totalGap}%
+Abweichungsniveau: ${calculated.gapLevel}
+Entwicklungsstufe: ${calculated.developmentLabel} (${calculated.developmentLevel}/4)
+Steuerungsintensität: ${calculated.controlIntensity}
+
+Gib nur das JSON-Objekt zurück.`;
+
+      const raw = await callClaudeForText("generate-soll-ist-narrative", systemPrompt, userMsg, { temperature: 0.6, maxTokens: 2000 });
+      const jsonStr = raw.replace(/```json\s*/gi, "").replace(/```\s*/g, "").trim();
+      const narrative = JSON.parse(jsonStr);
+
+      const requiredStr = ["summaryText", "dominanceShiftText", "developmentText", "finalText"];
+      const requiredArr = ["executiveBullets", "constellationRisks", "actions"];
+      for (const f of requiredStr) {
+        if (typeof narrative[f] !== "string") throw new Error(`Missing field: ${f}`);
+      }
+      for (const f of requiredArr) {
+        if (!Array.isArray(narrative[f])) throw new Error(`Missing array field: ${f}`);
+      }
+
+      res.json(narrative);
+    } catch (err: any) {
+      console.error("[generate-soll-ist-narrative]", err);
+      res.status(500).json({ error: err.message || "Generation failed" });
+    }
+  });
+
   app.post("/api/generate-kandidatenprofil", requireAuth, requireFullAccess, async (req, res) => {
     try {
       const { beruf, bereich, taetigkeiten, fuehrungstyp, aufgabencharakter, arbeitslogik, region } = req.body;

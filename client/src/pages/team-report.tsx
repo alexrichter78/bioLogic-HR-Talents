@@ -579,6 +579,17 @@ export default function TeamReport() {
   const [roleName, setRoleName] = useState(() => sessionStorage.getItem("tc_roleName") || "");
   const [candidateName, setCandidateName] = useState(() => sessionStorage.getItem("tc_candidateName") || "");
   const [reportGenerated, setReportGenerated] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
+  const [aiNarrative, setAiNarrative] = useState<{
+    fuehrungsprofil: string;
+    teamdynamikAlltag: string;
+    systemwirkung: string;
+    kulturwirkung: string;
+    chancen: string;
+    risiken: string;
+    systemfazit: string;
+  } | null>(null);
   const [matchCheckOpen, setMatchCheckOpen] = useState(true);
   const [roleTypeForCard, setRoleTypeForCard] = useState<"teammitglied" | "fuehrung">(() => {
     const v = sessionStorage.getItem("tc_roleType");
@@ -796,7 +807,71 @@ export default function TeamReport() {
     return calculateLeadershipAssessment(istTriad, teamTriad, roleTypeForCard, teamGoal || null, region);
   }, [istTriad.impulsiv, istTriad.intuitiv, istTriad.analytisch, teamTriad.impulsiv, teamTriad.intuitiv, teamTriad.analytisch, roleTypeForCard, teamGoal, region]);
 
-  const result: TeamReportResult | null = reportGenerated ? liveResult : null;
+  const resultBase: TeamReportResult | null = reportGenerated ? liveResult : null;
+  const result: TeamReportResult | null = resultBase && aiNarrative
+    ? { ...resultBase, ...aiNarrative }
+    : resultBase;
+
+  const handleGenerateReport = async () => {
+    setAiLoading(true);
+    setAiError(null);
+    try {
+      let roleLevel = "-";
+      let taskStructure = "-";
+      let workStyle = "-";
+      try {
+        const dnaRaw = localStorage.getItem("rollenDnaState");
+        if (dnaRaw) {
+          const dna = JSON.parse(dnaRaw) as RoleDnaState;
+          if (dna.fuehrung) roleLevel = dna.fuehrung;
+          if (dna.aufgabencharakter) taskStructure = dna.aufgabencharakter;
+          if (dna.arbeitslogik) workStyle = dna.arbeitslogik;
+        }
+      } catch {}
+      const payload = {
+        context: {
+          roleName: roleName || "Rolle",
+          candidateName: candidateName || "Person",
+          isLeadership: roleTypeForCard === "fuehrung",
+          teamGoal: teamGoal || null,
+          roleLevel,
+          taskStructure,
+          workStyle,
+        },
+        profiles: {
+          person: { impulsiv: Math.round(istProfile.impulsiv), intuitiv: Math.round(istProfile.intuitiv), analytisch: Math.round(istProfile.analytisch) },
+          team:   { impulsiv: Math.round(teamProfileN.impulsiv), intuitiv: Math.round(teamProfileN.intuitiv), analytisch: Math.round(teamProfileN.analytisch) },
+        },
+        calculated: {
+          gesamtpassung: liveResult.gesamtpassung,
+          gesamtpassungLabel: liveResult.gesamtpassungLabel,
+          teamIstGap: liveResult.teamIstGap,
+          controlIntensity: liveResult.controlIntensity,
+          developmentLevel: liveResult.developmentLevel,
+          teamConstellationLabel: liveResult.teamConstellationLabel,
+          istConstellationLabel: liveResult.istConstellationLabel,
+          teamGoalLabel: liveResult.teamGoalLabel || null,
+        },
+        region,
+      };
+      const resp = await fetch("/api/generate-team-narrative", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!resp.ok) {
+        const err = await resp.json().catch(() => ({}));
+        throw new Error(err.error || `HTTP ${resp.status}`);
+      }
+      const narrative = await resp.json();
+      setAiNarrative(narrative);
+      setReportGenerated(true);
+    } catch (err: any) {
+      setAiError(err.message || "Generation failed");
+    } finally {
+      setAiLoading(false);
+    }
+  };
 
   const sw = result?.systemwirkungResult;
   const tone = result ? passungTone(result.gesamtpassung) : passungTone("geeignet");
@@ -1451,6 +1526,46 @@ export default function TeamReport() {
           );
         })()}
 
+        {!reportGenerated && (
+          <div style={{ marginTop: 24, display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }} data-testid="section-generate-cta">
+            <button
+              onClick={handleGenerateReport}
+              disabled={aiLoading}
+              style={{
+                height: 52, paddingLeft: 32, paddingRight: 32, fontSize: 16, fontWeight: 700,
+                borderRadius: 16, border: "none", cursor: aiLoading ? "not-allowed" : "pointer",
+                background: aiLoading ? "linear-gradient(135deg, #8E8E93, #AEAEB2)" : "linear-gradient(135deg, #0071E3, #34AADC)",
+                color: "#FFFFFF", boxShadow: aiLoading ? "none" : "0 4px 20px rgba(0,113,227,0.35)",
+                transition: "all 200ms ease", display: "inline-flex", alignItems: "center", gap: 10,
+              }}
+              data-testid="button-ai-team-report"
+            >
+              {aiLoading ? (
+                <>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ animation: "spin 1s linear infinite" }}>
+                    <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.3)" strokeWidth="2.5" />
+                    <path d="M12 2a10 10 0 0 1 10 10" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
+                  </svg>
+                  {region === "EN" ? "Generating report…" : "Bericht wird erstellt…"}
+                </>
+              ) : (
+                <>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                  </svg>
+                  {region === "EN" ? "Generate AI Team Report" : "KI-Teambericht erstellen"}
+                </>
+              )}
+            </button>
+            {aiError && (
+              <p style={{ fontSize: 13, color: "#D64045", margin: 0 }} data-testid="text-ai-error">
+                {region === "EN" ? `Error: ${aiError}` : `Fehler: ${aiError}`}
+              </p>
+            )}
+            <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
+          </div>
+        )}
+
         {result && sw && (
           <>
             {/* ── Header ── */}
@@ -1789,10 +1904,10 @@ export default function TeamReport() {
             </section>
 
             <div className="flex justify-center no-print pb-8">
-              <button onClick={() => setReportGenerated(false)}
+              <button onClick={() => { setReportGenerated(false); setAiNarrative(null); setAiError(null); }}
                 className="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 text-sm font-semibold text-slate-600 shadow-sm hover:bg-slate-50 transition-colors"
                 data-testid="button-reconfigure">
-                Profil anpassen
+                {region === "EN" ? "Reconfigure" : "Profil anpassen"}
               </button>
             </div>
           </>

@@ -250,6 +250,17 @@ export default function SollIstBericht() {
     return false;
   });
   const [reportGenerated, setReportGenerated] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
+  const [aiNarrative, setAiNarrative] = useState<{
+    summaryText: string;
+    executiveBullets: string[];
+    constellationRisks: string[];
+    dominanceShiftText: string;
+    developmentText: string;
+    actions: string[];
+    finalText: string;
+  } | null>(null);
   const [isExportingPdf, setIsExportingPdf] = useState(false);
   const reportRef = useRef<HTMLDivElement>(null);
   const subCircleCache = useRef<Record<string, string>>({});
@@ -316,8 +327,9 @@ export default function SollIstBericht() {
   const result: SollIstResult | null = useMemo(() => {
     if (!roleTriad || !reportGenerated) return null;
     const raw = computeSollIst(roleName, candidateName || "Person", roleTriad, candidateProfile, fuehrungsArt, roleAnalysisObj);
-    return localizeDeep(raw, region);
-  }, [roleTriad, roleName, candidateName, candidateProfile.impulsiv, candidateProfile.intuitiv, candidateProfile.analytisch, reportGenerated, fuehrungsArt, region, roleAnalysisObj]);
+    const base = localizeDeep(raw, region);
+    return aiNarrative ? { ...base, ...aiNarrative } : base;
+  }, [roleTriad, roleName, candidateName, candidateProfile.impulsiv, candidateProfile.intuitiv, candidateProfile.analytisch, reportGenerated, fuehrungsArt, region, roleAnalysisObj, aiNarrative]);
 
   const exportPdf = useCallback(async () => {
     if (!result || isExportingPdf || !roleTriad || !reportRef.current) return;
@@ -779,20 +791,77 @@ export default function SollIstBericht() {
               return null;
             })()}
               <button
-                onClick={() => setReportGenerated(true)}
+                onClick={async () => {
+                  if (!roleTriad) return;
+                  setAiLoading(true);
+                  setAiError(null);
+                  try {
+                    const computed = computeSollIst(roleName, candidateName || "Person", roleTriad, candidateProfile, fuehrungsArt, roleAnalysisObj);
+                    const payload = {
+                      context: { roleName: roleName || "Rolle", candidateName: candidateName || "Person" },
+                      profiles: {
+                        role:      { impulsiv: Math.round(roleTriad.impulsiv), intuitiv: Math.round(roleTriad.intuitiv), analytisch: Math.round(roleTriad.analytisch) },
+                        candidate: { impulsiv: Math.round(candidateProfile.impulsiv), intuitiv: Math.round(candidateProfile.intuitiv), analytisch: Math.round(candidateProfile.analytisch) },
+                      },
+                      calculated: {
+                        fitLabel: computed.fitLabel,
+                        fitRating: computed.fitRating,
+                        totalGap: computed.totalGap,
+                        gapLevel: computed.gapLevel,
+                        developmentLabel: computed.developmentLabel,
+                        developmentLevel: computed.developmentLevel,
+                        controlIntensity: computed.controlIntensity,
+                        roleConstellationLabel: computed.roleConstellationLabel,
+                        candConstellationLabel: computed.candConstellationLabel,
+                      },
+                      region,
+                    };
+                    const resp = await fetch("/api/generate-soll-ist-narrative", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify(payload),
+                    });
+                    if (!resp.ok) {
+                      const err = await resp.json().catch(() => ({}));
+                      throw new Error(err.error || `HTTP ${resp.status}`);
+                    }
+                    const narrative = await resp.json();
+                    setAiNarrative(narrative);
+                    setReportGenerated(true);
+                  } catch (err: any) {
+                    setAiError(err.message || "Generation failed");
+                  } finally {
+                    setAiLoading(false);
+                  }
+                }}
+                disabled={aiLoading}
                 data-testid="button-generate-report"
                 style={{
                   height: 48, paddingLeft: 24, paddingRight: 24, fontSize: 15, fontWeight: 600,
-                  borderRadius: 14, border: "none", outline: "none", cursor: "pointer",
-                  background: "linear-gradient(135deg, #0071E3, #34AADC)", color: "#FFFFFF",
-                  boxShadow: "0 4px 16px rgba(0,113,227,0.3)", transition: "all 200ms ease",
+                  borderRadius: 14, border: "none", outline: "none", cursor: aiLoading ? "not-allowed" : "pointer",
+                  background: aiLoading ? "linear-gradient(135deg, #8E8E93, #AEAEB2)" : "linear-gradient(135deg, #0071E3, #34AADC)", color: "#FFFFFF",
+                  boxShadow: aiLoading ? "none" : "0 4px 16px rgba(0,113,227,0.3)", transition: "all 200ms ease",
                   display: "inline-flex", alignItems: "center", gap: 8, flexShrink: 0,
                 }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-1px)"; (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 6px 20px rgba(0,113,227,0.35)"; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = "translateY(0)"; (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 4px 16px rgba(0,113,227,0.3)"; }}
+                onMouseEnter={(e) => { if (!aiLoading) { (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-1px)"; (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 6px 20px rgba(0,113,227,0.35)"; } }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = "translateY(0)"; (e.currentTarget as HTMLButtonElement).style.boxShadow = aiLoading ? "none" : "0 4px 16px rgba(0,113,227,0.3)"; }}
               >
-                {region === "EN" ? "Generate report" : "Bericht erstellen"}
+                {aiLoading ? (
+                  <>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style={{ animation: "spin 1s linear infinite" }}>
+                      <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.3)" strokeWidth="2.5" />
+                      <path d="M12 2a10 10 0 0 1 10 10" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
+                    </svg>
+                    {region === "EN" ? "Generating…" : "Erstelle Bericht…"}
+                    <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
+                  </>
+                ) : (region === "EN" ? "Generate report" : "Bericht erstellen")}
               </button>
+              {aiError && (
+                <p style={{ fontSize: 13, color: "#D64045", margin: "8px 0 0", width: "100%", textAlign: "center" }} data-testid="text-ai-error">
+                  {region === "EN" ? `Error: ${aiError}` : `Fehler: ${aiError}`}
+                </p>
+              )}
             </div>
             </div>)}
           </div>
@@ -979,7 +1048,7 @@ export default function SollIstBericht() {
           <div ref={reportRef} style={{ maxWidth: 820, margin: "0 auto" }} data-testid="print-report-wrapper">
             <button
               className="no-print"
-              onClick={() => { setReportGenerated(false); window.scrollTo(0, 0); }}
+              onClick={() => { setReportGenerated(false); setAiNarrative(null); setAiError(null); window.scrollTo(0, 0); }}
               style={{
                 display: "inline-flex",
                 alignItems: "center",
@@ -1497,7 +1566,7 @@ export default function SollIstBericht() {
 
             <div style={{ display: "flex", justifyContent: "center", padding: "24px 0" }} className="no-print">
               <button
-                onClick={() => setReportGenerated(false)}
+                onClick={() => { setReportGenerated(false); setAiNarrative(null); setAiError(null); }}
                 style={{ display: "inline-flex", alignItems: "center", gap: 8, height: 40, padding: "0 20px", borderRadius: 14, border: "1px solid rgba(0,0,0,0.08)", background: "#FFF", fontSize: 14, fontWeight: 600, color: "#6E6E73", cursor: "pointer" }}
                 data-testid="button-reconfigure"
               >
