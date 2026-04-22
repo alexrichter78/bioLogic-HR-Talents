@@ -254,6 +254,8 @@ export default function Rollenprofil() {
     setKandidatenText(null);
     setKandidatenError(false);
     setKandidatenLoading(false);
+    const completed = localStorage.getItem("rollenDnaCompleted");
+    if (completed !== "true") return;
     const raw = localStorage.getItem("rollenDnaState");
     if (!raw) return;
     try {
@@ -262,9 +264,6 @@ export default function Rollenprofil() {
       const hauptItems = taetigkeiten.filter((t: any) => t.kategorie === "haupt");
       const nebenItems = taetigkeiten.filter((t: any) => t.kategorie === "neben");
       const fuehrungItems = taetigkeiten.filter((t: any) => t.kategorie === "fuehrung");
-      const completed = localStorage.getItem("rollenDnaCompleted");
-      const hasRequiredFields = !!(state.beruf && state.fuehrung && (state.erfolgsfokusIndices?.length > 0) && state.aufgabencharakter && state.arbeitslogik && taetigkeiten.length > 0);
-      if (completed !== "true" && !hasRequiredFields) return;
 
       let haupt = state.bioGramHaupt;
       let neben = state.bioGramNeben;

@@ -257,7 +257,6 @@ export default function TeamCheck() {
   const isMobile = useIsMobile();
   const t = useLocalizedText();
   const { region } = useRegion();
-  const isEN = region === "EN";
   const [soll, setSoll] = useState<Triad>({ impulsiv: 33, intuitiv: 34, analytisch: 33 });
   const [kandidat, setKandidat] = useState<Triad>({ impulsiv: 33, intuitiv: 34, analytisch: 33 });
   const [team, setTeam] = useState<Triad>({ impulsiv: 30, intuitiv: 50, analytisch: 20 });
@@ -272,8 +271,6 @@ export default function TeamCheck() {
   const [detailTab, setDetailTab] = useState<"bewertung" | "alltag" | "chancen" | "hebel" | "prognose" | "empfehlung">("bewertung");
   const [reportView, setReportView] = useState<"none" | "detail" | "executive">("none");
   const reportRef = useRef<HTMLDivElement>(null);
-  const [aiTeamText, setAiTeamText] = useState<{ intro: string; bewertungSummary: string; warumText?: string; wirkungText?: string; druckText?: string; schlussfazit?: string; integrationAdvice: string; teamDynamics: string } | null>(null);
-  const [aiTeamLoading, setAiTeamLoading] = useState(false);
 
   useEffect(() => {
     try {
@@ -371,37 +368,6 @@ export default function TeamCheck() {
   const tdResult = useMemo(() => localizeDeep(computeTeamDynamics(tdInput), region), [tdInput, region]);
   const tl = TL_COLORS[tdResult.trafficLight];
 
-  useEffect(() => {
-    if (reportView === "none") return;
-    setAiTeamText(null);
-    setAiTeamLoading(true);
-    const payload = {
-      roleName: beruf || "",
-      candidateName: "Person",
-      personTriad: { impulsiv: kandidat.impulsiv, intuitiv: kandidat.intuitiv, analytisch: kandidat.analytisch },
-      teamTriad: { impulsiv: team.impulsiv, intuitiv: team.intuitiv, analytisch: team.analytisch },
-      gesamteinschaetzung: v4Result.gesamteinschaetzung,
-      passungZumTeam: v4Result.passungZumTeam,
-      beitragZurAufgabe: v4Result.beitragZurAufgabe,
-      begleitungsbedarf: v4Result.begleitungsbedarf,
-      hauptstaerke: v4Result.hauptstaerke,
-      hauptabweichung: v4Result.hauptabweichung,
-      roleType: isLeading ? "fuehrung" : "teammitglied",
-      teamGoal: teamGoal || "",
-      locale: region === "EN" ? "en" : "de",
-    };
-    fetch("/api/generate-teamcheck-text", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    })
-      .then(r => r.json())
-      .then(data => { if (data && data.intro) setAiTeamText(data); })
-      .catch(() => {})
-      .finally(() => setAiTeamLoading(false));
-  }, [reportView, beruf, isLeading, teamGoal, region,
-    v4Result.gesamteinschaetzung, v4Result.passungZumTeam, v4Result.beitragZurAufgabe]);
-
   const rolleLabel = isLeading ? "Neue Führungskraft" : "Neues Teammitglied";
   const sollDom = getDominanceLabel(soll);
   const kandDom = getDominanceLabel(kandidat);
@@ -424,10 +390,10 @@ export default function TeamCheck() {
             fontSize: 12, fontWeight: 600, color: "#1D1D1F",
           }}>
             <ArrowLeft style={{ width: 14, height: 14, strokeWidth: 2.5 }} />
-            {isEN ? "Back" : "Zurück"}
+            Zurück
           </button>
           <span style={{ flex: 1, fontSize: 13, fontWeight: 700, color: "#1D1D1F", textAlign: "center" }}>
-            {reportView === "detail" ? (isEN ? "TeamCheck Report (V4)" : "TeamCheck-Bericht (V4)") : "Executive Summary"}
+            {reportView === "detail" ? "TeamCheck-Bericht (V4)" : "Executive Summary"}
           </span>
           <button onClick={() => window.print()} data-testid="btn-print-report" style={{
             display: "flex", alignItems: "center", gap: 6,
@@ -437,7 +403,7 @@ export default function TeamCheck() {
             boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
           }}>
             <FileDown style={{ width: 13, height: 13, strokeWidth: 2 }} />
-            {isEN ? "Export as PDF" : "Als PDF exportieren"}
+            Als PDF exportieren
           </button>
         </div>
 
@@ -452,13 +418,13 @@ export default function TeamCheck() {
                   borderRadius: 20, padding: "5px 14px", marginBottom: 14,
                 }}>
                   <FileText style={{ width: 12, height: 12, color: "#0071E3" }} />
-                  <span style={{ fontSize: 10, fontWeight: 700, color: "#0071E3", textTransform: "uppercase", letterSpacing: "0.12em" }}>{isEN ? "TeamCheck Report" : "TeamCheck-Bericht"}</span>
+                  <span style={{ fontSize: 10, fontWeight: 700, color: "#0071E3", textTransform: "uppercase", letterSpacing: "0.12em" }}>TeamCheck-Bericht</span>
                 </div>
                 <h1 style={{ fontSize: 28, fontWeight: 750, letterSpacing: "-0.03em", color: "#1D1D1F", lineHeight: 1.15, marginBottom: 6 }}>{beruf}</h1>
-                <p style={{ fontSize: 13, color: "#8E8E93", marginBottom: 16 }}>{bereich || (isEN ? "Systemic integration analysis" : "Systemische Analyse zur Besetzung")}</p>
+                <p style={{ fontSize: 13, color: "#8E8E93", marginBottom: 16 }}>{bereich || "Systemische Analyse zur Besetzung"}</p>
                 <div style={{ display: "flex", justifyContent: "center", gap: 12, flexWrap: "wrap" }}>
                   <span style={{ fontSize: 12, fontWeight: 600, color: "#3A3A3C", background: "rgba(0,0,0,0.04)", padding: "6px 14px", borderRadius: 10 }}>
-                    {isLeading ? (isEN ? "Leadership role" : "Führungsposition") : (isEN ? "Team member" : "Teammitglied")}
+                    {isLeading ? "Führungsposition" : "Teammitglied"}
                   </span>
                   <span style={{ fontSize: 12, fontWeight: 700, color: bc, background: `${bc}10`, padding: "6px 14px", borderRadius: 10 }}>
                     {v4Result.gesamteinschaetzung}
@@ -468,9 +434,9 @@ export default function TeamCheck() {
 
               <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
                 {[
-                  { label: isEN ? "Team fit" : "Passung zum Team", value: axisLabel(v4Result.passungZumTeam), color: axisColor(v4Result.passungZumTeam) },
-                  { label: isEN ? "Task contribution" : "Beitrag zur Aufgabe", value: axisLabel(v4Result.beitragZurAufgabe), color: axisColor(v4Result.beitragZurAufgabe) },
-                  { label: isEN ? "Support required" : "Begleitungsbedarf", value: axisLabel(v4Result.begleitungsbedarf), color: axisColor(v4Result.begleitungsbedarf === "gering" ? "hoch" : v4Result.begleitungsbedarf === "hoch" ? "gering" : "mittel") },
+                  { label: "Passung zum Team", value: axisLabel(v4Result.passungZumTeam), color: axisColor(v4Result.passungZumTeam) },
+                  { label: "Beitrag zur Aufgabe", value: axisLabel(v4Result.beitragZurAufgabe), color: axisColor(v4Result.beitragZurAufgabe) },
+                  { label: "Begleitungsbedarf", value: axisLabel(v4Result.begleitungsbedarf), color: axisColor(v4Result.begleitungsbedarf === "gering" ? "hoch" : v4Result.begleitungsbedarf === "hoch" ? "gering" : "mittel") },
                 ].map((kpi, i) => (
                   <div key={i} style={{
                     flex: 1, minWidth: 140, textAlign: "center",
@@ -485,63 +451,61 @@ export default function TeamCheck() {
                 ))}
               </div>
 
-              {(aiTeamLoading && !aiTeamText) ? (
-                <div style={{ padding: "16px 22px", borderRadius: 16, marginBottom: 4, background: "linear-gradient(135deg, rgba(0,113,227,0.06), rgba(0,113,227,0.02))", border: "1px solid rgba(0,113,227,0.12)" }}>
-                  <div style={{ height: 15, borderRadius: 5, background: "rgba(0,113,227,0.12)", marginBottom: 8, width: "92%" }} />
-                  <div style={{ height: 15, borderRadius: 5, background: "rgba(0,113,227,0.08)", marginBottom: 8, width: "78%" }} />
-                  <div style={{ height: 15, borderRadius: 5, background: "rgba(0,113,227,0.06)", width: "85%" }} />
+              {v4Result.introText && (
+                <div style={{
+                  padding: "16px 22px", borderRadius: 16, marginBottom: 4,
+                  background: "linear-gradient(135deg, rgba(0,113,227,0.06), rgba(0,113,227,0.02))",
+                  border: "1px solid rgba(0,113,227,0.12)",
+                }}>
+                  <Paragraphs text={v4Result.introText} />
                 </div>
-              ) : (aiTeamText?.intro || v4Result.introText) ? (
-                <div style={{ padding: "16px 22px", borderRadius: 16, marginBottom: 4, background: "linear-gradient(135deg, rgba(0,113,227,0.06), rgba(0,113,227,0.02))", border: "1px solid rgba(0,113,227,0.12)" }}>
-                  <Paragraphs text={aiTeamText?.intro || v4Result.introText} />
-                </div>
-              ) : null}
+              )}
 
               {/* S1: Gesamtbewertung */}
               <GlassCard data-testid="report-section-1">
-                <SectionHeader num={1} title={isEN ? "Overall Assessment" : "Gesamtbewertung"} icon={Target} />
+                <SectionHeader num={1} title="Gesamtbewertung" icon={Target} />
                 <div style={{
                   display: "flex", gap: 12, marginBottom: 18, flexWrap: "wrap",
                 }}>
                   <div style={{ flex: 1, minWidth: 180, padding: "14px 18px", borderRadius: 16, background: "rgba(52,199,89,0.05)", border: "1px solid rgba(52,199,89,0.12)" }}>
-                    <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 4px" }}>{isEN ? "Main strength" : "Hauptstärke"}</p>
+                    <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 4px" }}>Hauptstärke</p>
                     <p style={{ fontSize: 13, fontWeight: 600, color: "#34C759", margin: 0 }}>{v4Result.hauptstaerke}</p>
                   </div>
                   <div style={{ flex: 1, minWidth: 180, padding: "14px 18px", borderRadius: 16, background: "rgba(255,149,0,0.05)", border: "1px solid rgba(255,149,0,0.12)" }}>
-                    <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 4px" }}>{isEN ? "Main divergence" : "Hauptabweichung"}</p>
+                    <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 4px" }}>Hauptabweichung</p>
                     <p style={{ fontSize: 13, fontWeight: 600, color: "#FF9500", margin: 0 }}>{v4Result.hauptabweichung}</p>
                   </div>
                 </div>
-                <Paragraphs text={aiTeamText?.bewertungSummary || v4Result.gesamtbewertungText} highlight />
+                <Paragraphs text={v4Result.gesamtbewertungText} highlight />
               </GlassCard>
 
               {/* S2: Warum */}
               <GlassCard data-testid="report-section-2">
-                <SectionHeader num={2} title={isEN ? "Why this assessment" : "Warum diese Bewertung"} icon={Lightbulb} />
-                <Paragraphs text={aiTeamText?.warumText || v4Result.warumText} />
+                <SectionHeader num={2} title="Warum diese Bewertung" icon={Lightbulb} />
+                <Paragraphs text={v4Result.warumText} />
               </GlassCard>
 
               {/* S3: Wirkung im Alltag */}
               <GlassCard data-testid="report-section-3">
-                <SectionHeader num={3} title={isEN ? "Daily impact" : "Wirkung im Alltag"} icon={Activity} />
-                <Paragraphs text={aiTeamText?.wirkungText || v4Result.wirkungAlltagText} />
+                <SectionHeader num={3} title="Wirkung im Alltag" icon={Activity} />
+                <Paragraphs text={v4Result.wirkungAlltagText} />
               </GlassCard>
 
               {/* S4: Chancen & Risiken */}
               <GlassCard data-testid="report-section-4">
-                <SectionHeader num={4} title={isEN ? "Opportunities & Risks" : "Chancen & Risiken"} icon={TrendingUp} />
+                <SectionHeader num={4} title="Chancen & Risiken" icon={TrendingUp} />
                 <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 16 }}>
                   <div style={{ flex: 1, minWidth: 220 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
                       <CheckCircle style={{ width: 15, height: 15, color: "#34C759", strokeWidth: 2.5 }} />
-                      <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>{isEN ? "Opportunities" : "Chancen"}</span>
+                      <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>Chancen</span>
                     </div>
                     <V4BlockList items={v4Result.chancen} accentColor="#34C759" />
                   </div>
                   <div style={{ flex: 1, minWidth: 220 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
                       <AlertTriangle style={{ width: 15, height: 15, color: "#FF3B30", strokeWidth: 2.5 }} />
-                      <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>{isEN ? "Risks" : "Risiken"}</span>
+                      <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>Risiken</span>
                     </div>
                     <V4BlockList items={v4Result.risiken} accentColor="#FF3B30" />
                   </div>
@@ -551,21 +515,21 @@ export default function TeamCheck() {
 
               {/* S5: Unter Druck */}
               <GlassCard data-testid="report-section-5">
-                <SectionHeader num={5} title={isEN ? "Behaviour under pressure" : "Verhalten unter Druck"} icon={Flame} />
-                <Paragraphs text={aiTeamText?.druckText || v4Result.druckText} />
+                <SectionHeader num={5} title="Verhalten unter Druck" icon={Flame} />
+                <Paragraphs text={v4Result.druckText} />
               </GlassCard>
 
               {/* S6: Führungshinweis (only for leaders) */}
               {v4Result.fuehrungshinweis && (
                 <GlassCard data-testid="report-section-6">
-                  <SectionHeader num={6} title={isEN ? "Leadership note" : "Führungshinweis"} icon={Shield} />
+                  <SectionHeader num={6} title="Führungshinweis" icon={Shield} />
                   <V4BlockList items={v4Result.fuehrungshinweis} accentColor="#5856D6" />
                 </GlassCard>
               )}
 
               {/* S7: Risikoprognose */}
               <GlassCard data-testid="report-section-7">
-                <SectionHeader num={v4Result.fuehrungshinweis ? 7 : 6} title={isEN ? "Risk forecast" : "Risikoprognose"} icon={CalendarDays} />
+                <SectionHeader num={v4Result.fuehrungshinweis ? 7 : 6} title="Risikoprognose" icon={CalendarDays} />
                 <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
                   {v4Result.risikoprognose.map((phase, i) => {
                     const phaseColors = ["#FF9500", "#0071E3", "#34C759"];
@@ -593,7 +557,7 @@ export default function TeamCheck() {
 
               {/* S8: Integrationsplan */}
               <GlassCard data-testid="report-section-8">
-                <SectionHeader num={v4Result.fuehrungshinweis ? 8 : 7} title={isEN ? "Integration plan" : "Integrationsplan"} icon={CalendarDays} />
+                <SectionHeader num={v4Result.fuehrungshinweis ? 8 : 7} title="Integrationsplan" icon={CalendarDays} />
                 <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
                   {v4Result.integrationsplan.map((phase, i) => {
                     const phaseColors = ["#34C759", "#0071E3", "#5856D6"];
@@ -612,30 +576,30 @@ export default function TeamCheck() {
                             <span style={{ fontSize: 11, color: "#8E8E93", marginLeft: 8 }}>{phase.period}</span>
                           </div>
                         </div>
-                        <p style={{ fontSize: 12, fontWeight: 600, color: pc, margin: "0 0 6px" }}>{isEN ? "Goal: " : "Ziel: "}{phase.ziel}</p>
+                        <p style={{ fontSize: 12, fontWeight: 600, color: pc, margin: "0 0 6px" }}>Ziel: {phase.ziel}</p>
                         <Paragraphs text={phase.beschreibung} />
                         {phase.praxis.length > 0 && (
                           <div style={{ marginTop: 10 }}>
-                            <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", margin: "0 0 6px", textTransform: "uppercase" }}>{isEN ? "Practice" : "Praxis"}</p>
+                            <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", margin: "0 0 6px", textTransform: "uppercase" }}>Praxis</p>
                             <BulletList items={phase.praxis} color={pc} icon="check" />
                           </div>
                         )}
                         {phase.signale.length > 0 && (
                           <div style={{ marginTop: 10 }}>
-                            <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", margin: "0 0 6px", textTransform: "uppercase" }}>{isEN ? "Positive signals" : "Positive Signale"}</p>
+                            <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", margin: "0 0 6px", textTransform: "uppercase" }}>Positive Signale</p>
                             <BulletList items={phase.signale} color="#34C759" icon="check" />
                           </div>
                         )}
                         {phase.fokus && (phase.fokus.intro || phase.fokus.bullets.length > 0) && (
                           <div style={{ marginTop: 10, padding: "10px 14px", borderRadius: 10, background: `${pc}06`, border: `1px solid ${pc}10` }}>
-                            <p style={{ fontSize: 11, fontWeight: 600, color: pc, margin: "0 0 4px", textTransform: "uppercase" }}>{isEN ? "What matters" : "Worauf es ankommt"}</p>
-                            {phase.fokus.intro && <p style={{ fontSize: 12, color: "#3A3A3C", margin: "0 0 6px", lineHeight: 1.55 }}>{hyphenateText(phase.fokus.intro)}</p>}
+                            <p style={{ fontSize: 11, fontWeight: 600, color: pc, margin: "0 0 4px", textTransform: "uppercase" }}>Worauf es ankommt</p>
+                            {phase.fokus.intro && <p style={{ fontSize: 12, color: "#3A3A3C", margin: "0 0 6px", lineHeight: 1.55 }} lang="de">{hyphenateText(phase.fokus.intro)}</p>}
                             {phase.fokus.bullets.length > 0 && <BulletList items={phase.fokus.bullets} color={pc} icon="dot" />}
                           </div>
                         )}
                         <div style={{ marginTop: 10, padding: "10px 14px", borderRadius: 10, background: `${pc}08`, border: `1px solid ${pc}12` }}>
-                          <p style={{ fontSize: 11, fontWeight: 600, color: pc, margin: "0 0 4px", textTransform: "uppercase" }}>{isEN ? "Leadership tip" : "Führungstipp"}</p>
-                          <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.55 }}>{hyphenateText(phase.fuehrungstipp)}</p>
+                          <p style={{ fontSize: 11, fontWeight: 600, color: pc, margin: "0 0 4px", textTransform: "uppercase" }}>Führungstipp</p>
+                          <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.55 }} lang="de">{hyphenateText(phase.fuehrungstipp)}</p>
                         </div>
                       </div>
                     );
@@ -643,45 +607,45 @@ export default function TeamCheck() {
                 </div>
                 {v4Result.intWarnsignale.length > 0 && (
                   <div style={{ marginTop: 20 }}>
-                    <p style={{ fontSize: 13, fontWeight: 700, color: "#FF9500", margin: "0 0 10px" }}>{isEN ? "Warning signals" : "Warnsignale"}</p>
+                    <p style={{ fontSize: 13, fontWeight: 700, color: "#FF9500", margin: "0 0 10px" }}>Warnsignale</p>
                     <BulletList items={v4Result.intWarnsignale} color="#FF9500" icon="warning" />
                   </div>
                 )}
                 {v4Result.intLeitfragen.length > 0 && (
                   <div style={{ marginTop: 20 }}>
-                    <p style={{ fontSize: 13, fontWeight: 700, color: "#0071E3", margin: "0 0 10px" }}>{isEN ? "Key questions" : "Leitfragen"}</p>
+                    <p style={{ fontSize: 13, fontWeight: 700, color: "#0071E3", margin: "0 0 10px" }}>Leitfragen</p>
                     <BulletList items={v4Result.intLeitfragen} color="#0071E3" icon="dot" />
                   </div>
                 )}
-                {(aiTeamText?.integrationAdvice || v4Result.intVerantwortung) && (
+                {v4Result.intVerantwortung && (
                   <div style={{ marginTop: 16 }}>
-                    <p style={{ fontSize: 13, fontWeight: 700, color: "#3A3A3C", margin: "0 0 6px" }}>{isEN ? "Integration advice" : "Verantwortung"}</p>
-                    <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.65, margin: 0 }}>{hyphenateText(aiTeamText?.integrationAdvice || v4Result.intVerantwortung || "")}</p>
+                    <p style={{ fontSize: 13, fontWeight: 700, color: "#3A3A3C", margin: "0 0 6px" }}>Verantwortung</p>
+                    <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.65, margin: 0 }} lang="de">{hyphenateText(v4Result.intVerantwortung)}</p>
                   </div>
                 )}
               </GlassCard>
 
               {/* S9: Empfehlungen */}
               <GlassCard data-testid="report-section-9">
-                <SectionHeader num={v4Result.fuehrungshinweis ? 9 : 8} title={isEN ? "Recommendations" : "Empfehlungen"} icon={Target} />
+                <SectionHeader num={v4Result.fuehrungshinweis ? 9 : 8} title="Empfehlungen" icon={Target} />
                 <V4BlockList items={v4Result.empfehlungen} accentColor="#0071E3" />
               </GlassCard>
 
               {/* S10: Team ohne Person */}
               <GlassCard data-testid="report-section-10">
-                <SectionHeader num={v4Result.fuehrungshinweis ? 10 : 9} title={isEN ? "Team without this hire" : "Team ohne diese Besetzung"} icon={Users} />
-                <Paragraphs text={aiTeamText?.teamDynamics || v4Result.teamOhnePersonText} />
+                <SectionHeader num={v4Result.fuehrungshinweis ? 10 : 9} title="Team ohne diese Besetzung" icon={Users} />
+                <Paragraphs text={v4Result.teamOhnePersonText} />
               </GlassCard>
 
               {/* S11: Fazit */}
               <GlassCard data-testid="report-section-11">
-                <SectionHeader num={v4Result.fuehrungshinweis ? 11 : 10} title={isEN ? "Closing summary" : "Schlussfazit"} icon={Award} />
+                <SectionHeader num={v4Result.fuehrungshinweis ? 11 : 10} title="Schlussfazit" icon={Award} />
                 <div style={{
                   padding: "20px 24px", borderRadius: 18,
                   background: `linear-gradient(135deg, ${bc}08, ${bc}03)`,
                   border: `1px solid ${bc}15`,
                 }}>
-                  <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.75, margin: 0, fontWeight: 550 }}>{hyphenateText(aiTeamText?.schlussfazit || v4Result.schlussfazit)}</p>
+                  <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.75, margin: 0, fontWeight: 550 }} lang="de">{hyphenateText(v4Result.schlussfazit)}</p>
                 </div>
               </GlassCard>
             </>
@@ -699,10 +663,10 @@ export default function TeamCheck() {
                   <span style={{ fontSize: 10, fontWeight: 700, color: "#34C759", textTransform: "uppercase", letterSpacing: "0.12em" }}>Executive Summary</span>
                 </div>
                 <h1 style={{ fontSize: 28, fontWeight: 750, letterSpacing: "-0.03em", color: "#1D1D1F", lineHeight: 1.15, marginBottom: 6 }}>{beruf}</h1>
-                <p style={{ fontSize: 13, color: "#8E8E93", marginBottom: 18 }}>{bereich || (isEN ? "Systemic integration analysis" : "Systemische Analyse zur Besetzung")}</p>
+                <p style={{ fontSize: 13, color: "#8E8E93", marginBottom: 18 }}>{bereich || "Systemische Analyse zur Besetzung"}</p>
                 <div style={{ display: "flex", justifyContent: "center", gap: 12, flexWrap: "wrap", marginBottom: 18 }}>
                   <span style={{ fontSize: 12, fontWeight: 600, color: "#3A3A3C", background: "rgba(0,0,0,0.04)", padding: "6px 14px", borderRadius: 10 }}>
-                    {isLeading ? (isEN ? "Leadership role" : "Führungsposition") : (isEN ? "Team member" : "Teammitglied")}
+                    {isLeading ? "Führungsposition" : "Teammitglied"}
                   </span>
                   <span style={{ fontSize: 12, fontWeight: 700, color: bc, background: `${bc}10`, padding: "6px 14px", borderRadius: 10 }}>
                     {v4Result.gesamteinschaetzung}
@@ -718,25 +682,11 @@ export default function TeamCheck() {
                 </div>
               </GlassCard>
 
-              {(aiTeamLoading && !aiTeamText) ? (
-                <GlassCard>
-                  <div style={{ height: 16, borderRadius: 6, background: "rgba(0,0,0,0.07)", marginBottom: 8, width: "90%" }} />
-                  <div style={{ height: 16, borderRadius: 6, background: "rgba(0,0,0,0.05)", marginBottom: 8, width: "80%" }} />
-                  <div style={{ height: 16, borderRadius: 6, background: "rgba(0,0,0,0.04)", width: "70%" }} />
-                </GlassCard>
-              ) : aiTeamText?.intro ? (
-                <GlassCard>
-                  {aiTeamText.intro.split(/\n\n+/).map((para, i) => (
-                    <p key={i} style={{ fontSize: 13.5, color: "#48484A", lineHeight: 1.8, margin: i === 0 ? "0 0 10px" : "0" }}>{hyphenateText(para)}</p>
-                  ))}
-                </GlassCard>
-              ) : null}
-
               <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
                 {[
-                  { label: isEN ? "Team fit" : "Passung zum Team", value: axisLabel(v4Result.passungZumTeam), color: axisColor(v4Result.passungZumTeam), icon: Users },
-                  { label: isEN ? "Task contribution" : "Beitrag zur Aufgabe", value: axisLabel(v4Result.beitragZurAufgabe), color: axisColor(v4Result.beitragZurAufgabe), icon: Target },
-                  { label: isEN ? "Support required" : "Begleitungsbedarf", value: axisLabel(v4Result.begleitungsbedarf), color: axisColor(v4Result.begleitungsbedarf === "gering" ? "hoch" : v4Result.begleitungsbedarf === "hoch" ? "gering" : "mittel"), icon: Shield },
+                  { label: "Passung zum Team", value: axisLabel(v4Result.passungZumTeam), color: axisColor(v4Result.passungZumTeam), icon: Users },
+                  { label: "Beitrag zur Aufgabe", value: axisLabel(v4Result.beitragZurAufgabe), color: axisColor(v4Result.beitragZurAufgabe), icon: Target },
+                  { label: "Begleitungsbedarf", value: axisLabel(v4Result.begleitungsbedarf), color: axisColor(v4Result.begleitungsbedarf === "gering" ? "hoch" : v4Result.begleitungsbedarf === "hoch" ? "gering" : "mittel"), icon: Shield },
                 ].map((kpi, i) => (
                   <div key={i} style={{
                     flex: 1, minWidth: 140,
@@ -775,13 +725,8 @@ export default function TeamCheck() {
                     <p style={{ fontSize: 13, fontWeight: 600, color: "#FF9500", margin: 0 }}>{v4Result.hauptabweichung}</p>
                   </div>
                 </div>
-                {aiTeamLoading && !aiTeamText ? (
-                  <>
-                    <div style={{ height: 16, borderRadius: 6, background: "rgba(0,0,0,0.07)", marginBottom: 8, width: "90%" }} />
-                    <div style={{ height: 16, borderRadius: 6, background: "rgba(0,0,0,0.05)", width: "75%" }} />
-                  </>
-                ) : (aiTeamText?.bewertungSummary || v4Result.gesamtbewertungText).split("\n\n").slice(0, 2).map((p, i) => (
-                  <p key={i} style={{ fontSize: 13.5, color: "#48484A", lineHeight: 1.8, margin: "0 0 8px" }}>{hyphenateText(p)}</p>
+                {v4Result.gesamtbewertungText.split("\n\n").slice(0, 2).map((p, i) => (
+                  <p key={i} style={{ fontSize: 13.5, color: "#48484A", lineHeight: 1.8, margin: "0 0 8px" }} lang="de">{hyphenateText(p)}</p>
                 ))}
               </GlassCard>
 
@@ -789,14 +734,14 @@ export default function TeamCheck() {
                 <GlassCard style={{ flex: 1, minWidth: 260 }} data-testid="exec-chancen">
                   <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
                     <CheckCircle style={{ width: 15, height: 15, color: "#34C759", strokeWidth: 2.5 }} />
-                    <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>{isEN ? "Opportunities" : "Chancen"}</span>
+                    <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>Chancen</span>
                   </div>
                   <BulletList items={v4Result.chancen.map(c => c.title)} color="#34C759" icon="check" />
                 </GlassCard>
                 <GlassCard style={{ flex: 1, minWidth: 260 }} data-testid="exec-risiken">
                   <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
                     <AlertTriangle style={{ width: 15, height: 15, color: "#FF3B30", strokeWidth: 2.5 }} />
-                    <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>{isEN ? "Risks" : "Risiken"}</span>
+                    <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>Risiken</span>
                   </div>
                   <BulletList items={v4Result.risiken.map(r => r.title)} color="#FF3B30" icon="warning" />
                 </GlassCard>
@@ -1172,12 +1117,12 @@ export default function TeamCheck() {
           <GlassCard data-testid="section-detail-tabs">
             <div style={{ display: "flex", gap: 3, background: "rgba(0,0,0,0.03)", borderRadius: 10, padding: 3, marginBottom: 26 }}>
               {([
-                ["bewertung", isEN ? "Assessment" : "Bewertung", Target],
-                ["alltag", isEN ? "Daily & Pressure" : "Alltag & Druck", Activity],
-                ["chancen", isEN ? "Opport./Risks" : "Chancen/Risiken", TrendingUp],
-                ["hebel", isEN ? "Leadership" : "Führungshebel", Flame],
-                ["prognose", isEN ? "Forecast" : "Prognose", Clock],
-                ["empfehlung", isEN ? "Recommendations" : "Empfehlungen", Shield],
+                ["bewertung", "Bewertung", Target],
+                ["alltag", "Alltag & Druck", Activity],
+                ["chancen", "Chancen/Risiken", TrendingUp],
+                ["hebel", "Führungshebel", Flame],
+                ["prognose", "Prognose", Clock],
+                ["empfehlung", "Empfehlungen", Shield],
               ] as const).map(([key, label, Icon]) => {
                 const active = detailTab === key;
                 return (
@@ -1203,48 +1148,48 @@ export default function TeamCheck() {
               {/* TAB: GESAMTBEWERTUNG */}
               {detailTab === "bewertung" && (
                 <div data-testid="content-bewertung">
-                  <SectionHeader num={1} title={isEN ? "OVERALL ASSESSMENT" : "GESAMTBEWERTUNG"} icon={Target} />
+                  <SectionHeader num={1} title="GESAMTBEWERTUNG" icon={Target} />
 
                   <div style={{ display: "flex", gap: 12, marginBottom: 18, flexWrap: "wrap" }}>
                     <div style={{ flex: 1, minWidth: 180, padding: "14px 18px", borderRadius: 16, background: "rgba(52,199,89,0.05)", border: "1px solid rgba(52,199,89,0.12)" }}>
-                      <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 4px" }}>{isEN ? "Main strength" : "Hauptstärke"}</p>
+                      <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 4px" }}>Hauptstärke</p>
                       <p style={{ fontSize: 13, fontWeight: 600, color: "#34C759", margin: 0 }}>{v4Result.hauptstaerke}</p>
                     </div>
                     <div style={{ flex: 1, minWidth: 180, padding: "14px 18px", borderRadius: 16, background: "rgba(255,149,0,0.05)", border: "1px solid rgba(255,149,0,0.12)" }}>
-                      <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 4px" }}>{isEN ? "Main divergence" : "Hauptabweichung"}</p>
+                      <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 4px" }}>Hauptabweichung</p>
                       <p style={{ fontSize: 13, fontWeight: 600, color: "#FF9500", margin: 0 }}>{v4Result.hauptabweichung}</p>
                     </div>
                   </div>
 
-                  <Paragraphs text={aiTeamText?.bewertungSummary || v4Result.gesamtbewertungText} highlight />
+                  <Paragraphs text={v4Result.gesamtbewertungText} highlight />
 
                   <div style={{ height: 1, background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.06), transparent)", margin: "20px 0" }} />
 
                   <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
                     <Lightbulb style={{ width: 16, height: 16, color: "#0071E3", strokeWidth: 2.5 }} />
-                    <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{isEN ? "Why this assessment" : "Warum diese Bewertung"}</h3>
+                    <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Warum diese Bewertung</h3>
                   </div>
-                  <Paragraphs text={aiTeamText?.warumText || v4Result.warumText} />
+                  <Paragraphs text={v4Result.warumText} />
                 </div>
               )}
 
               {/* TAB: ALLTAG & DRUCK */}
               {detailTab === "alltag" && (
                 <div data-testid="content-alltag">
-                  <SectionHeader num={2} title={isEN ? "DAILY IMPACT" : "WIRKUNG IM ALLTAG"} icon={Activity} />
-                  <Paragraphs text={aiTeamText?.wirkungText || v4Result.wirkungAlltagText} highlight />
+                  <SectionHeader num={2} title="WIRKUNG IM ALLTAG" icon={Activity} />
+                  <Paragraphs text={v4Result.wirkungAlltagText} highlight />
 
                   <div style={{ height: 1, background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.06), transparent)", margin: "24px 0" }} />
 
                   <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
                     <Flame style={{ width: 16, height: 16, color: "#FF3B30", strokeWidth: 2.5 }} />
-                    <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{isEN ? "Behaviour under pressure" : "Verhalten unter Druck"}</h3>
+                    <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Verhalten unter Druck</h3>
                   </div>
                   <div style={{
                     padding: "16px 20px", borderRadius: 16,
                     background: "rgba(255,59,48,0.04)", border: "1px solid rgba(255,59,48,0.10)",
                   }}>
-                    <Paragraphs text={aiTeamText?.druckText || v4Result.druckText} />
+                    <Paragraphs text={v4Result.druckText} />
                   </div>
 
                   {v4Result.fuehrungshinweis && (
@@ -1252,7 +1197,7 @@ export default function TeamCheck() {
                       <div style={{ height: 1, background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.06), transparent)", margin: "24px 0" }} />
                       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
                         <Shield style={{ width: 16, height: 16, color: "#5856D6", strokeWidth: 2.5 }} />
-                        <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{isEN ? "Leadership note" : "Führungshinweis"}</h3>
+                        <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Führungshinweis</h3>
                       </div>
                       <V4BlockList items={v4Result.fuehrungshinweis} accentColor="#5856D6" />
                     </>
@@ -1263,7 +1208,7 @@ export default function TeamCheck() {
               {/* TAB: CHANCEN & RISIKEN */}
               {detailTab === "chancen" && (
                 <div data-testid="content-chancen">
-                  <SectionHeader num={3} title={isEN ? "OPPORTUNITIES & RISKS" : "CHANCEN & RISIKEN"} icon={TrendingUp} />
+                  <SectionHeader num={3} title="CHANCEN & RISIKEN" icon={TrendingUp} />
                   <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 20 }}>
                     <div style={{
                       flex: 1, minWidth: 220, padding: "18px 16px", borderRadius: 18,
@@ -1271,12 +1216,12 @@ export default function TeamCheck() {
                     }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
                         <CheckCircle style={{ width: 15, height: 15, color: "#34C759", strokeWidth: 2.5 }} />
-                        <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>{isEN ? "Opportunities" : "Chancen"}</span>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>Chancen</span>
                       </div>
                       {v4Result.chancen.map((c, i) => (
                         <div key={i} style={{ marginBottom: i < v4Result.chancen.length - 1 ? 10 : 0 }}>
                           <p style={{ fontSize: 12, fontWeight: 700, color: "#34C759", margin: "0 0 3px" }}>{c.title}</p>
-                          <p style={{ fontSize: 12, color: "#48484A", lineHeight: 1.6, margin: 0 }}>{hyphenateText(c.text)}</p>
+                          <p style={{ fontSize: 12, color: "#48484A", lineHeight: 1.6, margin: 0 }} lang="de">{hyphenateText(c.text)}</p>
                         </div>
                       ))}
                     </div>
@@ -1286,12 +1231,12 @@ export default function TeamCheck() {
                     }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
                         <AlertTriangle style={{ width: 15, height: 15, color: "#FF3B30", strokeWidth: 2.5 }} />
-                        <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>{isEN ? "Risks" : "Risiken"}</span>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>Risiken</span>
                       </div>
                       {v4Result.risiken.map((r, i) => (
                         <div key={i} style={{ marginBottom: i < v4Result.risiken.length - 1 ? 10 : 0 }}>
                           <p style={{ fontSize: 12, fontWeight: 700, color: "#FF3B30", margin: "0 0 3px" }}>{r.title}</p>
-                          <p style={{ fontSize: 12, color: "#48484A", lineHeight: 1.6, margin: 0 }}>{hyphenateText(r.text)}</p>
+                          <p style={{ fontSize: 12, color: "#48484A", lineHeight: 1.6, margin: 0 }} lang="de">{hyphenateText(r.text)}</p>
                         </div>
                       ))}
                     </div>
@@ -1303,8 +1248,8 @@ export default function TeamCheck() {
               {/* TAB: FÜHRUNGSHEBEL */}
               {detailTab === "hebel" && (
                 <div data-testid="content-hebel">
-                  <SectionHeader num={4} title={isEN ? "LEADERSHIP LEVERS" : "FÜHRUNGSHEBEL"} icon={Flame} />
-                  <p style={{ fontSize: 12, color: "#8E8E93", margin: "0 0 18px", fontWeight: 500 }}>{isEN ? "Concrete management measures for this leader–team combination" : t("Konkrete Steuerungsmassnahmen für diese Führungskraft-Team-Kombination")}</p>
+                  <SectionHeader num={4} title="FÜHRUNGSHEBEL" icon={Flame} />
+                  <p style={{ fontSize: 12, color: "#8E8E93", margin: "0 0 18px", fontWeight: 500 }}>{t("Konkrete Steuerungsmassnahmen für diese Führungskraft-Team-Kombination")}</p>
 
                   {isLeading && tdResult.leadershipContext && tdResult.leadershipContext.leadershipLevers.length > 0 ? (
                     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -1338,7 +1283,7 @@ export default function TeamCheck() {
                       padding: "24px 20px", borderRadius: 16, textAlign: "center",
                       background: "rgba(142,142,147,0.06)", border: "1px solid rgba(0,0,0,0.04)",
                     }}>
-                      <p style={{ fontSize: 13, color: "#8E8E93", margin: 0 }}>{isEN ? "Leadership levers are shown in leadership mode only. Please activate 'Leadership' in the Diagnostics section." : "Führungshebel werden nur im Führungsmodus angezeigt. Bitte 'Führung' im Diagnose-Bereich aktivieren."}</p>
+                      <p style={{ fontSize: 13, color: "#8E8E93", margin: 0 }}>Führungshebel werden nur im Führungsmodus angezeigt. Bitte „Führung" im Diagnose-Bereich aktivieren.</p>
                     </div>
                   )}
                 </div>
@@ -1347,7 +1292,7 @@ export default function TeamCheck() {
               {/* TAB: PROGNOSE */}
               {detailTab === "prognose" && (
                 <div data-testid="content-prognose">
-                  <SectionHeader num={5} title={isEN ? "RISK FORECAST" : "RISIKOPROGNOSE"} icon={Clock} />
+                  <SectionHeader num={5} title="RISIKOPROGNOSE" icon={Clock} />
                   <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
                     {v4Result.risikoprognose.map((phase, i) => {
                       const phaseColors = ["#FF9500", "#0071E3", "#34C759"];
@@ -1382,22 +1327,22 @@ export default function TeamCheck() {
               {/* TAB: EMPFEHLUNGEN */}
               {detailTab === "empfehlung" && (
                 <div data-testid="content-empfehlung">
-                  <SectionHeader num={6} title={isEN ? "RECOMMENDATIONS" : "EMPFEHLUNGEN"} icon={Shield} />
+                  <SectionHeader num={6} title="EMPFEHLUNGEN" icon={Shield} />
                   <V4BlockList items={v4Result.empfehlungen} accentColor="#0071E3" />
 
                   <div style={{ height: 1, background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.06), transparent)", margin: "24px 0" }} />
 
                   <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
                     <Award style={{ width: 16, height: 16, color: "#0071E3", strokeWidth: 2.5 }} />
-                    <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{isEN ? "Closing summary" : "Schlussfazit"}</h3>
+                    <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Schlussfazit</h3>
                   </div>
                   <div style={{
                     padding: "16px 20px", borderRadius: 16,
                     background: "linear-gradient(135deg, rgba(0,113,227,0.06), rgba(52,199,89,0.04))",
                     border: "1px solid rgba(0,113,227,0.10)",
                   }}>
-                    <p style={{ fontSize: 13, color: "#1D1D1F", lineHeight: 1.75, margin: 0, fontWeight: 550 }}>
-                      {hyphenateText(aiTeamText?.schlussfazit || v4Result.schlussfazit)}
+                    <p style={{ fontSize: 13, color: "#1D1D1F", lineHeight: 1.75, margin: 0, fontWeight: 550 }} lang="de">
+                      {hyphenateText(v4Result.schlussfazit)}
                     </p>
                   </div>
                 </div>

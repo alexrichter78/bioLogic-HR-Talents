@@ -250,8 +250,6 @@ export default function SollIstBericht() {
     return false;
   });
   const [reportGenerated, setReportGenerated] = useState(false);
-  const [aiMatchText, setAiMatchText] = useState<Record<string, any> | null>(null);
-  const [aiMatchLoading, setAiMatchLoading] = useState(false);
   const [isExportingPdf, setIsExportingPdf] = useState(false);
   const reportRef = useRef<HTMLDivElement>(null);
   const subCircleCache = useRef<Record<string, string>>({});
@@ -320,37 +318,6 @@ export default function SollIstBericht() {
     const raw = computeSollIst(roleName, candidateName || "Person", roleTriad, candidateProfile, fuehrungsArt, roleAnalysisObj);
     return localizeDeep(raw, region);
   }, [roleTriad, roleName, candidateName, candidateProfile.impulsiv, candidateProfile.intuitiv, candidateProfile.analytisch, reportGenerated, fuehrungsArt, region, roleAnalysisObj]);
-
-  useEffect(() => {
-    if (!result || !roleTriad) return;
-    setAiMatchText(null);
-    setAiMatchLoading(true);
-    const payload = {
-      roleName: result.roleName,
-      candidateName: result.candidateName,
-      roleTriad: { imp: roleTriad.impulsiv, int: roleTriad.intuitiv, ana: roleTriad.analytisch },
-      candTriad: { imp: candidateProfile.impulsiv, int: candidateProfile.intuitiv, ana: candidateProfile.analytisch },
-      fitLabel: result.fitLabel,
-      fitRating: result.fitRating,
-      controlIntensity: result.controlIntensity,
-      gapLevel: result.gapLevel,
-      developmentLabel: result.developmentLabel,
-      roleDomKey: result.roleDomKey === "impulsiv" ? "imp" : result.roleDomKey === "intuitiv" ? "int" : "ana",
-      candDomKey: result.candDomKey === "impulsiv" ? "imp" : result.candDomKey === "intuitiv" ? "int" : "ana",
-      locale: region === "EN" ? "en" : "de",
-    };
-    fetch("/api/generate-matchcheck-text", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    })
-      .then(r => r.json())
-      .then(data => {
-        if (data && data.intro) setAiMatchText(data);
-      })
-      .catch(() => {})
-      .finally(() => setAiMatchLoading(false));
-  }, [result?.fitLabel, result?.fitRating, result?.roleName, result?.candidateName, reportGenerated]);
 
   const exportPdf = useCallback(async () => {
     if (!result || isExportingPdf || !roleTriad || !reportRef.current) return;
@@ -824,7 +791,7 @@ export default function SollIstBericht() {
                 onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-1px)"; (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 6px 20px rgba(0,113,227,0.35)"; }}
                 onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = "translateY(0)"; (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 4px 16px rgba(0,113,227,0.3)"; }}
               >
-                {region === "EN" ? "Generate report" : "Bericht erstellen"}
+                Bericht erstellen
               </button>
             </div>
             </div>)}
@@ -839,17 +806,17 @@ export default function SollIstBericht() {
 
             let shortFazit: string;
             if (fitLabel === "Geeignet") {
-              shortFazit = region === "EN" ? "Working style matches the role" : "Arbeitsweise der Person passt zur Stelle";
+              shortFazit = "Arbeitsweise der Person passt zur Stelle";
             } else if (fitLabel === "Bedingt geeignet") {
-              shortFazit = region === "EN" ? "Working style partially matches the role" : "Arbeitsweise der Person passt teilweise zur Stelle";
+              shortFazit = "Arbeitsweise der Person passt teilweise zur Stelle";
             } else {
-              shortFazit = region === "EN" ? "Working style does not match the role" : "Arbeitsweise der Person passt nicht zur Stelle";
+              shortFazit = "Arbeitsweise der Person passt nicht zur Stelle";
             }
 
             const devLevel = effective.developmentLevel;
             const devScore = devLevel === 1 ? 3 : devLevel === 2 ? 2 : 1;
             const devGaugeColor = devScore === 3 ? BIO_COLORS.geeignet : devScore === 2 ? BIO_COLORS.bedingt : BIO_COLORS.nichtGeeignet;
-            const devShort = region === "EN" ? (devScore === 3 ? "Good prospects · Little effort" : devScore === 2 ? "Feasible · Targeted leadership required" : "High effort · Outcome uncertain") : (devScore === 3 ? "Gute Aussichten · Wenig Aufwand" : devScore === 2 ? "Machbar · Gezielte Führung nötig" : "Hoher Aufwand · Ergebnis unsicher");
+            const devShort = devScore === 3 ? "Gute Aussichten · Wenig Aufwand" : devScore === 2 ? "Machbar · Gezielte Führung nötig" : "Hoher Aufwand · Ergebnis unsicher";
 
             const bulletCol = fitLabel === "Geeignet" ? BIO_COLORS.geeignet : fitLabel === "Bedingt geeignet" ? BIO_COLORS.bedingt : BIO_COLORS.nichtGeeignet;
 
@@ -861,35 +828,35 @@ export default function SollIstBericht() {
             let kritischLabel: string;
             const kritischBullets: string[] = [];
             if (fitLabel === "Geeignet") {
-              kritischLabel = region === "EN" ? "Strengths" : "Stärken";
-              kritischBullets.push(region === "EN" ? "Working style aligns" : "Arbeitsweise stimmt überein");
-              kritischBullets.push(region === "EN" ? "Decision-making logic fits" : "Entscheidungslogik passt");
-              kritischBullets.push(region === "EN" ? "Pace and structure compatible" : "Tempo und Struktur kompatibel");
+              kritischLabel = "Stärken";
+              kritischBullets.push("Arbeitsweise stimmt überein");
+              kritischBullets.push("Entscheidungslogik passt");
+              kritischBullets.push("Tempo und Struktur kompatibel");
             } else if (fitLabel === "Bedingt geeignet") {
-              kritischLabel = region === "EN" ? "Notable" : "Auffällig";
-              kritischBullets.push(region === "EN" ? "Working style intensity differs" : "Ausprägung der Arbeitsweise weicht ab");
-              kritischBullets.push(region === "EN" ? "Decision-making logic broadly compatible" : "Entscheidungslogik grundsätzlich kompatibel");
-              kritischBullets.push(region === "EN" ? "Intensity of dominant trait not aligned" : "Intensität der Hauptprägung nicht deckungsgleich");
+              kritischLabel = "Auffällig";
+              kritischBullets.push("Ausprägung der Arbeitsweise weicht ab");
+              kritischBullets.push("Entscheidungslogik grundsätzlich kompatibel");
+              kritischBullets.push("Intensität der Hauptprägung nicht deckungsgleich");
             } else {
-              kritischLabel = region === "EN" ? "Critical" : "Kritisch";
-              kritischBullets.push(region === "EN" ? "Working style intensity does not fit" : "Ausprägung der Arbeitsweise passt nicht");
-              kritischBullets.push(region === "EN" ? "Decision-making logic differs significantly" : "Entscheidungslogik weicht deutlich ab");
-              kritischBullets.push(region === "EN" ? "Intensity diverges too strongly" : "Intensität weicht zu stark ab");
+              kritischLabel = "Kritisch";
+              kritischBullets.push("Ausprägung der Arbeitsweise passt nicht");
+              kritischBullets.push("Entscheidungslogik weicht deutlich ab");
+              kritischBullets.push("Intensität weicht zu stark ab");
             }
 
             const auswirkungBullets: string[] = [];
             if (fitLabel === "Geeignet") {
-              auswirkungBullets.push(region === "EN" ? "Smooth collaboration" : "Reibungslose Zusammenarbeit");
-              auswirkungBullets.push(region === "EN" ? "Stable team structure" : "Stabiles Teamgefüge");
-              auswirkungBullets.push(region === "EN" ? "Low leadership effort" : "Geringer Führungsaufwand");
+              auswirkungBullets.push("Reibungslose Zusammenarbeit");
+              auswirkungBullets.push("Stabiles Teamgefüge");
+              auswirkungBullets.push("Geringer Führungsaufwand");
             } else if (fitLabel === "Bedingt geeignet") {
-              auswirkungBullets.push(region === "EN" ? "More alignment required" : "Mehr Abstimmung nötig");
-              auswirkungBullets.push(region === "EN" ? "Slight potential for tension" : "Leichtes Spannungspotenzial");
-              auswirkungBullets.push(region === "EN" ? "Increased leadership effort" : "Erhöhter Führungsaufwand");
+              auswirkungBullets.push("Mehr Abstimmung nötig");
+              auswirkungBullets.push("Leichtes Spannungspotenzial");
+              auswirkungBullets.push("Erhöhter Führungsaufwand");
             } else {
-              auswirkungBullets.push(region === "EN" ? "Significantly more alignment required" : "Deutlich mehr Abstimmung nötig");
-              auswirkungBullets.push(region === "EN" ? "Potential for team conflict" : "Konfliktpotenzial im Team");
-              auswirkungBullets.push(region === "EN" ? "High leadership effort" : "Hoher Führungsaufwand");
+              auswirkungBullets.push("Deutlich mehr Abstimmung nötig");
+              auswirkungBullets.push("Konfliktpotenzial im Team");
+              auswirkungBullets.push("Hoher Führungsaufwand");
             }
 
             const BulletItem = ({ text, color }: { text: string; color: string }) => (
@@ -1030,7 +997,7 @@ export default function SollIstBericht() {
               data-testid="link-back-matchcheck"
             >
               <ChevronLeft style={{ width: 16, height: 16 }} />
-              {region === "EN" ? "Back to MatchCheck" : "Zurück zum MatchCheck"}
+              Zurück zum MatchCheck
             </button>
             <div style={{ position: "relative", background: "#FFFFFF", borderRadius: 20, overflow: "hidden", boxShadow: "0 4px 40px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.03)" }} data-testid="print-report-card" data-bericht lang="de">
 
@@ -1062,11 +1029,11 @@ export default function SollIstBericht() {
                     title="Im Druckdialog 'Als PDF speichern' wählen"
                   >
                     <Printer style={{ width: 15, height: 15 }} />
-                    <span>{region === "EN" ? "Print" : "Drucken"}</span>
+                    <span>Drucken</span>
                   </button>
                 </div>
 
-                <div className="report-kicker">{region === "EN" ? "FIT ANALYSIS" : "PASSUNGSANALYSE"}</div>
+                <div className="report-kicker">PASSUNGSANALYSE</div>
                 <h1 className="report-title" data-testid="text-page-title">MatchCheck</h1>
                 <div className="report-subtitle">{result.roleName}</div>
 
@@ -1075,29 +1042,15 @@ export default function SollIstBericht() {
 
               {/* ─── EXECUTIVE DECISION CONTENT (weisser Hintergrund) ─── */}
               <div style={{ padding: "28px 44px 0" }}>
-                {aiMatchLoading && !aiMatchText ? (
-                  <div data-pdf-block style={{ margin: "0 0 16px" }}>
-                    <div style={{ height: 18, borderRadius: 6, background: "rgba(0,0,0,0.07)", marginBottom: 8, width: "90%" }} />
-                    <div style={{ height: 18, borderRadius: 6, background: "rgba(0,0,0,0.05)", marginBottom: 8, width: "70%" }} />
-                    <div style={{ height: 18, borderRadius: 6, background: "rgba(0,0,0,0.04)", width: "80%" }} />
-                  </div>
-                ) : aiMatchText ? (
-                  aiMatchText.intro.split(/\n\n+/).map((para, i) => (
-                    <p key={i} data-pdf-block style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 12px", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} data-testid="text-einleitung">
-                      {para}
-                    </p>
-                  ))
-                ) : (
-                  <p data-pdf-block style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 16px", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de" data-testid="text-einleitung">
-                    {region === "EN" ? "This fit analysis shows how well the person and the role align in their working logic. It reveals where there is alignment, where deviations arise, and what leadership or development effort to expect." : "Diese Passungsanalyse zeigt, wie gut Person und Position in ihrer Arbeitslogik zusammenpassen. Sie macht sichtbar, wo Übereinstimmungen bestehen, wo Abweichungen entstehen und welcher Führungs- oder Entwicklungsaufwand daraus im Alltag zu erwarten ist."}
-                  </p>
-                )}
+                <p data-pdf-block style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 16px", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de" data-testid="text-einleitung">
+                  Diese Passungsanalyse zeigt, wie gut Person und Position in ihrer Arbeitslogik zusammenpassen. Sie macht sichtbar, wo Übereinstimmungen bestehen, wo Abweichungen entstehen und welcher Führungs- oder Entwicklungsaufwand daraus im Alltag zu erwarten ist.
+                </p>
                 <div data-pdf-block style={{ background: "linear-gradient(135deg, rgba(255,59,48,0.06) 0%, rgba(255,59,48,0.03) 100%)", borderRadius: 10, padding: "16px 20px", border: "1px solid rgba(255,59,48,0.2)", marginBottom: 24 }}>
                   <p style={{ fontSize: 13, fontWeight: 700, color: "#FF3B30", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
                     {REPORT_INTRO_DISCLAIMER}
                   </p>
                 </div>
-                <SectionHead num={1} title={region === "EN" ? "Overall Assessment" : "Gesamtbewertung"} />
+                <SectionHead num={1} title="Gesamtbewertung" />
                 {(() => {
                   const cCol = bioControlColor(result.controlIntensity);
                   const cLabel = result.controlIntensity === "hoch" ? "Hoch" : result.controlIntensity === "mittel" ? "Mittel" : "Gering";
@@ -1149,7 +1102,7 @@ export default function SollIstBericht() {
                   return (
                     <>
                       <p data-pdf-block style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 22px", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de" data-testid="text-gesamt-intro">
-                        {aiMatchText?.fitSummary || gesamtIntroText}
+                        {gesamtIntroText}
                       </p>
                       <div data-pdf-block style={{ marginBottom: 22 }} data-testid="section-systemstatus">
                         <div style={{ display: "flex", gap: 16, marginTop: 20, paddingTop: 18, borderTop: "1px solid rgba(0,0,0,0.06)" }}>
@@ -1233,7 +1186,7 @@ export default function SollIstBericht() {
 
                       {/* AUSWIRKUNG IM ARBEITSALLTAG */}
                       <div data-pdf-block style={{ marginBottom: 22 }} data-testid="section-auswirkung">
-                        <SubHead num={1} title={region === "EN" ? "Impact in Day-to-Day Work" : "Auswirkung im Arbeitsalltag"} color="#0F3A6E" />
+                        <SubHead num={1} title="Auswirkung im Arbeitsalltag" color="#0F3A6E" />
                         <p style={{ margin: 0, fontSize: 14, lineHeight: 1.85, color: "#48484A", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
                           {result.dominanceShiftText.split(/\n\n+/)[0]}
                         </p>
@@ -1241,7 +1194,7 @@ export default function SollIstBericht() {
 
                       {/* MANAGEMENTKURZFAZIT */}
                       <div data-pdf-block style={{ marginBottom: 22 }} data-testid="section-fazit">
-                        <SubHead num={2} title={region === "EN" ? "Management Summary" : "Managementkurzfazit"} color="#0F3A6E" />
+                        <SubHead num={2} title="Managementkurzfazit" color="#0F3A6E" />
                         <p style={{ fontSize: 14, lineHeight: 1.85, color: "#48484A", margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de" data-testid="text-summary-fazit">
                           {result.summaryText.split(/\n\n+/)[0]}
                         </p>
@@ -1252,7 +1205,7 @@ export default function SollIstBericht() {
                         <div data-pdf-block style={{ marginBottom: 0 }} data-testid="section-executive-bullets">
                           {result.executiveBullets.length > 0 && (
                             <div style={{ marginBottom: result.constellationRisks.length > 0 ? 14 : 0 }}>
-                              <SubHead num={3} title={region === "EN" ? "Why this result" : "Warum dieses Ergebnis"} color="#0F3A6E" />
+                              <SubHead num={3} title="Warum dieses Ergebnis" color="#0F3A6E" />
                               {result.executiveBullets.map((b, i) => (
                                 <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
                                   <span style={{ width: 5, height: 5, borderRadius: 3, background: "#0F3A6E", flexShrink: 0 }} />
@@ -1263,7 +1216,7 @@ export default function SollIstBericht() {
                           )}
                           {result.constellationRisks.length > 0 && (
                             <div>
-                              <SubHead num={4} title={region === "EN" ? "Risks of this combination" : "Risiken dieser Konstellation"} color="#0F3A6E" />
+                              <SubHead num={4} title="Risiken dieser Konstellation" color="#0F3A6E" />
                               {result.constellationRisks.map((r, i) => (
                                 <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
                                   <span style={{ width: 5, height: 5, borderRadius: 3, background: "#0F3A6E", flexShrink: 0 }} />
@@ -1283,13 +1236,13 @@ export default function SollIstBericht() {
               <div style={{ padding: "36px 44px 48px" }}>
 
               <div data-pdf-block style={{ ...sep, borderBottom: "none" }} data-testid="section-comparison-bars">
-                <SectionHead num={2} title={region === "EN" ? "Profile Comparison" : "Vergleich der Profile"} />
+                <SectionHead num={2} title="Vergleich der Profile" />
                 <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 20px", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
                   {biggestGapText(result.roleTriad, result.candTriad)}
                 </p>
                 <div className="grid gap-6 grid-cols-1 sm:grid-cols-2" style={{ marginBottom: 14 }}>
                   <div style={{ borderRadius: 16, border: "1px solid rgba(0,0,0,0.06)", background: "linear-gradient(135deg, #fafbfd, #f5f7fb)", padding: 24, boxShadow: "0 2px 8px rgba(0,0,0,0.02)" }}>
-                    <p style={{ fontSize: 15, fontWeight: 600, color: "#1D1D1F", margin: "0 0 20px" }}>{region === "EN" ? "Target profile" : "Soll-Profil"} <span style={{ fontWeight: 400, color: "#8E8E93" }}>({region === "EN" ? "Role" : "Stelle"})</span></p>
+                    <p style={{ fontSize: 15, fontWeight: 600, color: "#1D1D1F", margin: "0 0 20px" }}>Soll-Profil <span style={{ fontWeight: 400, color: "#8E8E93" }}>(Stelle)</span></p>
                     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                       {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
                         const val = Math.round(roleTriad![k]);
@@ -1314,7 +1267,7 @@ export default function SollIstBericht() {
                     </div>
                   </div>
                   <div style={{ borderRadius: 16, border: "1px solid rgba(0,0,0,0.06)", background: "linear-gradient(135deg, #fafbfd, #f5f7fb)", padding: 24, boxShadow: "0 2px 8px rgba(0,0,0,0.02)" }}>
-                    <p style={{ fontSize: 15, fontWeight: 600, color: "#1D1D1F", margin: "0 0 20px" }}>{region === "EN" ? "Actual profile" : "Ist-Profil"} <span style={{ fontWeight: 400, color: "#8E8E93" }}>({region === "EN" ? "Person" : "Person"})</span></p>
+                    <p style={{ fontSize: 15, fontWeight: 600, color: "#1D1D1F", margin: "0 0 20px" }}>Ist-Profil <span style={{ fontWeight: 400, color: "#8E8E93" }}>(Person)</span></p>
                     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                       {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
                         const val = Math.round(candidateProfile[k]);
@@ -1363,7 +1316,7 @@ export default function SollIstBericht() {
               </div>
 
               <div data-pdf-block style={{ ...sep, borderBottom: "none" }} data-testid="section-impact-matrix">
-                <SectionHead num={3} title={region === "EN" ? "Impact in Day-to-Day Work" : "Wirkung der Besetzung im Arbeitsalltag"} />
+                <SectionHead num={3} title="Wirkung der Besetzung im Arbeitsalltag" />
                 <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
                   {result.impactAreas.map((area, areaIdx) => {
                     const sevCol = area.severity === "critical" ? "#FF3B30" : area.severity === "warning" ? "#FF9500" : "#34C759";
@@ -1376,7 +1329,7 @@ export default function SollIstBericht() {
                           </div>
                           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
                             <div data-text-left style={{ background: "#FAFAFA", borderRadius: 10, padding: "12px 14px", border: "1px solid rgba(0,0,0,0.07)" }}>
-                              <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 6px" }}>{region === "EN" ? "Role requirement" : "Stellenanforderung"}</p>
+                              <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 6px" }}>Stellenanforderung</p>
                               <p style={{ fontSize: 14, lineHeight: 1.75, color: "#48484A", margin: 0, wordBreak: "break-word", overflowWrap: "break-word" }} lang="de">{area.roleNeed}</p>
                             </div>
                             <div data-text-left style={{ background: "#FAFAFA", borderRadius: 10, padding: "12px 14px", border: "1px solid rgba(0,0,0,0.07)" }}>
@@ -1398,30 +1351,30 @@ export default function SollIstBericht() {
               </div>
 
               <div data-pdf-block style={{ ...sep, borderBottom: "none" }} data-testid="section-stress-behavior">
-                <SectionHead num={4} title={region === "EN" ? "Behaviour under Pressure" : "Verhalten unter Druck"} />
+                <SectionHead num={4} title="Verhalten unter Druck" />
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                   <div style={{ padding: "16px 18px", borderRadius: 12, background: "#FF950008", border: "1px solid #FF950018", overflow: "visible" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
                       <AlertCircle style={{ width: 14, height: 14, color: "#FF9500", flexShrink: 0 }} />
-                      <p style={{ fontSize: 12, fontWeight: 700, color: "#FF9500", textTransform: "uppercase", letterSpacing: "0.05em", margin: 0 }}>{region === "EN" ? "Controlled Pressure" : "Kontrollierter Druck"}</p>
+                      <p style={{ fontSize: 12, fontWeight: 700, color: "#FF9500", textTransform: "uppercase", letterSpacing: "0.05em", margin: 0 }}>Kontrollierter Druck</p>
                     </div>
-                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, wordBreak: "break-word", overflowWrap: "break-word", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any}>{result.stressBehavior.controlledPressure}</p>
+                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, wordBreak: "break-word", overflowWrap: "break-word", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">{result.stressBehavior.controlledPressure}</p>
                   </div>
                   <div style={{ padding: "16px 18px", borderRadius: 12, background: "#FF3B3008", border: "1px solid #FF3B3018", overflow: "visible" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
                       <AlertTriangle style={{ width: 14, height: 14, color: "#FF3B30", flexShrink: 0 }} />
-                      <p style={{ fontSize: 12, fontWeight: 700, color: "#FF3B30", textTransform: "uppercase", letterSpacing: "0.05em", margin: 0 }}>{region === "EN" ? "Uncontrolled Stress" : "Unkontrollierter Stress"}</p>
+                      <p style={{ fontSize: 12, fontWeight: 700, color: "#FF3B30", textTransform: "uppercase", letterSpacing: "0.05em", margin: 0 }}>Unkontrollierter Stress</p>
                     </div>
                     <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, wordBreak: "break-word", overflowWrap: "break-word", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">{result.stressBehavior.uncontrolledStress}</p>
                   </div>
                 </div>
                 <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "14px 0 0", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
-                  {region === "EN" ? "Under increasing work pressure, these behavioural patterns may intensify. This creates risks for coordination, leadership, and collaboration in daily work." : "Unter zunehmendem Arbeitsdruck können sich diese Verhaltensmuster verstärken. Dadurch entstehen im Arbeitsalltag Risiken für Abstimmung, Führung und Zusammenarbeit."}
+                  Unter zunehmendem Arbeitsdruck können sich diese Verhaltensmuster verstärken. Dadurch entstehen im Arbeitsalltag Risiken für Abstimmung, Führung und Zusammenarbeit.
                 </p>
               </div>
 
               <div data-pdf-block style={{ ...sep, borderBottom: "none" }} data-testid="section-risk-timeline">
-                <SectionHead num={5} title={region === "EN" ? "Risk Forecast" : "Risikoprognose"} />
+                <SectionHead num={5} title="Risikoprognose" />
                 <div style={{ position: "relative", paddingLeft: 28 }}>
                   <div style={{ position: "absolute", left: 9, top: 8, bottom: 8, width: 2, background: "rgba(0,0,0,0.08)", borderRadius: 1 }} />
                   <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
@@ -1462,7 +1415,7 @@ export default function SollIstBericht() {
 
                 return (
                   <div data-pdf-block style={{ ...sep, borderBottom: "none" }} data-testid="section-development">
-                    <SectionHead num={6} title={region === "EN" ? "Overall Assessment" : "Gesamtbewertung"} />
+                    <SectionHead num={6} title="Gesamtbewertung" />
 
                     <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 14 }}>
                       <div style={{ width: 16, height: 16, borderRadius: 8, background: rFitColor, flexShrink: 0, boxShadow: `0 0 0 3px ${rFitColor}20` }} />
@@ -1483,7 +1436,7 @@ export default function SollIstBericht() {
 
               {result.integrationsplan && (
                 <div data-pdf-block style={{ ...sep, borderBottom: "none" }} data-testid="section-integrationsplan">
-                  <SectionHead num={7} title={region === "EN" ? "30-Day Integration Plan" : "30-Tage-Integrationsplan"} />
+                  <SectionHead num={7} title="30-Tage-Integrationsplan" />
                   <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
                     {result.integrationsplan.map(phase => {
                       const phaseCol = phase.num === 1 ? "#0071E3" : phase.num === 2 ? "#F39200" : "#34C759";
@@ -1498,7 +1451,7 @@ export default function SollIstBericht() {
                           </div>
                           <div style={{ padding: "16px 20px" }}>
                             <p style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", margin: "0 0 14px", lineHeight: 1.7 }}>
-                              <span style={{ fontWeight: 700 }}>{region === "EN" ? "Goal: " : "Ziel: "}</span>{phase.ziel}
+                              <span style={{ fontWeight: 700 }}>Ziel: </span>{phase.ziel}
                             </p>
 
                             <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 16 }}>
@@ -1511,7 +1464,7 @@ export default function SollIstBericht() {
                             </div>
 
                             <div style={{ padding: "14px 16px", borderRadius: 10, background: `${phaseCol}06`, borderLeft: `4px solid ${phaseCol}` }}>
-                              <p style={{ fontSize: 11, fontWeight: 700, color: phaseCol, textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 6px" }}>{region === "EN" ? "What matters" : "Worauf es ankommt"}</p>
+                              <p style={{ fontSize: 11, fontWeight: 700, color: phaseCol, textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 6px" }}>Worauf es ankommt</p>
                               <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: "0 0 8px", hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">{phase.fokus.intro}</p>
                               <ul style={{ margin: 0, paddingLeft: 0, listStyle: "none" }}>
                                 {phase.fokus.bullets.map((b, bi) => (
@@ -1546,7 +1499,7 @@ export default function SollIstBericht() {
                 style={{ display: "inline-flex", alignItems: "center", gap: 8, height: 40, padding: "0 20px", borderRadius: 14, border: "1px solid rgba(0,0,0,0.08)", background: "#FFF", fontSize: 14, fontWeight: 600, color: "#6E6E73", cursor: "pointer" }}
                 data-testid="button-reconfigure"
               >
-                {region === "EN" ? "Adjust profile" : "Profil anpassen"}
+                Profil anpassen
               </button>
             </div>
           </div>

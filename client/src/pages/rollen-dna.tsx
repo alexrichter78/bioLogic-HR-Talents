@@ -322,153 +322,6 @@ const roleResultTexts: Record<ResultKey, RoleResultEntry> = {
   },
 };
 
-const roleResultTextsEN: Record<ResultKey, RoleResultEntry> = {
-  IMP_INT_ANA: {
-    headline: "Active action shapes daily work — under pressure, more exchange with others",
-    body: [
-      "In daily work, this role is shaped above all by an active and decision-oriented working style. Topics are picked up early, responsibility is taken on, and decisions are made comparatively quickly. The role therefore comes across as dynamic and action-driven.",
-      "When pressure rises, exchange with others moves more strongly into focus. Conversations, alignment and incorporating different perspectives help to secure decisions and develop solutions together.",
-      "This combination ensures that topics not only get moving quickly, but are also further developed in dialogue with others. Decisions are therefore both supported and put into practice.",
-    ],
-    leadership: "In leadership work, this shows through clear decisions, visible responsibility and open communication with the environment.",
-  },
-  IMP_ANA_INT: {
-    headline: "Decisions and execution shape daily work — under pressure, more structure and control",
-    body: [
-      "In daily work, this role is shaped above all by decisiveness and an execution focus. Topics are actively picked up, responsibility is taken on, and decisions are made comparatively quickly.",
-      "When pressure rises, the need for structure, planning and control often grows. Topics are examined more carefully, processes are arranged more clearly, and decisions are increasingly secured through analysis.",
-      "This combination ensures that decisions are not only made but also implemented in a structured way. Dynamic action is complemented by order.",
-    ],
-    leadership: "In leadership work, this shows through clear goal orientation, structured steering and binding decisions.",
-  },
-  INT_IMP_ANA: {
-    headline: "Collaboration shapes daily work — under pressure, faster decision-making and action",
-    body: [
-      "In daily work, collaboration and exchange with others are at the centre. Conversations, alignment and a good feel for situations shape the working style.",
-      "When pressure rises, decisions can be made more directly and quickly. Topics are pushed forward more actively to bring movement into situations.",
-      "This combination ensures that collaboration is not only based on conversations, but is also translated into concrete steps.",
-    ],
-    leadership: "In leadership work, this shows through open communication, a strong presence in the team, and the ability to move topics forward together.",
-  },
-  INT_ANA_IMP: {
-    headline: "Collaboration shapes daily work — under pressure, more structure and clarity",
-    body: [
-      "In daily work, collaboration and alignment shape this role above all. Exchange, conversations and a good feel for people are at the centre.",
-      "When pressure rises, the need for structure, planning and clear processes often grows. Decisions are increasingly secured through analysis and order.",
-      "This combination ensures that collaboration not only works through conversations, but is also stabilised by clear structures.",
-    ],
-    leadership: "In leadership work, this shows through dialogue-oriented leadership, comprehensible decisions and a structured organisation of collaboration.",
-  },
-  ANA_IMP_INT: {
-    headline: "Structure and planning shape daily work — under pressure, faster decisions",
-    body: [
-      "In daily work, structure, planning and technical clarity shape the working style above all. Topics are carefully analysed and prepared before decisions are made.",
-      "When pressure rises, decisions can be made more quickly and directly to move topics forward.",
-      "This combination connects careful planning with clear execution power.",
-    ],
-    leadership: "In leadership work, this shows through clear structures, factual decisions and consistent execution.",
-  },
-  ANA_INT_IMP: {
-    headline: "Structure and planning shape daily work — under pressure, more exchange and alignment",
-    body: [
-      "In daily work, structure, planning and technical clarity are at the centre. Topics are systematically prepared and carefully thought through.",
-      "When pressure rises, exchange with others gains stronger importance. Conversations and alignment help to carry decisions together.",
-      "This combination ensures that decisions are made both thoughtfully and in alignment with others.",
-    ],
-    leadership: "In leadership work, this shows through clear structures, comprehensible decisions and open alignment within the team.",
-  },
-  IMP_INT__ANA: {
-    headline: "Active action and collaboration shape daily work — under pressure, more structure",
-    body: [
-      "In daily work, an action orientation and collaboration work especially closely together. Topics are actively pushed forward and at the same time aligned in exchange with others.",
-      "When pressure rises, the wish for more structure and orientation often grows, in order to arrange topics more clearly and secure decisions.",
-      "This combination connects dynamic action with shared alignment and ensures that movement and collaboration are possible at the same time.",
-    ],
-    leadership: "In leadership work, this shows through active communication, clear decisions and a strong presence in the team.",
-  },
-  IMP_ANA__INT: {
-    headline: "Decisions and structure shape daily work — under pressure, more exchange",
-    body: [
-      "In daily work, decisiveness and a structured working style are especially closely connected. Topics are actively pushed forward and at the same time carefully planned.",
-      "When pressure rises, exchange with others gains stronger importance. Conversations help to reflect on decisions and bring in different perspectives.",
-      "This combination ensures that decisions are implemented both consistently and comprehensibly.",
-    ],
-    leadership: "In leadership work, this shows through clear orientation, structured steering and open dialogue.",
-  },
-  INT_IMP__ANA: {
-    headline: "Collaboration and activity shape daily work — under pressure, more structure",
-    body: [
-      "In daily work, collaboration and activity work especially closely together. Topics are developed in exchange with others and at the same time actively pushed forward.",
-      "When pressure rises, the need for more structure and order often grows in order to secure decisions.",
-      "This combination connects dynamic action with shared alignment and ensures that collaboration remains capable of action.",
-    ],
-    leadership: "In leadership work, this shows through open communication, a strong presence in the team and clear decisions.",
-  },
-  INT_ANA__IMP: {
-    headline: "Collaboration and structure shape daily work — under pressure, faster decisions",
-    body: [
-      "In daily work, collaboration and a structured working style are especially closely connected. Exchange and clear processes shape day-to-day work.",
-      "When pressure rises, decisions can be made more directly and quickly to move topics forward.",
-      "This combination ensures that collaboration is supported by clear structures and concrete steps.",
-    ],
-    leadership: "In leadership work, this shows through open communication, structured planning and clear orientation for the team.",
-  },
-  ANA_IMP__INT: {
-    headline: "Structure and execution shape daily work — under pressure, more exchange",
-    body: [
-      "In daily work, decisiveness and a structured working style are especially closely connected. Topics are actively pushed forward and at the same time carefully planned.",
-      "When pressure rises, exchange with others gains stronger importance. Conversations help to reflect on decisions and bring in different perspectives.",
-      "This combination ensures that decisions are implemented both consistently and comprehensibly.",
-    ],
-    leadership: "In leadership work, this shows through clear orientation, structured steering and open dialogue.",
-  },
-  ANA_INT__IMP: {
-    headline: "Structure and collaboration shape daily work — under pressure, faster decisions",
-    body: [
-      "In daily work, collaboration and a structured working style are especially closely connected. Exchange and clear processes shape day-to-day work.",
-      "When pressure rises, decisions can be made more directly and quickly to move topics forward.",
-      "This combination ensures that collaboration is supported by clear structures and concrete steps.",
-    ],
-    leadership: "In leadership work, this shows through open communication, structured planning and clear orientation for the team.",
-  },
-  BD_IMP: {
-    headline: "Quick decisions shape daily work — under pressure, more exchange or structure",
-    body: [
-      "In daily work, a decision and action orientation shapes the working style above all. Topics are actively picked up and pushed forward.",
-      "Alongside this clear orientation, however, two almost equally strong complementary directions are at work: the wish for exchange with others and the need for structure and planning.",
-      "These two sides are in constant competition with each other. Depending on the situation, either more alignment or more structure may become visible.",
-    ],
-    leadership: "In leadership work, this shows through clear decisions, combined with situational adjustment between dialogue and structure.",
-  },
-  BD_INT: {
-    headline: "Collaboration shapes daily work — under pressure, more structure or faster decisions",
-    body: [
-      "In daily work, collaboration and alignment shape the working style above all. Conversations, exchange and a good feel for people are at the centre.",
-      "At the same time, two almost equally strong complementary directions are at work in the background: the wish for structure and planning on one side, and the impulse to make quick decisions and direct execution on the other.",
-      "These two tendencies are in constant competition and may become visible to different degrees depending on the situation.",
-    ],
-    leadership: "In leadership work, this shows through dialogue-oriented leadership with an inner tension between careful steering and swift execution.",
-  },
-  BD_ANA: {
-    headline: "Structure shapes daily work — under pressure, faster decisions or more exchange",
-    body: [
-      "In daily work, structure, planning and technical clarity shape the working style. Topics are carefully examined and prepared.",
-      "At the same time, two almost equally strong complementary directions are at work in the background: the impulse to act quickly and the wish for exchange and alignment with others.",
-      "These two directions are in competition with each other and may come to the foreground to different degrees depending on the situation.",
-    ],
-    leadership: "In leadership work, this shows through clear structures, combined with situational adjustment between decision and dialogue.",
-  },
-  BALANCED: {
-    headline: "Balanced profile",
-    body: [
-      "In this profile, different approaches are similarly strongly developed. The role is therefore not one-sidedly fixed, but can flexibly adapt to different requirements.",
-      "Depending on the situation, it is possible to switch between execution, collaboration and structured analysis. Which side becomes more visible often depends on task, environment and pressure situation.",
-      "This breadth ensures that the role works particularly well where flexibility, overview and a variable approach are needed.",
-    ],
-    leadership: "In leadership work, this shows through situation-dependent steering and the ability to switch between clarity, dialogue and execution as needed.",
-  },
-};
-
 const analysisPrincipleText = {
   title: "Grundprinzip der Analyse",
   body: [
@@ -3047,7 +2900,7 @@ export default function RollenDNA() {
 
                     {(() => {
                       const analysis = getRoleAnalysis(bioGramGesamt.imp, bioGramGesamt.int, bioGramGesamt.ana);
-                      const rt = (region === "EN" ? roleResultTextsEN : roleResultTexts)[analysis.resultKey];
+                      const rt = roleResultTexts[analysis.resultKey];
                       return (
                         <div style={{
                           marginTop: 14,
@@ -3169,7 +3022,7 @@ export default function RollenDNA() {
                       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
                         <BarChart3 style={{ width: 16, height: 16, color: "#6E6E73", strokeWidth: 1.8 }} />
                         <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>
-                          {region === "EN" ? "Overall profile of the role requirement" : "Gesamtprofil der Stellenanforderung"}
+                          Gesamtprofil der Stellenanforderung
                         </p>
                       </div>
                       {(() => {
@@ -3546,7 +3399,7 @@ export default function RollenDNA() {
 
                   {(() => {
                     const analysis = getRoleAnalysis(bioGramGesamt.imp, bioGramGesamt.int, bioGramGesamt.ana);
-                    const rt = (region === "EN" ? roleResultTextsEN : roleResultTexts)[analysis.resultKey];
+                    const rt = roleResultTexts[analysis.resultKey];
                     return (
                       <div style={{
                         marginTop: 14,
@@ -3669,7 +3522,7 @@ export default function RollenDNA() {
                       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
                         <BarChart3 style={{ width: 16, height: 16, color: "#6E6E73", strokeWidth: 1.8 }} />
                         <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>
-                          {region === "EN" ? "Overall profile of the role requirement" : "Gesamtprofil der Stellenanforderung"}
+                          Gesamtprofil der Stellenanforderung
                         </p>
                       </div>
                       {(() => {

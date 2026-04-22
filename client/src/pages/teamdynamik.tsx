@@ -451,7 +451,7 @@ export default function Teamdynamik() {
             <div style={{ marginBottom: 20, padding: "16px 20px", borderRadius: 14, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }} data-testid="soll-profile-card">
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
                 <BarChart3 style={{ width: 16, height: 16, color: "#6E6E73" }} />
-                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{region === "EN" ? "Overall profile of the role requirement" : "Gesamtprofil der Stellenanforderung"}</p>
+                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Gesamtprofil der Stellenanforderung</p>
               </div>
               <ReadOnlyBars triad={sollProfile} />
               <p style={{ fontSize: 11, color: "#8E8E93", marginTop: 8, textAlign: "center" }}>Soll-Profil aus Rollen-DNA (nicht editierbar)</p>

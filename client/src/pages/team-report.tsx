@@ -1196,65 +1196,21 @@ export default function TeamReport() {
                       const variantToColors = (v: string | null) =>
                         v === "success" ? badgeColors.hoch : v === "warning" ? badgeColors.mittel : badgeColors.gering;
 
-                      const enLabelMap: Record<string, string> = {
-                        "Verstärkung": "Reinforcement",
-                        "Spannung": "Tension",
-                        "Transformation": "Transformation",
-                        "Niedrig": "Low",
-                        "Mittel": "Medium",
-                        "Hoch": "High",
-                        "Gering": "Low",
-                        "Passend": "Suitable",
-                        "Teilweise passend": "Partially suitable",
-                        "Kritisch": "Critical",
-                        "Kein Ziel gewählt": "No goal selected",
-                        "Geeignet": "Suitable",
-                        "Bedingt geeignet": "Conditionally suitable",
-                        "Nicht geeignet": "Not suitable",
-                      };
-                      const trLabel = (s: string | null | undefined) => (region === "EN" && s && enLabelMap[s]) || s || "";
-
-                      const trText = (s: string) => {
-                        if (region !== "EN" || !s) return s;
-                        return s
-                          .replace(/Die Führungskraft wird die bestehende Teamlogik voraussichtlich eher stabilisieren und verstärken\./g, "The leader will likely stabilize and reinforce the existing team logic.")
-                          .replace(/Die neue Person wird die bestehende Teamlogik voraussichtlich eher stabilisieren und verstärken\./g, "The new person will likely stabilize and reinforce the existing team logic.")
-                          .replace(/Die Führungskraft wird voraussichtlich andere Akzente setzen und damit spürbare Reibung, aber auch Entwicklung auslösen\./g, "The leader will likely set different accents, creating noticeable friction but also development.")
-                          .replace(/Die neue Person wird voraussichtlich andere Akzente setzen und damit spürbare Reibung, aber auch Entwicklung auslösen\./g, "The new person will likely set different accents, creating noticeable friction but also development.")
-                          .replace(/Die Führungskraft wird das Team voraussichtlich deutlich verändern und eine neue Arbeitslogik hineinbringen\./g, "The leader will likely change the team significantly and introduce a new working logic.")
-                          .replace(/Die neue Person wird das Team voraussichtlich deutlich verändern und eine neue Arbeitslogik hineinbringen\./g, "The new person will likely change the team significantly and introduce a new working logic.")
-                          .replace(/Die Integration verläuft voraussichtlich reibungsarm\. Geringer Begleitungsbedarf, normale (Führungssteuerung|Teamführung) ist ausreichend\./g, (_m, s) => `Integration is expected to run smoothly. Low support needed; normal ${s === "Führungssteuerung" ? "leadership steering" : "team leadership"} is sufficient.`)
-                          .replace(/Die Integration ist machbar, sollte aber gezielt begleitet werden\. Regelmässige Abstimmung und klare Erwartungen beschleunigen den Prozess\./g, "Integration is feasible but should be actively supported. Regular alignment and clear expectations accelerate the process.")
-                          .replace(/Die Integration erfordert intensive Begleitung\. Strukturierte Onboarding-Massnahmen, enge Abstimmung und aktive (Führungssteuerung|Teamführung) sind notwendig\./g, (_m, s) => `Integration requires intensive support. Structured onboarding measures, close alignment and active ${s === "Führungssteuerung" ? "leadership steering" : "team leadership"} are necessary.`)
-                          .replace(/Für das Team wurde aktuell kein Funktionsziel ausgewählt\./g, "No functional goal is currently selected for the team.")
-                          .replace(/Die Führungskraft passt gut zum aktuellen Teamziel\./g, "The leader fits well with the current team goal.")
-                          .replace(/Die neue Person passt gut zum aktuellen Teamziel\./g, "The new person fits well with the current team goal.")
-                          .replace(/Die Führungskraft unterstützt das aktuelle Teamziel nur teilweise\./g, "The leader supports the current team goal only partially.")
-                          .replace(/Die neue Person unterstützt das aktuelle Teamziel nur teilweise\./g, "The new person supports the current team goal only partially.")
-                          .replace(/Die Führungskraft arbeitet deutlich anders als das aktuelle Teamziel es erfordert\./g, "The leader works very differently than the current team goal requires.")
-                          .replace(/Die neue Person arbeitet deutlich anders als das aktuelle Teamziel es erfordert\./g, "The new person works very differently than the current team goal requires.")
-                          .replace(/Die Führungskraft bringt für das Teamziel ([^\s]+(?: [^\s]+)*) die passende Stärke mit\./g, "The leader brings the right strength for the team goal $1.")
-                          .replace(/Die neue Person bringt für das Teamziel ([^\s]+(?: [^\s]+)*) die passende Stärke mit\./g, "The new person brings the right strength for the team goal $1.")
-                          .replace(/Umsetzung und Ergebnisse/g, "Execution and results")
-                          .replace(/Analyse und Struktur/g, "Analysis and structure")
-                          .replace(/Zusammenarbeit und Kommunikation/g, "Collaboration and communication");
-                      };
-
                       type ResultCard = { title: string; label: string; text: string; colors: { bg: string; text: string; border: string }; testId: string };
 
                       const resultCards: ResultCard[] = isFK
                         ? [
-                            { title: region === "EN" ? "System impact" : "Systemwirkung", label: trLabel(la.systemImpact.label), text: trText(la.systemImpact.text!), colors: variantToColors(la.systemImpact.variant), testId: "v4-card-system-impact" },
-                            { title: region === "EN" ? "Integration effort" : "Integrationsaufwand", label: trLabel(la.integrationEffort.label), text: trText(la.integrationEffort.text!), colors: variantToColors(la.integrationEffort.variant), testId: "v4-card-integration-effort" },
+                            { title: region === "EN" ? "System impact" : "Systemwirkung", label: la.systemImpact.label!, text: la.systemImpact.text!, colors: variantToColors(la.systemImpact.variant), testId: "v4-card-system-impact" },
+                            { title: region === "EN" ? "Integration effort" : "Integrationsaufwand", label: la.integrationEffort.label!, text: la.integrationEffort.text!, colors: variantToColors(la.integrationEffort.variant), testId: "v4-card-integration-effort" },
                             ...(la.teamGoalImpact.selectedGoal && la.teamGoalImpact.label !== "Kein Ziel gewählt"
-                              ? [{ title: region === "EN" ? "Impact on team goal" : "Wirkung aufs Teamziel", label: trLabel(la.teamGoalImpact.label), text: trText(la.teamGoalImpact.reasons[0] || la.teamGoalImpact.text!), colors: variantToColors(la.teamGoalImpact.variant), testId: "v4-card-goal-impact" }]
+                              ? [{ title: region === "EN" ? "Impact on team goal" : "Wirkung aufs Teamziel", label: la.teamGoalImpact.label!, text: la.teamGoalImpact.reasons[0] || la.teamGoalImpact.text!, colors: variantToColors(la.teamGoalImpact.variant), testId: "v4-card-goal-impact" }]
                               : []),
                           ]
                         : [
-                            { title: region === "EN" ? "Team fit" : "Teampassung", label: trLabel(badgeLabels[teamFit]), text: trText(teamText), colors: tColors, testId: "v4-card-team" },
-                            { title: region === "EN" ? "Integration effort" : "Integrationsaufwand", label: trLabel(bLabel), text: trText(bDesc), colors: bBg, testId: "v4-card-integration" },
+                            { title: region === "EN" ? "Team fit" : "Teampassung", label: badgeLabels[teamFit], text: teamText, colors: tColors, testId: "v4-card-team" },
+                            { title: region === "EN" ? "Integration effort" : "Integrationsaufwand", label: bLabel, text: bDesc, colors: bBg, testId: "v4-card-integration" },
                             ...(fColors
-                              ? [{ title: region === "EN" ? "Fit to functional goal" : "Passung zum Funktionsziel", label: trLabel(badgeLabels[funcFit]), text: trText(funcText), colors: fColors, testId: "v4-card-func" }]
+                              ? [{ title: region === "EN" ? "Fit to functional goal" : "Passung zum Funktionsziel", label: badgeLabels[funcFit], text: funcText, colors: fColors, testId: "v4-card-func" }]
                               : []),
                           ];
 
