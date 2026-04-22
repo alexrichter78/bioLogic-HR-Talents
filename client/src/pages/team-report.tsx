@@ -258,6 +258,7 @@ function SliderGroup({
   onTriadChange: (key: ComponentKey, val: number) => void;
   testIdPrefix: string;
 }) {
+  const { region: sliderRegion } = useRegion();
   const dom = dominanceModeOf(triad);
 
   return (
@@ -272,7 +273,7 @@ function SliderGroup({
           return (
             <div key={key} style={{ display: "flex", alignItems: "center", gap: 12 }}>
               <span style={{ fontSize: 14, color: "#48484A", width: 72, flexShrink: 0 }}>
-                {labelComponent(key)}
+                {labelComponent(key, sliderRegion)}
               </span>
               <div style={{ flex: 1, position: "relative", height: 28 }}>
                 <div style={{
