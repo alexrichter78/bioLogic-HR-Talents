@@ -979,6 +979,8 @@ export default function SollIstBericht() {
             const devGaugeColor = devScore === 3 ? BIO_COLORS.geeignet : devScore === 2 ? BIO_COLORS.bedingt : BIO_COLORS.nichtGeeignet;
             const devShort = region === "EN"
               ? devScore === 3 ? "Good prospects \u00b7 Low effort" : devScore === 2 ? "Manageable \u00b7 Targeted leadership needed" : "High effort \u00b7 Outcome uncertain"
+              : region === "FR"
+              ? devScore === 3 ? "Bonnes perspectives \u00b7 Effort faible" : devScore === 2 ? "Réalisable \u00b7 Management ciblé nécessaire" : "Effort élevé \u00b7 Résultat incertain"
               : devScore === 3 ? "Gute Aussichten \u00b7 Wenig Aufwand" : devScore === 2 ? "Machbar \u00b7 Gezielte F\u00fchrung n\u00f6tig" : "Hoher Aufwand \u00b7 Ergebnis unsicher";
 
             const bulletCol = fitRating === "GEEIGNET" ? BIO_COLORS.geeignet : fitRating === "BEDINGT" ? BIO_COLORS.bedingt : BIO_COLORS.nichtGeeignet;
@@ -1065,7 +1067,7 @@ export default function SollIstBericht() {
                       <div style={{ padding: "14px 16px", borderRadius: 12, background: "rgba(0,0,0,0.02)" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
                           <div style={{ width: 10, height: 10, borderRadius: 5, background: devGaugeColor, flexShrink: 0 }} />
-                          <span style={{ fontSize: 14, fontWeight: 700, color: devGaugeColor }}>{region === "FR" ? "Effort de développement" : region === "EN" ? "Development effort" : "Entwicklungsaufwand"}: {region === "EN" ? (devScore === 3 ? "low" : devScore === 2 ? "medium" : "high") : (devScore === 3 ? "niedrig" : devScore === 2 ? "mittel" : "hoch")}</span>
+                          <span style={{ fontSize: 14, fontWeight: 700, color: devGaugeColor }}>{region === "FR" ? "Effort de développement" : region === "EN" ? "Development effort" : "Entwicklungsaufwand"}: {region === "EN" ? (devScore === 3 ? "low" : devScore === 2 ? "medium" : "high") : region === "FR" ? (devScore === 3 ? "faible" : devScore === 2 ? "moyen" : "élevé") : (devScore === 3 ? "niedrig" : devScore === 2 ? "mittel" : "hoch")}</span>
                         </div>
                         <div style={{ display: "flex", gap: 5 }}>
                           {Array.from({ length: 3 }).map((_, i) => {
@@ -1222,11 +1224,15 @@ export default function SollIstBericht() {
                   const cCol = bioControlColor(result.controlIntensity);
                   const cLabel = region === "EN"
                     ? result.controlIntensity === "hoch" ? "High" : result.controlIntensity === "mittel" ? "Medium" : "Low"
+                    : region === "FR"
+                    ? result.controlIntensity === "hoch" ? "Élevée" : result.controlIntensity === "mittel" ? "Moyenne" : "Faible"
                     : result.controlIntensity === "hoch" ? "Hoch" : result.controlIntensity === "mittel" ? "Mittel" : "Gering";
                   const devLevel = result.developmentLevel;
                   const devScore = devLevel === 1 ? 3 : devLevel === 2 ? 2 : 1;
                   const devLabel = region === "EN"
                     ? devScore === 3 ? "low" : devScore === 2 ? "medium" : "high"
+                    : region === "FR"
+                    ? devScore === 3 ? "faible" : devScore === 2 ? "moyen" : "élevé"
                     : devScore === 3 ? "niedrig" : devScore === 2 ? "mittel" : "hoch";
                   const devCol = devScore === 3 ? BIO_COLORS.geeignet : devScore === 2 ? BIO_COLORS.bedingt : BIO_COLORS.nichtGeeignet;
                   const gapCol = result.totalGap > 40 ? BIO_COLORS.nichtGeeignet : result.totalGap > 20 ? BIO_COLORS.bedingt : BIO_COLORS.geeignet;
