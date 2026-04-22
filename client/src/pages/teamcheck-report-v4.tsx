@@ -507,10 +507,14 @@ export default function TeamCheckReportV4() {
 
               {/* === Section 2: Vergleich der Profile === */}
               {(() => {
-                const COMP_LABEL_FULL: Record<string, string> = isEN
+                const COMP_LABEL_FULL: Record<string, string> = isFR
+                  ? { impulsiv: "Rythme et Décision", intuitiv: "Communication et Relations", analytisch: "Structure et Rigueur" }
+                  : isEN
                   ? { impulsiv: "Pace and Decision", intuitiv: "Communication and Relationships", analytisch: "Structure and Diligence" }
                   : { impulsiv: "Impulsiv", intuitiv: "Intuitiv", analytisch: "Analytisch" };
-                const COMP_LABEL_AREA: Record<string, string> = isEN
+                const COMP_LABEL_AREA: Record<string, string> = isFR
+                  ? { impulsiv: "Rythme / Décision", intuitiv: "Communication / Relations", analytisch: "Structure / Rigueur" }
+                  : isEN
                   ? { impulsiv: "Pace and Decision", intuitiv: "Communication and Relationships", analytisch: "Structure and Diligence" }
                   : { impulsiv: "Umsetzung / Tempo", intuitiv: "Zusammenarbeit / Kommunikation", analytisch: "Struktur / Analyse" };
                 const keys: ComponentKey[] = ["impulsiv", "intuitiv", "analytisch"];
@@ -519,7 +523,9 @@ export default function TeamCheckReportV4() {
                   const g = Math.abs(result.teamTriad[k] - result.personTriad[k]);
                   if (g > maxGap) { maxGap = g; maxKey = k; }
                 }
-                const gapText = isEN
+                const gapText = isFR
+                  ? `L'écart le plus important entre l'équipe et la personne se situe dans le domaine ${COMP_LABEL_AREA[maxKey]}. C'est là que les approches de travail diffèrent le plus.`
+                  : isEN
                   ? `The largest gap between team and person is in the area of ${COMP_LABEL_AREA[maxKey]}. This is where the working approaches differ most.`
                   : `Die grösste Abweichung zwischen Team und Person liegt im Bereich ${COMP_LABEL_AREA[maxKey]}. Hier unterscheiden sich die Arbeitsweisen am stärksten.`;
                 const renderBar = (k: ComponentKey, val: number) => {
