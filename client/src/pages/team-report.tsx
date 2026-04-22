@@ -590,6 +590,7 @@ export default function TeamReport() {
     risiken: string;
     systemfazit: string;
   } | null>(null);
+  const [lastInputHash, setLastInputHash] = useState<string | null>(null);
   const [matchCheckOpen, setMatchCheckOpen] = useState(true);
   const [roleTypeForCard, setRoleTypeForCard] = useState<"teammitglied" | "fuehrung">(() => {
     const v = sessionStorage.getItem("tc_roleType");
@@ -814,6 +815,15 @@ export default function TeamReport() {
     : resultBase;
 
   const handleGenerateReport = async () => {
+    const currentHash = JSON.stringify({
+      roleName, candidateName, teamGoal, roleTypeForCard, region,
+      person: { impulsiv: Math.round(istProfile.impulsiv), intuitiv: Math.round(istProfile.intuitiv), analytisch: Math.round(istProfile.analytisch) },
+      team:   { impulsiv: Math.round(teamProfileN.impulsiv), intuitiv: Math.round(teamProfileN.intuitiv), analytisch: Math.round(teamProfileN.analytisch) },
+    });
+    if (aiNarrative && currentHash === lastInputHash) {
+      setReportGenerated(true);
+      return;
+    }
     setAiLoading(true);
     setAiError(null);
     try {
@@ -866,6 +876,7 @@ export default function TeamReport() {
       }
       const narrative = await resp.json();
       setAiNarrative(narrative);
+      setLastInputHash(currentHash);
       setReportGenerated(true);
     } catch (err: any) {
       setAiError(err.message || "Generation failed");

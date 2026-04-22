@@ -282,6 +282,7 @@ export default function SollIstBericht() {
     actions: string[];
     finalText: string;
   } | null>(null);
+  const [lastInputHash, setLastInputHash] = useState<string | null>(null);
   const [isExportingPdf, setIsExportingPdf] = useState(false);
   const reportRef = useRef<HTMLDivElement>(null);
   const subCircleCache = useRef<Record<string, string>>({});
@@ -836,6 +837,15 @@ export default function SollIstBericht() {
               <button
                 onClick={async () => {
                   if (!roleTriad) return;
+                  const currentHash = JSON.stringify({
+                    roleName, candidateName, fuehrungsArt, region,
+                    role: { impulsiv: Math.round(roleTriad.impulsiv), intuitiv: Math.round(roleTriad.intuitiv), analytisch: Math.round(roleTriad.analytisch) },
+                    candidate: { impulsiv: Math.round(candidateProfile.impulsiv), intuitiv: Math.round(candidateProfile.intuitiv), analytisch: Math.round(candidateProfile.analytisch) },
+                  });
+                  if (aiNarrative && currentHash === lastInputHash) {
+                    setReportGenerated(true);
+                    return;
+                  }
                   setAiLoading(true);
                   setAiError(null);
                   try {
@@ -870,6 +880,7 @@ export default function SollIstBericht() {
                     }
                     const narrative = await resp.json();
                     setAiNarrative(narrative);
+                    setLastInputHash(currentHash);
                     setReportGenerated(true);
                   } catch (err: any) {
                     setAiError(err.message || "Generation failed");
