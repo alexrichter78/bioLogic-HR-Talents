@@ -39,6 +39,16 @@ const BEW_COLOR: Record<string, string> = {
   "Spannungsreich bei begrenztem Zusatznutzen": "#FF3B30",
   "Spannungsreich mit Alltagsbrücke": "#FF9500",
   "Kritisch": "#FF3B30",
+  "Très adapté": "#34C759",
+  "Bien adapté": "#34C759",
+  "Adapté culturellement, portée fonctionnelle limitée": "#FF9500",
+  "Fonctionnellement précieux, intégration exigeante": "#FF9500",
+  "Partiellement adapté": "#FF9500",
+  "Intégrable, sans levier fonctionnel clair": "#FF9500",
+  "Intéressant fonctionnellement, risqué culturellement": "#FF3B30",
+  "Friction élevée, valeur ajoutée limitée": "#FF3B30",
+  "Friction notable avec passerelle quotidienne": "#FF9500",
+  "Critique": "#FF3B30",
 };
 const bewCol = (b: string) => BEW_COLOR[b] || "#FF9500";
 const axisColor = (v: string) => v === "hoch" ? "#34C759" : v === "mittel" ? "#FF9500" : v === "gering" ? "#FF3B30" : "#8E8E93";
@@ -352,6 +362,7 @@ export default function TeamCheck() {
       candidateName: "Person",
       teamGoal: teamGoal || undefined,
       roleType: isLeading ? "fuehrung" : "teammitglied",
+      lang: region === "FR" ? "fr" : region === "EN" ? "en" : "de",
     };
     return localizeDeep(computeTeamCheckV4(input), region);
   }, [beruf, isLeading, aufgabencharakter, erfolgsfokusLabels, team, kandidat, teamGoal, region]);
@@ -940,7 +951,7 @@ export default function TeamCheck() {
                         color: isLeading === val ? "#0071E3" : "#8E8E93",
                         transition: "all 200ms ease",
                       }}
-                    >{val ? "Führung" : "Teammitglied"}</button>
+                    >{val ? (region === "FR" ? "Management" : region === "EN" ? "Leadership" : "Führung") : (region === "FR" ? "Membre d'équipe" : region === "EN" ? "Team member" : "Teammitglied")}</button>
                   ))}
                 </div>
               </div>
@@ -971,13 +982,13 @@ export default function TeamCheck() {
 
             {/* Funktionsziel */}
             <div style={{ marginBottom: 20 }}>
-              <p style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F", margin: "0 0 10px" }}>Funktionsziel des Bereichs</p>
+              <p style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F", margin: "0 0 10px" }}>{region === "FR" ? "Objectif fonctionnel du domaine" : region === "EN" ? "Functional goal of the area" : "Funktionsziel des Bereichs"}</p>
               <div style={{ display: "flex", gap: 4, background: "rgba(0,0,0,0.03)", borderRadius: 10, padding: 3 }}>
                 {([
-                  { value: "" as typeof teamGoal, label: "Keins", icon: null },
-                  { value: "umsetzung" as typeof teamGoal, label: "Umsetzung", icon: Rocket },
-                  { value: "analyse" as typeof teamGoal, label: "Analyse", icon: BarChart3 },
-                  { value: "zusammenarbeit" as typeof teamGoal, label: "Zusammenarbeit", icon: Handshake },
+                  { value: "" as typeof teamGoal, label: region === "FR" ? "Aucun" : region === "EN" ? "None" : "Keins", icon: null },
+                  { value: "umsetzung" as typeof teamGoal, label: region === "FR" ? "Rythme et Décision" : region === "EN" ? "Execution" : "Umsetzung", icon: Rocket },
+                  { value: "analyse" as typeof teamGoal, label: region === "FR" ? "Structure et Rigueur" : region === "EN" ? "Analysis" : "Analyse", icon: BarChart3 },
+                  { value: "zusammenarbeit" as typeof teamGoal, label: region === "FR" ? "Communication et Relations" : region === "EN" ? "Collaboration" : "Zusammenarbeit", icon: Handshake },
                 ]).map(opt => {
                   const active = teamGoal === opt.value;
                   const OptIcon = opt.icon;

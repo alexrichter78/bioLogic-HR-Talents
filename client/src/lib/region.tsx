@@ -131,6 +131,9 @@ const ENGINE_VALUE_MAP_EN: Record<string, string> = {
   "Teilweise passend": "Partially suitable",
   "Kritisch": "Critical",
   "Kein Ziel gewählt": "No goal selected",
+  "Stabile Ergänzung": "Stable complement",
+  "Ergänzung mit Spannung": "Complement under tension",
+  "nicht bewertet": "not assessed",
 };
 
 const ENGINE_VALUE_MAP_FR: Record<string, string> = {
@@ -165,6 +168,9 @@ const ENGINE_VALUE_MAP_FR: Record<string, string> = {
   "Teilweise passend": "Partiellement adapté",
   "Kritisch": "Critique",
   "Kein Ziel gewählt": "Aucun objectif sélectionné",
+  "Stabile Ergänzung": "Complémentarité stable",
+  "Ergänzung mit Spannung": "Complémentarité sous tension",
+  "nicht bewertet": "non évalué",
 };
 
 export function translateEngineValue(value: string | null | undefined, region: Region): string {
@@ -175,7 +181,11 @@ export function translateEngineValue(value: string | null | undefined, region: R
 }
 
 export function localizeDeep<T>(obj: T, region: Region): T {
-  if (typeof obj === "string") return localizeStr(obj, region) as unknown as T;
+  if (typeof obj === "string") {
+    const s = localizeStr(obj, region);
+    if (region === "FR" || region === "EN") return translateEngineValue(s, region) as unknown as T;
+    return s as unknown as T;
+  }
   if (Array.isArray(obj)) return obj.map(item => localizeDeep(item, region)) as unknown as T;
   if (obj !== null && typeof obj === "object") {
     const out: Record<string, unknown> = {};

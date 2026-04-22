@@ -113,27 +113,36 @@ function biggestGapText(rt: Triad, ct: Triad, region?: string): string {
     const g = Math.abs(rt[k] - ct[k]);
     if (g > maxGap) { maxGap = g; maxKey = k; }
   }
+  const isFR = region === "FR";
   if (maxGap <= 3) {
     return isEN
       ? "The profiles do not differ significantly in any of the three dimensions. The basic structure is aligned."
-      : "Die Profile weichen in keinem der drei Bereiche wesentlich voneinander ab. Die Grundstruktur passt.";
+      : isFR
+        ? "Les profils ne diffèrent pas significativement dans aucune des trois dimensions. La structure de base est alignée."
+        : "Die Profile weichen in keinem der drei Bereiche wesentlich voneinander ab. Die Grundstruktur passt.";
   }
   const sorted = keys.slice().sort((a, b) => rt[b] - rt[a]);
   const roleRange = rt[sorted[0]] - rt[sorted[2]];
   if (roleRange <= 8) {
     return isEN
       ? `The largest deviation is in the ${labels[maxKey]} dimension. Since the role requires a balanced profile, any deviation affects the overall fit.`
-      : `Die deutlichste Abweichung liegt im Bereich ${COMP_LABELS[maxKey]}. Da die Stelle ein ausgeglichenes Profil erfordert, wirkt sich jede Abweichung auf die Gesamtpassung aus.`;
+      : isFR
+        ? `L'écart le plus important se trouve dans le domaine ${labels[maxKey]}. Le poste exigeant un profil équilibré, tout écart affecte l'adéquation globale.`
+        : `Die deutlichste Abweichung liegt im Bereich ${labels[maxKey]}. Da die Stelle ein ausgeglichenes Profil erfordert, wirkt sich jede Abweichung auf die Gesamtpassung aus.`;
   }
   const primaryKey = sorted[0];
   if (maxKey === primaryKey) {
     return isEN
       ? `The largest deviation is in the ${labels[maxKey]} dimension — which is precisely the core requirement of this role.`
-      : `Die deutlichste Abweichung liegt im Bereich ${COMP_LABELS[maxKey]} – und damit genau im Kernbereich der Stellenanforderung.`;
+      : isFR
+        ? `L'écart le plus important se trouve dans le domaine ${labels[maxKey]}, qui est précisément le domaine central du poste.`
+        : `Die deutlichste Abweichung liegt im Bereich ${labels[maxKey]} – und damit genau im Kernbereich der Stellenanforderung.`;
   }
   return isEN
     ? `The largest deviation is in the ${labels[maxKey]} dimension. The core requirement of the role (${labels[primaryKey]}) is less affected.`
-    : `Die deutlichste Abweichung liegt im Bereich ${COMP_LABELS[maxKey]}. Der Kernbereich der Stelle (${COMP_LABELS[primaryKey]}) ist davon weniger betroffen.`;
+    : isFR
+      ? `L'écart le plus important se trouve dans le domaine ${labels[maxKey]}. Le domaine central du poste (${labels[primaryKey]}) est moins concerné.`
+      : `Die deutlichste Abweichung liegt im Bereich ${labels[maxKey]}. Der Kernbereich der Stelle (${labels[primaryKey]}) ist davon weniger betroffen.`;
 }
 
 

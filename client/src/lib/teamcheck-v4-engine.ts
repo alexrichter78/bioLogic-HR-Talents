@@ -111,7 +111,10 @@ export type GoalContribution = "hoch" | "mittel" | "gering" | "nicht bewertet";
 const EQ_TOL = 5;
 
 let _lang: "de" | "en" | "fr" = "de";
-function t(de: string, en: string): string { return _lang === "en" ? en : de; }
+function t(de: string, en: string, fr?: string): string {
+  if (_lang === "fr") return fr ?? de;
+  return _lang === "en" ? en : de;
+}
 
 const GOAL_LABELS: Record<string, string> = {
   umsetzung: "Umsetzung und Ergebnisse",
@@ -125,7 +128,14 @@ const GOAL_LABELS_EN: Record<string, string> = {
   zusammenarbeit: "Collaboration and Communication",
 };
 
+const GOAL_LABELS_FR: Record<string, string> = {
+  umsetzung: "Exécution et Résultats",
+  analyse: "Analyse et Structure",
+  zusammenarbeit: "Collaboration et Communication",
+};
+
 function goalLabel(key: string): string {
+  if (_lang === "fr") return GOAL_LABELS_FR[key] ?? key;
   return _lang === "en" ? (GOAL_LABELS_EN[key] ?? key) : (GOAL_LABELS[key] ?? key);
 }
 
@@ -147,7 +157,14 @@ const COMP_SHORT_EN: Record<ComponentKey, string> = {
   analytisch: "Structure and Diligence",
 };
 
+const COMP_SHORT_FR: Record<ComponentKey, string> = {
+  impulsiv: "Rythme et Décision",
+  intuitiv: "Communication et Relations",
+  analytisch: "Structure et Rigueur",
+};
+
 function cs(k: ComponentKey): string {
+  if (_lang === "fr") return COMP_SHORT_FR[k];
   return _lang === "en" ? COMP_SHORT_EN[k] : COMP_SHORT[k];
 }
 
@@ -163,7 +180,14 @@ const COMP_DOMAIN_EN: Record<ComponentKey, string> = {
   analytisch: "Structure and Diligence",
 };
 
+const COMP_DOMAIN_FR: Record<ComponentKey, string> = {
+  impulsiv: "Rythme et Décision",
+  intuitiv: "Communication et Relations",
+  analytisch: "Structure et Rigueur",
+};
+
 function cd(k: ComponentKey): string {
+  if (_lang === "fr") return COMP_DOMAIN_FR[k];
   return _lang === "en" ? COMP_DOMAIN_EN[k] : COMP_DOMAIN[k];
 }
 
@@ -179,7 +203,14 @@ const COMP_ADJ_EN: Record<ComponentKey, string> = {
   analytisch: "more thoroughly and systematically",
 };
 
+const COMP_ADJ_FR: Record<ComponentKey, string> = {
+  impulsiv: "avec plus de rythme et de décision",
+  intuitiv: "par l'échange et la collaboration",
+  analytisch: "de manière plus structurée et rigoureuse",
+};
+
 function ca(k: ComponentKey): string {
+  if (_lang === "fr") return COMP_ADJ_FR[k];
   return _lang === "en" ? COMP_ADJ_EN[k] : COMP_ADJ[k];
 }
 
@@ -401,6 +432,20 @@ function gesamtLabel(teamFit: string, taskFit: string, matchCase: MatchCase): st
     if (matchCase === "TOP2_ONLY") return "Tension with a shared working layer";
     return "Critical";
   }
+  if (_lang === "fr") {
+    if (teamFit === "hoch" && taskFit === "hoch") return "Très adapté";
+    if (teamFit === "hoch" && taskFit === "mittel") return "Bien adapté";
+    if (teamFit === "hoch" && taskFit === "gering") return "Adapté culturellement, portée fonctionnelle limitée";
+    if (teamFit === "hoch" && taskFit === "nicht bewertet") return "Bien adapté";
+    if (teamFit === "mittel" && taskFit === "hoch") return "Fonctionnellement précieux, intégration exigeante";
+    if (teamFit === "mittel" && taskFit === "mittel") return "Partiellement adapté";
+    if (teamFit === "mittel" && taskFit === "gering") return "Intégrable, sans levier fonctionnel clair";
+    if (teamFit === "mittel" && taskFit === "nicht bewertet") return "Partiellement adapté";
+    if (teamFit === "gering" && taskFit === "hoch") return "Intéressant fonctionnellement, risqué culturellement";
+    if (teamFit === "gering" && taskFit === "mittel") return "Friction élevée, valeur ajoutée limitée";
+    if (matchCase === "TOP2_ONLY") return "Friction notable avec passerelle quotidienne";
+    return "Critique";
+  }
   if (teamFit === "hoch" && taskFit === "hoch") return "Sehr passend";
   if (teamFit === "hoch" && taskFit === "mittel") return "Gut passend";
   if (teamFit === "hoch" && taskFit === "gering") return "Kulturell passend, fachlich begrenzt";
@@ -445,6 +490,13 @@ function buildIntroText(c: Ctx): string {
       ? "This report shows how this person will likely perform in a leadership role in the existing team. It compares the bioLogic profiles of person and team. It identifies where collaboration can work well, where friction is likely, and where clarity will be needed in day-to-day work. It does not replace a personal assessment. It adds a dimension that conversations often cannot reveal."
       : "This report shows how this person will likely perform in the existing team. It compares the bioLogic profiles of person and team. It identifies where collaboration can work well, where friction is likely, and where clarity will be needed in day-to-day work. It does not replace a personal assessment. It adds a dimension that conversations often cannot reveal.";
     const p2 = "Differences between person and team are not automatically negative. They can add real value to a team. For that to work, expectations need to be clear and leadership needs to be active. This report provides the basis for making the right decisions early.";
+    return `${p1}\n\n${p2}`;
+  }
+  if (_lang === "fr") {
+    const p1 = c.isLeader
+      ? "Ce rapport indique comment cette personne est susceptible d'agir dans un rôle de manager au sein de l'équipe existante. Il compare les profils bioLogic de la personne et de l'équipe et montre où la collaboration peut bien fonctionner, où des frictions sont probables et où des clarifications seront nécessaires au quotidien. Il ne remplace pas une évaluation personnelle, mais apporte une perspective que les entretiens ne révèlent souvent pas."
+      : "Ce rapport indique comment cette personne est susceptible d'agir au sein de l'équipe existante. Il compare les profils bioLogic de la personne et de l'équipe et montre où la collaboration peut bien fonctionner, où des frictions sont probables et où des clarifications seront nécessaires au quotidien. Il ne remplace pas une évaluation personnelle, mais apporte une perspective que les entretiens ne révèlent souvent pas.";
+    const p2 = "Les différences entre la personne et l'équipe ne sont pas automatiquement négatives. Elles peuvent apporter une réelle valeur ajoutée à l'équipe. Pour que cela fonctionne, les attentes doivent être claires et le management doit être actif. Ce rapport fournit la base pour prendre les bonnes décisions rapidement.";
     return `${p1}\n\n${p2}`;
   }
   const p1 = c.isLeader
@@ -495,6 +547,49 @@ function buildGesamtbewertungText(c: Ctx): string {
         paras.push(`For the functional goal ${teamGoalLabel}, the person brings some of the required strength. In core tasks, targeted support and input from stronger team members will be helpful.`);
       } else if (taskFit === "gering") {
         paras.push(`For the functional goal ${teamGoalLabel}, the person does not bring the right strength. This does not mean the role cannot be fulfilled. It does mean more support will be needed to deliver the expected results.`);
+      }
+    }
+
+    return paras.join("\n\n");
+  }
+
+  if (_lang === "fr") {
+    const paras: string[] = [];
+
+    if (teamClass === "BALANCED" && personClass === "BALANCED") {
+      paras.push("L'équipe et la personne présentent toutes deux une structure équilibrée sans dominante claire. Aucune des trois dimensions bioLogic ne ressort fortement d'un côté ou de l'autre. Les deux parties peuvent réagir de manière flexible selon les situations et aucune logique de travail rigide ne vient s'opposer à l'autre. L'intégration devrait donc se dérouler sans friction majeure. La collaboration peut s'établir rapidement car aucun des deux côtés n'impose de direction dominante.");
+      paras.push("Le risque de cette configuration réside paradoxalement dans l'absence de friction utile : ni l'équipe ni la personne ne donnent de cap clair. En période de forte pression de décision, de ressources limitées ou de conflits, cela peut conduire à des hésitations, à une dilution des responsabilités ou à un manque de priorisation. Dans ces moments-là, une coordination externe ou une clarification explicite des rôles sera nécessaire.");
+    } else if (teamClass === "BALANCED") {
+      paras.push(`L'équipe est diversifiée et non fixée à une logique de travail unique. Les trois dimensions bioLogic sont réparties de manière relativement équilibrée, ce qui lui confère une grande capacité d'adaptation. La personne, en revanche, apporte une logique de travail nettement plus marquée, orientée vers ${cd(c.personPrimary)}. Cela peut donner à l'équipe une orientation bienvenue qu'elle n'avait pas jusqu'à présent.`);
+      paras.push("En même temps, il existe un risque que la personne fasse pencher l'équilibre existant dans une seule direction. Plus la dominante de la personne est marquée, plus elle attirera la culture d'équipe vers son style. Cela peut être voulu, mais doit être piloté consciemment. Sans leadership clair, l'équipe risque de perdre sa polyvalence et des résistances peuvent apparaître chez certains membres qui ne se retrouvent pas dans la nouvelle orientation.");
+    } else if (personClass === "BALANCED") {
+      paras.push(`L'équipe suit une logique de travail claire, orientée vers ${cd(c.teamPrimary)}. Les décisions, la communication et la collaboration s'organisent autour de ce schéma. La personne, elle, est plus polyvalente et moins clairement orientée. Elle ne présente pas de logique dominante et peut donc passer situativement d'une approche à l'autre.`);
+      paras.push("Cela permet à la personne de s'adapter avec souplesse à la logique de l'équipe. Elle court cependant le risque de ne pas être perçue de manière suffisamment claire dans son rôle. L'équipe pourrait la trouver peu profilée ou difficilement lisible. Une intégration réussie nécessite que les attentes envers la personne soient formulées concrètement dès le début et que sa contribution spécifique soit clairement définie.");
+    } else if (matchCase === "TOP1_TOP2") {
+      paras.push(isLeader
+        ? `La façon de travailler de la personne correspond très bien à celle de l'équipe. La logique fondamentale (${cd(c.teamPrimary)}) et l'approche de collaboration au quotidien (${cd(c.teamSecondary)}) concordent. La personne ne comprend pas seulement la culture d'équipe, elle la partage naturellement. L'entrée dans le rôle de manager devrait se dérouler sans friction, car le manager communique et décide dans un langage que l'équipe reconnaît et attend.`
+        : `La façon de travailler de la personne correspond très bien à celle de l'équipe. La logique fondamentale (${cd(c.teamPrimary)}) et l'approche de collaboration au quotidien (${cd(c.teamSecondary)}) concordent. La personne ne comprend pas seulement la culture d'équipe, elle la partage naturellement. L'intégration devrait se dérouler sans friction et devenir rapidement efficace au quotidien, car les deux parties se retrouvent dans des schémas familiers.`);
+      paras.push("Cette forte concordance a aussi un revers : la personne renforce la logique d'équipe existante au lieu de la compléter. Les angles morts de l'équipe restent invisibles car la nouvelle personne partage les mêmes forces et les mêmes faiblesses. À long terme, cela peut accentuer les schémas existants et rendre l'équipe plus unidimensionnelle.");
+    } else if (matchCase === "TOP1_ONLY") {
+      paras.push(isLeader
+        ? `La personne partage la logique fondamentale de l'équipe : ${cd(c.teamPrimary)}. Cela crée une base de confiance stable, car l'équipe reconnaît que le manager partage la même façon fondamentale de penser. Dans le travail quotidien, cependant, les approches diffèrent. L'équipe s'appuie davantage sur ${cs(c.teamSecondary)}, la personne plutôt sur ${cs(c.personSecondary)}. La direction est partagée, mais le chemin pour y parvenir diffère.`
+        : `La personne partage la logique fondamentale de l'équipe : ${cd(c.teamPrimary)}. Cela crée une base stable pour la collaboration, car les deux parties se comprennent au niveau fondamental. Dans le travail quotidien, cependant, les approches diffèrent. L'équipe s'appuie davantage sur ${cs(c.teamSecondary)}, la personne plutôt sur ${cs(c.personSecondary)}. La direction est partagée, mais le chemin pour y parvenir diffère.`);
+      paras.push("La collaboration de base est donc assurée et la personne ne sera pas perçue comme un corps étranger. Au quotidien, des différences dans la communication, le rythme et l'approche concrète peuvent cependant devenir visibles. Ces différences sont généralement bien gérables, mais une clarification précoce des attentes mutuelles est utile. Avec une bonne coordination, une intégration stable et productive est tout à fait réalisable.");
+    } else if (matchCase === "TOP2_ONLY") {
+      paras.push(`La logique de pensée de la personne diffère de celle de l'équipe. L'équipe travaille par ${cd(c.teamPrimary)}, la personne par ${cd(c.personPrimary)}. Cette différence se fera sentir au quotidien et peut créer des frictions.`);
+      paras.push(`Dans le comportement concret au travail, il existe cependant des points communs : les deux s'appuient sur ${cs(c.teamSecondary)}. Cela crée un pont important dans le travail courant. L'intégration peut fonctionner, mais elle nécessite un pilotage conscient et des attentes claires.`);
+    } else {
+      paras.push(`La personne s'écarte sensiblement de l'équipe tant dans la logique de pensée que dans l'approche concrète. L'équipe travaille par ${cd(c.teamPrimary)}, la personne par ${cd(c.personPrimary)}. Cette différence ne concerne pas seulement des détails, mais la manière dont les décisions sont prises, les priorités fixées et la communication organisée.`);
+      paras.push("Des frictions perceptibles au quotidien sont donc à prévoir. En réunion et lors des prises de décision, des attentes différentes se heurteront. Une intégration est possible, mais elle demande un effort de management important et la décision claire que ces différences sont voulues. Sans accompagnement actif, la frustration croît des deux côtés.");
+    }
+
+    if (hasGoal) {
+      if (taskFit === "hoch") {
+        paras.push(`Pour l'objectif fonctionnel ${teamGoalLabel}, la personne apporte la bonne force. Elle pourra vraisemblablement travailler efficacement et de manière autonome dans les tâches principales de ce rôle.`);
+      } else if (taskFit === "mittel") {
+        paras.push(`Pour l'objectif fonctionnel ${teamGoalLabel}, la personne apporte une partie de la force requise. Dans les tâches principales, un accompagnement ciblé et le soutien de membres de l'équipe plus compétents dans ce domaine seront utiles.`);
+      } else if (taskFit === "gering") {
+        paras.push(`Pour l'objectif fonctionnel ${teamGoalLabel}, la personne n'apporte pas la force adaptée. Cela ne signifie pas qu'elle ne peut pas remplir le rôle, mais il faudra davantage d'accompagnement et de soutien pour obtenir les résultats attendus.`);
       }
     }
 
@@ -552,6 +647,13 @@ function buildHauptstaerke(c: Ctx): string {
     if (c.personClass === "BALANCED") return "Versatility and adaptability.";
     return `Distinct strength in ${cs(c.personPrimary)}.`;
   }
+  if (_lang === "fr") {
+    if (c.matchCase === "TOP1_TOP2") return `Logique de travail et approche communes avec l'équipe (${cs(c.teamPrimary)} et ${cs(c.teamSecondary)}).`;
+    if (c.matchCase === "TOP1_ONLY") return `Logique fondamentale commune avec l'équipe (${cs(c.teamPrimary)}).`;
+    if (c.matchCase === "TOP2_ONLY") return `Chevauchement dans l'approche quotidienne (${cs(c.teamSecondary)}).`;
+    if (c.personClass === "BALANCED") return "Polyvalence et capacité d'adaptation.";
+    return `Atout distinct en ${cs(c.personPrimary)}.`;
+  }
   if (c.matchCase === "TOP1_TOP2") return `Gleiche Grundlogik und Arbeitsweise wie das Team (${COMP_SHORT[c.teamPrimary]} + ${COMP_SHORT[c.teamSecondary]}).`;
   if (c.matchCase === "TOP1_ONLY") return `Gleiche Grundlogik wie das Team (${COMP_SHORT[c.teamPrimary]}).`;
   if (c.matchCase === "TOP2_ONLY") return `Überschneidung in der Arbeitsweise (${COMP_SHORT[c.teamSecondary]}).`;
@@ -565,6 +667,12 @@ function buildHauptabweichung(c: Ctx): string {
     if (c.matchCase === "TOP1_ONLY") return `Different working approach in day-to-day tasks (team: ${cs(c.teamSecondary)}, person: ${cs(c.personSecondary)}).`;
     if (c.matchCase === "TOP2_ONLY") return `Different core logic (team: ${cd(c.teamPrimary)}, person: ${cd(c.personPrimary)}).`;
     return `Both core logic and working approach differ (team: ${cd(c.teamPrimary)}, person: ${cd(c.personPrimary)}).`;
+  }
+  if (_lang === "fr") {
+    if (c.matchCase === "TOP1_TOP2") return "Aucun écart significatif identifié.";
+    if (c.matchCase === "TOP1_ONLY") return `Approche quotidienne différente (équipe : ${cs(c.teamSecondary)}, personne : ${cs(c.personSecondary)}).`;
+    if (c.matchCase === "TOP2_ONLY") return `Logique fondamentale différente (équipe : ${cd(c.teamPrimary)}, personne : ${cd(c.personPrimary)}).`;
+    return `Logique fondamentale et approche quotidienne diffèrent (équipe : ${cd(c.teamPrimary)}, personne : ${cd(c.personPrimary)}).`;
   }
   if (c.matchCase === "TOP1_TOP2") return "Keine wesentliche Abweichung erkennbar.";
   if (c.matchCase === "TOP1_ONLY") return `Unterschiedliche Arbeitsweise im Alltag (Team: ${COMP_SHORT[c.teamSecondary]}, Person: ${COMP_SHORT[c.personSecondary]}).`;
@@ -600,6 +708,35 @@ function buildWarumText(c: Ctx): string {
       } else {
         paras.push(`Team and person differ in both core logic and working approach. The team operates through ${cd(teamPrimary)} with ${cs(teamSecondary)}, the person through ${cd(personPrimary)} with ${cs(personSecondary)}. This tension affects communication, decisions, and daily interaction.`);
         paras.push("This does not have to be a problem. Sometimes a team needs exactly this different perspective. But it needs active leadership and clarity about why this placement makes sense. Without that, friction dominates the daily dynamic.");
+      }
+    }
+    return paras.join("\n\n");
+  }
+
+  if (_lang === "fr") {
+    const paras: string[] = [];
+    if (teamClass === "BALANCED" && personClass === "BALANCED") {
+      paras.push("L'équipe et la personne présentent toutes deux un profil équilibré sans dominante claire. Aucune des trois dimensions bioLogic ne se démarque nettement d'un côté ou de l'autre. L'évaluation dépend donc moins d'une correspondance structurelle dans une logique particulière que de la flexibilité fondamentale des deux parties.");
+      paras.push("En pratique, les deux parties réagissent de manière situationnelle et peuvent s'adapter à différentes exigences. La collaboration dépendra davantage des facteurs personnels, du style de communication et des tâches concrètes que de la structure des profils. C'est un avantage pour la flexibilité, mais cela peut conduire à une désorientation dans les phases qui requièrent des décisions claires.");
+    } else if (teamClass === "BALANCED") {
+      paras.push(`L'équipe présente un profil équilibré sans dominante claire. Elle n'est pas fixée à une logique de travail particulière et réagit de manière situationnelle. La personne, en revanche, a une orientation claire vers ${cd(personPrimary)}. Cette configuration signifie que la personne apporte une direction reconnaissable alors que l'équipe y est fondamentalement ouverte.`);
+      paras.push("L'intégration peut réussir si la personne apporte sa force de manière ciblée et constructive sans restreindre la polyvalence de l'équipe. L'enjeu clé est de savoir si l'équipe perçoit la ligne claire de la personne comme un enrichissement ou comme une contrainte. C'est là que réside la responsabilité du management : fixer un cadre dans lequel la force de la personne peut s'exprimer sans que l'équipe perde sa capacité d'adaptation.");
+    } else if (personClass === "BALANCED") {
+      paras.push(`L'équipe suit une logique de travail claire, axée sur ${cd(teamPrimary)}. Les décisions et la communication de l'équipe s'orientent selon ce schéma. La personne, elle, est plus polyvalente et ne présente pas de dominante unique. Elle peut réagir de manière flexible selon les situations, mais n'apporte pas de direction clairement reconnaissable.`);
+      paras.push("L'intégration dépend de la capacité de la personne à comprendre, accepter et soutenir la logique de l'équipe. Elle doit s'engager dans le schéma dominant de l'équipe, même si cela ne correspond pas à sa propre façon naturelle de travailler. Si cela fonctionne, la personne peut apporter une précieuse flexibilité. Sinon, il y a un risque qu'elle soit perçue comme peu profilée ou difficilement lisible.");
+    } else {
+      if (matchCase === "TOP1_TOP2") {
+        paras.push(`L'équipe et la personne s'appuient toutes deux sur ${cd(teamPrimary)} comme logique principale et sur ${cd(teamSecondary)} comme approche complémentaire. Cette double concordance crée une compatibilité de base élevée. La personne pense, décide et communique selon les mêmes schémas que l'équipe. Cela facilite considérablement l'intégration et réduit le risque de malentendus dans les premières semaines.`);
+        paras.push("Le revers de cette concordance : les deux parties ont les mêmes forces, mais aussi les mêmes angles morts. La personne ne complète pas l'équipe, elle renforce son orientation existante. À long terme, cela peut conduire à un rétrécissement si aucune voix contraire n'est intentionnellement introduite.");
+      } else if (matchCase === "TOP1_ONLY") {
+        paras.push(`La logique principale est partagée : les deux parties s'appuient sur ${cd(teamPrimary)} comme mode de pensée et de décision primaire. Cela crée une base stable, car la personne et l'équipe se comprennent dans leur approche fondamentale. Au quotidien, cependant, l'approche complémentaire diffère : l'équipe s'appuie davantage sur ${cs(teamSecondary)}, la personne plutôt sur ${cs(personSecondary)}.`);
+        paras.push("Cela crée une base stable avec des différences visibles dans les détails. La personne ne sera pas perçue comme un corps étranger, mais dans des situations de travail concrètes, des attentes différentes en matière de rythme, de communication ou de rigueur peuvent se heurter. Ces différences sont généralement bien gérables et peuvent même fonctionner comme un complément si elles sont nommées et acceptées tôt.");
+      } else if (matchCase === "TOP2_ONLY") {
+        paras.push(`La correspondance reflète une configuration avec deux forces opposées. D'un côté, la logique principale (Top 1) ne correspond pas : l'équipe s'appuie sur ${cd(teamPrimary)}, la personne sur ${cd(personPrimary)}. Cette différence fait baisser considérablement le score car elle concerne la direction fondamentale de la pensée et de la décision.`);
+        paras.push(`De l'autre côté, l'approche complémentaire (Top 2) concorde : les deux parties utilisent ${cs(teamSecondary)}. Ce dénominateur commun absorbe une partie des frictions au quotidien et explique pourquoi la collaboration fonctionne souvent mieux en pratique que la simple analyse de profil ne le laisserait supposer. Le score reflète fidèlement la tension structurelle, mais tend à surestimer la distance pratique.`);
+      } else {
+        paras.push(`L'équipe et la personne diffèrent dans la logique fondamentale et dans l'approche de travail. L'équipe s'appuie sur ${cd(teamPrimary)} avec ${cs(teamSecondary)}, la personne sur ${cd(personPrimary)} avec ${cs(personSecondary)}. Cette tension affecte la communication, les décisions et les interactions quotidiennes.`);
+        paras.push("Ce n'est pas forcément un problème. Parfois une équipe a besoin exactement de cette perspective différente. Mais cela nécessite un management actif et une clarté sur les raisons pour lesquelles cette composition a du sens. Sans cela, la friction domine le quotidien.");
       }
     }
     return paras.join("\n\n");
@@ -682,6 +819,52 @@ function buildWirkungAlltagText(c: Ctx): string {
 
     paras.push(`In daily work, the differences will be clearly visible. The team works through ${cd(teamPrimary)}, the person through ${cd(personPrimary)}. In meetings, decisions, and communication, different expectations collide.`);
     paras.push("This shows up concretely in how priorities are set, how quickly or thoroughly decisions are made, and what kind of coordination is expected. Without active leadership, frustration can build quickly: the person feels misunderstood, the team sees them as unadapted. Regular clarifying conversations and clear role assignments are essential.");
+    return paras.join("\n\n");
+  }
+
+  if (_lang === "fr") {
+    const paras: string[] = [];
+
+    if (c.teamClass === "BALANCED" && c.personClass === "BALANCED") {
+      paras.push("Au quotidien, les deux parties passeront vraisemblablement d'une approche de travail à l'autre selon les situations. Il n'existe pas de direction fixe qu'une des deux parties imposerait systématiquement, ni de friction structurelle issue de logiques opposées. Dans les réunions, les prises de décision et la communication quotidienne, peu de schémas figés devraient apparaître.");
+      paras.push("La collaboration devient plus difficile lorsque des décisions claires ou une priorisation nette sont requises. Dans ces moments, aucun des deux côtés ne dispose d'une direction dominante pour donner de l'orientation. Il faudra alors soit des responsabilités claires, soit une instance externe pour définir la direction. Dans les conditions normales, la collaboration devrait cependant se dérouler de manière pragmatique et simple.");
+      return paras.join("\n\n");
+    }
+
+    if (c.teamClass === "BALANCED") {
+      paras.push(`Au quotidien, l'équipe est flexible et ouverte à différentes approches de travail. Il n'y a pas d'attente dominante que les nouveaux membres doivent immédiatement satisfaire. La personne, en revanche, apporte une direction claire : ${cd(personPrimary)}. Cela se ressentira dans la vie professionnelle, car la personne agit de manière plus cohérente et ciblée dans son domaine que ce à quoi l'équipe est habituée.`);
+      paras.push("Cela peut donner à l'équipe une orientation bienvenue et accélérer les décisions. Mais cela peut aussi conduire à ce que certains membres de l'équipe se sentent sous pression face au style clair de la personne, ou aient l'impression que leur propre façon de travailler n'est plus valorisée. L'enjeu décisif est de savoir si l'équipe perçoit la direction de la personne comme un enrichissement ou comme une domination. Une coordination régulière et la valorisation consciente de la diversité existante de l'équipe sont essentielles ici.");
+      return paras.join("\n\n");
+    }
+
+    if (c.personClass === "BALANCED") {
+      paras.push(`Au quotidien, l'équipe suit une ligne claire : ${cd(teamPrimary)}. Les réunions, la communication et les décisions s'orientent selon ce schéma. La personne, elle, est plus polyvalente et passe situativement d'une approche à l'autre. À un moment elle réagit de manière analytique et structurée, à l'autre de manière spontanée et orientée vers l'action.`);
+      paras.push("Cela peut être perçu par l'équipe comme de la flexibilité ou comme de l'indécision. Ce qui compte, c'est la manière dont la personne utilise et communique sa polyvalence. Si elle s'adapte consciemment à la logique de l'équipe et apporte délibérément sa flexibilité comme un complément, elle sera perçue comme un enrichissement précieux. Si elle passe constamment d'une approche à l'autre sans montrer de ligne claire, cela peut créer de la frustration dans l'équipe. Des attentes claires et des retours réguliers aident à stabiliser la collaboration.");
+      return paras.join("\n\n");
+    }
+
+    if (matchCase === "TOP1_TOP2") {
+      paras.push(isLeader
+        ? `Au quotidien, la collaboration devrait se dérouler sans friction. Le style de management et la culture d'équipe partagent des priorités similaires : ${cd(teamPrimary)} comme logique fondamentale et ${cs(c.teamSecondary)} comme approche complémentaire. Les décisions sont prises de manière similaire, la communication emprunte des voies familières, et les attentes fondamentales en matière de rythme, de rigueur et de coordination concordent. L'équipe acceptera probablement bien le management car elle reconnaît le style intuitivement.`
+        : `Au quotidien, la collaboration devrait se dérouler sans friction. La personne et l'équipe partagent des priorités similaires : ${cd(teamPrimary)} comme logique fondamentale et ${cs(c.teamSecondary)} comme approche complémentaire. Les décisions sont prises de manière similaire, la communication emprunte des voies familières, et les attentes fondamentales en matière de rythme, de rigueur et de coordination concordent. La personne peut contribuer rapidement et de manière productive car aucune adaptation fondamentale n'est nécessaire.`);
+      paras.push("L'avantage : peu de temps d'adaptation, une efficacité rapide, un faible risque de conflit. L'inconvénient : la collaboration peut être trop fluide. Des erreurs ou des faiblesses peuvent ne pas être détectées car les deux parties partagent les mêmes angles morts. Des points de réflexion délibérément intégrés et des rétrospectives régulières peuvent aider à protéger l'équipe contre l'uniformité.");
+      return paras.join("\n\n");
+    }
+
+    if (matchCase === "TOP1_ONLY") {
+      paras.push(`Au quotidien, la direction de pensée fondamentale est partagée : les deux parties s'appuient sur ${cd(teamPrimary)}. Cela crée une base commune sur laquelle la collaboration peut se construire. Dans l'exécution concrète, cependant, des différences apparaissent qui deviennent visibles dans les interactions quotidiennes. La personne travaille ${ca(c.personSecondary)}, tandis que l'équipe tend plutôt à procéder ${ca(c.teamSecondary)}. Cela se voit dans les réunions, la répartition des tâches et la façon d'aborder les problèmes.`);
+      paras.push("Ces différences peuvent conduire à un complément productif : la personne apporte un regard différent sur l'exécution qui peut enrichir l'équipe. Elles peuvent aussi engendrer des malentendus et des frictions mineures si les attentes différentes ne sont pas nommées ouvertement. En pratique, il est conseillé de convenir de règles de travail concrètes dans les premières semaines et de clarifier explicitement les attentes mutuelles.");
+      return paras.join("\n\n");
+    }
+
+    if (matchCase === "TOP2_ONLY") {
+      paras.push(`Au quotidien, la tension se manifeste surtout dans les situations de décision : l'équipe attend une approche ${ca(teamPrimary)}, la personne tend ${ca(personPrimary)}. Cela peut se traduire concrètement par le fait que la personne prépare les décisions différemment, priorise d'autres informations ou juge un rythme différent comme approprié par rapport aux habitudes de l'équipe.`);
+      paras.push(`Dans le travail courant, le niveau partagé de ${cs(c.teamSecondary)} atténue considérablement ces différences. Dans les réunions, la répartition des tâches et la coordination informelle, les deux parties se retrouvent grâce à ${cs(c.teamSecondary)}. Le quotidien fonctionne donc souvent mieux que la simple analyse de profil ne le laisserait supposer. La friction apparaît typiquement lorsqu'il s'agit de décisions de direction et que la logique fondamentale prend le dessus sur le niveau de travail partagé.`);
+      return paras.join("\n\n");
+    }
+
+    paras.push(`Au quotidien, les différences seront clairement visibles. L'équipe travaille par ${cd(teamPrimary)}, la personne par ${cd(personPrimary)}. Dans les réunions, les décisions et la communication, des attentes différentes se heurtent.`);
+    paras.push("Cela se manifeste concrètement dans la façon dont les priorités sont fixées, la rapidité ou la rigueur des décisions et le type de coordination attendu. Sans management actif, la frustration peut s'accumuler rapidement : la personne se sent incomprise, l'équipe la perçoit comme inadaptée. Des discussions régulières de clarification et des responsabilités claires sont absolument nécessaires ici.");
     return paras.join("\n\n");
   }
 
@@ -786,6 +969,57 @@ function buildChancenRisiken(c: Ctx): { chancen: V4Block[]; risiken: V4Block[]; 
     return { chancen, risiken, chancenRisikenEinordnung: einordnung };
   }
 
+  if (_lang === "fr") {
+    if (c.matchCase === "TOP1_TOP2") {
+      chancen.push({ title: "Intégration rapide", text: "La personne peut s'intégrer rapidement car sa logique de travail correspond à celle de l'équipe. La période d'adaptation devrait être courte et la personne pourra contribuer rapidement et de manière productive aux résultats de l'équipe. Cela économise du temps de management et réduit le risque d'un démarrage difficile." });
+      chancen.push({ title: "Forte acceptation", text: "L'équipe accueillera probablement bien la personne car la culture de travail et la communication sont similaires. La personne parle le même langage que l'équipe et prend des décisions de manière analogue. Cela crée rapidement de la confiance, qui est le fondement d'une collaboration productive." });
+      chancen.push({ title: "Collaboration stable", text: "Peu de friction se crée au quotidien. L'énergie de l'équipe et de la personne peut être investie dans la tâche réelle plutôt que dans des conflits d'intégration et des processus d'adaptation. Sous pression, la collaboration restera probablement stable car les deux parties réagissent de manière similaire." });
+      risiken.push({ title: "Absence de complément", text: "La forte similarité manque d'une impulsion complémentaire. Les angles morts ne sont pas mis au jour mais peuvent être renforcés. À long terme, l'équipe peut s'ancrer dans son orientation et manquer des développements importants." });
+      risiken.push({ title: "Tendance à la confirmation", text: "La personne renforce les schémas existants au lieu de les remettre en question. Lorsque tout le monde pense de manière similaire, les faiblesses deviennent invisibles et les erreurs se répètent." });
+    } else if (c.matchCase === "TOP1_ONLY") {
+      chancen.push({ title: "Direction fondamentale commune", text: `Les deux parties s'appuient sur ${cd(c.teamPrimary)} comme logique de travail principale. Cela crée une base stable pour la collaboration et réduit le risque de malentendus fondamentaux. La personne est comprise dans sa façon de penser et peut évoluer en terrain familier.` });
+      chancen.push({ title: `Complément par ${cs(c.personSecondary)}`, text: `La personne apporte ${cs(c.personSecondary)} comme approche complémentaire au quotidien, tandis que l'équipe s'appuie davantage sur ${cs(c.teamSecondary)}. Concrètement, cela signifie : ${c.personSecondary === "impulsiv" ? "des décisions plus rapides, plus de dynamisme d'exécution et une approche plus pragmatique des sujets" : c.personSecondary === "analytisch" ? "plus de pensée structurée, une préparation plus systématique et une analyse plus approfondie avant les décisions" : "une plus forte implication de toutes les parties, plus de coordination et un style de travail orienté vers les relations"}. Cela peut renforcer l'équipe dans ce domaine sans compromettre la logique fondamentale commune.` });
+      chancen.push({ title: "Opportunité d'apprentissage mutuel", text: `Les différences dans l'approche concrète de travail offrent une opportunité d'apprentissage. L'équipe peut apprendre de la personne ${c.personSecondary === "impulsiv" ? "plus de rythme et de capacité de décision" : c.personSecondary === "analytisch" ? "plus de profondeur et de structure" : "plus d'ouverture et d'échange"}, et la personne peut apprendre de l'équipe ${c.teamSecondary === "impulsiv" ? "la rapidité et le pragmatisme" : c.teamSecondary === "analytisch" ? "la rigueur et la précision" : "la coordination et l'orientation collective"}. Cet enrichissement mutuel peut augmenter la polyvalence de l'équipe à long terme.` });
+      risiken.push({ title: "Rythme et approche différents", text: `Dans l'exécution concrète, l'équipe et la personne diffèrent notablement. L'équipe attend ${c.teamSecondary === "analytisch" ? "plus de rigueur et de vérification approfondie" : c.teamSecondary === "impulsiv" ? "une action rapide et une orientation résultats" : "de la coordination et une prise de décision collective"}, tandis que la personne tend ${c.personSecondary === "impulsiv" ? "vers une action plus rapide et peut être perçue comme trop prompte" : c.personSecondary === "analytisch" ? "vers plus de détails et peut être perçue comme trop lente" : "vers la discussion et l'inclusion et peut être perçue comme trop hésitante"}. Inversement, la personne peut trouver l'équipe ${c.teamSecondary === "analytisch" ? "trop lente et trop prudente" : c.teamSecondary === "impulsiv" ? "trop réactive et trop superficielle" : "trop axée sur le consensus et peu encline à décider"}.` });
+      risiken.push({ title: "Besoin d'alignement", text: "La personne comprend fondamentalement la logique de l'équipe et ne se sent pas comme un corps étranger. Elle a néanmoins besoin de repères dans l'exécution concrète et d'indications claires sur la façon dont l'équipe gère certaines choses. Sans ces repères, des contributions bien intentionnées peuvent involontairement créer des frictions." });
+    } else if (c.matchCase === "TOP2_ONLY") {
+      chancen.push({ title: "Perspective différente", text: `La personne apporte ${cd(c.personPrimary)} dans une équipe qui en est peu dotée. Elle peut prendre en charge des tâches pour lesquelles l'équipe a des lacunes et soulever des sujets que personne d'autre ne suit.` });
+      chancen.push({ title: "Niveau de travail commun", text: `Dans le travail courant, il existe un chevauchement important via ${cs(c.teamSecondary)}. Cela donne à la personne et à l'équipe un point de connexion, même quand la logique fondamentale diffère sensiblement.` });
+      chancen.push({ title: "Plus large spectre de compétences", text: `L'équipe devient plus polyvalente grâce à cette personne, sans être bouleversée. ${cd(c.personPrimary)} était sous-représentée. Bien exploitée, l'équipe pourra traiter plus efficacement un éventail plus large de problèmes.` });
+      risiken.push({ title: "Friction fondamentale", text: `Les logiques de pensée diffèrent clairement. L'équipe opère par ${cs(c.teamPrimary)}, la personne travaille principalement par ${cs(c.personPrimary)}. Cette différence se ressent dans les décisions, la priorisation et la communication. Sans cadrage clair, elle peut mener à des conflits récurrents.` });
+      risiken.push({ title: "Effort de management", text: `Le management doit clarifier activement quand ${cs(c.teamPrimary)} a la priorité et quand ${cs(c.personPrimary)} est sollicité. Sans ce cadrage, chaque partie percevra le comportement de l'autre comme erroné.` });
+      risiken.push({ title: "Mauvaise interprétation", text: "L'équipe peut percevoir le comportement de la personne comme inadapté, alors qu'il est structurellement fondé. Sans cadrage du management, des préjugés se forment qui rendent l'intégration plus difficile sur la durée." });
+    } else {
+      chancen.push({ title: "Nouvelle perspective", text: `La personne pense et travaille différemment de l'équipe. Bien exploitée, elle peut soulever des sujets que personne d'autre ne suit et prendre en charge des tâches pour lesquelles l'équipe a des lacunes. ${cd(c.personPrimary)} est peu représentée dans l'équipe, ce qui peut être un vrai atout.` });
+      chancen.push({ title: "Rendre les faiblesses visibles", text: "Ce que l'équipe néglige systématiquement est souvent la première chose que la personne remarque, car elle ne pense pas selon les mêmes schémas. Cela peut être inconfortable, mais cela aide à identifier les problèmes plus tôt." });
+      chancen.push({ title: "Apprentissage mutuel", text: "Quand la collaboration fonctionne bien, les deux parties apprennent l'une de l'autre. L'équipe acquiert un regard différent sur des choses qu'elle considérait comme acquises. La personne apprend comment l'équipe pense et décide. Les deux parties s'améliorent à long terme." });
+      risiken.push({ title: "Forte friction", text: "L'équipe et la personne travaillent de manière fondamentalement différente. Cela crée des tensions dans la communication, les décisions et la priorisation. Sans gestion active, des conflits récurrents peuvent se développer et devenir difficiles à rompre." });
+      risiken.push({ title: "Effort de management élevé", text: "Le management doit investir beaucoup plus de temps pour modérer entre la personne et l'équipe que dans le cas d'une meilleure correspondance. Cet effort ne doit pas être sous-estimé." });
+      risiken.push({ title: "Risque d'isolement", text: "La personne peut se sentir isolée si la culture d'équipe ne soutient pas sa façon de travailler. Si la motivation baisse durablement, le retrait intérieur ou un départ prématuré deviennent des risques réels." });
+    }
+
+    if (c.teamClass === "BALANCED") {
+      chancen.push({ title: "Système ouvert", text: "L'équipe équilibrée n'a pas d'attentes rigides et peut accueillir différents styles de travail. Cela abaisse le seuil d'entrée pour la personne et permet une intégration plus flexible." });
+      risiken.push({ title: "Déplacement de direction", text: "Une personne avec une dominante claire peut déplacer l'équilibre existant de l'équipe dans une seule direction. Sans gestion délibérée, l'équipe peut perdre sa polyvalence et s'aligner progressivement sur la logique de la nouvelle personne." });
+    }
+
+    if (c.personClass === "BALANCED") {
+      chancen.push({ title: "Flexibilité", text: "La personne peut s'adapter à différentes dynamiques d'équipe et passer situativement d'une approche de travail à l'autre. Cela apporte de la flexibilité à l'équipe et permet à la personne d'être efficace dans des contextes variés." });
+      risiken.push({ title: "Profil peu lisible", text: "La personne risque d'être perçue comme difficile à cerner ou indécise. L'équipe manque d'une image claire de ce pour quoi la personne se positionne et de la contribution spécifique qu'elle apporte. Cela peut créer de l'incertitude et réduire la confiance." });
+    }
+
+    let einordnung: string;
+    if (c.score >= 85) {
+      einordnung = "Les opportunités l'emportent nettement. La forte concordance facilite l'intégration et la collaboration quotidienne. Le risque principal est l'absence de complément, l'équipe pouvant devenir plus unidimensionnelle par renforcement.";
+    } else if (c.score >= 60) {
+      einordnung = "Opportunités et risques sont en équilibre. Cette composition peut bien fonctionner, mais elle nécessite des attentes claires et une coordination régulière. L'enjeu décisif est de savoir si les différences deviennent un complément productif ou une source de friction persistante.";
+    } else {
+      einordnung = "Les risques l'emportent. Cette composition peut néanmoins être la bonne, mais seulement si ce style de travail différent est réellement nécessaire dans l'équipe et si le management le communique activement.";
+    }
+
+    return { chancen, risiken, chancenRisikenEinordnung: einordnung };
+  }
+
   if (c.matchCase === "TOP1_TOP2") {
     chancen.push({ title: "Schnelle Integration", text: "Die Person kann sich schnell einarbeiten, weil Denk- und Arbeitsweise zum Team passen. Die Eingewöhnungsphase ist voraussichtlich kurz, und die Person kann früh produktiv zum Teamergebnis beitragen. Das spart Führungszeit und reduziert das Risiko eines schwierigen Starts." });
     chancen.push({ title: "Hohe Akzeptanz", text: "Das Team wird die Person voraussichtlich gut aufnehmen, weil Arbeitskultur und Kommunikation ähnlich sind. Die Person spricht die gleiche Sprache wie das Team und trifft Entscheidungen auf ähnliche Weise. Dadurch entsteht schnell Vertrauen, das die Grundlage für eine produktive Zusammenarbeit ist." });
@@ -870,6 +1104,27 @@ function buildDruckText(c: Ctx): string {
     return paras.join("\n\n");
   }
 
+  if (_lang === "fr") {
+    const paras: string[] = [];
+    if (c.teamClass === "BALANCED" && c.personClass === "BALANCED") {
+      paras.push("Sous pression, ni l'équipe ni la personne ne montrent de déplacement clairement prévisible vers un schéma particulier. Les deux parties réagissent de manière situationnelle et peuvent passer d'une stratégie à l'autre. Cela peut être un avantage quand aucune réaction rigide ne domine, mais aussi un inconvénient quand la réponse devient imprévisible et diffuse.");
+      paras.push("Dans les phases de pression, une direction claire que tout le monde peut suivre fait défaut. Le risque réside dans l'indécision, des actions parallèles sans coordination et un ralentissement général des processus de décision. Il est donc important que des responsabilités claires, des voies de décision définies et une priorisation explicite soient établies avant que la pression ne monte.");
+    } else if (c.matchCase === "TOP1_TOP2") {
+      paras.push(`Sous pression, les deux parties intensifient la logique principale commune : ${cd(c.teamPrimary)}. L'équipe et la personne convergent dans la même direction dans les situations de stress. La cohérence augmente car tout le monde poursuit la même stratégie. Dans les crises aiguës, cela peut être un avantage car la réponse est rapide et coordonnée.`);
+      paras.push(`L'inconvénient : sous pression, les angles morts deviennent particulièrement visibles. Quand tout le monde réagit ${ca(c.teamPrimary)}, d'autres aspects importants passent au second plan. ${cd(c.personSecondary)} peut être trop négligé, ce qui conduit à des décisions unilatérales aux conséquences à long terme. Un rééquilibrage délibéré et une question explicite sur la perspective négligée peuvent aider.`);
+    } else if (c.matchCase === "TOP1_ONLY") {
+      paras.push(`Sous pression, les deux parties renforcent la logique principale commune : ${cd(c.teamPrimary)}. Sur le plan stratégique, l'équipe et la personne se rapprocheront. Les différences dans l'approche concrète de travail peuvent cependant s'accentuer. La personne réagit ${ca(c.personSecondary)}, tandis que l'équipe attend davantage de ${cs(c.teamSecondary)}.`);
+      paras.push("Cela signifie : la direction stratégique est partagée, mais l'exécution peut créer des tensions. La personne veut procéder différemment des habitudes de l'équipe, même si les deux poursuivent le même objectif. Une communication claire sous pression est décisive pour maintenir cette tension productive. Des règles préalablement convenues pour la gestion des situations de stress permettent d'éviter les conflits.");
+    } else if (c.matchCase === "TOP2_ONLY") {
+      paras.push(`Sous pression, les deux parties intensifient leur logique principale respective. L'équipe réagit ${ca(c.teamPrimary)} et se replie sur ${cd(c.teamPrimary)}. La personne intensifie ${cd(c.personPrimary)} et réagit ${ca(c.personPrimary)}. En temps normal, le niveau secondaire commun (${cs(c.teamSecondary)}) maintient le contact entre les deux parties. Sous pression croissante, ce pont est mis à rude épreuve.`);
+      paras.push(`Sous pression modérée, ${cs(c.teamSecondary)} peut encore fonctionner comme niveau de médiation : les deux parties retrouvent l'échange grâce à lui. Sous forte pression ou pression prolongée, ce pont cède. La logique principale de chaque partie domine alors, et la collaboration se polarise. Dans ces phases, les voies de décision et les responsabilités doivent être prédéfinies pour éviter la rupture de contact.`);
+    } else {
+      paras.push(`Sous pression, les différences deviennent plus marquées. L'équipe réagit ${ca(c.teamPrimary)}, la personne ${ca(c.personPrimary)}. Les deux parties se replient sur leur propre logique et s'éloignent l'une de l'autre au lieu de se rapprocher.`);
+      paras.push("Dans ces phases, le risque de conflit augmente. Les malentendus s'accumulent, la tolérance diminue. Des voies d'escalade claires et un management qui modère activement sous pression sont indispensables ici.");
+    }
+    return paras.join("\n\n");
+  }
+
   const paras: string[] = [];
 
   if (c.teamClass === "BALANCED" && c.personClass === "BALANCED") {
@@ -916,6 +1171,28 @@ function buildFuehrungshinweis(c: Ctx): V4Block[] | null {
       hints.push({ title: "Define role clarity and mandate", text: "Make clear from the outset: What should the manager change, what should they take over, and where are the limits? Without this frame, they will either reshape the team one-sidedly or disengage." });
       hints.push({ title: "Prepare the team", text: "Explain to the team in advance that the new manager works differently from what they are used to, and why this is intentional. Without this framing, the differences will be read as a poor hiring decision." });
       hints.push({ title: "Regular progress reviews", text: "Plan structured reviews at thirty, sixty, and ninety days: Is integration working? Where is friction showing up? What needs to change?" });
+    }
+    return hints;
+  }
+
+  if (_lang === "fr") {
+    if (c.matchCase === "TOP1_TOP2") {
+      hints.push({ title: "Établir la confiance et ancrer le rôle", text: "Le manager sera probablement accepté rapidement car il partage naturellement la logique de l'équipe. Utilisez ce bon départ pour fixer des attentes claires et ancrer le rôle dans les premières semaines. Définissez ensemble avec le manager les objectifs clés pour les 90 premiers jours et clarifiez les marges de décision existantes. Cette acceptation rapide est un avantage à utiliser délibérément." });
+      hints.push({ title: "Solliciter activement le complément", text: "Lorsque le manager et l'équipe s'alignent étroitement, les angles morts ont tendance à être renforcés plutôt que mis au jour. Demandez activement au manager d'introduire aussi des perspectives inhabituelles et de challenger constructivement l'équipe. Un manager qui ne fait que confirmer ce que l'équipe pense déjà n'exploite pas tout son potentiel. Des moments de réflexion réguliers sur ce qui pourrait être négligé sont utiles ici." });
+      hints.push({ title: "Observer le développement", text: "Après les trois premiers mois, observez si le manager imprime sa propre direction ou s'adapte trop fortement à la culture d'équipe existante. Un bon manager doit aussi prendre des décisions inconfortables et ne peut pas se contenter de confirmer le statu quo." });
+    } else if (c.matchCase === "TOP1_ONLY") {
+      hints.push({ title: "Utiliser la logique fondamentale commune comme base de confiance", text: `Le manager partage la logique principale de l'équipe (${cd(c.teamPrimary)}). Utilisez cet avantage délibérément pour établir la confiance dans les premières semaines. En même temps, soyez transparent dès le début sur les points où le style de management diffère dans les détails, notamment en matière de ${cs(c.personSecondary)} par rapport à l'attente de l'équipe en termes de ${cs(c.teamSecondary)}. Plus cette clarification est concrète, moins il y aura de frictions au quotidien.` });
+      hints.push({ title: "Mettre en place des boucles de rétroaction", text: "Organisez des entretiens de rétroaction structurés entre le manager et l'équipe dans les 90 premiers jours. Ces échanges doivent aborder à la fois la collaboration sur les tâches et la dynamique interpersonnelle. Questions types : qu'est-ce qui fonctionne bien ? Où y a-t-il des frictions ? Que l'équipe attend-elle du manager ? Que le manager attend-il de l'équipe ? Cette communication précoce évite que les malentendus se figent." });
+      hints.push({ title: "Rendre visible l'apport complémentaire", text: `Le manager apporte ${cs(c.personSecondary)} comme une nuance différente au quotidien. Montrez à l'équipe où ce complément est utile et présentez les différences comme un enrichissement, non comme une faiblesse.` });
+    } else if (c.matchCase === "TOP2_ONLY") {
+      hints.push({ title: "Cadrer activement le style de management", text: `Le manager pense et décide par ${cd(c.personPrimary)}, tandis que l'équipe attend ${cd(c.teamPrimary)}. Expliquez concrètement à l'équipe pourquoi une logique de pensée différente dans ce rôle de management est intentionnelle. Sans ce cadrage, l'équipe interprétera le style de management comme une erreur de placement plutôt qu'un choix délibéré.` });
+      hints.push({ title: "Utiliser délibérément le pont quotidien", text: `Les deux parties partagent ${cs(c.teamSecondary)} comme approche de travail. Utilisez ce pont consciemment : structurez les réunions d'équipe et les formats de coordination de façon à ce que ${cs(c.teamSecondary)} domine comme niveau de communication. Ainsi, le manager construit la confiance même si la direction de pensée stratégique est différente.` });
+      hints.push({ title: "Préparer les décisions de direction", text: `Dans les sujets stratégiques, la différence de logique fondamentale sera visible. Préparez le manager au fait que l'équipe réagit aux décisions ${ca(c.teamPrimary)} et trouve les décisions ${ca(c.personPrimary)} plus difficiles à comprendre. Le manager doit rendre sa logique de décision transparente plutôt que de la considérer comme évidente.` });
+    } else {
+      hints.push({ title: "Accompagnement intensif dès le départ", text: "Le manager se distingue significativement de l'équipe. Planifiez des points de suivi hebdomadaires pour les 90 premiers jours et intervenez immédiatement aux premiers signes de conflit." });
+      hints.push({ title: "Définir la clarté du rôle et le mandat", text: "Clarifiez d'emblée : que doit changer le manager, que doit-il reprendre et où sont les limites ? Sans ce cadre, le manager soit remodèlera l'équipe unilatéralement, soit se désengagera." });
+      hints.push({ title: "Préparer l'équipe", text: "Expliquez à l'équipe à l'avance que le nouveau manager travaille différemment de ce à quoi elle est habituée et pourquoi c'est intentionnel. Sans ce cadrage, les différences seront interprétées comme une erreur de recrutement." });
+      hints.push({ title: "Points d'étape réguliers", text: "Planifiez des bilans structurés à 30, 60 et 90 jours : l'intégration fonctionne-t-elle ? Où y a-t-il des frictions ? Que faut-il changer ?" });
     }
     return hints;
   }
@@ -978,6 +1255,43 @@ function buildRisikoprognose(c: Ctx): V4RiskPhase[] {
       p("Phase 1", "0-3 months", "The start is demanding. Early conflicts and friction are likely. This is normal, not a sign of failure. Intensive support and clear expectations are needed from the start to prevent negative patterns from forming."),
       p("Phase 2", "3-12 months", "The differences are known and the initial uncertainty has passed. Now the decision is made: are the differences experienced as enrichment or as a burden? Without active leadership, the dynamic tips toward frustration and disengagement."),
       p("Phase 3", "12+ months", "Either the person has broadened the team and contributed new strengths, or the tension has become permanent. In the latter case, a frank conversation about the path forward is needed. Continuation only makes sense if both sides actively want to work on it."),
+    ];
+  }
+
+  if (_lang === "fr") {
+    const p = (label: string, period: string, text: string): V4RiskPhase => ({ label, period, text });
+    if (c.matchCase === "TOP1_TOP2") {
+      return [
+        p("Phase 1", "0-3 mois", "Le démarrage devrait se dérouler sans friction. La personne comprend naturellement la logique de l'équipe et peut contribuer de manière productive rapidement. Le risque principal : tout fonctionne si bien que des clarifications importantes sont omises et des angles morts restent non détectés."),
+        p("Phase 2", "3-12 mois", "La personne est entièrement intégrée. Le risque réside maintenant dans la routine : quand tout le monde pense de manière similaire, les problèmes sont négligés. Une réflexion régulière et des perspectives extérieures aident à contrebalancer cela."),
+        p("Phase 3", "12+ mois", "La collaboration est stable. Vérifiez à long terme si l'équipe est devenue plus unidimensionnelle par renforcement. Si c'est le cas, la prochaine composition devrait délibérément apporter une perspective différente."),
+      ];
+    }
+    if (c.matchCase === "TOP1_ONLY") {
+      return [
+        p("Phase 1", "0-3 mois", "Le démarrage se passe globalement bien car la logique principale concorde. Dans le travail quotidien, des différences dans l'approche concrète deviennent cependant perceptibles : rythme différent, communication différente, attentes différentes en matière de rigueur. Les premières frictions doivent être abordées ouvertement avant qu'elles ne se figent en jugements définitifs."),
+        p("Phase 2", "3-12 mois", "Les différences sont connues et peuvent être gérées délibérément. Si l'alignement a bien fonctionné en phase 1, la collaboration devient maintenant plus productive. Sinon, les points de friction se figent. Les règles de travail doivent être revues et ajustées si nécessaire."),
+        p("Phase 3", "12+ mois", "L'intégration est stable quand les différences ont été acceptées comme un complément. Si elles n'ont jamais vraiment été abordées, une frustration latente peut s'accumuler. Même après une longue période commune, une conversation de clarification reste utile."),
+      ];
+    }
+    if (c.matchCase === "TOP2_ONLY") {
+      return [
+        p("Phase 1", "0-3 mois", `Le démarrage est exigeant car les logiques de pensée diffèrent. L'équipe travaille par ${cs(c.teamPrimary)}, la personne par ${cs(c.personPrimary)}. L'approche de travail commune offre cependant un pont important. Les attentes doivent être formulées très concrètement dans cette phase.`),
+        p("Phase 2", "3-12 mois", "La tension devient plus claire au fur et à mesure que l'effet de nouveauté s'estompe. C'est le moment où l'on voit si le complément est utilisé comme une force ou devient une source de friction persistante. Sans cadrage clair du management, la personne risque d'être marginalisée."),
+        p("Phase 3", "12+ mois", "Si l'intégration a réussi, l'équipe est devenue plus polyvalente. Si ce n'est pas le cas, la friction s'est figée. Une décision ouverte s'impose alors : la situation va-t-elle changer, ou reste-t-elle ainsi avec toutes les conséquences ?"),
+      ];
+    }
+    if (c.teamClass === "BALANCED" || c.personClass === "BALANCED") {
+      return [
+        p("Phase 1", "0-3 mois", "Le démarrage dépend beaucoup de la façon dont la personne se positionne. Avec une équipe équilibrée ou une personne au profil large, il n'y a pas de friction naturelle, mais pas non plus de point d'ancrage clair. Les attentes et la clarté du rôle sont particulièrement importantes dès le début."),
+        p("Phase 2", "3-12 mois", "Le schéma de collaboration se stabilise. Sa productivité dépend de la façon dont les deux parties ont trouvé un mode de travail clair. Des points de suivi réguliers aident à s'assurer que la dynamique ne dérive pas."),
+        p("Phase 3", "12+ mois", "Une collaboration stable nécessite que les deux parties aient développé un langage de travail commun. Si c'est le cas, la combinaison est résiliente. Sinon, une discussion franche sur la voie à suivre s'impose."),
+      ];
+    }
+    return [
+      p("Phase 1", "0-3 mois", "Le démarrage est exigeant. Des conflits et des frictions précoces sont probables, ce qui est normal et non un signe d'échec. Un accompagnement intensif et des attentes claires sont nécessaires dès le début pour éviter que des schémas négatifs ne s'installent."),
+      p("Phase 2", "3-12 mois", "Les différences sont connues et l'incertitude initiale est passée. La question se pose maintenant : les différences sont-elles vécues comme un enrichissement ou comme un fardeau ? Sans management actif, la dynamique bascule vers la frustration et le retrait."),
+      p("Phase 3", "12+ mois", "Soit la personne a enrichi l'équipe et apporté de nouvelles forces, soit la tension est permanente. Dans ce dernier cas, une discussion ouverte sur la perspective est nécessaire. La poursuite n'a de sens que si les deux parties y travaillent activement."),
     ];
   }
 
@@ -1110,6 +1424,108 @@ function buildIntegrationsplan(c: Ctx): V4IntegrationPhase[] {
         fokus: {
           intro: "This phase focuses on:",
           bullets: ["Sustainability of integration and long-term viability", "Clarification of all open points and unspoken expectations", "Definition of a clear direction for the coming months", "Ensuring both sides are satisfied and collaborating constructively"],
+        },
+      },
+    ];
+    return base;
+  }
+
+  if (_lang === "fr") {
+    const base: V4IntegrationPhase[] = [
+      {
+        num: 1,
+        title: "Arrivée et orientation",
+        period: "Jours 1-10",
+        ziel: "La personne comprend la culture d'équipe, les principaux processus et les attentes liées à son rôle. Elle sait qui fait quoi dans l'équipe et connaît les règles fondamentales de la collaboration.",
+        beschreibung: c.matchCase === "TOP1_TOP2"
+          ? "L'intégration peut se dérouler rapidement car l'approche de travail de la personne correspond à celle de l'équipe. La personne trouvera rapidement ses marques et comprendra naturellement la culture d'équipe. L'accent doit être mis sur la clarification du rôle et les premières tâches concrètes pour que la personne soit efficace rapidement. Utilisez l'alignement naturel pour établir la confiance rapidement."
+          : c.matchCase === "TOP1_ONLY"
+            ? `L'intégration peut s'appuyer sur la logique commune (${cs(c.teamPrimary)}), ce qui facilite l'arrivée. En même temps, il faut être transparent dès le départ sur le fait que la personne procède différemment dans le travail quotidien de ce à quoi l'équipe est habituée : ${c.personSecondary === "impulsiv" ? "La personne voudra passer à l'action plus vite, tandis que l'équipe attend davantage de préparation." : c.personSecondary === "analytisch" ? "La personne voudra analyser plus en profondeur, tandis que l'équipe attend plus de rythme." : "La personne cherchera plus de coordination, tandis que l'équipe tend à travailler de manière plus indépendante."} Clarifiez tôt quelle approche est attendue dans quelles situations.`
+            : c.matchCase === "NONE"
+              ? "L'intégration nécessite une attention particulière car l'approche de travail et la culture d'équipe diffèrent significativement. La personne ne comprendra pas naturellement la logique de l'équipe et a besoin d'explications actives. L'accent doit être mis sur la connaissance mutuelle et la compréhension de la culture d'équipe. Évitez de laisser la personne travailler de manière autonome avant qu'elle ait compris les règles du jeu."
+              : "L'intégration nécessite des repères clairs. La personne apporte une approche de travail partiellement compatible, mais doit d'abord comprendre comment l'équipe fonctionne et ce qu'elle attend avant d'agir de manière autonome.",
+        praxis: [
+          "Présentations personnelles avec tous les membres de l'équipe en tête-à-tête ou en petits groupes",
+          "Clarification des principales tâches, responsabilités et voies de décision",
+          "Désignation d'un interlocuteur dédié (binôme ou mentor) pour les premières semaines",
+          "Introduction aux principaux outils, processus et canaux de communication de l'équipe",
+          "Communication transparente à l'équipe sur le rôle et les attentes vis-à-vis de la nouvelle personne",
+        ],
+        signale: [
+          "La personne pose des questions actives sur la culture d'équipe et montre un intérêt réel pour la compréhension",
+          "Premières contributions en réunion, même si elles sont encore prudentes",
+          "Pas de conflits évidents, pas de retrait ni d'inconfort visible",
+          "La personne prend contact spontanément avec les membres de l'équipe",
+          "L'équipe fait preuve d'ouverture et de volonté d'impliquer la personne",
+        ],
+        fuehrungstipp: c.isLeader
+          ? "En tant que manager : écoutez plus que vous ne parlez dans les premiers jours. Observez la dynamique d'équipe avant d'initier des changements. Montrez du respect pour les processus existants et signalez que vous souhaitez comprendre la culture d'équipe avant de la façonner. Votre première impression a un effet durable."
+          : "Donnez délibérément à la personne de l'espace pour s'installer. N'attendez pas encore une pleine productivité. Concentrez-vous sur la construction des relations et l'orientation. Évitez de la surcharger avec trop d'informations d'un coup. Priorisez les sujets les plus importants.",
+        fokus: {
+          intro: "Cette phase se concentre sur :",
+          bullets: ["Établissement de la confiance entre la personne et l'équipe", "Orientation dans la culture d'équipe, les processus et les attentes", "Premiers contacts personnels et découverte du style de travail de l'équipe", "Clarté du rôle et compréhension de sa propre contribution"],
+        },
+      },
+      {
+        num: 2,
+        title: "Prise en main et premiers résultats",
+        period: "Jours 11-20",
+        ziel: "La personne prend en charge ses premières tâches autonomes et devient visible dans l'équipe en tant que membre actif. Elle comprend la logique de l'équipe et peut contribuer de manière productive.",
+        beschreibung: c.matchCase === "TOP1_TOP2"
+          ? "Grâce au fort alignement, la personne peut rapidement travailler de manière autonome et assumer des responsabilités. L'accent doit maintenant porter sur des résultats précoces et visibles qui confirment la confiance de l'équipe. Utilisez cette phase pour impliquer la personne dans des projets actifs et affiner son profil dans l'équipe."
+          : c.matchCase === "TOP1_ONLY"
+            ? `La personne commence à apporter plus clairement sa propre approche de travail. Dans cette phase, la différence entre ${cs(c.teamSecondary)} (approche de l'équipe) et ${cs(c.personSecondary)} (approche de la personne) devient concrètement perceptible dans le quotidien. ${c.personSecondary === "impulsiv" ? "Dans des situations que l'équipe gère avec soin et préparation, la personne tendra vers des décisions rapides et une action directe." : c.personSecondary === "analytisch" ? "Dans des situations que l'équipe gère avec rythme et pragmatisme, la personne tendra vers une analyse approfondie et des approches structurées." : "Dans des situations que l'équipe gère de manière structurée et factuelle, la personne cherchera des échanges et l'implication de toutes les parties."} Clarifiez dans des situations concrètes quelle approche a la priorité.`
+            : "La personne commence à apporter plus clairement sa propre approche de travail. Dans cette phase, les différences avec l'équipe deviennent visibles et tangibles. C'est une partie normale et importante du processus d'intégration. Les différences doivent être abordées ouvertement et de manière constructive plutôt qu'ignorées ou étouffées. Un retour clair aide la personne à se repérer.",
+        praxis: [
+          "Prise en charge d'un lot de travail concret et délimité avec un résultat clair",
+          "Premier entretien structuré de retour avec le manager sur l'intégration à ce jour",
+          "Implication dans des projets d'équipe actifs et collaboration avec différents membres de l'équipe",
+          "Réflexion commune : où y a-t-il alignement, où des différences apparaissent-elles ?",
+          "Ajustement du rôle ou des attentes si nécessaire selon les expériences des premiers jours",
+        ],
+        signale: [
+          "La personne livre les premiers résultats autonomes qui répondent aux attentes",
+          "Le retour des membres de l'équipe est majoritairement positif ou constructif",
+          "Pas de malentendus répétés ni de frustration croissante d'un côté ou de l'autre",
+          "La personne apporte ses propres idées et fait preuve d'initiative",
+          "La collaboration dans l'équipe devient de plus en plus naturelle pour toutes les parties",
+        ],
+        fuehrungstipp: c.isLeader
+          ? "Fixez maintenant les premières priorités claires et montrez à l'équipe la direction prise. Vos premières décisions visibles façonnent la perception de votre management. Soyez décisif, mais respectueux des structures existantes. Recueillez activement des retours de l'équipe et montrez que vous les prenez au sérieux."
+          : "Vérifiez activement dans cette phase si la personne a compris la logique de l'équipe et peut contribuer de manière productive. Corrigez tôt et de manière constructive si nécessaire. N'attendez pas que les problèmes se figent. Une courte conversation maintenant évite de longs conflits plus tard.",
+        fokus: {
+          intro: "Cette phase se concentre sur :",
+          bullets: ["Premières contributions autonomes et résultats visibles", "Visibilité et acceptation croissantes dans l'équipe", "Recherche active et traitement des retours", "Gestion constructive des différences qui apparaissent"],
+        },
+      },
+      {
+        num: 3,
+        title: "Stabilisation et approfondissement",
+        period: "Jours 21-30",
+        ziel: "La personne est arrivée dans l'équipe et travaille de manière autonome et efficace. L'intégration fondamentale est terminée et les bases d'une collaboration à long terme sont en place.",
+        beschreibung: c.score >= 60
+          ? "L'intégration devrait maintenant être largement en place. La personne a trouvé sa place dans l'équipe et travaille de manière productive. L'accent porte maintenant sur les points ouverts, les objectifs pour les prochains mois et un entretien de retour honnête des deux côtés."
+          : "L'intégration nécessite encore de l'attention. Abordez ouvertement si la collaboration peut fonctionner à long terme. S'il y a des problèmes, ils doivent être nommés maintenant, pas dans six mois.",
+        praxis: [
+          "Entretien de retour récapitulatif couvrant toute la phase d'intégration",
+          "Clarification des prochaines étapes de développement et des objectifs concrets pour les trois prochains mois",
+          "Bilan commun : qu'est-ce qui fonctionne bien, qu'est-ce qui nécessite un ajustement ou un soutien supplémentaire ?",
+          "Définition d'attentes claires pour la prochaine phase de collaboration",
+          "Ajustement du rôle, des responsabilités ou des modes de travail si nécessaire",
+        ],
+        signale: [
+          "La personne est productive de manière autonome et livre des résultats de façon fiable",
+          "La dynamique d'équipe est stable ou s'est améliorée par rapport au point de départ",
+          "Pas de conflits non résolus ni de tensions latentes",
+          "La personne se sent membre de l'équipe et l'exprime",
+          "Les membres de l'équipe incluent naturellement la personne dans les décisions et la coordination",
+        ],
+        fuehrungstipp: c.isLeader
+          ? "Réfléchissez honnêtement et de manière autocritique à votre premier impact dans l'équipe. Qu'est-ce qui a bien fonctionné, qu'est-ce qui nécessite un ajustement ? Recueillez un retour structuré de l'équipe et montrez que vous êtes prêt à adapter votre style de management aux besoins de l'équipe, sans abandonner votre propre direction."
+          : "Ayez une conversation ouverte et honnête avec la personne : qu'est-ce qui fonctionne bien, qu'est-ce qui doit changer ? Fixez des objectifs communs pour les trois prochains mois et définissez comment le succès de l'intégration sera mesuré. Cette conversation est la base d'une collaboration durablement productive.",
+        fokus: {
+          intro: "Cette phase se concentre sur :",
+          bullets: ["Pérennité de l'intégration et viabilité à long terme", "Clarification de tous les points ouverts et des attentes non exprimées", "Définition d'une direction claire pour les prochains mois", "S'assurer que les deux parties sont satisfaites et collaborent de manière constructive"],
         },
       },
     ];
@@ -1254,6 +1670,40 @@ function buildIntegrationZusatz(c: Ctx): { intWarnsignale: string[]; intLeitfrag
     return { intWarnsignale: warnsignale, intLeitfragen: leitfragen, intVerantwortung: verantwortung };
   }
 
+  if (_lang === "fr") {
+    const warnsignale: string[] = [
+      "La personne se retire dans les réunions, devient anormalement silencieuse ou ne contribue que lorsqu'on s'adresse directement à elle",
+      "Les membres de l'équipe expriment leur insatisfaction quant à la collaboration ou évitent le contact avec la nouvelle personne",
+      "La personne ne prend pas contact de manière autonome avec l'équipe et reste isolée dans son propre travail",
+      "Des malentendus récurrents dans la communication qui persistent malgré les tentatives de clarification",
+      "La personne montre une motivation déclinante, arrive en retard, part tôt ou semble de plus en plus désintéressée",
+      "L'équipe forme des sous-groupes informels qui excluent la nouvelle personne",
+    ];
+
+    if (c.score < 60) {
+      warnsignale.push("Les conflits ouverts ou latents augmentent plutôt que diminuent, malgré des tentatives antérieures de résolution");
+      warnsignale.push("La personne tente de déplacer la culture d'équipe dans sa propre direction sans tenir compte des dynamiques existantes");
+      warnsignale.push("Les membres de l'équipe réagissent avec un rejet croissant ou une résistance passive aux propositions de la personne");
+      warnsignale.push("Le management doit de plus en plus souvent arbitrer entre la personne et l'équipe sans amélioration de la situation");
+    }
+
+    const leitfragen = [
+      "La personne se sent-elle la bienvenue dans l'équipe et reconnue comme membre à part entière ?",
+      "La personne comprend-elle clairement ce qu'on attend d'elle et peut-elle répondre à ces attentes ?",
+      "Existe-t-il des points de friction ou des tensions qui ne sont pas abordés ouvertement et agissent en sourdine ?",
+      "La personne peut-elle réellement utiliser ses forces spécifiques dans le rôle actuel et les rendre visibles ?",
+      "Existe-t-il une couche de travail commune où la personne et l'équipe collaborent régulièrement de manière productive ?",
+      "Les attentes initiales des deux parties se sont-elles avérées réalistes, ou doivent-elles être ajustées ?",
+      "Comment la dynamique d'équipe a-t-elle évolué depuis l'arrivée de la personne : positivement ou négativement ?",
+    ];
+
+    const verantwortung = c.isLeader
+      ? "La responsabilité de l'intégration incombe conjointement à l'organisation et au management. L'organisation définit le cadre et les attentes. Le manager doit aller vers l'équipe, écouter et apprendre avant de façonner. Les deux parties doivent être prêtes à investir dans le processus et à intervenir tôt si nécessaire."
+      : "La responsabilité principale incombe au manager : formuler des attentes claires, donner un retour régulier, intervenir tôt quand ça bloque et expliquer à l'équipe pourquoi cette personne a été choisie. La personne elle-même doit faire preuve d'ouverture et aller activement vers l'équipe.";
+
+    return { intWarnsignale: warnsignale, intLeitfragen: leitfragen, intVerantwortung: verantwortung };
+  }
+
   const warnsignale: string[] = [
     "Die Person zieht sich in Meetings zurück, wird auffällig still oder beteiligt sich nur noch auf direkte Ansprache",
     "Teammitglieder äussern Unzufriedenheit über die Zusammenarbeit oder vermeiden den Kontakt mit der neuen Person",
@@ -1317,6 +1767,32 @@ function buildEmpfehlungen(c: Ctx): V4Block[] {
     return emps;
   }
 
+  if (_lang === "fr") {
+    if (c.matchCase === "TOP1_TOP2") {
+      emps.push({ title: "Déployer les forces délibérément", text: `Placez la personne là où la force commune de l'équipe et de la personne a le plus d'impact. Le fort alignement en ${cd(c.teamPrimary)} et en ${cs(c.teamSecondary)} permet un déploiement rapide sur les tâches principales sans longue période d'intégration. Utilisez cet avantage consciemment et donnez tôt de la responsabilité à la personne dans des domaines qui s'appuient sur la force commune.` });
+      emps.push({ title: "Rechercher activement le complément", text: "Veillez délibérément à ce que l'équipe ne devienne pas plus unidimensionnelle par renforcement. Invitez activement des perspectives complémentaires, par exemple à travers des questions ciblées en réunion ou en intégrant consciemment des points de vue extérieurs. Pour la prochaine composition d'équipe, envisagez si quelqu'un avec une logique de travail différente renforcerait la polyvalence de l'équipe." });
+      emps.push({ title: "Intégrer des temps de réflexion", text: "Créez des moments de réflexion réguliers où l'équipe réfléchit délibérément à sa propre façon de travailler. Des questions comme 'Qu'est-ce que nous négligeons en ce moment ?' ou 'Quelle perspective nous manque ?' aident à minimiser les risques d'un fort alignement et à mettre en lumière les angles morts." });
+    } else if (c.matchCase === "TOP1_ONLY") {
+      emps.push({ title: "Renforcer la base commune", text: `Utilisez la logique commune en ${cd(c.teamPrimary)} comme fondation stable pour la collaboration. Aidez la personne et l'équipe à reconnaître qu'elles s'accordent au niveau fondamental, et abordez ouvertement et de manière constructive les différences dans l'approche de travail concrète. Présentez les différences comme des chemins différents vers le même objectif, non comme des incompatibilités fondamentales.` });
+      emps.push({ title: "Convenir des règles du quotidien", text: "Définissez dans les premières semaines des règles concrètes pour la collaboration quotidienne : comment communique-t-on ? À quelle rapidité attend-on des réponses ? Avec quelle rigueur les décisions doivent-elles être préparées ? Ces petits accords concrets comblent les différences dans les détails et empêchent que des différences normales de style de travail ne deviennent des conflits émotionnels." });
+      emps.push({ title: "Valoriser le complément", text: `La personne apporte ${cs(c.personSecondary)} comme une force différente dans le quotidien par rapport à l'équipe. Rendez visible où ce complément aide l'équipe, et créez délibérément des opportunités pour que la personne apporte sa force particulière. Cela augmente l'acceptation et montre à l'équipe la valeur de cette composition.` });
+    } else if (c.matchCase === "TOP2_ONLY") {
+      emps.push({ title: "Rendre la logique de décision transparente", text: `L'équipe décide ${ca(c.teamPrimary)}, la personne ${ca(c.personPrimary)}. Clarifiez concrètement : dans quelles situations ${cs(c.teamPrimary)} a-t-il la priorité (par exemple sous pression de temps, dans les décisions opérationnelles) ? Et où ${cs(c.personPrimary)} est-il explicitement souhaité (par exemple dans les questions stratégiques, la gestion de la qualité) ? Quand les deux parties savent quelle logique s'applique dans quel cas, les frictions quotidiennes diminuent.` });
+      emps.push({ title: "Utiliser activement la couche commune", text: `Les deux parties se rejoignent par ${cs(c.teamSecondary)}. Utilisez cette approche de travail commune consciemment comme pont : structurez les réunions de coordination, les tours de rétroaction et les sessions de travail communes de façon à ce que ${cs(c.teamSecondary)} soit le format dominant. Cela renforce le lien et crée une couche familière où les différences de logique fondamentale ont moins d'impact.` });
+      emps.push({ title: "Cadrer les différences pour l'équipe", text: `L'équipe peut percevoir le comportement de la personne comme inadapté ou résistant, même si c'est structurellement fondé. Expliquez à l'équipe que la personne ne travaille pas différemment par mauvaise volonté, mais parce que ${cd(c.personPrimary)} est sa logique de travail naturelle. Nommez concrètement où le complément aide l'équipe, par exemple dans des tâches où l'équipe avait des lacunes. Ce cadrage prévient les préjugés et augmente l'acceptation.` });
+    } else {
+      emps.push({ title: "Fournir un accompagnement intensif", text: "Les 90 premiers jours sont particulièrement décisifs ici. Planifiez des points de suivi hebdomadaires et adressez les premiers signes de conflit immédiatement. Plus les problèmes sont traités tôt, plus ils sont faciles à résoudre." });
+      emps.push({ title: "Créer des responsabilités claires", text: "Définissez dès le début les responsabilités, les voies de décision et les voies d'escalade. Avec une forte déviation, la coordination intuitive ne fonctionne pas. Les deux parties ont besoin de règles claires." });
+      emps.push({ title: "Vérifier et communiquer l'intention", text: "La différence est-elle intentionnelle ? L'équipe a-t-elle vraiment besoin d'une perspective différente ? Si oui, dites-le clairement à l'équipe. Sans ce cadrage, les différences seront interprétées comme une erreur dans la décision de recrutement. Si la différence n'était pas prévue, reconsidérez la composition." });
+    }
+
+    if (c.hasGoal && c.taskFit === "gering") {
+      emps.push({ title: "Renforcer délibérément le focus sur la tâche", text: `La personne n'apporte pas la force appropriée pour l'objectif fonctionnel ${c.teamGoalLabel}. Elle peut quand même remplir le rôle, mais aura besoin de plus de soutien. Complétez délibérément avec des membres de l'équipe plus forts dans ce domaine, et veillez à ce que la personne ne travaille pas durablement contre sa logique de travail naturelle.` });
+    }
+
+    return emps;
+  }
+
   if (c.matchCase === "TOP1_TOP2") {
     emps.push({ title: "Stärken gezielt nutzen", text: `Setzen Sie die Person dort ein, wo die gemeinsame Stärke von Team und Person am meisten Wirkung zeigt. Die hohe Übereinstimmung in ${COMP_DOMAIN[c.teamPrimary]} und ${COMP_SHORT[c.teamSecondary]} ermöglicht es, die Person schnell in Kernaufgaben einzusetzen, ohne lange Einarbeitungszeit. Nutzen Sie diesen Vorteil bewusst und geben Sie der Person früh Verantwortung in Bereichen, die auf die gemeinsame Stärke einzahlen.` });
     emps.push({ title: "Ergänzung aktiv suchen", text: "Achten Sie bewusst darauf, dass das Team durch die Verstärkung nicht einseitiger wird. Fordern Sie aktiv ergänzende Perspektiven ein, zum Beispiel durch gezielte Fragen in Meetings oder durch die bewusste Einbeziehung externer Sichtweisen. Überlegen Sie bei der nächsten Teambesetzung, ob eine Person mit einer anderen Arbeitslogik sinnvoller wäre, um die Vielseitigkeit des Teams zu erhöhen." });
@@ -1358,6 +1834,24 @@ function buildTeamOhnePerson(c: Ctx): string {
     } else {
       paras.push("Without this person, the team returns to its previous dynamic. How noticeable this is depends on how integration played out. If the person genuinely broadened the team, there is a real gap. If the collaboration was dominated by friction, the departure may even bring relief.");
       paras.push("The key question: has the person anchored changes in processes or thinking that outlast their presence? If yes, the positive effect remains. If not, the team will quickly return to its starting point. Use the departure for an honest reflection: what did this placement bring? What would you do differently?");
+    }
+    return paras.join("\n\n");
+  }
+
+  if (_lang === "fr") {
+    const paras: string[] = [];
+    if (c.matchCase === "TOP1_TOP2") {
+      paras.push(`Sans cette personne, l'équipe reste dans sa logique fondamentale. Le renforcement en ${cd(c.teamPrimary)} disparaît, mais l'équipe ne perd aucune capacité qu'elle n'avait pas auparavant, seulement de la capacité dans la force principale. La dynamique reste probablement stable.`);
+      paras.push("À long terme, la structure et la culture de l'équipe changent peu. La question est : la capacité supplémentaire était-elle nécessaire et doit-elle être remplacée ? Si la personne était un renforcement purement quantitatif, le remplacement est simple. Si elle a apporté des qualités personnelles au-delà de la correspondance de profil, le vide sera plus grand que ce que l'analyse du profil laisse supposer.");
+    } else if (c.matchCase === "TOP1_ONLY") {
+      paras.push(`Sans cette personne, l'équipe perd l'apport complémentaire en ${cd(c.personSecondary)}. La logique fondamentale (${cs(c.teamPrimary)}) reste inchangée, mais l'approche de travail particulière, ${cs(c.personSecondary)} plutôt que ${cs(c.teamSecondary)}, manque comme perspective.`);
+      paras.push("L'équipe revient à son mode de travail précédent. À court terme, cela apporte de la stabilité, car l'effort d'adaptation disparaît. À long terme, le complément manque. Pour la prochaine composition, il vaut la peine d'examiner si un profil similaire doit être recherché à nouveau.");
+    } else if (c.matchCase === "TOP2_ONLY") {
+      paras.push(`Sans cette personne, l'équipe perd l'apport en ${cd(c.personPrimary)}. La mesure dans laquelle cela est perceptible dépend de la qualité de l'intégration de la personne et de la façon dont l'équipe a activement utilisé son complément.`);
+      paras.push("L'équipe revient à son mode de travail précédent. À court terme, cela apporte de la stabilité. À long terme, les faiblesses et les angles morts que la personne compensait restent de nouveau sans compensation. Pour la prochaine composition, il vaut la peine d'examiner si un profil similaire doit être recherché à nouveau.");
+    } else {
+      paras.push("Sans cette personne, l'équipe revient à sa dynamique précédente. La mesure dans laquelle cela est perceptible dépend du déroulement de l'intégration. Si la personne a réellement élargi l'équipe, elle laisse un vide. Si la collaboration était dominée par les frictions, le départ peut même apporter un soulagement.");
+      paras.push("La question clé : la personne a-t-elle ancré des changements dans les processus ou les façons de penser qui perdurent après son départ ? Si oui, l'effet positif reste. Sinon, l'équipe reviendra rapidement à son point de départ. Utilisez le départ pour une réflexion honnête : qu'a apporté cette composition ? Que feriez-vous différemment ?");
     }
     return paras.join("\n\n");
   }
@@ -1411,6 +1905,32 @@ function buildSchlussfazit(c: Ctx): string {
     return paras.join("\n\n");
   }
 
+  if (_lang === "fr") {
+    const paras: string[] = [];
+    if (score >= 85) {
+      const goalPart = hasGoal && taskFit === "hoch"
+        ? ` Pour l'objectif fonctionnel ${teamGoalLabel}, la personne présente également une bonne adéquation.`
+        : "";
+      paras.push(`Cette composition est recommandée. Le style de travail de la personne s'aligne bien avec l'équipe.${goalPart} ${isLeader ? "La prise de poste de manager devrait se dérouler sans heurts, car le manager communique et décide d'une façon que l'équipe reconnaît." : "L'intégration devrait se faire rapidement, car la personne comprend naturellement la culture d'équipe."}`);
+      paras.push(`Il vaut quand même la peine de discuter ouvertement des attentes dès le départ. Une bonne adéquation de profil réduit les frictions, mais ne garantit pas une collaboration parfaite. ${isLeader ? "Vérifiez après 90 jours si le manager imprime aussi sa propre direction et ne fait pas que confirmer ce que l'équipe pense déjà." : "Vérifiez après 90 jours si l'équipe n'est pas devenue plus unidimensionnelle par renforcement."}`);
+    } else if (score >= 60) {
+      paras.push(`Cette composition peut fonctionner, mais nécessite un pilotage. ${matchCase === "TOP1_ONLY" ? "La logique de pensée concorde, ce qui constitue une base stable. Dans le quotidien, il existe cependant des différences qui nécessitent une clarification." : "Dans le travail quotidien, il y a des chevauchements qui portent la collaboration. La direction de pensée diffère cependant, ce qui se remarque sous pression."}`);
+      paras.push(`Le succès de cette composition dépend de la façon dont les différences sont utilisées comme complément. Cela nécessite des attentes claires, un retour régulier et de l'ouverture des deux côtés. ${isLeader ? "Le manager doit savoir où s'adapter et où imprimer sa propre direction." : "Le manager porte la responsabilité principale de définir le cadre."} Un bilan après 90 jours est recommandé.`);
+    } else {
+      const goalPart = hasGoal && taskFit !== "gering"
+        ? ` Pour l'objectif fonctionnel ${teamGoalLabel}, la personne peut cependant apporter une contribution concrète.`
+        : "";
+      if (matchCase === "TOP2_ONLY") {
+        paras.push(`Cette composition est exigeante. Les logiques de pensée diffèrent significativement, mais dans le travail quotidien il existe une couche de connexion par ${cs(c.teamSecondary)}.${goalPart}`);
+        paras.push("Cette couche de travail commune rend l'intégration plus réaliste que sans aucun chevauchement. Le management doit cependant clarifier quand quelle logique de travail a la priorité, et communiquer ouvertement pourquoi cette composition a du sens malgré tout.");
+      } else {
+        paras.push(`Cette composition est exigeante. La personne et l'équipe diffèrent significativement tant dans la logique de pensée que dans l'approche de travail.${goalPart}`);
+        paras.push("Une intégration est possible, mais seulement quand il est clair pourquoi cette composition a du sens malgré les différences. Quand cela est justifié, elle peut renforcer l'équipe. Sinon, la décision devrait être réexaminée.");
+      }
+    }
+    return paras.join("\n\n");
+  }
+
   const paras: string[] = [];
 
   if (score >= 85) {
@@ -1441,13 +1961,15 @@ function buildSchlussfazit(c: Ctx): string {
 
 
 export function computeTeamCheckV4(input: TeamCheckV4Input): TeamCheckV4Result {
-  _lang = input.lang === "en" ? "en" : "de";
+  _lang = input.lang === "en" ? "en" : input.lang === "fr" ? "fr" : "de";
 
   const inputRoleType = input.roleType;
   const isLeader = inputRoleType === "fuehrung" || inputRoleType === "leadership";
-  const roleLabel = _lang === "en"
-    ? (isLeader ? "Manager" : "Team member")
-    : (isLeader ? "Führungskraft" : "Teammitglied");
+  const roleLabel = _lang === "fr"
+    ? (isLeader ? "Manager" : "Membre d'équipe")
+    : _lang === "en"
+      ? (isLeader ? "Manager" : "Team member")
+      : (isLeader ? "Führungskraft" : "Teammitglied");
 
   const teamPrimary = getTop1(input.teamProfile);
   const personPrimary = getTop1(input.personProfile);
@@ -1474,7 +1996,7 @@ export function computeTeamCheckV4(input: TeamCheckV4Input): TeamCheckV4Result {
   const begleitungsbedarf = fitToBegleitung(teamFit);
   const gesamteinschaetzung = gesamtLabel(teamFit, taskFit, matchCase);
 
-  const roleName = input.roleTitle || (_lang === "en" ? "this role" : "diese Rolle");
+  const roleName = input.roleTitle || (_lang === "fr" ? "ce poste" : _lang === "en" ? "this role" : "diese Rolle");
   const goalKey = safeGoal ? GOAL_KEY[safeGoal] : null;
 
   const ctx: Ctx = {
@@ -1495,15 +2017,25 @@ export function computeTeamCheckV4(input: TeamCheckV4Input): TeamCheckV4Result {
             : sameDominance
               ? `Both team and person operate through ${cs(teamPrimary)} as their primary working logic. The core logic is structurally close, which makes collaboration easier in principle. In day-to-day work, differences in pace and approach are to be expected, as the team relies more on ${cs(teamSecondary)} while the person tends toward ${cs(personSecondary)}.`
               : `The team works with a clear focus on ${cs(teamPrimary)} and has aligned to this logic. The person, by contrast, leans more toward ${cs(personPrimary)} and approaches things differently. Clear expectations from the start are needed.`)
-    : (teamClass === "BALANCED" && personClass === "BALANCED"
-        ? "Sowohl Team als auch Person zeigen ein ausgeglichenes Profil ohne klare Dominanz in einem der drei bioLogic-Grundmuster. Beide Seiten sind situativ flexibel und nicht auf eine bestimmte Arbeitslogik festgelegt. Dadurch entsteht weder eine starke Übereinstimmung noch eine starke Reibung aus der Profilstruktur heraus."
-        : teamClass === "BALANCED"
-          ? `Das Team ist ausgeglichen aufgestellt und zeigt kein dominantes Arbeitsmuster. Die Person setzt dagegen stärker auf ${COMP_SHORT[personPrimary]} und bringt damit eine klarere Richtung in die Zusammenarbeit ein. Das kann dem Team Orientierung geben, erfordert aber Aufmerksamkeit, damit die Vielseitigkeit des Teams erhalten bleibt.`
-          : personClass === "BALANCED"
-            ? `Das Team arbeitet mit einem klaren Schwerpunkt auf ${COMP_SHORT[teamPrimary]} und erwartet von neuen Mitgliedern eine ähnliche Ausrichtung. Die Person ist dagegen breit aufgestellt und zeigt kein dominantes Muster. Sie kann flexibel anschliessen, muss aber die Teamlogik aktiv verstehen und annehmen.`
-            : sameDominance
-              ? `Team und Person setzen beide auf ${COMP_SHORT[teamPrimary]} als primäre Arbeitslogik. Die Grundlogik liegt strukturell nah beieinander, was die Zusammenarbeit grundsätzlich erleichtert. Im Alltag sind jedoch Unterschiede in Tempo und Vorgehen zu erwarten, da das Team stärker auf ${COMP_SHORT[teamSecondary]} setzt, die Person eher auf ${COMP_SHORT[personSecondary]}.`
-              : `Das Team arbeitet mit einem klaren Schwerpunkt auf ${COMP_SHORT[teamPrimary]} und hat sich auf diese Arbeitslogik eingestellt. Die Person setzt dagegen stärker auf ${COMP_SHORT[personPrimary]} und geht Dinge anders an. Das braucht klare Erwartungen von Anfang an.`);
+    : _lang === "fr"
+      ? (teamClass === "BALANCED" && personClass === "BALANCED"
+          ? "L'équipe et la personne présentent toutes deux un profil équilibré sans dominance claire dans l'un des trois schémas comportementaux. Les deux parties sont flexibles et non fixées à une logique de travail particulière. Cela ne génère ni fort alignement ni forte friction structurelle à partir des profils."
+          : teamClass === "BALANCED"
+            ? `L'équipe est positionnée de manière équilibrée et ne montre pas de schéma de travail dominant. La personne, en revanche, s'oriente plus clairement vers ${cs(personPrimary)} et apporte une direction plus définie à la collaboration. Cela peut donner une orientation à l'équipe, mais nécessite une attention particulière pour préserver la polyvalence de l'équipe.`
+            : personClass === "BALANCED"
+              ? `L'équipe travaille avec un accent clair sur ${cs(teamPrimary)} et attend une orientation similaire des nouveaux membres. La personne est positionnée de manière plus large sans schéma dominant. Elle peut s'adapter avec souplesse, mais doit comprendre activement et adopter la logique de l'équipe.`
+              : sameDominance
+                ? `L'équipe et la personne opèrent toutes deux avec ${cs(teamPrimary)} comme logique de travail principale. La logique fondamentale est structurellement proche, ce qui facilite la collaboration en principe. Dans le travail quotidien, des différences de rythme et d'approche sont à prévoir, car l'équipe s'appuie davantage sur ${cs(teamSecondary)} tandis que la personne tend vers ${cs(personSecondary)}.`
+                : `L'équipe travaille avec un accent clair sur ${cs(teamPrimary)} et s'est alignée sur cette logique. La personne, en revanche, s'oriente davantage vers ${cs(personPrimary)} et aborde les choses différemment. Des attentes claires dès le début sont nécessaires.`)
+      : (teamClass === "BALANCED" && personClass === "BALANCED"
+          ? "Sowohl Team als auch Person zeigen ein ausgeglichenes Profil ohne klare Dominanz in einem der drei bioLogic-Grundmuster. Beide Seiten sind situativ flexibel und nicht auf eine bestimmte Arbeitslogik festgelegt. Dadurch entsteht weder eine starke Übereinstimmung noch eine starke Reibung aus der Profilstruktur heraus."
+          : teamClass === "BALANCED"
+            ? `Das Team ist ausgeglichen aufgestellt und zeigt kein dominantes Arbeitsmuster. Die Person setzt dagegen stärker auf ${COMP_SHORT[personPrimary]} und bringt damit eine klarere Richtung in die Zusammenarbeit ein. Das kann dem Team Orientierung geben, erfordert aber Aufmerksamkeit, damit die Vielseitigkeit des Teams erhalten bleibt.`
+            : personClass === "BALANCED"
+              ? `Das Team arbeitet mit einem klaren Schwerpunkt auf ${COMP_SHORT[teamPrimary]} und erwartet von neuen Mitgliedern eine ähnliche Ausrichtung. Die Person ist dagegen breit aufgestellt und zeigt kein dominantes Muster. Sie kann flexibel anschliessen, muss aber die Teamlogik aktiv verstehen und annehmen.`
+              : sameDominance
+                ? `Team und Person setzen beide auf ${COMP_SHORT[teamPrimary]} als primäre Arbeitslogik. Die Grundlogik liegt strukturell nah beieinander, was die Zusammenarbeit grundsätzlich erleichtert. Im Alltag sind jedoch Unterschiede in Tempo und Vorgehen zu erwarten, da das Team stärker auf ${COMP_SHORT[teamSecondary]} setzt, die Person eher auf ${COMP_SHORT[personSecondary]}.`
+                : `Das Team arbeitet mit einem klaren Schwerpunkt auf ${COMP_SHORT[teamPrimary]} und hat sich auf diese Arbeitslogik eingestellt. Die Person setzt dagegen stärker auf ${COMP_SHORT[personPrimary]} und geht Dinge anders an. Das braucht klare Erwartungen von Anfang an.`);
 
   return {
     roleTitle: input.roleTitle,
