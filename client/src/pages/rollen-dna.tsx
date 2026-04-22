@@ -772,14 +772,52 @@ const FUEHRUNG_OPTIONS_EN: DescOption[] = [
   { value: "Disziplinarische Führung mit Ergebnisverantwortung", label: "Leadership with personnel responsibility", desc: "The role leads employees, carries responsibility for results and develops the team in a targeted way." },
 ];
 
+const SECTION_SUBTITLES_FR: Record<string, string> = {
+  aufgabencharakter: "Quel type de tâches caractérise principalement ce poste ?",
+  arbeitslogik: "Qu'est-ce qui marque le plus le travail quotidien de ce poste ?",
+  erfolgsfokus: "Sur quoi repose principalement le succès de ce poste ?",
+  fuehrung: "Quel rôle de management est associé à ce poste ?",
+};
+
+const ERFOLGSFOKUS_DISPLAY_FR = [
+  { label: "Résultats et atteinte des objectifs", desc: "Le succès se manifeste dans des résultats concrets, l'atteinte des objectifs et une performance mesurable." },
+  { label: "Collaboration et réseau", desc: "Le succès naît de relations stables, d'une bonne coordination et d'une collaboration efficace." },
+  { label: "Innovation et changement", desc: "Le succès naît de nouvelles idées, d'approches audacieuses et d'une mise en oeuvre active du changement." },
+  { label: "Processus et efficacité", desc: "Le succès passe par des processus clairs, une structure et une approche systématique." },
+  { label: "Qualité professionnelle et expertise", desc: "Le succès repose sur un travail précis, une profondeur technique et une grande rigueur." },
+  { label: "Communication et influence", desc: "Le succès se manifeste dans la capacité à atteindre les personnes, à les convaincre et à faire avancer des solutions communes." },
+];
+
+const AUFGABENCHARAKTER_OPTIONS_FR: DescOption[] = [
+  { value: "überwiegend operativ", label: "Mise en oeuvre pratique au quotidien", desc: "L'accent est mis sur l'exécution directe et le traitement rapide des tâches dans le travail opérationnel quotidien. Les résultats découlent avant tout d'une action concrète." },
+  { value: "überwiegend systemisch", label: "Coordination et mise en oeuvre dans les processus", desc: "L'accent est mis sur la coordination, la concertation et une collaboration fluide au quotidien. Les tâches sont planifiées en échange et avancées conjointement." },
+  { value: "überwiegend strategisch", label: "Analyse, planification et pilotage stratégique", desc: "L'accent est mis sur la planification structurée, l'analyse approfondie et une évaluation claire. Les décisions sont préparées et pilotées de manière systématique." },
+  { value: "Gemischt", label: "Combinaison équilibrée", desc: "Le poste associe mise en oeuvre opérationnelle, analyse et coordination." },
+];
+
+const ARBEITSLOGIK_OPTIONS_FR: DescOption[] = [
+  { value: "Umsetzungsorientiert", label: "Mise en oeuvre et résultats", desc: "L'accent est mis sur l'exécution directe et les résultats visibles. Les tâches sont abordées rapidement et menées à terme de manière cohérente." },
+  { value: "Daten-/prozessorientiert", label: "Analyse et structure", desc: "L'accent est mis sur une planification réfléchie, une structure claire et une approche systématique. Les décisions reposent sur des données et une évaluation." },
+  { value: "Menschenorientiert", label: "Collaboration et communication", desc: "La coordination, les échanges et une collaboration fonctionnelle sont au centre. Les résultats découlent d'une bonne collaboration et d'une communication claire." },
+  { value: "Ausgewogen", label: "Combinaison équilibrée", desc: "Aucun style de travail ne se démarque clairement." },
+];
+
+const FUEHRUNG_OPTIONS_FR: DescOption[] = [
+  { value: "Keine", label: "Aucune responsabilité de management", desc: "Le poste travaille sans responsabilité envers d'autres personnes et se concentre sur ses propres tâches." },
+  { value: "Projekt-/Teamkoordination", label: "Coordination de projet ou d'équipe", desc: "Le poste coordonne les tâches, les processus ou les projets et assure la concertation dans l'équipe, sans responsabilité directe du personnel." },
+  { value: "Fachliche Führung", label: "Management technique", desc: "Le poste pilote les contenus, donne une orientation professionnelle et garantit la qualité du travail dans l'équipe." },
+  { value: "Disziplinarische Führung mit Ergebnisverantwortung", label: "Management avec responsabilité du personnel", desc: "Le poste dirige des collaborateurs, porte la responsabilité des résultats et développe l'équipe de manière ciblée." },
+];
+
 function getRegionOptions(region: string) {
   const isEn = region === "EN";
+  const isFr = region === "FR";
   return {
-    aufgaben: isEn ? AUFGABENCHARAKTER_OPTIONS_EN : AUFGABENCHARAKTER_OPTIONS,
-    arbeit: isEn ? ARBEITSLOGIK_OPTIONS_EN : ARBEITSLOGIK_OPTIONS,
-    fuehrung: isEn ? FUEHRUNG_OPTIONS_EN : FUEHRUNG_OPTIONS,
-    erfolg: isEn ? ERFOLGSFOKUS_DISPLAY_EN : ERFOLGSFOKUS_DISPLAY,
-    subtitles: isEn ? SECTION_SUBTITLES_EN : SECTION_SUBTITLES,
+    aufgaben: isEn ? AUFGABENCHARAKTER_OPTIONS_EN : isFr ? AUFGABENCHARAKTER_OPTIONS_FR : AUFGABENCHARAKTER_OPTIONS,
+    arbeit: isEn ? ARBEITSLOGIK_OPTIONS_EN : isFr ? ARBEITSLOGIK_OPTIONS_FR : ARBEITSLOGIK_OPTIONS,
+    fuehrung: isEn ? FUEHRUNG_OPTIONS_EN : isFr ? FUEHRUNG_OPTIONS_FR : FUEHRUNG_OPTIONS,
+    erfolg: isEn ? ERFOLGSFOKUS_DISPLAY_EN : isFr ? ERFOLGSFOKUS_DISPLAY_FR : ERFOLGSFOKUS_DISPLAY,
+    subtitles: isEn ? SECTION_SUBTITLES_EN : isFr ? SECTION_SUBTITLES_FR : SECTION_SUBTITLES,
   };
 }
 
@@ -1219,8 +1257,9 @@ function SectionNumber({ num, isComplete }: { num: number; isComplete: boolean }
   );
 }
 
-function MiniProgressBar({ filled, total }: { filled: number; total: number }) {
+function MiniProgressBar({ filled, total, region }: { filled: number; total: number; region?: string }) {
   const pct = (filled / total) * 100;
+  const ofWord = region === "EN" ? "of" : region === "FR" ? "sur" : "von";
   return (
     <div data-testid="mini-progress" style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 32 }}>
       <div style={{
@@ -1239,7 +1278,7 @@ function MiniProgressBar({ filled, total }: { filled: number; total: number }) {
         }} />
       </div>
       <span style={{ fontSize: 12, fontWeight: 500, color: "#6E6E73", whiteSpace: "nowrap" }}>
-        {filled} von {total}
+        {filled} {ofWord} {total}
       </span>
     </div>
   );
@@ -1255,17 +1294,23 @@ function SummaryBar({ beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, a
 }) {
   const localizeText = (text: string) => localizeStr(text, region as any);
   const isEN = region === "EN";
+  const isFR = region === "FR";
   const _ro = getRegionOptions(region);
   const arbeitsOpt = _ro.arbeit.find(o => o.value === arbeitslogik);
   const fuehrungOpt = _ro.fuehrung.find(o => o.value === fuehrung);
   const fokusLabels = erfolgsfokusIndices.map(i => _ro.erfolg[i]?.label).filter(Boolean);
-  const rollenName = beruf || (isEN ? "this role" : "diese Stelle");
+  const rollenName = beruf || (isEN ? "this role" : isFR ? "ce poste" : "diese Stelle");
 
   const aufgabenSatz: Record<string, string> = isEN ? {
     "überwiegend operativ": `combines practical work with direct execution in day-to-day business`,
     "überwiegend systemisch": `combines practical work with structured planning and steering`,
     "überwiegend strategisch": `is shaped by analysis, planning and strategic decisions`,
     "Gemischt": `combines practical work with analysis and coordination within the team`,
+  } : isFR ? {
+    "überwiegend operativ": `associe travail pratique et mise en oeuvre directe au quotidien`,
+    "überwiegend systemisch": `associe travail pratique à une planification et un pilotage structurés`,
+    "überwiegend strategisch": `est marqué par l'analyse, la planification et les décisions stratégiques`,
+    "Gemischt": `associe travail pratique, analyse et coordination dans l'équipe`,
   } : {
     "überwiegend operativ": `verbindet praktische Arbeit mit direkter Umsetzung im Tagesgeschäft`,
     "überwiegend systemisch": `verbindet praktische Arbeit mit strukturierter Planung und Steuerung`,
@@ -1278,6 +1323,11 @@ function SummaryBar({ beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, a
     "Daten-/prozessorientiert": `evaluating data, planning workflows and proceeding systematically`,
     "Menschenorientiert": `coordination, collaboration and communication within the team`,
     "Ausgewogen": `a balanced combination of different working styles is at the centre`,
+  } : isFR ? {
+    "Umsetzungsorientiert": `l'exécution des tâches et l'atteinte de résultats concrets`,
+    "Daten-/prozessorientiert": `l'analyse des données, la planification des processus et une approche systématique`,
+    "Menschenorientiert": `la coordination, la collaboration et la communication dans l'équipe`,
+    "Ausgewogen": `une combinaison équilibrée de différents styles de travail est au centre`,
   } : {
     "Umsetzungsorientiert": `Aufgaben umzusetzen und konkrete Ergebnisse zu erreichen`,
     "Daten-/prozessorientiert": `Daten auszuwerten, Abläufe zu planen und systematisch vorzugehen`,
@@ -1301,6 +1351,23 @@ function SummaryBar({ beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, a
     "Ausgewogen": [
       "The working style combines execution, analysis and communication.",
       "Flexibility in approach is decisive for success.",
+    ],
+  } : isFR ? {
+    "Umsetzungsorientiert": [
+      "Le poste travaille de manière très pratique et orientée vers les solutions.",
+      "Les tâches sont abordées directement et transformées en résultats concrets.",
+    ],
+    "Daten-/prozessorientiert": [
+      "Le travail repose sur des données, des structures claires et une approche systématique.",
+      "Les décisions sont préparées analytiquement et mises en oeuvre de manière compréhensible.",
+    ],
+    "Menschenorientiert": [
+      "La communication et l'entretien des relations sont au centre du travail quotidien.",
+      "Les résultats naissent de la coordination, de la confiance et de la collaboration.",
+    ],
+    "Ausgewogen": [
+      "Le style de travail associe mise en oeuvre, analyse et communication.",
+      "La flexibilité dans l'approche est décisive pour le succès.",
     ],
   } : {
     "Umsetzungsorientiert": [
@@ -1326,6 +1393,11 @@ function SummaryBar({ beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, a
     "Projekt-/Teamkoordination": "The role coordinates tasks and projects and ensures smooth collaboration within the team.",
     "Fachliche Führung": "The role takes technical responsibility within the team and ensures that work and quality are reliably delivered.",
     "Disziplinarische Führung mit Ergebnisverantwortung": "The role carries responsibility for employees, their development and the achievement of concrete results.",
+  } : isFR ? {
+    "Keine": "Le poste travaille de manière autonome sans diriger directement d'autres collaborateurs.",
+    "Projekt-/Teamkoordination": "Le poste coordonne les tâches et projets et assure une collaboration fluide dans l'équipe.",
+    "Fachliche Führung": "Le poste prend en charge la responsabilité professionnelle dans l'équipe et veille à ce que le travail et la qualité soient assurés de manière fiable.",
+    "Disziplinarische Führung mit Ergebnisverantwortung": "Le poste porte la responsabilité des collaborateurs, de leur développement et de l'atteinte de résultats concrets.",
   } : {
     "Keine": "Die Stelle arbeitet eigenverantwortlich ohne direkte Führung von Mitarbeitenden.",
     "Projekt-/Teamkoordination": "Die Stelle koordiniert Aufgaben und Projekte und sorgt für eine reibungslose Zusammenarbeit im Team.",
@@ -1346,6 +1418,13 @@ function SummaryBar({ beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, a
     "Processes and efficiency": "reliable workflows and efficient ways of working",
     "Technical quality and expertise": "high technical quality and expertise",
     "Communication and influence": "convincing communication and reaching people",
+  } : isFR ? {
+    "Résultats et atteinte des objectifs": "des résultats concrets et d'une performance mesurable",
+    "Collaboration et réseau": "d'une collaboration stable et de relations fiables",
+    "Innovation et changement": "de nouvelles idées et d'une mise en oeuvre active du changement",
+    "Processus et efficacité": "de processus fiables et d'une manière de travailler efficace",
+    "Qualité professionnelle et expertise": "d'une haute qualité professionnelle et d'une expertise",
+    "Communication et influence": "d'une communication convaincante et de la capacité à atteindre les personnes",
   } : {
     "Ergebnisse und Zielerreichung": "konkreten Resultaten und messbarer Leistung",
     "Zusammenarbeit und Netzwerk": "stabiler Zusammenarbeit und verlässlichen Beziehungen",
@@ -1355,21 +1434,25 @@ function SummaryBar({ beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, a
     "Kommunikation und Einfluss": "überzeugender Kommunikation und dem Erreichen von Menschen",
   };
 
-  const aufgText = aufgabenSatz[aufgabencharakter] || (isEN ? "combines various task areas" : "verbindet verschiedene Aufgabenbereiche");
-  const arbText = arbeitsSatz[arbeitslogik] || (isEN ? "different working styles" : "unterschiedliche Arbeitsweisen");
+  const aufgText = aufgabenSatz[aufgabencharakter] || (isEN ? "combines various task areas" : isFR ? "associe différents domaines de tâches" : "verbindet verschiedene Aufgabenbereiche");
+  const arbText = arbeitsSatz[arbeitslogik] || (isEN ? "different working styles" : isFR ? "une combinaison de différents styles de travail" : "unterschiedliche Arbeitsweisen");
   const fokusTeile = (fokusLabels as string[]).map(l => fokusKurz[l] || l.toLowerCase()).filter(Boolean);
   let fokusSatz = "";
   if (isEN) {
     if (fokusTeile.length === 1) fokusSatz = `The success of this role shows above all in ${fokusTeile[0]}.`;
     else if (fokusTeile.length === 2) fokusSatz = `The success of this role shows above all in ${fokusTeile[0]} and ${fokusTeile[1]}.`;
     else if (fokusTeile.length > 2) fokusSatz = `The success of this role shows above all in ${fokusTeile.slice(0, -1).join(", ")} and ${fokusTeile[fokusTeile.length - 1]}.`;
+  } else if (isFR) {
+    if (fokusTeile.length === 1) fokusSatz = `Le succès de ce poste se manifeste avant tout dans ${fokusTeile[0]}.`;
+    else if (fokusTeile.length === 2) fokusSatz = `Le succès de ce poste se manifeste avant tout dans ${fokusTeile[0]} et ${fokusTeile[1]}.`;
+    else if (fokusTeile.length > 2) fokusSatz = `Le succès de ce poste se manifeste avant tout dans ${fokusTeile.slice(0, -1).join(", ")} et ${fokusTeile[fokusTeile.length - 1]}.`;
   } else {
     if (fokusTeile.length === 1) fokusSatz = `Der Erfolg dieser Stelle zeigt sich vor allem in ${fokusTeile[0]}.`;
     else if (fokusTeile.length === 2) fokusSatz = `Der Erfolg dieser Stelle zeigt sich vor allem in ${fokusTeile[0]} und ${fokusTeile[1]}.`;
     else if (fokusTeile.length > 2) fokusSatz = `Der Erfolg dieser Stelle zeigt sich vor allem in ${fokusTeile.slice(0, -1).join(", ")} und ${fokusTeile[fokusTeile.length - 1]}.`;
   }
 
-  const arbDetail = arbeitsDetail[arbeitslogik] || (isEN ? ["The working style is versatile and situation-dependent.", ""] as [string, string] : ["Die Arbeitsweise ist vielseitig und situationsabhängig.", ""]);
+  const arbDetail = arbeitsDetail[arbeitslogik] || (isEN ? ["The working style is versatile and situation-dependent.", ""] as [string, string] : isFR ? ["Le style de travail est polyvalent et adapté à la situation.", ""] as [string, string] : ["Die Arbeitsweise ist vielseitig und situationsabhängig.", ""]);
   const fuehDetail = fuehrungDetail[fuehrung] || fuehrungOpt?.desc || "";
 
   return (
@@ -1396,18 +1479,20 @@ function SummaryBar({ beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, a
           <CheckCircle2 style={{ width: 16, height: 16, color: "#fff", strokeWidth: 2.5 }} />
         </div>
         <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.01em" }}>
-          {isEN ? "Summary" : "Zusammenfassung"}
+          {isEN ? "Summary" : isFR ? "Résumé" : "Zusammenfassung"}
         </span>
       </div>
 
-      <p lang={isEN ? "en" : "de"} style={{ fontSize: 14, color: "#3A3A3C", lineHeight: 1.7, margin: "0 0 4px", ...reportTextStyle }}>
+      <p lang={isEN ? "en" : isFR ? "fr" : "de"} style={{ fontSize: 14, color: "#3A3A3C", lineHeight: 1.7, margin: "0 0 4px", ...reportTextStyle }}>
         {isEN
           ? `The role ${rollenName} ${aufgText}. Day-to-day, the focus is above all on ${arbText}.`
+          : isFR
+          ? `Le poste ${rollenName} ${aufgText}. Au quotidien, l'accent est avant tout mis sur ${arbText}.`
           : localizeText(`Die Stelle ${rollenName} ${aufgText}. Im Alltag geht es vor allem darum, ${arbText}.`)}
       </p>
       {fokusSatz && (
-        <p lang={isEN ? "en" : "de"} style={{ fontSize: 14, color: "#3A3A3C", lineHeight: 1.7, margin: "8px 0 0", ...reportTextStyle }}>
-          {isEN ? fokusSatz : localizeText(fokusSatz)}
+        <p lang={isEN ? "en" : isFR ? "fr" : "de"} style={{ fontSize: 14, color: "#3A3A3C", lineHeight: 1.7, margin: "8px 0 0", ...reportTextStyle }}>
+          {isFR ? fokusSatz : isEN ? fokusSatz : localizeText(fokusSatz)}
         </p>
       )}
 
@@ -1432,7 +1517,7 @@ function SummaryBar({ beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, a
             }}>
               <Activity style={{ width: 17, height: 17, color: "#0071E3", strokeWidth: 2 }} />
             </div>
-            <span style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F" }}>{isEN ? "Working style" : "Arbeitsweise"}</span>
+            <span style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F" }}>{isEN ? "Working style" : isFR ? "Style de travail" : "Arbeitsweise"}</span>
           </div>
           <p style={{
             fontSize: 14, fontWeight: 600, color: "#1D1D1F",
@@ -1460,7 +1545,7 @@ function SummaryBar({ beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, a
             }}>
               <Users style={{ width: 17, height: 17, color: "#34C759", strokeWidth: 2 }} />
             </div>
-            <span style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F" }}>{isEN ? "Leadership role" : localizeText("Führungsrolle")}</span>
+            <span style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F" }}>{isEN ? "Leadership role" : isFR ? "Rôle de management" : localizeText("Führungsrolle")}</span>
           </div>
           <p style={{
             fontSize: 14, fontWeight: 600, color: "#1D1D1F",
@@ -2140,7 +2225,9 @@ export default function RollenDNA() {
           data-testid="popup-fuehrung-info"
         >
           <div className="flex items-center justify-between mb-4">
-            <h4 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F" }}>Definition Führungsverantwortung</h4>
+            <h4 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F" }}>
+              {region === "FR" ? "Définition de la responsabilité de management" : region === "EN" ? "Definition: Leadership responsibility" : "Definition Führungsverantwortung"}
+            </h4>
             <button
               onClick={() => setShowFuehrungInfo(false)}
               style={{ background: "none", border: "none", cursor: "pointer", color: "#8E8E93", padding: 2 }}
@@ -2150,15 +2237,29 @@ export default function RollenDNA() {
             </button>
           </div>
           <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.6, marginBottom: 16 }}>
-            Bitte ordne die Stelle nach der tatsächlichen Weisungs- und Personalverantwortung ein – nicht nach dem Jobtitel. Entscheidend ist, welche formale Entscheidungsmacht und Ergebnisverantwortung mit der Stelle verbunden sind.
+            {region === "FR"
+              ? "Classe ce poste selon la responsabilité hiérarchique et du personnel réelle, et non selon le titre. Ce qui compte, c'est le pouvoir décisionnel formel et la responsabilité des résultats associés au poste."
+              : region === "EN"
+              ? "Please classify the role according to actual reporting authority and personnel responsibility, not the job title. What matters is the formal decision-making authority and accountability for results associated with the role."
+              : "Bitte ordne die Stelle nach der tatsächlichen Weisungs- und Personalverantwortung ein, nicht nach dem Jobtitel. Entscheidend ist, welche formale Entscheidungsmacht und Ergebnisverantwortung mit der Stelle verbunden sind."}
           </p>
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            {[
+            {(region === "FR" ? [
+              { label: "Aucune", desc: "Aucune responsabilité hiérarchique ou de pilotage." },
+              { label: "Coordination", desc: "Pilote la collaboration, sans responsabilité hiérarchique ou du personnel formelle." },
+              { label: "Management technique", desc: "Dirige sur le plan professionnel (qualité, standards, priorités), sans décisions de personnel." },
+              { label: "Management avec responsabilité du personnel", desc: "Responsabilité pour les collaborateurs, y compris objectifs, développement, décisions et KPIs de résultats." },
+            ] : region === "EN" ? [
+              { label: "None", desc: "No reporting or steering responsibility." },
+              { label: "Coordination", desc: "Steers collaboration without formal reporting or personnel authority." },
+              { label: "Technical leadership", desc: "Leads on technical matters (quality, standards, priorities) without personnel decisions." },
+              { label: "Leadership with personnel responsibility", desc: "Responsible for employees including goals, development, decisions and performance KPIs." },
+            ] : [
               { label: "Keine", desc: "Keine Weisungs- oder Steuerungsverantwortung." },
               { label: "Koordination", desc: "Steuert Zusammenarbeit, aber ohne formale Weisungs- oder Personalverantwortung." },
               { label: "Fachliche Führung", desc: "Führt fachlich (Qualität, Standards, Prioritäten), aber ohne Personalentscheidungen." },
               { label: "Führung mit Personalverantwortung", desc: "Verantwortung für Mitarbeitende inkl. Ziele, Entwicklung, Entscheidungen und Ergebnis-KPIs." },
-            ].map(item => (
+            ]).map(item => (
               <div key={item.label}>
                 <span style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F" }}>{item.label}: </span>
                 <span style={{ fontSize: 14, color: "#48484A", lineHeight: 1.5 }}>{item.desc}</span>
@@ -2167,9 +2268,25 @@ export default function RollenDNA() {
           </div>
           <div style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid rgba(0,0,0,0.06)" }}>
             <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", lineHeight: 1.6 }}>
-              Im Zweifel orientiere dich bitte an folgender Leitfrage:<br />
-              Hat die Stelle formale Zielvereinbarungs- und Beurteilungsverantwortung für Mitarbeitende?<br />
-              Wenn ja, liegt in der Regel Führung mit Personalverantwortung vor.
+              {region === "FR" ? (
+                <>
+                  En cas de doute, pose-toi la question suivante :<br />
+                  Ce poste a-t-il une responsabilité formelle d'entretien d'évaluation et de fixation d'objectifs pour des collaborateurs ?<br />
+                  Si oui, il s'agit en principe d'un management avec responsabilité du personnel.
+                </>
+              ) : region === "EN" ? (
+                <>
+                  If in doubt, use the following guiding question:<br />
+                  Does the role have formal target-setting and appraisal responsibility for employees?<br />
+                  If yes, it is generally leadership with personnel responsibility.
+                </>
+              ) : (
+                <>
+                  Im Zweifel orientiere dich bitte an folgender Leitfrage:<br />
+                  Hat die Stelle formale Zielvereinbarungs- und Beurteilungsverantwortung für Mitarbeitende?<br />
+                  Wenn ja, liegt in der Regel Führung mit Personalverantwortung vor.
+                </>
+              )}
             </p>
           </div>
         </div>
@@ -2476,7 +2593,7 @@ export default function RollenDNA() {
                   }}
                   className="dark:bg-card/40"
                 >
-                  <MiniProgressBar filled={sectionsFilled} total={4} />
+                  <MiniProgressBar filled={sectionsFilled} total={4} region={region} />
 
                   <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
 
