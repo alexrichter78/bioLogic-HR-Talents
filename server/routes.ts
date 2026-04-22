@@ -2656,6 +2656,7 @@ WICHTIG:
         roleDomKey,
         candDomKey,
         locale = "de",
+        engineTexts = null,
       } = req.body || {};
 
       if (!roleTriad || !candTriad || !fitLabel) {
@@ -2783,10 +2784,33 @@ AUFGABE: Erzeuge dieses JSON. KEINE Zahlen oder Prozentwerte. KEINE Modellbegrif
   "teamImpact": "2 Sätze. Wie diese Person das Team beeinflusst, wenn sie in dieser Stelle eingesetzt wird."
 }`;
 
-      const fullPrompt = `${systemPrompt}\n\n${userContent}`;
+      let engineTranslation = "";
+      if (isEN && engineTexts) {
+        const areas = engineTexts.impactAreas || [];
+        const stress = engineTexts.stressBehavior || {};
+        const timeline = engineTexts.riskTimeline || [];
+        if (areas.length > 0 || stress.controlledPressure || timeline.length > 0) {
+          engineTranslation = `
+
+---
+ADDITIONAL TRANSLATION TASK:
+Translate the following German texts to natural English. Add these extra keys to your JSON response:
+
+"translatedImpactAreas": array — same length as input, each item: { "id": exact same id, "label": translated, "roleNeed": translated, "candidatePattern": translated, "risk": translated }
+"translatedStressBehavior": { "controlledPressure": translated, "uncontrolledStress": translated }
+"translatedRiskTimeline": array — same length as input, each item: { "label": translated, "text": translated }
+
+German texts to translate:
+impactAreas: ${JSON.stringify(areas)}
+stressBehavior: ${JSON.stringify(stress)}
+riskTimeline: ${JSON.stringify(timeline)}`;
+        }
+      }
+
+      const fullPrompt = `${systemPrompt}\n\n${userContent}${engineTranslation}`;
       const data = await callClaudeForJson("generate-matchcheck-text", fullPrompt, {
         temperature: 0.6,
-        maxTokens: 2048,
+        maxTokens: 4096,
         model: "claude-haiku-4-5",
       });
       res.json(data);
@@ -2814,6 +2838,7 @@ AUFGABE: Erzeuge dieses JSON. KEINE Zahlen oder Prozentwerte. KEINE Modellbegrif
         roleType = "teammitglied",
         teamGoal,
         locale = "de",
+        engineTexts = null,
       } = req.body || {};
 
       if (!personTriad || !teamTriad) {
@@ -2954,10 +2979,60 @@ AUFGABE: Erzeuge dieses JSON. KEINE Zahlen oder Prozentwerte. KEINE Modellbegrif
   "teamDynamics": "2 Sätze. Wie dieser Zuwachs die Arbeitsdynamik des gesamten Teams verändert."
 }`;
 
-      const fullPrompt = `${systemPrompt}\n\n${userContent}`;
+      let tcEngineTranslation = "";
+      if (isEN && engineTexts) {
+        const chancen = engineTexts.chancen || [];
+        const risiken = engineTexts.risiken || [];
+        const einordnung = engineTexts.chancenRisikenEinordnung || "";
+        const prognose = engineTexts.risikoprognose || [];
+        const empfehlungen = engineTexts.empfehlungen || [];
+        const fuehrungshinweis = engineTexts.fuehrungshinweis || [];
+        const intplan = engineTexts.integrationsplan || [];
+        const intWarnsignale = engineTexts.intWarnsignale || [];
+        const intLeitfragen = engineTexts.intLeitfragen || [];
+        const intVerantwortung = engineTexts.intVerantwortung || "";
+        const levers = engineTexts.leadershipLevers || [];
+        const hasAny = chancen.length > 0 || risiken.length > 0 || prognose.length > 0 ||
+          empfehlungen.length > 0 || intplan.length > 0 || einordnung || intVerantwortung;
+        if (hasAny) {
+          tcEngineTranslation = `
+
+---
+ADDITIONAL TRANSLATION TASK:
+Translate the following German engine-generated texts to natural English. Append these extra keys to your JSON response. Keep the same array structure and field names. Translate all German text fields; keep numeric/id fields unchanged. For "priority" field values translate: "hoch" → "high", "mittel" → "medium", "niedrig" → "low".
+
+Keys to add:
+"translatedChancen": [{title, text}] — same length as chancen input
+"translatedRisiken": [{title, text}] — same length as risiken input
+"translatedChancenRisikenEinordnung": string
+"translatedRisikoprognose": [{label, text}] — same length as risikoprognose input
+"translatedEmpfehlungen": [{title, text}] — same length as empfehlungen input
+"translatedFuehrungshinweis": [{title, text}] — same length as fuehrungshinweis input (empty array if none)
+"translatedIntegrationsplan": array — same length, each item: {title, ziel, beschreibung, praxis (string[]), signale (string[]), fokus: {intro, bullets (string[])}, fuehrungstipp}
+"translatedIntWarnsignale": string[]
+"translatedIntLeitfragen": string[]
+"translatedIntVerantwortung": string
+"translatedLeadershipLevers": [{title, description, priority}] — same length as leadershipLevers input (empty array if none)
+
+German texts:
+chancen: ${JSON.stringify(chancen)}
+risiken: ${JSON.stringify(risiken)}
+chancenRisikenEinordnung: ${JSON.stringify(einordnung)}
+risikoprognose: ${JSON.stringify(prognose)}
+empfehlungen: ${JSON.stringify(empfehlungen)}
+fuehrungshinweis: ${JSON.stringify(fuehrungshinweis)}
+integrationsplan: ${JSON.stringify(intplan)}
+intWarnsignale: ${JSON.stringify(intWarnsignale)}
+intLeitfragen: ${JSON.stringify(intLeitfragen)}
+intVerantwortung: ${JSON.stringify(intVerantwortung)}
+leadershipLevers: ${JSON.stringify(levers)}`;
+        }
+      }
+
+      const fullPrompt = `${systemPrompt}\n\n${userContent}${tcEngineTranslation}`;
       const data = await callClaudeForJson("generate-teamcheck-text", fullPrompt, {
         temperature: 0.6,
-        maxTokens: 3200,
+        maxTokens: 7000,
         model: "claude-haiku-4-5",
       });
       res.json(data);

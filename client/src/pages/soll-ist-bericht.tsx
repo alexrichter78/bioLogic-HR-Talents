@@ -250,7 +250,7 @@ export default function SollIstBericht() {
     return false;
   });
   const [reportGenerated, setReportGenerated] = useState(false);
-  const [aiMatchText, setAiMatchText] = useState<{ intro: string; fitSummary: string; developmentOutlook: string; teamImpact: string } | null>(null);
+  const [aiMatchText, setAiMatchText] = useState<Record<string, any> | null>(null);
   const [aiMatchLoading, setAiMatchLoading] = useState(false);
   const [isExportingPdf, setIsExportingPdf] = useState(false);
   const reportRef = useRef<HTMLDivElement>(null);
