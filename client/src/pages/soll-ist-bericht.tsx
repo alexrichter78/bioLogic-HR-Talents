@@ -1561,7 +1561,7 @@ export default function SollIstBericht() {
                   rFazit = isEN
                     ? "The person's working style matches the role requirements. Tasks, decisions, and work style are well aligned."
                     : "Die Arbeitsweise der Person ist deckungsgleich mit den Anforderungen der Stelle. Aufgaben, Entscheidungen und Arbeitsstil sind stimmig.";
-                } else if ((rFitLabel === "Bedingt geeignet" || rFitLabel === "Conditionally suitable") && (rGapLevel === "gering" || rGapLevel === "low")) {
+                } else if ((rFitLabel === "Bedingt geeignet" || rFitLabel === "Conditionally suitable") && rGapLevel === "gering") {
                   rFazit = isEN
                     ? "The basic direction is similar, but the weighting of individual work areas differs. In day-to-day practice this can lead to increased coordination effort and higher management demands."
                     : "Die Grundausrichtung ist ähnlich, jedoch unterscheidet sich die Gewichtung einzelner Arbeitsbereiche. Im Alltag kann das zu erhöhtem Abstimmungsbedarf und höherem Führungsaufwand führen.";
@@ -1569,7 +1569,7 @@ export default function SollIstBericht() {
                   rFazit = isEN
                     ? "The basic direction is similar, but noticeable adaptation needs are present in some areas. In practice this can create team friction and significantly higher management effort."
                     : "Die Grundausrichtung ist ähnlich. In einzelnen Bereichen zeigt sich jedoch spürbarer Anpassungsbedarf. Im Alltag kann das zu Konflikten im Team und deutlich höherem Führungsaufwand führen.";
-                } else if ((rFitLabel === "Nicht geeignet" || rFitLabel === "Not suitable") && rGapLevel !== "hoch" && rGapLevel !== "high") {
+                } else if ((rFitLabel === "Nicht geeignet" || rFitLabel === "Not suitable") && rGapLevel !== "hoch") {
                   rFazit = isEN
                     ? "The structural deviation between role and person is significant. In practice this can lead to increased coordination needs, team conflicts, and considerably higher management effort."
                     : "Die strukturelle Abweichung zwischen Stelle und Person ist deutlich. Im Alltag kann das zu erhöhtem Abstimmungsbedarf, Konflikten im Team und deutlich höherem Führungsaufwand führen.";

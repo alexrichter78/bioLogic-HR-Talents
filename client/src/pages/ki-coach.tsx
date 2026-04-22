@@ -32,7 +32,7 @@ const WELCOME_MSG_FR: Message = {
 };
 const isWelcomeMsg = (m: Message) => m === WELCOME_MSG || m === WELCOME_MSG_EN || m === WELCOME_MSG_FR;
 
-function getWelcomeMsg(lang: "DE" | "EN" | "FR"): Message {
+function getWelcomeMsg(lang: string): Message {
   if (lang === "FR") return WELCOME_MSG_FR;
   if (lang === "EN") return WELCOME_MSG_EN;
   return WELCOME_MSG;

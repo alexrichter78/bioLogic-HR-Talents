@@ -283,6 +283,7 @@ function ReportChapter({ section, chapterIndex }: { section: ParsedSection; chap
 }
 
 function ReadOnlyBars({ triad }: { triad: Triad }) {
+  const { region } = useRegion();
   const bars: { label: string; value: number; color: string }[] = [
     { label: region === "EN" ? "Impulsive" : "Impulsiv", value: triad.impulsiv, color: COLORS.imp },
     { label: region === "EN" ? "Intuitive" : "Intuitiv", value: triad.intuitiv, color: COLORS.int },

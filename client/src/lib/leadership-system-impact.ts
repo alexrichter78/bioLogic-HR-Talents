@@ -67,11 +67,12 @@ function normalizeProfile(profile: Profile): Profile {
 }
 
 function getSortedComponents(profile: Profile): Array<{ key: ComponentKey; value: number }> {
-  return [
+  const arr: Array<{ key: ComponentKey; value: number }> = [
     { key: "impulsiv", value: profile.impulsiv },
     { key: "intuitiv", value: profile.intuitiv },
     { key: "analytisch", value: profile.analytisch },
-  ].sort((a, b) => b.value - a.value);
+  ];
+  return arr.sort((a, b) => b.value - a.value);
 }
 
 function getTopComponent(profile: Profile): ComponentKey {

@@ -163,11 +163,12 @@ function normalizeTriad(triad: Triad): Triad {
 
 function getSorted(triadInput: Triad): Array<{ key: ComponentKey; value: number }> {
   const triad = normalizeTriad(triadInput);
-  return [
+  const arr: Array<{ key: ComponentKey; value: number }> = [
     { key: "imp", value: triad.imp },
     { key: "int", value: triad.int },
     { key: "ana", value: triad.ana },
-  ].sort((a, b) => {
+  ];
+  return arr.sort((a, b) => {
     if (b.value !== a.value) return b.value - a.value;
     return a.key.localeCompare(b.key);
   });
