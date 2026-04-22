@@ -130,17 +130,18 @@ function classifyProfile(bg: BG): { type: ProfileType; intensity: Intensity } {
 
 const SORT_PRIORITY: Record<string, number> = { imp: 0, int: 1, ana: 2 };
 
-function sortedTriad(bg: BG) {
+function sortedTriad(bg: BG, r?: string) {
+  const en = r === "EN";
   return [
-    { key: "imp" as const, label: region === "EN" ? "Impulsive" : "Impulsiv", value: bg.imp },
-    { key: "int" as const, label: region === "EN" ? "Intuitive" : "Intuitiv", value: bg.int },
-    { key: "ana" as const, label: region === "EN" ? "Analytical" : "Analytisch", value: bg.ana },
+    { key: "imp" as const, label: en ? "Impulsive" : "Impulsiv", value: bg.imp },
+    { key: "int" as const, label: en ? "Intuitive" : "Intuitiv", value: bg.int },
+    { key: "ana" as const, label: en ? "Analytical" : "Analytisch", value: bg.ana },
   ].sort((a, b) => b.value - a.value || SORT_PRIORITY[a.key] - SORT_PRIORITY[b.key]);
 }
 
-function dominant(bg: BG) { return sortedTriad(bg)[0]; }
-function secondary(bg: BG) { return sortedTriad(bg)[1]; }
-function weakest(bg: BG) { return sortedTriad(bg)[2]; }
+function dominant(bg: BG, r?: string) { return sortedTriad(bg, r)[0]; }
+function secondary(bg: BG, r?: string) { return sortedTriad(bg, r)[1]; }
+function weakest(bg: BG, r?: string) { return sortedTriad(bg, r)[2]; }
 
 type ReportData = {
   beruf: string;
@@ -164,7 +165,7 @@ type ReportData = {
 };
 
 function buildProfilkonflikt(data: ReportData, lang: "de" | "en" = "de"): string | null {
-  const hauptDom = dominant(data.haupt);
+  const hauptDom = dominant(data.haupt, lang === "en" ? "EN" : "DE");
   const { dom } = data;
   if (hauptDom.key === dom.key) return null;
   if (lang === "en") {
@@ -283,9 +284,9 @@ export default function Rollenprofil() {
       const arbeitslogik = state.arbeitslogik || "";
       const erfolgsfokusIndices = state.erfolgsfokusIndices || [];
       const { type: profileType, intensity } = classifyProfile(gesamt);
-      const dom = dominant(gesamt);
-      const sec = secondary(gesamt);
-      const wk = weakest(gesamt);
+      const dom = dominant(gesamt, region);
+      const sec = secondary(gesamt, region);
+      const wk = weakest(gesamt, region);
 
       const newData = {
         beruf, bereich, isLeadership, fuehrungstyp, aufgabencharakter, arbeitslogik,
