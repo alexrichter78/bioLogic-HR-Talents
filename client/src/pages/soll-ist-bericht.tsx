@@ -283,6 +283,12 @@ export default function SollIstBericht() {
     finalText: string;
   } | null>(null);
   const [lastInputHash, setLastInputHash] = useState<string | null>(null);
+  useEffect(() => {
+    setAiNarrative(null);
+    setAiError(null);
+    setReportGenerated(false);
+    setLastInputHash(null);
+  }, [region]);
   const [isExportingPdf, setIsExportingPdf] = useState(false);
   const reportRef = useRef<HTMLDivElement>(null);
   const subCircleCache = useRef<Record<string, string>>({});

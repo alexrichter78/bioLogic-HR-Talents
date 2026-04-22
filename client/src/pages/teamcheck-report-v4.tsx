@@ -91,6 +91,8 @@ export default function TeamCheckReportV4() {
   const [aiError, setAiError] = useState<string | null>(null);
 
   useEffect(() => {
+    setAiNarrative(null);
+    setAiLoading(true);
     const raw = sessionStorage.getItem("teamcheckV4Input");
     if (!raw) { navigate("/team-report"); return; }
     try {

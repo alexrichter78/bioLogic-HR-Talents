@@ -351,6 +351,7 @@ export default function Teamdynamik() {
   const [viewMode, setViewMode] = useState<ViewMode>("HR");
   const [activeTab, setActiveTab] = useState<"chancen" | "risiken" | "integration">("chancen");
   const [reportText, setReportText] = useState<string | null>(null);
+  useEffect(() => { setReportText(null); }, [region]);
   const [reportLoading, setReportLoading] = useState(false);
   const [reportError, setReportError] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);

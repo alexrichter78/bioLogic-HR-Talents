@@ -591,6 +591,11 @@ export default function TeamReport() {
     systemfazit: string;
   } | null>(null);
   const [lastInputHash, setLastInputHash] = useState<string | null>(null);
+  useEffect(() => {
+    setAiNarrative(null);
+    setAiError(null);
+    setLastInputHash(null);
+  }, [region]);
   const [matchCheckOpen, setMatchCheckOpen] = useState(true);
   const [roleTypeForCard, setRoleTypeForCard] = useState<"teammitglied" | "fuehrung">(() => {
     const v = sessionStorage.getItem("tc_roleType");
