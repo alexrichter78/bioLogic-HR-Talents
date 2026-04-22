@@ -173,6 +173,11 @@ function buildProfilkonflikt(data: ReportData, lang: "de" | "en" | "fr" = "de"):
     const gesamtBehavior = dom.key === "imp" ? "decisiveness and pace" : dom.key === "int" ? "relationship building and communication" : "methodical work and quality assurance";
     return `Note: The core tasks of this role primarily call for ${hauptBehavior}. The overall profile, however, shifts towards ${gesamtBehavior}. Framework conditions and additional requirements change the demand profile. During the hiring process, it should be checked whether the candidate can primarily cover the core tasks or the full package.`;
   }
+  if (lang === "fr") {
+    const hauptBehavior = hauptDom.key === "imp" ? "l'action rapide et la mise en oeuvre" : hauptDom.key === "int" ? "le contact personnel et le travail relationnel" : "l'analyse structurée et la rigueur";
+    const gesamtBehavior = dom.key === "imp" ? "la capacité de décision et le rythme" : dom.key === "int" ? "la communication et la gestion des relations" : "le travail méthodique et la garantie de qualité";
+    return `Remarque : Les activités principales du poste exigent avant tout ${hauptBehavior}. Le profil global se déplace toutefois vers ${gesamtBehavior}. Les conditions cadres et les exigences complémentaires modifient le profil de poste. Lors du processus de recrutement, il convient de vérifier si la personne peut couvrir principalement les activités principales ou l'ensemble du profil.`;
+  }
   const hauptBehavior = hauptDom.key === "imp" ? "schnelles Handeln und Umsetzung" : hauptDom.key === "int" ? "persönlichen Kontakt und Beziehungsarbeit" : "strukturierte Analyse und Sorgfalt";
   const gesamtBehavior = dom.key === "imp" ? "Entscheidungskraft und Tempo" : dom.key === "int" ? "Beziehungsgestaltung und Kommunikation" : "methodisches Arbeiten und Qualitätssicherung";
   return `Hinweis: Die Kerntätigkeiten der Stelle verlangen vor allem ${hauptBehavior}. Das Gesamtprofil verschiebt sich jedoch in Richtung ${gesamtBehavior}. Rahmenbedingungen und ergänzende Anforderungen verändern das Anforderungsprofil. Im Besetzungsprozess sollte geprüft werden, ob die Person primär die Kerntätigkeiten oder das Gesamtpaket abbilden kann.`;
