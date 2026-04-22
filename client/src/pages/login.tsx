@@ -120,6 +120,8 @@ export default function Login() {
                         data-testid="input-reset-email"
                         style={{ width: "100%", padding: "12px 14px 12px 42px", borderRadius: 12, border: "1.5px solid #E5E7EB", fontSize: 14, outline: "none", boxSizing: "border-box", background: "#F9FAFB", transition: "border-color 0.2s, box-shadow 0.2s", color: "#1F2937" }}
                         placeholder="name@firma.de"
+                        onInvalid={e => { const el = e.target as HTMLInputElement; if (el.validity.valueMissing) { el.setCustomValidity(en ? "Please fill in this field." : "Füllen Sie dieses Feld aus."); } else if (el.validity.typeMismatch) { el.setCustomValidity(en ? "Please enter a valid email address." : "Geben Sie eine gültige E-Mail-Adresse ein."); } else { el.setCustomValidity(""); } }}
+                        onInput={e => (e.target as HTMLInputElement).setCustomValidity("")}
                         onFocus={(e) => { e.target.style.borderColor = "#3B82F6"; e.target.style.boxShadow = "0 0 0 3px rgba(59,130,246,0.1)"; }}
                         onBlur={(e) => { e.target.style.borderColor = "#E5E7EB"; e.target.style.boxShadow = "none"; }}
                       />
@@ -220,6 +222,8 @@ export default function Login() {
                   data-testid="input-username"
                   style={{ width: "100%", padding: "12px 14px 12px 42px", borderRadius: 12, border: "1.5px solid #E5E7EB", fontSize: 14, outline: "none", boxSizing: "border-box", background: "#F9FAFB", transition: "border-color 0.2s, box-shadow 0.2s", color: "#1F2937" }}
                   placeholder={en ? "Username" : "Benutzername"}
+                  onInvalid={e => { const el = e.target as HTMLInputElement; el.setCustomValidity(en ? "Please fill in this field." : "Füllen Sie dieses Feld aus."); }}
+                  onInput={e => (e.target as HTMLInputElement).setCustomValidity("")}
                   onFocus={(e) => { e.target.style.borderColor = "#3B82F6"; e.target.style.boxShadow = "0 0 0 3px rgba(59,130,246,0.1)"; }}
                   onBlur={(e) => { e.target.style.borderColor = "#E5E7EB"; e.target.style.boxShadow = "none"; }}
                 />
@@ -238,6 +242,8 @@ export default function Login() {
                   data-testid="input-password"
                   style={{ width: "100%", padding: "12px 42px 12px 42px", borderRadius: 12, border: "1.5px solid #E5E7EB", fontSize: 14, outline: "none", boxSizing: "border-box", background: "#F9FAFB", transition: "border-color 0.2s, box-shadow 0.2s", color: "#1F2937" }}
                   placeholder={en ? "Enter password" : "Passwort eingeben"}
+                  onInvalid={e => { const el = e.target as HTMLInputElement; el.setCustomValidity(en ? "Please fill in this field." : "Füllen Sie dieses Feld aus."); }}
+                  onInput={e => (e.target as HTMLInputElement).setCustomValidity("")}
                   onFocus={(e) => { e.target.style.borderColor = "#3B82F6"; e.target.style.boxShadow = "0 0 0 3px rgba(59,130,246,0.1)"; }}
                   onBlur={(e) => { e.target.style.borderColor = "#E5E7EB"; e.target.style.boxShadow = "none"; }}
                 />

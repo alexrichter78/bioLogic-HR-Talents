@@ -457,15 +457,24 @@ export default function Kurs() {
 
                     {isMobile && <label style={labelStyle}>{en ? "First name" : "Vorname"}</label>}
                     <input type="text" value={p.firstName} onChange={e => updateParticipant(p.id, "firstName", e.target.value)}
-                      placeholder={en ? "First name" : "Vorname"} style={inputStyle} required data-testid={`input-firstname-${p.id}`} />
+                      placeholder={en ? "First name" : "Vorname"} style={inputStyle} required
+                      onInvalid={e => { const el = e.target as HTMLInputElement; el.setCustomValidity(en ? "Please fill in this field." : "Füllen Sie dieses Feld aus."); }}
+                      onInput={e => (e.target as HTMLInputElement).setCustomValidity("")}
+                      data-testid={`input-firstname-${p.id}`} />
 
                     {isMobile && <label style={labelStyle}>{en ? "Last name" : "Nachname"}</label>}
                     <input type="text" value={p.lastName} onChange={e => updateParticipant(p.id, "lastName", e.target.value)}
-                      placeholder={en ? "Last name" : "Nachname"} style={inputStyle} required data-testid={`input-lastname-${p.id}`} />
+                      placeholder={en ? "Last name" : "Nachname"} style={inputStyle} required
+                      onInvalid={e => { const el = e.target as HTMLInputElement; el.setCustomValidity(en ? "Please fill in this field." : "Füllen Sie dieses Feld aus."); }}
+                      onInput={e => (e.target as HTMLInputElement).setCustomValidity("")}
+                      data-testid={`input-lastname-${p.id}`} />
 
                     {isMobile && <label style={labelStyle}>{en ? "Email address" : "E-Mail-Adresse"}</label>}
                     <input type="email" value={p.email} onChange={e => updateParticipant(p.id, "email", e.target.value)}
-                      placeholder={en ? "Email address" : "E-Mail-Adresse"} style={inputStyle} required data-testid={`input-email-${p.id}`} />
+                      placeholder={en ? "Email address" : "E-Mail-Adresse"} style={inputStyle} required
+                      onInvalid={e => { const el = e.target as HTMLInputElement; if (el.validity.valueMissing) { el.setCustomValidity(en ? "Please fill in this field." : "Füllen Sie dieses Feld aus."); } else if (el.validity.typeMismatch) { el.setCustomValidity(en ? "Please enter a valid email address." : "Geben Sie eine gültige E-Mail-Adresse ein."); } else { el.setCustomValidity(""); } }}
+                      onInput={e => (e.target as HTMLInputElement).setCustomValidity("")}
+                      data-testid={`input-email-${p.id}`} />
 
                     {!isMobile && (
                       participants.length > 1 ? (
