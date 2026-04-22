@@ -2351,6 +2351,46 @@ Antworte als JSON:
       };
       const roleCategory = detectRoleCategory(jobTitle, tasks);
 
+      const detectRoleCategoryEN = (title: string, taskList: string[]): { category: string; vocab: string } => {
+        const hay = `${title} ${(taskList || []).join(" ")}`.toLowerCase();
+        const has = (...words: string[]) => words.some(w => hay.includes(w));
+        if (has("vertrieb", "sales", "account", "akquise", "business development", "key account")) {
+          return { category: "Sales", vocab: "pipeline, deals, revenue targets, prospecting, conversion, client conversations, follow-ups" };
+        }
+        if (has("pflege", "betreu", "krankenpfleg", "altenpfleg", "station")) {
+          return { category: "Care", vocab: "care quality, staffing ratios, shift handovers, documentation, family conversations" };
+        }
+        if (has("produkt", "fertigung", "schicht", "montage", "werker", "maschinenführ")) {
+          return { category: "Production", vocab: "throughput, scrap rate, shift handover, equipment availability, quality checks" };
+        }
+        if (has("entwickl", "developer", "engineer", "devops", "software", "it-", "system", "admin", "techniker")) {
+          return { category: "Tech/IT", vocab: "system stability, code quality, deployments, incidents, tickets, rollouts, reviews" };
+        }
+        if (has("finanz", "controlling", "buchhalt", "accounting", "audit", "bilanz")) {
+          return { category: "Finance", vocab: "close quality, audit readiness, reporting discipline, forecasting, document review" };
+        }
+        if (has(" hr", "personal", "recruit", "talent", "people")) {
+          return { category: "HR", vocab: "time-to-fill, turnover, candidate experience, performance conversations, onboarding" };
+        }
+        if (has("marketing", "kampagne", "brand", "content", "seo", "social")) {
+          return { category: "Marketing", vocab: "campaign performance, conversion, reach, content pipeline, brand consistency" };
+        }
+        if (has("lehr", "ausbild", "dozent", "trainer", "schul", "kita", "erzieh")) {
+          return { category: "Education", vocab: "learning progress, development plans, parent conversations, training quality, group dynamics" };
+        }
+        if (has("einkauf", "procurement", "supplier", "lieferant")) {
+          return { category: "Procurement", vocab: "supplier evaluation, negotiation outcomes, lead times, total cost of ownership" };
+        }
+        if (has("logist", "lager", "disposition", "spediti")) {
+          return { category: "Logistics", vocab: "on-time delivery, inventory turnover, route planning, returns rate" };
+        }
+        if (has("geschäftsführ", "ceo", "cfo", "cto", "vorstand", "leiter", "leitung", "head of", "director")) {
+          return { category: "Leadership", vocab: "steering metrics, quarterly targets, escalations, stakeholder alignment, team accountability" };
+        }
+        return { category: "General", vocab: "weekly priorities, deadlines, handovers, colleagues, stakeholders" };
+      };
+      const roleCategoryEN = detectRoleCategoryEN(jobTitle, tasks);
+
       if (req.session.userId) {
         const limitCheck = await checkAiLimit(req.session.userId);
         if (!limitCheck.allowed) {
@@ -2449,26 +2489,51 @@ Antworte als JSON:
       if (isEN) {
         const taskLineEN = Array.isArray(tasks) && tasks.length > 0 ? tasks.join("; ") : "(no main tasks specified)";
 
-        systemPrompt = `You are an experienced consultant writing job-analysis reports. The readers know neither the bioLogic model nor terms like "impulsive", "intuitive" or "analytical". Write so that a stranger without prior knowledge can understand the report.
+        systemPrompt = `You are an internal consultant writing job-analysis reports for HR managers and line managers who need to make fast decisions. Readers do not know the bioLogic model — write so anyone without prior knowledge understands the report immediately. You have a point of view and you express it. No academic tone. No textbook writing. No HR-handbook speak.
 
 STYLE RULES (mandatory):
-- Clear, easy-to-read everyday English. Short sentences. Active voice. No passive.
-- NO numbers, NO percentages, NO scores, no values like "52 %", "gap of 3 points" or "around 40". Use words instead: "clearly in the foreground", "clearly shaping the role", "noticeably present", "in the background", "practically on par", "just ahead", "clearly ahead".
-- NO bioLogic model jargon: never use "impulsive", "intuitive", "analytical", "component", "triad", "profile class", "BAL_FULL", "DUAL_TOP", "CLEAR_TOP", "ORDER", "top1/top2/top3", "gap". Always use plain labels: "Pace and Decision", "Communication and Relationships", "Structure and Diligence", "focus area", "main focus", "supports the role".
-- No empty phrases, no textbook tone, no coaching-speak, no intensifiers ("really", "extremely", "absolutely").
-- Each section: key statement first → short justification based on the concrete tasks/context → one concrete recommendation at the end.
-- Refer concretely to the role title, named tasks, success focus and conditions — not generic.
-- No repetition between sections.
-- Reply in ${languageName}.
+
+1) Active voice. No passive constructions, no conditionals without reason.
+   Wrong: "It should be ensured that the person can communicate clearly."
+   Right: "Whoever sits here runs conversations every day where clarity and trust are both required at once."
+
+2) Specific and role-anchored. Every sentence must apply to THIS role, not to managers or salespeople in general.
+   Wrong: "Strong communication skills are important in this role."
+   Right: "A Key Account Manager who cannot hold a difficult conversation with a client loses the deal — not next quarter, but today."
+
+3) NO numbers, NO percentages anywhere. Use qualitative words only: "clearly in the foreground", "clearly shapes the role", "noticeably present", "in the background", "practically on par", "just ahead", "clearly ahead", "carries the role", "supports the role".
+
+4) NO model jargon. Never use "impulsive", "intuitive", "analytical", "component", "triad", "profile class", "gap", "top1/top2/top3", "BAL_FULL", "DUAL_TOP", "CLEAR_TOP", "ORDER". Always use plain labels: "Pace and Decision", "Communication and Relationships", "Structure and Diligence".
+
+5) No empty phrases. Banned: "in the context of", "it is worth noting", "against the backdrop of", "significant value-add", "holistic approach", "proven track record", "key competencies".
+
+6) No em-dashes. Never use "—" or "–" in running text. Rephrase the sentence or split it.
+
+7) Every section ends with a concrete statement. What does this mean for hiring? What must the reader know or decide? No section ends in the air.
+
+8) No textbook sound. No definitions. The reader knows their job. They do not need an introduction to leadership models.
+
+9) Reply in ${languageName}.
 
 HOW TO NAME THE THREE FOCUS AREAS (always plain English):
 - "Pace and Decision" = taking action, deciding quickly, driving pace, getting things done
 - "Communication and Relationships" = engaging with people, aligning, mediating, building relationships
 - "Structure and Diligence" = organising, checking, analysing, ensuring care and accuracy
 
-Reply only with valid JSON matching the requested schema. No prose around the JSON.`;
+BEFORE (what it must NOT sound like):
+"The task profile fits the focus structure. The leadership role with results responsibility requires fast decisions and clear communication, both of which are strongly anchored in the profile. Structural work could become a risk in more complex planning tasks, where additional support should be considered."
+
+AFTER (what it SHOULD sound like):
+"This role needs someone who decides fast and communicates clearly. Those are not optional traits — they are the baseline for effective leadership here. Planning tasks that demand care and accuracy sit outside the main focus. Whoever takes this role will need support there, either from a deputy or a staff function. That is not a weakness. It is a concrete organisational need that HR should clarify before the hire."
+
+Reply only with valid JSON matching the requested schema. No prose around the JSON.
+
+CHECKLIST before output — check every text block:
+- No passive voice? - No numbers or percentages? - No model jargon? - No disclaimer text? - No em-dashes? - Every section ends with a concrete statement? - Anchored to "${jobTitle}" and the named tasks?`;
 
         userPrompt = `ROLE: ${jobTitle}
+ROLE CATEGORY: ${roleCategoryEN.category}
+RELEVANT VOCABULARY (use what fits this role — do not force it): ${roleCategoryEN.vocab}
 MAIN TASKS: ${taskLineEN}
 
 FOCUS AREAS FOR THIS ROLE (qualitative — DO NOT use any numbers in the report):
@@ -2492,29 +2557,29 @@ TASK:
 Produce the JSON below. Strictly follow the style rules — especially: NO numbers or percentages in the text. NO terms like "impulsive", "intuitive", "analytical". Always use the plain labels above.
 
 {
-  "intro": "EXACTLY 2 paragraphs (separated by \\n\\n), no more. First paragraph: what this role is about and what the report shows — in everyday English, no model jargon. Second paragraph: short framing of the focus picture (which focus carries, which support) and what the reader can use the report for. NO disclaimer paragraph about 'value-free', 'personality profile', 'individual case' etc. — that disclaimer is shown separately and must not appear here.",
-  "shortDescription": "2-3 sentences. What kind of person this role needs — everyday English, with reference to the tasks.",
-  "structureProfile": "2-3 sentences. What the focus picture means for the role. Use words like 'main focus', 'supports', 'in the background'. No numbers.",
+  "intro": "EXACTLY 2 paragraphs (separated by \\n\\n), no more. First paragraph (2-3 sentences): what makes this specific role tick — name the tension or challenge that defines the position, using the role title and the concrete tasks. Second paragraph (2-3 sentences): what the focus picture means in practice (which focus carries, which ones support) and what HR or the hiring manager can use this report for. NO generic opener like 'This report examines...' or 'This analysis looks at...'. Start with a concrete observation about the role itself. NO disclaimer paragraph about 'value-free', 'personality profile', 'individual case' — that text is shown separately.",
+  "shortDescription": "2-3 sentences. What kind of person this role actually needs — name the specific challenge of the role, not a generic job description. Use concrete language anchored in the tasks.",
+  "structureProfile": "2-3 sentences. What the focus picture means for day-to-day work in this role. Use words like 'carries the role', 'supports actively', 'plays a secondary part'. End with a concrete implication for hiring. No numbers.",
   "componentMeaning": [
-    { "component": "${t1}", "title": "${componentLabel[t1]}", "text": "1-2 sentences: what this focus stands for in the role '${jobTitle}' — anchored in one of the concrete tasks." },
-    { "component": "${t2}", "title": "${componentLabel[t2]}", "text": "1-2 sentences: what additional role this focus plays." },
-    { "component": "${t3}", "title": "${componentLabel[t3]}", "text": "1-2 sentences: what role this focus plays in the background." }
+    { "component": "${t1}", "title": "${componentLabel[t1]}", "text": "1-2 sentences: what this focus concretely stands for in the role '${jobTitle}' — tied to one specific named task." },
+    { "component": "${t2}", "title": "${componentLabel[t2]}", "text": "1-2 sentences: what this focus adds — and when it matters most in this role." },
+    { "component": "${t3}", "title": "${componentLabel[t3]}", "text": "1-2 sentences: what role this plays in the background — and when its absence becomes visible." }
   ],
-  "workLogic": "1-2 sentences. How the focus areas must work together so the role functions.",
-  "framework": "2-3 sentences. How task character, work logic and leadership type fit the focus picture. If something is not specified, briefly name it.",
-  "successFocus": "1-2 sentences. What the success focus means for the day-to-day steering of this role.",
-  "behaviourDaily": "2 sentences. How the role shows up in normal everyday work — everyday English.",
-  "behaviourPressure": "2 sentences. How the role reacts under normal work pressure.",
-  "behaviourStress": "2 sentences. How the role reacts when pressure becomes too high.",
-  "teamImpact": "2 sentences. The impact of the role on the team.",
-  "tensionFields": ["4 sharp tension pairs in the format 'X vs. Y' from this concrete role context (e.g. 'Pace vs. Diligence', 'Closeness to the team vs. clear directives'). Everyday English, no model jargon."],
+  "workLogic": "1-2 sentences. How these focus areas must interlock so the role works. Name a specific situation where the combination matters.",
+  "framework": "2-3 sentences. How task character, work logic and leadership type fit — or create friction with — the focus picture. Name concrete implications. If something is not specified, say so briefly.",
+  "successFocus": "1-2 sentences. What the success focus demands from the person in this role day-to-day. Name a concrete steering implication.",
+  "behaviourDaily": "2 sentences. How this role shows up in normal everyday work. Name one specific habit or pattern that makes or breaks daily effectiveness.",
+  "behaviourPressure": "2 sentences. How the role reacts under normal work pressure. Name what changes and what that means for the team.",
+  "behaviourStress": "2 sentences. How the role reacts when pressure becomes too high. Name the risk that becomes visible in the team or with the work.",
+  "teamImpact": "2 sentences. What the role does to the team around it. Name a concrete dynamic — positive or challenging.",
+  "tensionFields": ["4 sharp tension pairs in the format 'X vs. Y' from this specific role context (e.g. 'Speed vs. Care', 'Client closeness vs. internal process'). Everyday English, no model jargon. Each pair must be observable in this actual role."],
   "miscastRisks": [
-    { "label": "When ${componentLabel[t1]} becomes too strong", "bullets": ["3-4 concrete risks as short everyday sentences. What happens then in the team, with the tasks, with colleagues?"] },
-    { "label": "When ${componentLabel[t2]} takes over the role", "bullets": ["3-4 concrete risks as short everyday sentences."] },
-    { "label": "When ${componentLabel[t3]} becomes too strong", "bullets": ["3-4 concrete risks as short everyday sentences."] }
+    { "label": "When ${componentLabel[t1]} becomes too dominant", "bullets": ["3-4 concrete risks as short everyday sentences. What happens then in the team, with the tasks, with colleagues? The LAST bullet must start with 'In practice this means ' and describe one observable day-to-day behaviour."] },
+    { "label": "When ${componentLabel[t2]} takes over", "bullets": ["3-4 concrete risks as short everyday sentences. The LAST bullet must start with 'In practice this means ' and describe one observable day-to-day behaviour."] },
+    { "label": "When ${componentLabel[t3]} becomes too dominant", "bullets": ["3-4 concrete risks as short everyday sentences. The LAST bullet must start with 'In practice this means ' and describe one observable day-to-day behaviour."] }
   ],
-  "typicalPerson": "2-3 sentences. From which roles or career paths suitable candidates typically come — concrete and in everyday English.",
-  "finalDecision": "2-3 sentences. Clear hiring recommendation in everyday English, referring to the main focus of this role. End with a verifiable recommendation.",
+  "typicalPerson": "2-3 sentences. From which roles, industries or career paths suitable candidates typically come. Be concrete — name types of positions or environments, not soft traits.",
+  "finalDecision": "2-3 sentences. Direct hiring recommendation — state what to look for, what to watch out for, and end with one verifiable check or question the hiring manager can use.",
   "jobTitleEnglish": "Natural, idiomatic English version of the role title '${jobTitle}'. Translate meaningfully (not word-for-word). If the title is already English, return it unchanged. Just the title, no quotes, no extra words.",
   "tasksEnglish": ["Natural English translation of EACH provided main task, in the SAME order as MAIN TASKS above. One string per task. Translate meaningfully so a native English-speaking HR manager understands what is actually done. Keep them concise. If a task is already in English, keep it as-is."]
 }
@@ -2524,7 +2589,8 @@ IMPORTANT:
 - NO terms "impulsive", "intuitive", "analytical", "component", "triad", "profile class", "gap", "top1", "top2", "top3", "bioLogic".
 - tensionFields = exactly 4 strings. miscastRisks.bullets each 3-4 strings.
 - componentMeaning in exactly this order with the keys ${t1}, ${t2}, ${t3}.
-- tasksEnglish must contain EXACTLY ${Array.isArray(tasks) ? tasks.length : 0} strings, in the same order as MAIN TASKS.`;
+- tasksEnglish must contain EXACTLY ${Array.isArray(tasks) ? tasks.length : 0} strings, in the same order as MAIN TASKS.
+- Concrete reference to the role category "${roleCategoryEN.category}" and the relevant vocabulary above, where it fits naturally.`;
       } else {
         const taskLine = Array.isArray(tasks) && tasks.length > 0 ? tasks.join("; ") : "(keine Hauptaufgaben angegeben)";
 
