@@ -250,6 +250,8 @@ export default function SollIstBericht() {
     return false;
   });
   const [reportGenerated, setReportGenerated] = useState(false);
+  const [aiMatchText, setAiMatchText] = useState<{ intro: string; fitSummary: string; developmentOutlook: string; teamImpact: string } | null>(null);
+  const [aiMatchLoading, setAiMatchLoading] = useState(false);
   const [isExportingPdf, setIsExportingPdf] = useState(false);
   const reportRef = useRef<HTMLDivElement>(null);
   const subCircleCache = useRef<Record<string, string>>({});
@@ -318,6 +320,37 @@ export default function SollIstBericht() {
     const raw = computeSollIst(roleName, candidateName || "Person", roleTriad, candidateProfile, fuehrungsArt, roleAnalysisObj);
     return localizeDeep(raw, region);
   }, [roleTriad, roleName, candidateName, candidateProfile.impulsiv, candidateProfile.intuitiv, candidateProfile.analytisch, reportGenerated, fuehrungsArt, region, roleAnalysisObj]);
+
+  useEffect(() => {
+    if (!result || !roleTriad) return;
+    setAiMatchText(null);
+    setAiMatchLoading(true);
+    const payload = {
+      roleName: result.roleName,
+      candidateName: result.candidateName,
+      roleTriad: { imp: roleTriad.impulsiv, int: roleTriad.intuitiv, ana: roleTriad.analytisch },
+      candTriad: { imp: candidateProfile.impulsiv, int: candidateProfile.intuitiv, ana: candidateProfile.analytisch },
+      fitLabel: result.fitLabel,
+      fitRating: result.fitRating,
+      controlIntensity: result.controlIntensity,
+      gapLevel: result.gapLevel,
+      developmentLabel: result.developmentLabel,
+      roleDomKey: result.roleDomKey === "impulsiv" ? "imp" : result.roleDomKey === "intuitiv" ? "int" : "ana",
+      candDomKey: result.candDomKey === "impulsiv" ? "imp" : result.candDomKey === "intuitiv" ? "int" : "ana",
+      locale: region === "EN" ? "en" : "de",
+    };
+    fetch("/api/generate-matchcheck-text", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    })
+      .then(r => r.json())
+      .then(data => {
+        if (data && data.intro) setAiMatchText(data);
+      })
+      .catch(() => {})
+      .finally(() => setAiMatchLoading(false));
+  }, [result?.fitLabel, result?.fitRating, result?.roleName, result?.candidateName, reportGenerated]);
 
   const exportPdf = useCallback(async () => {
     if (!result || isExportingPdf || !roleTriad || !reportRef.current) return;
@@ -1042,9 +1075,23 @@ export default function SollIstBericht() {
 
               {/* ─── EXECUTIVE DECISION CONTENT (weisser Hintergrund) ─── */}
               <div style={{ padding: "28px 44px 0" }}>
-                <p data-pdf-block style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 16px", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de" data-testid="text-einleitung">
-                  Diese Passungsanalyse zeigt, wie gut Person und Position in ihrer Arbeitslogik zusammenpassen. Sie macht sichtbar, wo Übereinstimmungen bestehen, wo Abweichungen entstehen und welcher Führungs- oder Entwicklungsaufwand daraus im Alltag zu erwarten ist.
-                </p>
+                {aiMatchLoading && !aiMatchText ? (
+                  <div data-pdf-block style={{ margin: "0 0 16px" }}>
+                    <div style={{ height: 18, borderRadius: 6, background: "rgba(0,0,0,0.07)", marginBottom: 8, width: "90%" }} />
+                    <div style={{ height: 18, borderRadius: 6, background: "rgba(0,0,0,0.05)", marginBottom: 8, width: "70%" }} />
+                    <div style={{ height: 18, borderRadius: 6, background: "rgba(0,0,0,0.04)", width: "80%" }} />
+                  </div>
+                ) : aiMatchText ? (
+                  aiMatchText.intro.split(/\n\n+/).map((para, i) => (
+                    <p key={i} data-pdf-block style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 12px", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} data-testid="text-einleitung">
+                      {para}
+                    </p>
+                  ))
+                ) : (
+                  <p data-pdf-block style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 16px", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de" data-testid="text-einleitung">
+                    {region === "EN" ? "This fit analysis shows how well the person and the role align in their working logic. It reveals where there is alignment, where deviations arise, and what leadership or development effort to expect." : "Diese Passungsanalyse zeigt, wie gut Person und Position in ihrer Arbeitslogik zusammenpassen. Sie macht sichtbar, wo Übereinstimmungen bestehen, wo Abweichungen entstehen und welcher Führungs- oder Entwicklungsaufwand daraus im Alltag zu erwarten ist."}
+                  </p>
+                )}
                 <div data-pdf-block style={{ background: "linear-gradient(135deg, rgba(255,59,48,0.06) 0%, rgba(255,59,48,0.03) 100%)", borderRadius: 10, padding: "16px 20px", border: "1px solid rgba(255,59,48,0.2)", marginBottom: 24 }}>
                   <p style={{ fontSize: 13, fontWeight: 700, color: "#FF3B30", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
                     {REPORT_INTRO_DISCLAIMER}
@@ -1102,7 +1149,7 @@ export default function SollIstBericht() {
                   return (
                     <>
                       <p data-pdf-block style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 22px", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de" data-testid="text-gesamt-intro">
-                        {gesamtIntroText}
+                        {aiMatchText?.fitSummary || gesamtIntroText}
                       </p>
                       <div data-pdf-block style={{ marginBottom: 22 }} data-testid="section-systemstatus">
                         <div style={{ display: "flex", gap: 16, marginTop: 20, paddingTop: 18, borderTop: "1px solid rgba(0,0,0,0.06)" }}>

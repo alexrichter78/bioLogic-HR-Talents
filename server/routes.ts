@@ -2640,6 +2640,326 @@ WICHTIG:
     }
   });
 
+  // ─── MATCHCHECK AI TEXT ───────────────────────────────────────────────────
+  app.post("/api/generate-matchcheck-text", requireAuth, requireFullAccess, async (req, res) => {
+    try {
+      const {
+        roleName,
+        candidateName = "Person",
+        roleTriad,
+        candTriad,
+        fitLabel,
+        fitRating,
+        controlIntensity,
+        gapLevel,
+        developmentLabel,
+        roleDomKey,
+        candDomKey,
+        locale = "de",
+      } = req.body || {};
+
+      if (!roleTriad || !candTriad || !fitLabel) {
+        return res.status(400).json({ error: "roleTriad, candTriad and fitLabel are required" });
+      }
+
+      if (req.session.userId) {
+        const limitCheck = await checkAiLimit(req.session.userId);
+        if (!limitCheck.allowed) {
+          return res.status(429).json({ error: limitCheck.reason });
+        }
+      }
+
+      const isEN = locale === "en";
+      const languageName = isEN ? "English" : "Deutsch";
+
+      const componentLabel: Record<string, string> = isEN
+        ? { imp: "Pace and Decision", int: "Communication and Relationships", ana: "Structure and Diligence" }
+        : { imp: "Tempo und Entscheidung", int: "Kommunikation und Beziehung", ana: "Struktur und Sorgfalt" };
+
+      const toBand = (v: number): string => {
+        if (isEN) {
+          if (v >= 45) return "clearly the dominant focus";
+          if (v >= 38) return "clearly shaping the role";
+          if (v >= 30) return "noticeably present";
+          if (v >= 22) return "more of a supporting role";
+          return "clearly in the background";
+        }
+        if (v >= 45) return "deutlich der Schwerpunkt";
+        if (v >= 38) return "klar mitprägend";
+        if (v >= 30) return "spürbar vorhanden";
+        if (v >= 22) return "eher unterstützend";
+        return "klar im Hintergrund";
+      };
+
+      const fitDescription = isEN
+        ? (fitRating === "GEEIGNET" ? "Suitable" : fitRating === "BEDINGT" ? "Conditionally suitable" : "Not suitable")
+        : (fitLabel === "Geeignet" ? "Geeignet" : fitLabel === "Bedingt geeignet" ? "Bedingt geeignet" : "Nicht geeignet");
+
+      const roleMain = componentLabel[roleDomKey] || componentLabel.imp;
+      const candMain = componentLabel[candDomKey] || componentLabel.imp;
+
+      const systemPrompt = isEN
+        ? `You are an experienced HR consultant writing a person-role fit report. Readers do not know the bioLogic model. Write so that any HR manager can understand it without prior knowledge.
+
+STYLE RULES (mandatory):
+- Clear, direct, active voice. Short sentences. No passive.
+- NO numbers, NO percentages. Use words: "clearly the dominant focus", "noticeably present", "in the background".
+- NO model jargon: never "impulsive", "intuitive", "analytical", "component", "triad", "profile class", "gap". Use plain labels: "Pace and Decision", "Communication and Relationships", "Structure and Diligence".
+- No empty phrases, no textbook tone, no coaching-speak.
+- Each section ends with a clear actionable statement.
+- No disclaimers ("value-free", "this replaces no individual assessment", etc.).
+- No em-dashes ("–" or "—") in running text.
+- Reply in ${languageName}.
+
+Reply only with valid JSON. No prose around the JSON.`
+        : `Du bist HR-Berater und schreibst einen Passungsanalyse-Bericht. Leser kennen das bioLogic-Modell nicht. Schreibe so, dass eine HR-Führungskraft ohne Vorwissen versteht, was hier entschieden werden muss.
+
+STIL-REGELN (verbindlich):
+1) Aktiv schreiben. Kein Passiv, keine Konjunktive ohne Grund.
+2) Konkret auf diese Stelle und diese Person bezogen, nicht generisch.
+3) KEINE Zahlen, keine Prozentwerte. Stattdessen Worte: "deutlich im Vordergrund", "klar mitprägend", "im Hintergrund".
+4) KEINE Fachbegriffe: niemals "impulsiv", "intuitiv", "analytisch", "Komponente", "Triade", "Profilklasse", "Gap". Stattdessen Klartext: "Tempo und Entscheidung", "Kommunikation und Beziehung", "Struktur und Sorgfalt".
+5) KEINE Disclaimer ("wertfrei", "ersetzt keine Einzelfallbetrachtung", "Tendenzen, keine starren Bilder"). Dieser Text steht separat.
+6) KEINE Floskeln, KEINE Gedankenstriche.
+7) Jeder Abschnitt endet mit einer klaren Aussage.
+
+Antworte ausschließlich mit gültigem JSON. Kein Fließtext um das JSON herum.`;
+
+      const userContent = isEN
+        ? `ROLE: ${roleName || "the role"}
+CANDIDATE: ${candidateName}
+
+ROLE FOCUS AREAS (qualitative — no numbers in report):
+- "${componentLabel.imp}": ${toBand(roleTriad.imp)}
+- "${componentLabel.int}": ${toBand(roleTriad.int)}
+- "${componentLabel.ana}": ${toBand(roleTriad.ana)}
+
+CANDIDATE FOCUS AREAS (qualitative):
+- "${componentLabel.imp}": ${toBand(candTriad.imp)}
+- "${componentLabel.int}": ${toBand(candTriad.int)}
+- "${componentLabel.ana}": ${toBand(candTriad.ana)}
+
+FIT RESULT: ${fitDescription}
+MAIN FOCUS OF THE ROLE: "${roleMain}"
+MAIN FOCUS OF THE CANDIDATE: "${candMain}"
+LEADERSHIP EFFORT: ${controlIntensity || "not specified"}
+GAP LEVEL: ${gapLevel || "not specified"}
+DEVELOPMENT LEVEL: ${developmentLabel || "not specified"}
+
+TASK: Produce this JSON. NO numbers or percentages. NO model jargon.
+
+{
+  "intro": "EXACTLY 2 paragraphs separated by \\n\\n. First: what this fit analysis shows for this specific role and candidate. Second: how the focus picture of role and person relates and what this means for the hiring decision. NO disclaimer paragraph.",
+  "fitSummary": "2-3 sentences. Clear hiring recommendation based on fit result, leadership effort, and gap level. End with a concrete, verifiable statement.",
+  "developmentOutlook": "2 sentences. What the development effort means in practice — what is realistic, what requires leadership attention.",
+  "teamImpact": "2 sentences. How this person affects the team if placed in this role."
+}`
+        : `STELLE: ${roleName || "die Stelle"}
+KANDIDAT/IN: ${candidateName}
+
+SCHWERPUNKTE DER STELLE (qualitativ – KEINE Zahlen im Bericht):
+- "${componentLabel.imp}": ${toBand(roleTriad.imp)}
+- "${componentLabel.int}": ${toBand(roleTriad.int)}
+- "${componentLabel.ana}": ${toBand(roleTriad.ana)}
+
+SCHWERPUNKTE DER PERSON (qualitativ):
+- "${componentLabel.imp}": ${toBand(candTriad.imp)}
+- "${componentLabel.int}": ${toBand(candTriad.int)}
+- "${componentLabel.ana}": ${toBand(candTriad.ana)}
+
+PASSUNGSERGEBNIS: ${fitDescription}
+HAUPTFOKUS DER STELLE: "${roleMain}"
+HAUPTFOKUS DER PERSON: "${candMain}"
+FÜHRUNGSAUFWAND: ${controlIntensity || "nicht angegeben"}
+PROFILABWEICHUNG: ${gapLevel || "nicht angegeben"}
+ENTWICKLUNGSAUFWAND: ${developmentLabel || "nicht angegeben"}
+
+AUFGABE: Erzeuge dieses JSON. KEINE Zahlen oder Prozentwerte. KEINE Modellbegriffe.
+
+{
+  "intro": "GENAU 2 Absätze mit \\n\\n getrennt. Erster Absatz: was diese Passungsanalyse für genau diese Stelle und diese Person zeigt. Zweiter Absatz: wie das Schwerpunkt-Bild von Stelle und Person zueinander steht und was das für die Besetzungsentscheidung bedeutet. KEIN Hinweis-Absatz zu wertfrei/Einzelfallbetrachtung/etc.",
+  "fitSummary": "2-3 Sätze. Klare Besetzungsempfehlung auf Basis von Passungsergebnis, Führungsaufwand und Profilabweichung. Ende mit einer konkreten, prüfbaren Aussage.",
+  "developmentOutlook": "2 Sätze. Was der Entwicklungsaufwand in der Praxis bedeutet – was realistisch ist, was Führungsaufmerksamkeit braucht.",
+  "teamImpact": "2 Sätze. Wie diese Person das Team beeinflusst, wenn sie in dieser Stelle eingesetzt wird."
+}`;
+
+      const fullPrompt = `${systemPrompt}\n\n${userContent}`;
+      const data = await callClaudeForJson("generate-matchcheck-text", fullPrompt, {
+        temperature: 0.6,
+        maxTokens: 2048,
+        model: "claude-haiku-4-5",
+      });
+      res.json(data);
+      if (req.session.userId) trackUsageEvent(req.session.userId, "matchcheck");
+    } catch (error) {
+      console.error("Error generating MatchCheck text:", error);
+      res.status(500).json({ error: "Fehler bei der Text-Generierung" });
+    }
+  });
+
+  // ─── TEAMCHECK AI TEXT ─────────────────────────────────────────────────────
+  app.post("/api/generate-teamcheck-text", requireAuth, requireFullAccess, async (req, res) => {
+    try {
+      const {
+        roleName,
+        candidateName = "Person",
+        personTriad,
+        teamTriad,
+        gesamteinschaetzung,
+        passungZumTeam,
+        beitragZurAufgabe,
+        begleitungsbedarf,
+        hauptstaerke,
+        hauptabweichung,
+        roleType = "teammitglied",
+        teamGoal,
+        locale = "de",
+      } = req.body || {};
+
+      if (!personTriad || !teamTriad) {
+        return res.status(400).json({ error: "personTriad and teamTriad are required" });
+      }
+
+      if (req.session.userId) {
+        const limitCheck = await checkAiLimit(req.session.userId);
+        if (!limitCheck.allowed) {
+          return res.status(429).json({ error: limitCheck.reason });
+        }
+      }
+
+      const isEN = locale === "en";
+      const languageName = isEN ? "English" : "Deutsch";
+      const hasRole = !!(roleName && roleName.trim());
+      const isLeading = roleType === "fuehrung";
+
+      const componentLabel: Record<string, string> = isEN
+        ? { impulsiv: "Pace and Decision", intuitiv: "Communication and Relationships", analytisch: "Structure and Diligence" }
+        : { impulsiv: "Tempo und Entscheidung", intuitiv: "Kommunikation und Beziehung", analytisch: "Struktur und Sorgfalt" };
+
+      const toBand = (v: number): string => {
+        if (isEN) {
+          if (v >= 45) return "clearly the dominant focus";
+          if (v >= 38) return "clearly shaping";
+          if (v >= 30) return "noticeably present";
+          if (v >= 22) return "more of a supporting element";
+          return "clearly in the background";
+        }
+        if (v >= 45) return "deutlich der Schwerpunkt";
+        if (v >= 38) return "klar mitprägend";
+        if (v >= 30) return "spürbar vorhanden";
+        if (v >= 22) return "eher unterstützend";
+        return "klar im Hintergrund";
+      };
+
+      const levelLabel = isEN
+        ? (isLeading ? "leadership position" : "team member")
+        : (isLeading ? "Führungsposition" : "Teammitglied");
+
+      const goalLabel = isEN
+        ? (teamGoal === "umsetzung" ? "execution and results" : teamGoal === "analyse" ? "analysis and structure" : teamGoal === "zusammenarbeit" ? "collaboration and alignment" : "not specified")
+        : (teamGoal === "umsetzung" ? "Umsetzung und Ergebnisse" : teamGoal === "analyse" ? "Analyse und Struktur" : teamGoal === "zusammenarbeit" ? "Zusammenarbeit und Abstimmung" : "nicht angegeben");
+
+      const systemPrompt = isEN
+        ? `You are an experienced HR consultant writing a team integration report. Readers do not know the bioLogic model. Write so that any team leader or HR manager understands what needs to happen without prior knowledge.
+
+STYLE RULES (mandatory):
+- Clear, direct, active voice. Short sentences. No passive.
+- NO numbers, NO percentages. Use words: "clearly the dominant focus", "noticeably present", "in the background".
+- NO model jargon: never "impulsive", "intuitive", "analytical", "component", "triad". Use: "Pace and Decision", "Communication and Relationships", "Structure and Diligence".
+- No empty phrases, no coaching-speak, no textbook tone.
+- Each section ends with a clear, actionable statement.
+- No disclaimers. No em-dashes.
+- Reply in ${languageName}.
+
+Reply only with valid JSON. No prose around the JSON.`
+        : `Du bist HR-Berater und schreibst einen Team-Integrationsbericht. Leser kennen das bioLogic-Modell nicht. Schreibe so, dass Teamleiter und HR-Verantwortliche ohne Vorwissen verstehen, was zu tun ist.
+
+STIL-REGELN (verbindlich):
+1) Aktiv schreiben. Kein Passiv, keine Konjunktive ohne Grund.
+2) Konkret auf dieses Team und diese Person bezogen, nicht generisch.
+3) KEINE Zahlen, keine Prozentwerte. Stattdessen Worte wie "deutlich im Vordergrund", "klar mitprägend".
+4) KEINE Fachbegriffe: niemals "impulsiv", "intuitiv", "analytisch", "Komponente", "Triade". Stattdessen: "Tempo und Entscheidung", "Kommunikation und Beziehung", "Struktur und Sorgfalt".
+5) KEINE Disclaimer, KEINE Floskeln, KEINE Gedankenstriche.
+6) Jeder Abschnitt endet mit einer klaren Aussage.
+
+Antworte ausschließlich mit gültigem JSON. Kein Fließtext um das JSON herum.`;
+
+      const userContent = isEN
+        ? `${hasRole ? `ROLE: ${roleName}` : "ROLE: new team member (no role title specified)"}
+CANDIDATE: ${candidateName}
+POSITION TYPE: ${levelLabel}
+TEAM GOAL: ${goalLabel}
+
+PERSON FOCUS AREAS (qualitative — no numbers in report):
+- "${componentLabel.impulsiv}": ${toBand(personTriad.impulsiv)}
+- "${componentLabel.intuitiv}": ${toBand(personTriad.intuitiv)}
+- "${componentLabel.analytisch}": ${toBand(personTriad.analytisch)}
+
+TEAM FOCUS AREAS (qualitative):
+- "${componentLabel.impulsiv}": ${toBand(teamTriad.impulsiv)}
+- "${componentLabel.intuitiv}": ${toBand(teamTriad.intuitiv)}
+- "${componentLabel.analytisch}": ${toBand(teamTriad.analytisch)}
+
+INTEGRATION ASSESSMENT: ${gesamteinschaetzung || "not specified"}
+FIT TO TEAM: ${passungZumTeam || "not specified"}
+CONTRIBUTION TO TASK: ${beitragZurAufgabe || "not specified"}
+SUPPORT REQUIRED: ${begleitungsbedarf || "not specified"}
+MAIN STRENGTH: ${hauptstaerke || "not specified"}
+MAIN DIVERGENCE: ${hauptabweichung || "not specified"}
+
+TASK: Produce this JSON. NO numbers or percentages. NO model jargon.
+
+{
+  "intro": "EXACTLY 2 paragraphs separated by \\n\\n. First: what this team integration analysis shows for ${hasRole ? `the role '${roleName}'` : "this new position"} and the existing team. Second: what the focus picture comparison between person and team means for integration — practical and concrete. NO disclaimer paragraph.",
+  "bewertungSummary": "2-3 sentences. Clear integration recommendation based on the assessment. ${isLeading ? "Address leadership impact on the team specifically. " : ""}End with a concrete, actionable recommendation.",
+  "integrationAdvice": "2 sentences. What specifically needs to happen in the first weeks to make integration successful.",
+  "teamDynamics": "2 sentences. How this addition changes the team's overall working dynamic."
+}`
+        : `${hasRole ? `STELLE: ${roleName}` : "STELLE: neue Position (kein Stellentitel angegeben)"}
+KANDIDAT/IN: ${candidateName}
+POSITIONSTYP: ${levelLabel}
+TEAMZIEL: ${goalLabel}
+
+SCHWERPUNKTE DER PERSON (qualitativ – KEINE Zahlen im Bericht):
+- "${componentLabel.impulsiv}": ${toBand(personTriad.impulsiv)}
+- "${componentLabel.intuitiv}": ${toBand(personTriad.intuitiv)}
+- "${componentLabel.analytisch}": ${toBand(personTriad.analytisch)}
+
+SCHWERPUNKTE DES TEAMS (qualitativ):
+- "${componentLabel.impulsiv}": ${toBand(teamTriad.impulsiv)}
+- "${componentLabel.intuitiv}": ${toBand(teamTriad.intuitiv)}
+- "${componentLabel.analytisch}": ${toBand(teamTriad.analytisch)}
+
+INTEGRATIONSBEWERTUNG: ${gesamteinschaetzung || "nicht angegeben"}
+PASSUNG ZUM TEAM: ${passungZumTeam || "nicht angegeben"}
+BEITRAG ZUR AUFGABE: ${beitragZurAufgabe || "nicht angegeben"}
+BEGLEITUNGSBEDARF: ${begleitungsbedarf || "nicht angegeben"}
+HAUPTSTÄRKE: ${hauptstaerke || "nicht angegeben"}
+HAUPTABWEICHUNG: ${hauptabweichung || "nicht angegeben"}
+
+AUFGABE: Erzeuge dieses JSON. KEINE Zahlen oder Prozentwerte. KEINE Modellbegriffe.
+
+{
+  "intro": "GENAU 2 Absätze mit \\n\\n getrennt. Erster Absatz: was diese Team-Integrationsanalyse für ${hasRole ? `die Stelle '${roleName}'` : "diese neue Position"} und das bestehende Team zeigt. Zweiter Absatz: was das Schwerpunkt-Bild von Person und Team für die Integration bedeutet – konkret und praxisnah. KEIN Hinweis-Absatz.",
+  "bewertungSummary": "2-3 Sätze. Klare Integrationsempfehlung auf Basis der Bewertung. ${isLeading ? "Geht explizit auf die Führungswirkung auf das Team ein. " : ""}Ende mit einer konkreten, prüfbaren Handlungsempfehlung.",
+  "integrationAdvice": "2 Sätze. Was konkret in den ersten Wochen passieren muss, damit die Integration gelingt.",
+  "teamDynamics": "2 Sätze. Wie dieser Zuwachs die Arbeitsdynamik des gesamten Teams verändert."
+}`;
+
+      const fullPrompt = `${systemPrompt}\n\n${userContent}`;
+      const data = await callClaudeForJson("generate-teamcheck-text", fullPrompt, {
+        temperature: 0.6,
+        maxTokens: 2048,
+        model: "claude-haiku-4-5",
+      });
+      res.json(data);
+      if (req.session.userId) trackUsageEvent(req.session.userId, "teamcheck");
+    } catch (error) {
+      console.error("Error generating TeamCheck text:", error);
+      res.status(500).json({ error: "Fehler bei der Text-Generierung" });
+    }
+  });
+
   app.post("/api/generate-team-report", requireAuth, requireFullAccess, async (req, res) => {
     try {
       const { context, profiles, computed, levers, region } = req.body;

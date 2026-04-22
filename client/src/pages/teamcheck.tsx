@@ -271,6 +271,8 @@ export default function TeamCheck() {
   const [detailTab, setDetailTab] = useState<"bewertung" | "alltag" | "chancen" | "hebel" | "prognose" | "empfehlung">("bewertung");
   const [reportView, setReportView] = useState<"none" | "detail" | "executive">("none");
   const reportRef = useRef<HTMLDivElement>(null);
+  const [aiTeamText, setAiTeamText] = useState<{ intro: string; bewertungSummary: string; integrationAdvice: string; teamDynamics: string } | null>(null);
+  const [aiTeamLoading, setAiTeamLoading] = useState(false);
 
   useEffect(() => {
     try {
@@ -368,6 +370,37 @@ export default function TeamCheck() {
   const tdResult = useMemo(() => localizeDeep(computeTeamDynamics(tdInput), region), [tdInput, region]);
   const tl = TL_COLORS[tdResult.trafficLight];
 
+  useEffect(() => {
+    if (reportView === "none") return;
+    setAiTeamText(null);
+    setAiTeamLoading(true);
+    const payload = {
+      roleName: beruf || "",
+      candidateName: "Person",
+      personTriad: { impulsiv: kandidat.impulsiv, intuitiv: kandidat.intuitiv, analytisch: kandidat.analytisch },
+      teamTriad: { impulsiv: team.impulsiv, intuitiv: team.intuitiv, analytisch: team.analytisch },
+      gesamteinschaetzung: v4Result.gesamteinschaetzung,
+      passungZumTeam: v4Result.passungZumTeam,
+      beitragZurAufgabe: v4Result.beitragZurAufgabe,
+      begleitungsbedarf: v4Result.begleitungsbedarf,
+      hauptstaerke: v4Result.hauptstaerke,
+      hauptabweichung: v4Result.hauptabweichung,
+      roleType: isLeading ? "fuehrung" : "teammitglied",
+      teamGoal: teamGoal || "",
+      locale: region === "EN" ? "en" : "de",
+    };
+    fetch("/api/generate-teamcheck-text", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    })
+      .then(r => r.json())
+      .then(data => { if (data && data.intro) setAiTeamText(data); })
+      .catch(() => {})
+      .finally(() => setAiTeamLoading(false));
+  }, [reportView, beruf, isLeading, teamGoal, region,
+    v4Result.gesamteinschaetzung, v4Result.passungZumTeam, v4Result.beitragZurAufgabe]);
+
   const rolleLabel = isLeading ? "Neue Führungskraft" : "Neues Teammitglied";
   const sollDom = getDominanceLabel(soll);
   const kandDom = getDominanceLabel(kandidat);
@@ -451,15 +484,17 @@ export default function TeamCheck() {
                 ))}
               </div>
 
-              {v4Result.introText && (
-                <div style={{
-                  padding: "16px 22px", borderRadius: 16, marginBottom: 4,
-                  background: "linear-gradient(135deg, rgba(0,113,227,0.06), rgba(0,113,227,0.02))",
-                  border: "1px solid rgba(0,113,227,0.12)",
-                }}>
-                  <Paragraphs text={v4Result.introText} />
+              {(aiTeamLoading && !aiTeamText) ? (
+                <div style={{ padding: "16px 22px", borderRadius: 16, marginBottom: 4, background: "linear-gradient(135deg, rgba(0,113,227,0.06), rgba(0,113,227,0.02))", border: "1px solid rgba(0,113,227,0.12)" }}>
+                  <div style={{ height: 15, borderRadius: 5, background: "rgba(0,113,227,0.12)", marginBottom: 8, width: "92%" }} />
+                  <div style={{ height: 15, borderRadius: 5, background: "rgba(0,113,227,0.08)", marginBottom: 8, width: "78%" }} />
+                  <div style={{ height: 15, borderRadius: 5, background: "rgba(0,113,227,0.06)", width: "85%" }} />
                 </div>
-              )}
+              ) : (aiTeamText?.intro || v4Result.introText) ? (
+                <div style={{ padding: "16px 22px", borderRadius: 16, marginBottom: 4, background: "linear-gradient(135deg, rgba(0,113,227,0.06), rgba(0,113,227,0.02))", border: "1px solid rgba(0,113,227,0.12)" }}>
+                  <Paragraphs text={aiTeamText?.intro || v4Result.introText} />
+                </div>
+              ) : null}
 
               {/* S1: Gesamtbewertung */}
               <GlassCard data-testid="report-section-1">
@@ -476,7 +511,7 @@ export default function TeamCheck() {
                     <p style={{ fontSize: 13, fontWeight: 600, color: "#FF9500", margin: 0 }}>{v4Result.hauptabweichung}</p>
                   </div>
                 </div>
-                <Paragraphs text={v4Result.gesamtbewertungText} highlight />
+                <Paragraphs text={aiTeamText?.bewertungSummary || v4Result.gesamtbewertungText} highlight />
               </GlassCard>
 
               {/* S2: Warum */}
@@ -682,6 +717,20 @@ export default function TeamCheck() {
                 </div>
               </GlassCard>
 
+              {(aiTeamLoading && !aiTeamText) ? (
+                <GlassCard>
+                  <div style={{ height: 16, borderRadius: 6, background: "rgba(0,0,0,0.07)", marginBottom: 8, width: "90%" }} />
+                  <div style={{ height: 16, borderRadius: 6, background: "rgba(0,0,0,0.05)", marginBottom: 8, width: "80%" }} />
+                  <div style={{ height: 16, borderRadius: 6, background: "rgba(0,0,0,0.04)", width: "70%" }} />
+                </GlassCard>
+              ) : aiTeamText?.intro ? (
+                <GlassCard>
+                  {aiTeamText.intro.split(/\n\n+/).map((para, i) => (
+                    <p key={i} style={{ fontSize: 13.5, color: "#48484A", lineHeight: 1.8, margin: i === 0 ? "0 0 10px" : "0" }}>{hyphenateText(para)}</p>
+                  ))}
+                </GlassCard>
+              ) : null}
+
               <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
                 {[
                   { label: "Passung zum Team", value: axisLabel(v4Result.passungZumTeam), color: axisColor(v4Result.passungZumTeam), icon: Users },
@@ -725,8 +774,13 @@ export default function TeamCheck() {
                     <p style={{ fontSize: 13, fontWeight: 600, color: "#FF9500", margin: 0 }}>{v4Result.hauptabweichung}</p>
                   </div>
                 </div>
-                {v4Result.gesamtbewertungText.split("\n\n").slice(0, 2).map((p, i) => (
-                  <p key={i} style={{ fontSize: 13.5, color: "#48484A", lineHeight: 1.8, margin: "0 0 8px" }} lang="de">{hyphenateText(p)}</p>
+                {aiTeamLoading && !aiTeamText ? (
+                  <>
+                    <div style={{ height: 16, borderRadius: 6, background: "rgba(0,0,0,0.07)", marginBottom: 8, width: "90%" }} />
+                    <div style={{ height: 16, borderRadius: 6, background: "rgba(0,0,0,0.05)", width: "75%" }} />
+                  </>
+                ) : (aiTeamText?.bewertungSummary || v4Result.gesamtbewertungText).split("\n\n").slice(0, 2).map((p, i) => (
+                  <p key={i} style={{ fontSize: 13.5, color: "#48484A", lineHeight: 1.8, margin: "0 0 8px" }}>{hyphenateText(p)}</p>
                 ))}
               </GlassCard>
 
@@ -1161,7 +1215,7 @@ export default function TeamCheck() {
                     </div>
                   </div>
 
-                  <Paragraphs text={v4Result.gesamtbewertungText} highlight />
+                  <Paragraphs text={aiTeamText?.bewertungSummary || v4Result.gesamtbewertungText} highlight />
 
                   <div style={{ height: 1, background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.06), transparent)", margin: "20px 0" }} />
 
