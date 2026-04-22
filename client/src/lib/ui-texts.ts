@@ -537,9 +537,9 @@ export const UI = {
       sollHeader: "Profil cible (poste)",
       istHeader: "Profil réel (personne)",
       istDescription: "Déplacez les curseurs pour saisir le profil de la personne. Les valeurs sont normalisées automatiquement.",
-      labelImpulsiv: "Action",
-      labelIntuitiv: "Relation",
-      labelAnalytisch: "Structure",
+      labelImpulsiv: "Rythme et Décision",
+      labelIntuitiv: "Communication et Relations",
+      labelAnalytisch: "Structure et Rigueur",
       normalizedNote: "Profil normalisé (max. 67 % par composante)",
       roleDominanceText: (compLabel: string, dominanceText: string) =>
         `La logique dominante du poste est ${compLabel} : ${dominanceText}.`,

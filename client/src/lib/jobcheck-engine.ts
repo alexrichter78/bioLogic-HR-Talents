@@ -348,6 +348,11 @@ export function labelComponent(k: ComponentKey, lang?: string) {
     if (k === "intuitiv") return "Intuitive";
     return "Analytical";
   }
+  if (lang === "FR") {
+    if (k === "impulsiv") return "Rythme et Décision";
+    if (k === "intuitiv") return "Communication et Relations";
+    return "Structure et Rigueur";
+  }
   if (k === "impulsiv") return "Impulsiv";
   if (k === "intuitiv") return "Intuitiv";
   return "Analytisch";
