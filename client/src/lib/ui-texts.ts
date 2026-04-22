@@ -40,6 +40,7 @@ export const UI = {
       CH: "Schweiz",
       AT: "Österreich",
       EN: "English",
+      FR: "Français",
     },
     home: {
       resetTitle: "Bist du sicher?",
@@ -221,6 +222,7 @@ export const UI = {
       CH: "Switzerland",
       AT: "Austria",
       EN: "English",
+      FR: "Français",
     },
     home: {
       resetTitle: "Are you sure?",

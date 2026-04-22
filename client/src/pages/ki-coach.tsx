@@ -674,23 +674,13 @@ function formatMessage(text: string) {
 }
 
 export default function KICoach() {
-  const { region: globalRegion } = useRegion();
+  const { region } = useRegion();
   const t = useLocalizedText();
   const rawUI = useUI();
-  const [kiLang, setKiLangState] = useState<"DE" | "EN" | "FR">(() => {
-    const stored = localStorage.getItem("louisKiLang");
-    if (stored === "DE" || stored === "EN" || stored === "FR") return stored;
-    return globalRegion === "EN" ? "EN" : "DE";
-  });
-  const setKiLang = (lang: "DE" | "EN" | "FR") => {
-    setKiLangState(lang);
-    localStorage.setItem("louisKiLang", lang);
-  };
-  const ui = kiLang === "FR"
+  const ui = region === "FR"
     ? { ...rawUI, coach: FR_COACH_UI as unknown as typeof rawUI.coach }
     : rawUI;
-  const region = kiLang;
-  const EXAMPLE_PROMPTS = kiLang === "FR" ? EXAMPLE_PROMPTS_FR : kiLang === "EN" ? EXAMPLE_PROMPTS_EN : EXAMPLE_PROMPTS_DE;
+  const EXAMPLE_PROMPTS = region === "FR" ? EXAMPLE_PROMPTS_FR : region === "EN" ? EXAMPLE_PROMPTS_EN : EXAMPLE_PROMPTS_DE;
   const { user } = useAuth();
   const isAdmin = user?.role === "admin";
   const isMobile = useIsMobile();
@@ -1894,7 +1884,7 @@ export default function KICoach() {
             maxWidth: 1100,
             display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12,
           }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+            <div>
               {!user?.coachOnly && hasAnalysisData() && (
                 <span data-testid="badge-context-active" style={{
                   fontSize: 10, fontWeight: 600, color: "#34C759",
@@ -1902,23 +1892,6 @@ export default function KICoach() {
                   borderRadius: 6, padding: "2px 8px", whiteSpace: "nowrap",
                 }}>{ui.coach.profileActive}</span>
               )}
-              <div style={{ display: "flex", gap: 2, background: "rgba(0,0,0,0.05)", borderRadius: 8, padding: 2 }}>
-                {(["DE", "EN", "FR"] as const).map(lang => (
-                  <button
-                    key={lang}
-                    onClick={() => setKiLang(lang)}
-                    data-testid={`button-lang-${lang.toLowerCase()}`}
-                    style={{
-                      padding: "2px 9px", borderRadius: 6, border: "none", cursor: "pointer",
-                      fontSize: 11, fontWeight: 600, letterSpacing: "0.02em",
-                      background: kiLang === lang ? "#fff" : "transparent",
-                      color: kiLang === lang ? "#0071E3" : "#86868B",
-                      boxShadow: kiLang === lang ? "0 1px 3px rgba(0,0,0,0.12)" : "none",
-                      transition: "all 150ms ease",
-                    }}
-                  >{lang}</button>
-                ))}
-              </div>
             </div>
             <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
               <button

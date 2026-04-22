@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
 
-export type Region = "DE" | "CH" | "AT" | "EN";
+export type Region = "DE" | "CH" | "AT" | "EN" | "FR";
 
 interface RegionContextType {
   region: Region;
@@ -14,6 +14,7 @@ const REGION_MAP: Record<Region, { locale: string; label: string }> = {
   CH: { locale: "de-CH", label: "Schweiz" },
   AT: { locale: "de-AT", label: "Österreich" },
   EN: { locale: "en-US", label: "English" },
+  FR: { locale: "fr-FR", label: "Français" },
 };
 
 const RegionContext = createContext<RegionContextType | null>(null);
@@ -21,7 +22,7 @@ const RegionContext = createContext<RegionContextType | null>(null);
 export function RegionProvider({ children }: { children: ReactNode }) {
   const [region, setRegionState] = useState<Region>(() => {
     const stored = localStorage.getItem("appRegion");
-    if (stored === "DE" || stored === "CH" || stored === "AT" || stored === "EN") return stored;
+    if (stored === "DE" || stored === "CH" || stored === "AT" || stored === "EN" || stored === "FR") return stored;
     return "DE";
   });
 

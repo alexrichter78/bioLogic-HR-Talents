@@ -31,6 +31,7 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
     { value: "CH", label: ui.region.CH },
     { value: "AT", label: ui.region.AT },
     { value: "EN", label: ui.region.EN },
+    { value: "FR", label: ui.region.FR },
   ], [ui]);
 
   const NAV_ITEMS = useMemo(() => {
