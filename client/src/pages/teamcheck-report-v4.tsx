@@ -448,7 +448,7 @@ export default function TeamCheckReportV4() {
                       </div>
                     </div>
                     <div data-pdf-block style={{ marginTop: 20, padding: "18px 20px", borderRadius: 12, background: "#F8F9FA", border: "1px solid rgba(0,0,0,0.06)" }}>
-                      <p style={{ fontSize: 13, fontWeight: 600, color: "#48484A", margin: "0 0 12px" }}>Bedeutung der Komponenten</p>
+                      <p style={{ fontSize: 13, fontWeight: 600, color: "#48484A", margin: "0 0 12px" }}>{region === "EN" ? "Meaning of the components" : "Bedeutung der Komponenten"}</p>
                       <div style={{ display: "flex", gap: 12 }}>
                         {([
                           { key: "impulsiv" as ComponentKey, label: region === "EN" ? "Impulsive" : "Impulsiv", color: COMP_HEX.impulsiv, text: "Steht für zügiges Handeln, klare Prioritäten und konsequente Umsetzung." },

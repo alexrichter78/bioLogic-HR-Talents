@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useAuth } from "@/lib/auth";
+import { useRegion } from "@/lib/region";
 import { Lock, User, Eye, EyeOff, AlertCircle, ArrowLeft, Mail, CheckCircle } from "lucide-react";
 import logoPath from "@assets/Logo_bioLogic_1774652440525.gif";
 
 export default function Login() {
   const { login } = useAuth();
+  const { region } = useRegion();
+  const en = region === "EN";
   const [, setLocation] = useLocation();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -25,7 +28,7 @@ export default function Login() {
     const result = await login(username, password);
     setLoading(false);
     if (!result.ok) {
-      setError(result.error || "Anmeldung fehlgeschlagen");
+      setError(result.error || (en ? "Login failed" : "Anmeldung fehlgeschlagen"));
     } else {
       setLocation("/");
     }
@@ -45,10 +48,10 @@ export default function Login() {
         setResetSent(true);
       } else {
         const data = await res.json();
-        setResetError(data.error || "Fehler bei der Anfrage");
+        setResetError(data.error || (en ? "Request error" : "Fehler bei der Anfrage"));
       }
     } catch {
-      setResetError("Verbindungsfehler");
+      setResetError((en ? "Connection error" : "Verbindungsfehler"));
     }
     setResetLoading(false);
   };
@@ -68,7 +71,7 @@ export default function Login() {
             {resetSent ? (
               <div style={{ textAlign: "center" }}>
                 <CheckCircle style={{ width: 40, height: 40, color: "#34C759", margin: "0 auto 16px" }} />
-                <h2 style={{ fontSize: 18, fontWeight: 700, color: "#1F2937", margin: "0 0 8px" }}>Anfrage gesendet</h2>
+                <h2 style={{ fontSize: 18, fontWeight: 700, color: "#1F2937", margin: "0 0 8px" }}>{en ? "Request sent" : "Anfrage gesendet"}</h2>
                 <p style={{ fontSize: 14, color: "#6B7280", margin: "0 0 24px", lineHeight: 1.5 }}>
                   Falls ein Konto mit dieser E-Mail existiert, erhältst du einen Link zum Zurücksetzen des Passworts.
                 </p>
@@ -84,8 +87,8 @@ export default function Login() {
             ) : (
               <>
                 <div style={{ textAlign: "center", marginBottom: 24 }}>
-                  <h2 style={{ fontSize: 18, fontWeight: 700, color: "#1F2937", margin: "0 0 6px" }}>Passwort vergessen</h2>
-                  <p style={{ fontSize: 13, color: "#6B7280", margin: 0 }}>Gib deine E-Mail-Adresse ein</p>
+                  <h2 style={{ fontSize: 18, fontWeight: 700, color: "#1F2937", margin: "0 0 6px" }}>{en ? "Forgot password" : "Passwort vergessen"}</h2>
+                  <p style={{ fontSize: 13, color: "#6B7280", margin: 0 }}>{en ? "Enter your email address" : "Gib deine E-Mail-Adresse ein"}</p>
                 </div>
 
                 {resetError && (
@@ -128,7 +131,7 @@ export default function Login() {
                       marginBottom: 16,
                     }}
                   >
-                    {resetLoading ? "Senden..." : "Link anfordern"}
+                    {resetLoading ? (en ? "Sending..." : "Senden...") : (en ? "Request link" : "Link anfordern")}
                   </button>
                 </form>
 
@@ -177,7 +180,7 @@ export default function Login() {
 
           <form onSubmit={handleSubmit}>
             <div style={{ marginBottom: 18 }}>
-              <label style={{ fontSize: 12, fontWeight: 600, color: "#6B7280", display: "block", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.04em" }}>Benutzername</label>
+              <label style={{ fontSize: 12, fontWeight: 600, color: "#6B7280", display: "block", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.04em" }}>{en ? "Username" : "Benutzername"}</label>
               <div style={{ position: "relative" }}>
                 <User style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", width: 16, height: 16, color: "#9CA3AF" }} />
                 <input
@@ -187,7 +190,7 @@ export default function Login() {
                   required
                   data-testid="input-username"
                   style={{ width: "100%", padding: "12px 14px 12px 42px", borderRadius: 12, border: "1.5px solid #E5E7EB", fontSize: 14, outline: "none", boxSizing: "border-box", background: "#F9FAFB", transition: "border-color 0.2s, box-shadow 0.2s", color: "#1F2937" }}
-                  placeholder="Benutzername"
+                  placeholder={en ? "Username" : "Benutzername"}
                   onFocus={(e) => { e.target.style.borderColor = "#3B82F6"; e.target.style.boxShadow = "0 0 0 3px rgba(59,130,246,0.1)"; }}
                   onBlur={(e) => { e.target.style.borderColor = "#E5E7EB"; e.target.style.boxShadow = "none"; }}
                 />
@@ -195,7 +198,7 @@ export default function Login() {
             </div>
 
             <div style={{ marginBottom: 12 }}>
-              <label style={{ fontSize: 12, fontWeight: 600, color: "#6B7280", display: "block", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.04em" }}>Passwort</label>
+              <label style={{ fontSize: 12, fontWeight: 600, color: "#6B7280", display: "block", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.04em" }}>{en ? "Password" : "Passwort"}</label>
               <div style={{ position: "relative" }}>
                 <Lock style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", width: 16, height: 16, color: "#9CA3AF" }} />
                 <input
@@ -205,7 +208,7 @@ export default function Login() {
                   required
                   data-testid="input-password"
                   style={{ width: "100%", padding: "12px 42px 12px 42px", borderRadius: 12, border: "1.5px solid #E5E7EB", fontSize: 14, outline: "none", boxSizing: "border-box", background: "#F9FAFB", transition: "border-color 0.2s, box-shadow 0.2s", color: "#1F2937" }}
-                  placeholder="Passwort eingeben"
+                  placeholder={en ? "Enter password" : "Passwort eingeben"}
                   onFocus={(e) => { e.target.style.borderColor = "#3B82F6"; e.target.style.boxShadow = "0 0 0 3px rgba(59,130,246,0.1)"; }}
                   onBlur={(e) => { e.target.style.borderColor = "#E5E7EB"; e.target.style.boxShadow = "none"; }}
                 />
@@ -254,7 +257,7 @@ export default function Login() {
               onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = loading ? "none" : "0 2px 8px rgba(0,113,227,0.3)"; }}
             >
               {loading && <div className="bio-spinner" style={{ width: 16, height: 16, borderWidth: 2 }} />}
-              {loading ? "Anmelden..." : "Anmelden"}
+              {loading ? (en ? "Signing in..." : "Anmelden...") : (en ? "Sign in" : "Anmelden")}
             </button>
           </form>
         </div>

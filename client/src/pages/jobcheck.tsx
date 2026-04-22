@@ -782,7 +782,7 @@ export default function JobCheck() {
                         </div>
                       ); })()}
                       <div>
-                        <p style={{ fontSize: 11, fontWeight: 700, color: fitColor(engine.overallFit), textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 2px" }}>Gesamteinstufung</p>
+                        <p style={{ fontSize: 11, fontWeight: 700, color: fitColor(engine.overallFit), textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 2px" }}>{region === "EN" ? "Overall rating" : "Gesamteinstufung"}</p>
                         <p style={{ fontSize: 18, fontWeight: 750, color: "#1D1D1F", margin: 0 }}>{statusLabel(engine.overallFit)}</p>
                       </div>
                     </div>
@@ -804,7 +804,7 @@ export default function JobCheck() {
                       }}>
                         <Target style={{ width: 16, height: 16, color: "#FFF", strokeWidth: 2.2 }} />
                       </div>
-                      <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>Vergleich der Profile</span>
+                      <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>{region === "EN" ? "Profile comparison" : "Vergleich der Profile"}</span>
                     </div>
                     <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.6, marginBottom: 16, hyphens: "auto", textAlign: "justify" } as React.CSSProperties} lang="de">
                       Diese Auswertung beschreibt die Wirklogik einer Stelle. Die Anforderungen werden den drei Arbeitsbereichen{" "}
@@ -858,7 +858,7 @@ export default function JobCheck() {
                         <p style={{ fontSize: 16, fontWeight: 750, color: controlColor(engine.controlIntensity), margin: 0 }}>{controlLabel(engine.controlIntensity)}</p>
                       </div>
                       <div style={{ padding: "12px 14px", borderRadius: 14, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)", textAlign: "center" }}>
-                        <p style={{ fontSize: 10, fontWeight: 700, color: "#6E6E73", textTransform: "uppercase", margin: "0 0 4px" }}>Abweichung</p>
+                        <p style={{ fontSize: 10, fontWeight: 700, color: "#6E6E73", textTransform: "uppercase", margin: "0 0 4px" }}>{region === "EN" ? "Deviation" : "Abweichung"}</p>
                         <p style={{ fontSize: 16, fontWeight: 750, color: "#1D1D1F", margin: 0 }}>{engine.mismatchScore <= 8 ? "Gering" : engine.mismatchScore <= 15 ? "Moderat" : "Hoch"}{engine.koTriggered ? " · K.O." : ""}</p>
                       </div>
                     </div>
@@ -866,7 +866,7 @@ export default function JobCheck() {
                     <CalloutBox text={engine.keyReason} color={fitColor(engine.overallFit)} icon={Lightbulb} />
 
                     <div style={{ marginTop: 20 }}>
-                      <p style={{ fontSize: 14, fontWeight: 600, color: "#48484A", margin: "0 0 14px", letterSpacing: "0.02em" }}>Bedeutung der Komponenten</p>
+                      <p style={{ fontSize: 14, fontWeight: 600, color: "#48484A", margin: "0 0 14px", letterSpacing: "0.02em" }}>{region === "EN" ? "Meaning of the components" : "Bedeutung der Komponenten"}</p>
                       {[
                         { label: region === "EN" ? "Intuitive" : "Intuitiv", color: COLORS.int, desc: "Erkennen, was Gesprächspartner oder Team brauchen und Kommunikation darauf abstimmen." },
                         { label: region === "EN" ? "Impulsive" : "Impulsiv", color: COLORS.imp, desc: "Aufgaben schnell vorantreiben, Prioritäten setzen und Ergebnisse liefern." },
@@ -1018,7 +1018,7 @@ export default function JobCheck() {
                             border: `1px solid ${intensityDiff <= 5 ? "rgba(52,199,89,0.15)" : intensityDiff <= 15 ? "rgba(255,149,0,0.15)" : "rgba(255,59,48,0.15)"}`,
                           }}>
                             <span style={{ fontSize: 12, fontWeight: 600, color: intensityDiff <= 5 ? "#34C759" : intensityDiff <= 15 ? "#FF9500" : "#FF3B30" }}>
-                              {intensityDiff <= 5 ? "Ausprägung nahezu identisch" : intensityDiff <= 15 ? "Spürbare Abweichung" : "Deutliche Abweichung"}
+                              {intensityDiff <= 5 ? (region === "EN" ? "Profile nearly identical" : "Ausprägung nahezu identisch") : intensityDiff <= 15 ? (region === "EN" ? "Noticeable deviation" : "Spürbare Abweichung") : (region === "EN" ? "Significant deviation" : "Deutliche Abweichung")}
                             </span>
                           </div>
                         )}
@@ -1102,7 +1102,7 @@ export default function JobCheck() {
                       <div style={{ width: 30, height: 30, borderRadius: 10, flexShrink: 0, background: "rgba(196,30,58,0.10)", display: "flex", alignItems: "center", justifyContent: "center", marginRight: 10 }}>
                         <Shield style={{ width: 14, height: 14, color: "#C41E3A", strokeWidth: 2 }} />
                       </div>
-                      <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>Risikoprognose</span>
+                      <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>{region === "EN" ? "Risk forecast" : "Risikoprognose"}</span>
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                       {[
@@ -1135,7 +1135,7 @@ export default function JobCheck() {
                     </div>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 14 }}>
                       <div style={{ padding: "14px 16px", borderRadius: 14, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)", textAlign: "center" }}>
-                        <p style={{ fontSize: 10, fontWeight: 700, color: "#6E6E73", textTransform: "uppercase", margin: "0 0 4px" }}>Wahrscheinlichkeit</p>
+                        <p style={{ fontSize: 10, fontWeight: 700, color: "#6E6E73", textTransform: "uppercase", margin: "0 0 4px" }}>{region === "EN" ? "Probability" : "Wahrscheinlichkeit"}</p>
                         <p style={{ fontSize: 18, fontWeight: 750, color: engine.development.likelihood === "hoch" ? "#34C759" : engine.development.likelihood === "mittel" ? "#FF9500" : "#C41E3A", margin: 0 }}>
                           {engine.development.likelihood.charAt(0).toUpperCase() + engine.development.likelihood.slice(1)}
                         </p>
@@ -1179,7 +1179,7 @@ export default function JobCheck() {
                       <div style={{ width: 30, height: 30, borderRadius: 10, flexShrink: 0, background: "rgba(0,113,227,0.10)", display: "flex", alignItems: "center", justifyContent: "center", marginRight: 10 }}>
                         <Award style={{ width: 14, height: 14, color: "#0071E3", strokeWidth: 2 }} />
                       </div>
-                      <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>Gesamtbewertung</span>
+                      <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>{region === "EN" ? "Overall assessment" : "Gesamtbewertung"}</span>
                     </div>
                     <div style={{ fontSize: 28, fontWeight: 800, color: fitColor(engine.overallFit), margin: "20px 0 0", letterSpacing: "-0.02em" }} data-testid="jc-gesamt-label">
                       {statusLabel(engine.overallFit)}
@@ -1187,7 +1187,7 @@ export default function JobCheck() {
 
                     <div style={{ display: "flex", gap: 16, marginTop: 20, paddingTop: 18, borderTop: "1px solid rgba(0,0,0,0.06)" }} data-testid="jc-two-axis">
                       <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: `${fitColor(engine.overallFit)}08`, border: `1px solid ${fitColor(engine.overallFit)}25` }}>
-                        <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>Grundpassung</div>
+                        <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>{region === "EN" ? "Basic fit" : "Grundpassung"}</div>
                         <div style={{ fontSize: 17, fontWeight: 700, color: fitColor(engine.overallFit) }} data-testid="jc-grundpassung">{statusLabel(engine.overallFit)}</div>
                       </div>
                       <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: `${controlColor(engine.controlIntensity)}08`, border: `1px solid ${controlColor(engine.controlIntensity)}25` }}>
@@ -1202,7 +1202,7 @@ export default function JobCheck() {
                         <div style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", lineHeight: 1.5 }} data-testid="jc-kritischer-bereich">{engine.criticalAreaLabel}</div>
                       </div>
                       <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: "rgba(26,93,171,0.04)", border: "1px solid rgba(26,93,171,0.12)" }}>
-                        <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>Empfehlung</div>
+                        <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>{region === "EN" ? "Recommendation" : "Empfehlung"}</div>
                         <div style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", lineHeight: 1.5 }} data-testid="jc-empfehlung">
                           {engine.overallFit === "SUITABLE" ? "Besetzung strukturell passend" : engine.overallFit === "CONDITIONAL" ? "Besetzung möglich mit Integrations-Setup" : "Für diese Stelle nicht strukturgerecht"}
                         </div>

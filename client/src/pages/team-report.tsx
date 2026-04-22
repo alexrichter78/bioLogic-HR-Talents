@@ -1754,7 +1754,7 @@ export default function TeamReport() {
             <section className="mb-8 rounded-[20px] border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-systemfazit">
               <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center">
                 <div>
-                  <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Gesamtbewertung</p>
+                  <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">{region === "EN" ? "Overall assessment" : "Gesamtbewertung"}</p>
                   <h3 className="mt-2 text-2xl font-semibold text-slate-950">{t("Abschliessende Empfehlung")}</h3>
                   <div className="mt-4 max-w-3xl">
                     <Prose text={result.systemfazit} />

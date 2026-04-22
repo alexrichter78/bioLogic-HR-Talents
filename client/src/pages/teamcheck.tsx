@@ -713,7 +713,7 @@ export default function TeamCheck() {
                   <div style={{ width: 32, height: 32, borderRadius: 10, background: "linear-gradient(135deg, #0071E3, #0071E3CC)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <Target style={{ width: 15, height: 15, color: "#FFF", strokeWidth: 2.2 }} />
                   </div>
-                  <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Gesamtbewertung</h3>
+                  <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{region === "EN" ? "Overall assessment" : "Gesamtbewertung"}</h3>
                 </div>
                 <div style={{ display: "flex", gap: 12, marginBottom: 14, flexWrap: "wrap" }}>
                   <div style={{ flex: 1, minWidth: 160, padding: "12px 16px", borderRadius: 14, background: "rgba(52,199,89,0.05)", border: "1px solid rgba(52,199,89,0.12)" }}>
@@ -752,7 +752,7 @@ export default function TeamCheck() {
                   <div style={{ width: 32, height: 32, borderRadius: 10, background: "linear-gradient(135deg, #5856D6, #5856D6CC)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <CalendarDays style={{ width: 15, height: 15, color: "#FFF", strokeWidth: 2.2 }} />
                   </div>
-                  <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Risikoprognose</h3>
+                  <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{region === "EN" ? "Risk forecast" : "Risikoprognose"}</h3>
                 </div>
                 <div style={{ position: "relative", paddingLeft: 20, marginBottom: 12 }}>
                   <div style={{ position: "absolute", left: -1, top: 0, bottom: 0, width: 3, borderRadius: 2, background: "linear-gradient(180deg, #FF9500, #0071E3, #34C759)" }} />
