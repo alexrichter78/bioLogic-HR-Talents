@@ -90,14 +90,16 @@ function BarSlider({ label, value, color, onChange }: { label: string; value: nu
 }
 
 function BarSliders({ triad, onChange }: { triad: Triad; onChange: (t: Triad) => void }) {
+  const { region } = useRegion();
+  const en = region === "EN";
   const handleChange = (key: ComponentKey, rawVal: number) => {
     onChange({ ...triad, [key]: Math.min(rawVal, MAX_BIO) });
   };
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-      <BarSlider label="Impulsiv" value={triad.impulsiv} color={COLORS.imp} onChange={v => handleChange("impulsiv", v)} />
-      <BarSlider label="Intuitiv" value={triad.intuitiv} color={COLORS.int} onChange={v => handleChange("intuitiv", v)} />
-      <BarSlider label="Analytisch" value={triad.analytisch} color={COLORS.ana} onChange={v => handleChange("analytisch", v)} />
+      <BarSlider label={en ? "Impulsive" : "Impulsiv"} value={triad.impulsiv} color={COLORS.imp} onChange={v => handleChange("impulsiv", v)} />
+      <BarSlider label={en ? "Intuitive" : "Intuitiv"} value={triad.intuitiv} color={COLORS.int} onChange={v => handleChange("intuitiv", v)} />
+      <BarSlider label={en ? "Analytical" : "Analytisch"} value={triad.analytisch} color={COLORS.ana} onChange={v => handleChange("analytisch", v)} />
     </div>
   );
 }

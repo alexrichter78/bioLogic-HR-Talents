@@ -3,6 +3,7 @@ import { useLocation } from "wouter";
 import GlobalNav from "@/components/global-nav";
 import { useAuth } from "@/lib/auth";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useRegion } from "@/lib/region";
 
 const DEFAULT_BEREICH1 = `IMPULSIV = Handlungs- und Umsetzungskompetenz (MACHEN & DURCHSETZEN)
 
@@ -94,6 +95,8 @@ export default function Analyse() {
   const { user } = useAuth();
   const [, setLocation] = useLocation();
   const isMobile = useIsMobile();
+  const { region } = useRegion();
+  const en = region === "EN";
 
   useEffect(() => {
     if (user && user.role !== "admin") {
@@ -161,14 +164,14 @@ export default function Analyse() {
               style={{ fontSize: 24, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em", margin: "0 0 8px" }}
               data-testid="text-analyse-title"
             >
-              Stammdaten (Analysehilfe)
+              {en ? "Master data (analysis helper)" : "Stammdaten (Analysehilfe)"}
             </h1>
           </div>
 
           <div className="flex flex-col gap-6">
             <div style={cardStyle}>
               <label style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", marginBottom: 8, display: "block" }} data-testid="label-bereich1">
-                Impulsive Daten
+                {en ? "Impulsive data" : "Impulsive Daten"}
               </label>
               <textarea
                 value={bereich1}
@@ -183,7 +186,7 @@ export default function Analyse() {
 
             <div style={cardStyle}>
               <label style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", marginBottom: 8, display: "block" }} data-testid="label-bereich2">
-                Intuitive Daten
+                {en ? "Intuitive data" : "Intuitive Daten"}
               </label>
               <textarea
                 value={bereich2}
@@ -198,7 +201,7 @@ export default function Analyse() {
 
             <div style={cardStyle}>
               <label style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", marginBottom: 8, display: "block" }} data-testid="label-bereich3">
-                Analytische Daten
+                {en ? "Analytical data" : "Analytische Daten"}
               </label>
               <textarea
                 value={bereich3}
