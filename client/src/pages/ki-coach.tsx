@@ -26,7 +26,68 @@ const WELCOME_MSG_EN: Message = {
   role: "assistant",
   content: "Welcome to Louis – your bioLogic Coach for decisions at the right moment.\n\nI support you with questions around leadership, HR decisions, assessment, interviews and communication.\n\nHow can I help you?",
 };
-const isWelcomeMsg = (m: Message) => m === WELCOME_MSG || m === WELCOME_MSG_EN;
+const WELCOME_MSG_FR: Message = {
+  role: "assistant",
+  content: "Bienvenue chez Louis – ton Coach bioLogic pour les décisions au bon moment.\n\nJe t'accompagne sur tes questions de leadership, de décisions RH, d'assessment, d'entretiens et de communication.\n\nComment puis-je t'aider ?",
+};
+const isWelcomeMsg = (m: Message) => m === WELCOME_MSG || m === WELCOME_MSG_EN || m === WELCOME_MSG_FR;
+
+function getWelcomeMsg(lang: "DE" | "EN" | "FR"): Message {
+  if (lang === "FR") return WELCOME_MSG_FR;
+  if (lang === "EN") return WELCOME_MSG_EN;
+  return WELCOME_MSG;
+}
+
+const FR_COACH_UI = {
+  pageTitle: "Louis",
+  pageSubtitle: "Ton coach IA pour le leadership, les RH et les questions d'équipe",
+  profileActive: "Profil actif",
+  historyTitle: "Historique",
+  historyButtonTitle: "Historique des conversations",
+  newConvTitle: "Nouvelle conversation",
+  newConvButton: "Nouvelle conversation",
+  exportTitle: "Exporter la conversation en TXT",
+  clearChatTitle: "Supprimer la conversation",
+  clearChatConfirm: "Veux-tu vraiment supprimer la conversation en cours ?",
+  historySearchPlaceholder: "Rechercher dans l'historique...",
+  noHits: "Aucun résultat.",
+  noConversations: "Aucune conversation enregistrée.",
+  renameTitle: "Renommer",
+  pinTitle: "Épingler",
+  unpinTitle: "Désépingler",
+  deleteTitle: "Supprimer",
+  deleteConvConfirm: "Supprimer cette conversation ?",
+  inputDesc: "Pose une question sur le leadership, la dynamique d'équipe ou choisis un prompt exemple.",
+  promptSearchPlaceholder: "Rechercher des prompts...",
+  examplePromptsBtn: "Prompts exemples",
+  noPromptResults: (q: string) => `Aucun prompt trouvé pour « ${q} »`,
+  requireAnalysisTitle: "Veuillez d'abord analyser un poste",
+  copyAnswer: "Copier la réponse",
+  goldenSaved: "Enregistré comme Golden Answer",
+  goldenSave: "Enregistrer comme Golden Answer (admin)",
+  suggestionsLabel: "Suggestions",
+  loadingDefault: "Réponse en cours...",
+  inputPlaceholder: "Pose ta question...",
+  uploadImage: "Télécharger une image",
+  uploadDoc: "Télécharger un PDF / document texte",
+  errorOverloaded: "Le coach est momentanément surchargé – réessaie dans quelques secondes.",
+  errorQuota: "Le quota IA de ton organisation est épuisé. Contacte ton administrateur pour augmenter la limite ou réinitialiser le compteur.",
+  errorTimeout: "La requête a pris trop de temps. Réessaie – pour les questions complexes, reformule-la plus brièvement.",
+  errorTimeoutShort: "La requête a pris trop de temps. Réessaie.",
+  errorTech: "Désolé, un problème technique est survenu. Réessaie.",
+  exportHeader: "Louis – Transcription de conversation",
+  exportedAt: (d: string, t: string) => `Exporté le ${d} à ${t}`,
+  exportLabelQuestion: "Question",
+  exportLabelCoach: "Coach",
+  welcome: "Bienvenue chez Louis – ton Coach bioLogic pour les décisions au bon moment.\n\nJe t'accompagne sur tes questions de leadership, de décisions RH, d'assessment, d'entretiens et de communication.\n\nComment puis-je t'aider ?",
+  imageWithText: "Image avec texte",
+  imageDownload: "Télécharger l'image",
+  imageOnly: "Image seule (sans texte)",
+  attachmentAlt: "Pièce jointe",
+  docReading: "Lecture du document...",
+  roleRequired: "(poste requis)",
+  aiImageNote: "[Une image générée par IA a été créée dans cette étape]",
+} as const;
 
 type PromptCategory = { category: string; prompts: string[]; requiresAnalysis?: boolean };
 
@@ -268,6 +329,82 @@ const EXAMPLE_PROMPTS_EN: PromptCategory[] = [
     category: "Summaries",
     prompts: [
       "Summarise the most important points from our conversation so far.",
+    ],
+  },
+];
+
+const EXAMPLE_PROMPTS_FR: PromptCategory[] = [
+  {
+    category: "Conseil bioLogic",
+    prompts: [
+      "J'ai un collaborateur avec une forte dominante Rythme et Décision qui coupe constamment la parole en réunion. Comment je gère ça ?",
+      "Je dois mener un entretien de recadrage avec quelqu'un de très orienté Structure et Rigueur. Qu'est-ce que je dois garder en tête ?",
+      "Comment reconnaître le profil dominant de quelqu'un sans lui faire passer un test ?",
+      "Mon manager est très orienté Structure et Rigueur et ne me donne jamais de feedback personnel. Comment je change ça ?",
+      "Je dois gérer deux personnes avec des profils opposés dans mon équipe. Par où je commence ?",
+    ],
+  },
+  {
+    category: "Leadership et management",
+    prompts: [
+      "Comment déléguer efficacement à quelqu'un avec une forte composante Communication et Relations ?",
+      "Mon équipe résiste au changement. Comment présenter une décision difficile selon les profils ?",
+      "Quels sont les signaux d'alarme d'une équipe en situation de stress selon les profils bioLogic ?",
+      "Comment donner un feedback constructif à une personne très orientée Rythme et Décision sans qu'elle le vive comme une attaque ?",
+      "Je dois faire passer quelqu'un d'un rôle opérationnel à un rôle de coordination. Quels risques et comment l'accompagner ?",
+    ],
+  },
+  {
+    category: "Dynamique d'équipe",
+    prompts: [
+      "Mon équipe est très orientée Rythme et Décision. Quels sont les angles morts collectifs ?",
+      "Nous sommes 5 : 2 avec une forte dominante Rythme et Décision, 2 Communication et Relations, 1 équilibré. Comment je pilote cette équipe ?",
+      "Mon équipe manque de profils Communication et Relations. Quelles sont les conséquences à long terme ?",
+      "Je constitue une nouvelle équipe projet. Quelle constellation est idéale pour un projet d'innovation ?",
+      "Comment gérer les tensions entre profils très différents lors de prises de décision sous pression ?",
+    ],
+  },
+  {
+    category: "Préparation d'entretiens",
+    prompts: [
+      "Demain j'ai un entretien de licenciement avec un collaborateur très orienté Communication et Relations. Aide-moi à me préparer.",
+      "J'ai un entretien de recrutement avec un candidat très orienté Structure et Rigueur. Quelles questions poser ?",
+      "Comment annoncer une décision impopulaire à une équipe avec une forte composante Rythme et Décision ?",
+      "Aide-moi à préparer une négociation avec quelqu'un de très orienté Structure et Rigueur qui veut tout par écrit.",
+      "Je dois mener un entretien de retour après une longue absence. Le collaborateur est très orienté Structure et Rigueur.",
+    ],
+  },
+  {
+    category: "Recrutement et offres d'emploi",
+    prompts: [
+      "Je cherche un responsable commercial avec une forte composante Rythme et Décision. Quel message et quelle tonalité pour l'offre d'emploi ?",
+      "Notre annonce pour un RH business partner n'attire que des profils Structure et Rigueur. Comment la reformuler ?",
+      "Donne-moi 5 formulations concrètes pour une offre d'emploi de chef de projet avec un profil mixte Rythme et Décision / Communication et Relations.",
+      "Quelles erreurs typiques font les entreprises dans leurs offres d'emploi en matière d'adéquation des profils ?",
+    ],
+  },
+  {
+    category: "Identification des conflits",
+    prompts: [
+      "Deux collègues s'affrontent sans cesse : l'un veut décider vite, l'autre a besoin de plus de données. Qu'est-ce qui se passe ?",
+      "Il y a un conflit récurrent entre le commerce (très Rythme et Décision) et l'assurance qualité (très Structure et Rigueur). Comment le résoudre ?",
+      "Sous pression, mon équipe se divise en clans. Quel est le schéma bioLogic derrière ça ?",
+      "Mon adjoint(e) et moi nous bloquons mutuellement. Comment briser ce schéma ?",
+    ],
+  },
+  {
+    category: "Données de contexte",
+    requiresAnalysis: true,
+    prompts: [
+      "Regarde le poste analysé et dis-moi : quels profils bioLogic correspondent le mieux à ce rôle ?",
+      "D'après le DNA du poste : quel type de candidat complète le mieux le profil d'exigences ?",
+      "Quels points forts doit avoir le titulaire du poste et où sont les risques typiques ?",
+    ],
+  },
+  {
+    category: "Résumés",
+    prompts: [
+      "Résume les points les plus importants de notre conversation.",
     ],
   },
 ];
@@ -537,10 +674,23 @@ function formatMessage(text: string) {
 }
 
 export default function KICoach() {
-  const { region } = useRegion();
+  const { region: globalRegion } = useRegion();
   const t = useLocalizedText();
-  const ui = useUI();
-  const EXAMPLE_PROMPTS = region === "EN" ? EXAMPLE_PROMPTS_EN : EXAMPLE_PROMPTS_DE;
+  const rawUI = useUI();
+  const [kiLang, setKiLangState] = useState<"DE" | "EN" | "FR">(() => {
+    const stored = localStorage.getItem("louisKiLang");
+    if (stored === "DE" || stored === "EN" || stored === "FR") return stored;
+    return globalRegion === "EN" ? "EN" : "DE";
+  });
+  const setKiLang = (lang: "DE" | "EN" | "FR") => {
+    setKiLangState(lang);
+    localStorage.setItem("louisKiLang", lang);
+  };
+  const ui = kiLang === "FR"
+    ? { ...rawUI, coach: FR_COACH_UI as unknown as typeof rawUI.coach }
+    : rawUI;
+  const region = kiLang;
+  const EXAMPLE_PROMPTS = kiLang === "FR" ? EXAMPLE_PROMPTS_FR : kiLang === "EN" ? EXAMPLE_PROMPTS_EN : EXAMPLE_PROMPTS_DE;
   const { user } = useAuth();
   const isAdmin = user?.role === "admin";
   const isMobile = useIsMobile();
@@ -549,7 +699,7 @@ export default function KICoach() {
   const [messages, setMessages] = useState<Message[]>([WELCOME_MSG]);
   useEffect(() => {
     setMessages(prev => {
-      if (prev.length === 1 && isWelcomeMsg(prev[0])) return [region === "EN" ? WELCOME_MSG_EN : WELCOME_MSG];
+      if (prev.length === 1 && isWelcomeMsg(prev[0])) return [getWelcomeMsg(region)];
       return prev;
     });
   }, [region]);
@@ -557,20 +707,20 @@ export default function KICoach() {
   useEffect(() => {
     try {
       const raw = localStorage.getItem(LOUIS_STORAGE_KEY);
-      if (!raw) { setMessages([region === "EN" ? WELCOME_MSG_EN : WELCOME_MSG]); return; }
+      if (!raw) { setMessages([getWelcomeMsg(region)]); return; }
       const parsed = JSON.parse(raw) as { savedAt: number; messages: Message[] };
       if (!parsed.savedAt || Date.now() - parsed.savedAt > LOUIS_TTL_MS) {
         localStorage.removeItem(LOUIS_STORAGE_KEY);
-        setMessages([region === "EN" ? WELCOME_MSG_EN : WELCOME_MSG]);
+        setMessages([getWelcomeMsg(region)]);
         return;
       }
       if (!Array.isArray(parsed.messages) || parsed.messages.length === 0) {
-        setMessages([region === "EN" ? WELCOME_MSG_EN : WELCOME_MSG]);
+        setMessages([getWelcomeMsg(region)]);
         return;
       }
       setMessages(parsed.messages);
     } catch {
-      setMessages([region === "EN" ? WELCOME_MSG_EN : WELCOME_MSG]);
+      setMessages([getWelcomeMsg(region)]);
     }
   }, [LOUIS_STORAGE_KEY]);
 
@@ -716,7 +866,7 @@ export default function KICoach() {
   const startNewConversation = useCallback(() => {
     if (saveTimerRef.current) { clearTimeout(saveTimerRef.current); saveTimerRef.current = null; }
     skipNextPersistRef.current = true;
-    setMessages([region === "EN" ? WELCOME_MSG_EN : WELCOME_MSG]);
+    setMessages([getWelcomeMsg(region)]);
     setCurrentConversationId(null);
     setInput("");
     setPendingImage(null);
@@ -745,7 +895,7 @@ export default function KICoach() {
     try {
       await fetch(`/api/coach-conversations/${id}`, { method: "DELETE", credentials: "include" });
       if (currentConversationId === id) {
-        setMessages([region === "EN" ? WELCOME_MSG_EN : WELCOME_MSG]);
+        setMessages([getWelcomeMsg(region)]);
         setCurrentConversationId(null);
       }
       loadConversations();
@@ -1525,7 +1675,7 @@ export default function KICoach() {
     const chatMessages = messages.filter(m => !isWelcomeMsg(m));
     if (chatMessages.length === 0) return;
     const now = new Date();
-    const locale = region === "EN" ? "en-GB" : "de-DE";
+    const locale = region === "EN" ? "en-GB" : region === "FR" ? "fr-FR" : "de-DE";
     const dateStr = now.toLocaleDateString(locale, { day: "2-digit", month: "2-digit", year: "numeric" });
     const timeStr = now.toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit" });
     let text = `${ui.coach.exportHeader}\n`;
@@ -1549,7 +1699,7 @@ export default function KICoach() {
   };
 
   return (
-    <div className="page-gradient-bg" style={{ display: "flex", flexDirection: "column" }} lang="de">
+    <div className="page-gradient-bg" style={{ display: "flex", flexDirection: "column" }} lang={region === "FR" ? "fr" : region === "EN" ? "en" : "de"}>
       <GlobalNav />
 
       {historyOpen && (
@@ -1744,7 +1894,7 @@ export default function KICoach() {
             maxWidth: 1100,
             display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12,
           }}>
-            <div>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
               {!user?.coachOnly && hasAnalysisData() && (
                 <span data-testid="badge-context-active" style={{
                   fontSize: 10, fontWeight: 600, color: "#34C759",
@@ -1752,6 +1902,23 @@ export default function KICoach() {
                   borderRadius: 6, padding: "2px 8px", whiteSpace: "nowrap",
                 }}>{ui.coach.profileActive}</span>
               )}
+              <div style={{ display: "flex", gap: 2, background: "rgba(0,0,0,0.05)", borderRadius: 8, padding: 2 }}>
+                {(["DE", "EN", "FR"] as const).map(lang => (
+                  <button
+                    key={lang}
+                    onClick={() => setKiLang(lang)}
+                    data-testid={`button-lang-${lang.toLowerCase()}`}
+                    style={{
+                      padding: "2px 9px", borderRadius: 6, border: "none", cursor: "pointer",
+                      fontSize: 11, fontWeight: 600, letterSpacing: "0.02em",
+                      background: kiLang === lang ? "#fff" : "transparent",
+                      color: kiLang === lang ? "#0071E3" : "#86868B",
+                      boxShadow: kiLang === lang ? "0 1px 3px rgba(0,0,0,0.12)" : "none",
+                      transition: "all 150ms ease",
+                    }}
+                  >{lang}</button>
+                ))}
+              </div>
             </div>
             <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
               <button
@@ -1811,7 +1978,7 @@ export default function KICoach() {
                   const hasChat = messages.filter(m => !isWelcomeMsg(m)).length > 0;
                   if (!hasChat) return;
                   if (!window.confirm(ui.coach.clearChatConfirm)) return;
-                  setMessages([region === "EN" ? WELCOME_MSG_EN : WELCOME_MSG]);
+                  setMessages([getWelcomeMsg(region)]);
                   try { localStorage.removeItem(LOUIS_STORAGE_KEY); } catch {}
                 }}
                 disabled={messages.filter(m => !isWelcomeMsg(m)).length === 0}

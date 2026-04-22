@@ -449,6 +449,14 @@ Write ALL "name" field values in clear, professional British English.
 - Keep ALL classification values exactly as specified: kompetenz must be exactly "Impulsiv", "Intuitiv", or "Analytisch" (unchanged); niveau must be exactly "Niedrig", "Mittel", or "Hoch" (unchanged). These are internal codes that must never be translated.
 - Use formal professional English appropriate for HR and recruitment contexts.\n`;
   }
+  if (region === "FR") {
+    return `\n\n## RÉGION LINGUISTIQUE : FRANÇAIS
+Écris TOUS les textes en français professionnel clair.
+- Tu tutois l'utilisateur (« tu »), sauf s'il te demande le vouvoiement.
+- Sois direct, chaleureux et concret — comme un expert RH expérimenté.
+- N'utilise jamais les termes de jargon du modèle (« impulsif », « intuitif », « analytique » comme étiquette de personnalité). À la place : « Rythme et Décision » pour la dimension action, « Communication et Relations » pour la dimension humaine, « Structure et Rigueur » pour la dimension processus.
+- Évite les tirets cadratins. Utilise des virgules, deux-points ou points.\n`;
+  }
   return "";
 }
 
@@ -2870,10 +2878,12 @@ Persönlichkeit, Typ, Mindset, Potenzial entfalten, wertschätzend, ganzheitlich
       const isAllowed = hasUpload || hasTopicKeyword || isFirstMessage || isShortMessage || isOngoingConversation;
 
       if (!isAllowed) {
-        return res.json({
-          reply: "Ich bin spezialisiert auf Führung, Personalentscheidungen, Assessment, Bewerbungsgespräche und Kommunikation im beruflichen Kontext. Bitte stelle mir eine Frage zu diesen Themen.",
-          filtered: true,
-        });
+        const filteredReply = region === "EN"
+          ? "I specialise in leadership, people decisions, assessment, interviews and professional communication. Please ask me a question on one of these topics."
+          : region === "FR"
+          ? "Je suis spécialisé en leadership, décisions RH, assessment, entretiens et communication professionnelle. Pose-moi une question sur l'un de ces sujets."
+          : "Ich bin spezialisiert auf Führung, Personalentscheidungen, Assessment, Bewerbungsgespräche und Kommunikation im beruflichen Kontext. Bitte stelle mir eine Frage zu diesen Themen.";
+        return res.json({ reply: filteredReply, filtered: true });
       }
 
       let fetchedUrlContext = "";
@@ -3013,7 +3023,7 @@ GESCHLECHTSNEUTRALE SPRACHE (ZWINGEND):
 - Diese Regel gilt für JEDE Antwort, auch bei Rollenspielen, Beispielen und Stellenanzeigen.
 
 ${getRegionInstruction(region, { skipAddress: true })}${modePrompt}${knowledgeContext}
-${customPrompt}${promptEndsWithDeutsch ? "" : "\n\n- Deutsch."}`;
+${customPrompt}${promptEndsWithDeutsch ? "" : region === "FR" ? "\n\n- Français." : region === "EN" ? "" : "\n\n- Deutsch."}`;
 
       let fullSystemPrompt = systemPrompt;
       if (stammdaten && typeof stammdaten === "object" && Object.keys(stammdaten).length > 0) {
