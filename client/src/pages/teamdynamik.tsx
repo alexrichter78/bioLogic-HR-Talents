@@ -1338,7 +1338,7 @@ export default function Teamdynamik() {
             transition: "all 200ms ease", letterSpacing: "-0.01em",
           }}>
             {reportLoading ? <Loader2 style={{ width: 18, height: 18, animation: "spin 1s linear infinite" }} /> : <FileText style={{ width: 18, height: 18 }} />}
-            {reportLoading ? "Report wird erstellt..." : "KI-Report generieren"}
+            {reportLoading ? (fr ? "Rapport en cours..." : en ? "Generating report..." : "Report wird erstellt...") : (fr ? "Générer le rapport IA" : en ? "Generate AI report" : "KI-Report generieren")}
           </button>
         </div>
 
@@ -1374,15 +1374,15 @@ export default function Teamdynamik() {
             {reportLoading ? (
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 14, padding: "60px 0" }}>
                 <Loader2 style={{ width: 28, height: 28, color: "#0071E3", animation: "spin 1s linear infinite" }} />
-                <p style={{ fontSize: 13, color: "#8E8E93" }}>Report wird erstellt...</p>
+                <p style={{ fontSize: 13, color: "#8E8E93" }}>{fr ? "Rapport en cours..." : en ? "Generating report..." : "Report wird erstellt..."}</p>
               </div>
             ) : reportError ? (
               <div style={{ textAlign: "center", padding: "40px 0" }}>
-                <p style={{ fontSize: 14, color: "#FF3B30", marginBottom: 12 }}>Report konnte nicht erstellt werden.</p>
+                <p style={{ fontSize: 14, color: "#FF3B30", marginBottom: 12 }}>{fr ? "Le rapport n'a pas pu être généré." : en ? "Report could not be generated." : "Report konnte nicht erstellt werden."}</p>
                 <button onClick={generateReport} style={{
                   padding: "8px 20px", borderRadius: 10, background: "#0071E3", color: "#fff",
                   border: "none", cursor: "pointer", fontSize: 13, fontWeight: 600,
-                }} data-testid="button-retry">Erneut versuchen</button>
+                }} data-testid="button-retry">{fr ? "Réessayer" : en ? "Try again" : "Erneut versuchen"}</button>
               </div>
             ) : reportText && parsedSections.length > 0 ? (
               <div ref={reportRef}>

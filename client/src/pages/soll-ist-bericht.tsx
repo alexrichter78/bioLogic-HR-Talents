@@ -591,7 +591,9 @@ export default function SollIstBericht() {
               {region === "FR" ? "Génération de l'analyse de compatibilité" : region === "EN" ? "Generating match analysis" : "MatchCheck wird erstellt"}
             </h2>
             <p style={{ fontSize: 14, color: "#48484A", margin: 0, lineHeight: 1.6 }}>
-              {region === "EN"
+              {region === "FR"
+                ? "Les textes sont générés sur la base de ton profil. Cela prend généralement 15 à 25 secondes."
+                : region === "EN"
                 ? "We're writing the report based on your profile. This usually takes 15–25 seconds."
                 : "Die Texte werden gerade auf Basis des Profils generiert. Das dauert in der Regel 15–25 Sekunden."}
             </p>
