@@ -351,7 +351,11 @@ export default function Teamdynamik() {
   const [viewMode, setViewMode] = useState<ViewMode>("HR");
   const [activeTab, setActiveTab] = useState<"chancen" | "risiken" | "integration">("chancen");
   const [reportText, setReportText] = useState<string | null>(null);
-  useEffect(() => { setReportText(null); }, [region]);
+  const reportCacheRef = useRef<Record<string, string>>({});
+  useEffect(() => {
+    const cached = reportCacheRef.current[region];
+    setReportText(cached ?? null);
+  }, [region]);
   const [reportLoading, setReportLoading] = useState(false);
   const [reportError, setReportError] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
@@ -422,6 +426,7 @@ export default function Teamdynamik() {
       const data = await res.json();
       if (!data.report || data.report.length < 50) throw new Error("Leer");
       setReportText(data.report);
+      reportCacheRef.current[region] = data.report;
       setReportOpen(true);
     } catch {
       setReportError(true);

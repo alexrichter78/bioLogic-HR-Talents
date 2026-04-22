@@ -283,11 +283,20 @@ export default function SollIstBericht() {
     finalText: string;
   } | null>(null);
   const [lastInputHash, setLastInputHash] = useState<string | null>(null);
+  const narrativeCacheRef = useRef<Record<string, { narrative: typeof aiNarrative; hash: string }>>({});
   useEffect(() => {
-    setAiNarrative(null);
-    setAiError(null);
-    setReportGenerated(false);
-    setLastInputHash(null);
+    const cached = narrativeCacheRef.current[region];
+    if (cached) {
+      setAiNarrative(cached.narrative);
+      setLastInputHash(cached.hash);
+      setReportGenerated(true);
+      setAiError(null);
+    } else {
+      setAiNarrative(null);
+      setAiError(null);
+      setReportGenerated(false);
+      setLastInputHash(null);
+    }
   }, [region]);
   const [isExportingPdf, setIsExportingPdf] = useState(false);
   const reportRef = useRef<HTMLDivElement>(null);
@@ -889,6 +898,7 @@ export default function SollIstBericht() {
                     setAiNarrative(narrative);
                     setLastInputHash(currentInputHash);
                     setReportGenerated(true);
+                    narrativeCacheRef.current[region] = { narrative, hash: currentInputHash };
                   } catch (err: any) {
                     setAiError(err.message || "Generation failed");
                   } finally {
@@ -1110,7 +1120,7 @@ export default function SollIstBericht() {
           <div ref={reportRef} style={{ maxWidth: 820, margin: "0 auto" }} data-testid="print-report-wrapper">
             <button
               className="no-print"
-              onClick={() => { setReportGenerated(false); setLastInputHash(null); setAiNarrative(null); setAiError(null); window.scrollTo(0, 0); }}
+              onClick={() => { narrativeCacheRef.current = {}; setReportGenerated(false); setLastInputHash(null); setAiNarrative(null); setAiError(null); window.scrollTo(0, 0); }}
               style={{
                 display: "inline-flex",
                 alignItems: "center",
@@ -1668,7 +1678,7 @@ export default function SollIstBericht() {
 
             <div style={{ display: "flex", justifyContent: "center", padding: "24px 0" }} className="no-print">
               <button
-                onClick={() => { setReportGenerated(false); setLastInputHash(null); setAiNarrative(null); setAiError(null); }}
+                onClick={() => { narrativeCacheRef.current = {}; setReportGenerated(false); setLastInputHash(null); setAiNarrative(null); setAiError(null); }}
                 style={{ display: "inline-flex", alignItems: "center", gap: 8, height: 40, padding: "0 20px", borderRadius: 14, border: "1px solid rgba(0,0,0,0.08)", background: "#FFF", fontSize: 14, fontWeight: 600, color: "#6E6E73", cursor: "pointer" }}
                 data-testid="button-reconfigure"
               >

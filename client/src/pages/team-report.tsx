@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useLocation } from "wouter";
 import { AlertTriangle, Download, Check, CheckCircle2, Users, ChevronDown, Zap, BarChart3, Handshake, Rocket, Settings } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
@@ -591,10 +591,19 @@ export default function TeamReport() {
     systemfazit: string;
   } | null>(null);
   const [lastInputHash, setLastInputHash] = useState<string | null>(null);
+  const narrativeCacheRef = useRef<Record<string, { narrative: typeof aiNarrative; hash: string }>>({});
   useEffect(() => {
-    setAiNarrative(null);
-    setAiError(null);
-    setLastInputHash(null);
+    const cached = narrativeCacheRef.current[region];
+    if (cached) {
+      setAiNarrative(cached.narrative);
+      setLastInputHash(cached.hash);
+      setReportGenerated(true);
+      setAiError(null);
+    } else {
+      setAiNarrative(null);
+      setAiError(null);
+      setLastInputHash(null);
+    }
   }, [region]);
   const [matchCheckOpen, setMatchCheckOpen] = useState(true);
   const [roleTypeForCard, setRoleTypeForCard] = useState<"teammitglied" | "fuehrung">(() => {
@@ -883,6 +892,7 @@ export default function TeamReport() {
       setAiNarrative(narrative);
       setLastInputHash(currentInputHash);
       setReportGenerated(true);
+      narrativeCacheRef.current[region] = { narrative, hash: currentInputHash };
     } catch (err: any) {
       setAiError(err.message || "Generation failed");
     } finally {

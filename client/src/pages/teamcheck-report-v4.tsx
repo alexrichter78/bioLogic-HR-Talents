@@ -89,8 +89,23 @@ export default function TeamCheckReportV4() {
   } | null>(null);
   const [aiLoading, setAiLoading] = useState(true);
   const [aiError, setAiError] = useState<string | null>(null);
+  const narrativeCacheRef = useRef<Record<string, typeof aiNarrative>>({});
 
   useEffect(() => {
+    const cached = narrativeCacheRef.current[region];
+    if (cached) {
+      setAiNarrative(cached);
+      setAiLoading(false);
+      const raw = sessionStorage.getItem("teamcheckV4Input");
+      if (raw) {
+        try {
+          const parsed = JSON.parse(raw) as TeamCheckV4Input;
+          const computed = computeTeamCheckV4({ ...parsed, lang: region === "EN" ? "en" : "de" });
+          setResult(localizeDeep(computed, region));
+        } catch {}
+      }
+      return;
+    }
     setAiNarrative(null);
     setAiLoading(true);
     const raw = sessionStorage.getItem("teamcheckV4Input");
@@ -136,7 +151,7 @@ export default function TeamCheckReportV4() {
         }),
       })
         .then(r => r.json())
-        .then(data => { if (data.error) { setAiError(data.error); } else { setAiNarrative(data); } })
+        .then(data => { if (data.error) { setAiError(data.error); } else { narrativeCacheRef.current[region] = data; setAiNarrative(data); } })
         .catch(err => setAiError(err.message))
         .finally(() => setAiLoading(false));
     } catch { navigate("/team-report"); }
