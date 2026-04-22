@@ -347,7 +347,7 @@ export default function SollIstBericht() {
 
   const result: SollIstResult | null = useMemo(() => {
     if (!roleTriad || !reportGenerated) return null;
-    const raw = computeSollIst(roleName, candidateName || "Person", roleTriad, candidateProfile, fuehrungsArt, roleAnalysisObj);
+    const raw = computeSollIst(roleName, candidateName || "Person", roleTriad, candidateProfile, fuehrungsArt, roleAnalysisObj, region === "EN" ? "en" : "de");
     const base = localizeDeep(raw, region);
     return aiNarrative ? { ...base, ...aiNarrative } : base;
   }, [roleTriad, roleName, candidateName, candidateProfile.impulsiv, candidateProfile.intuitiv, candidateProfile.analytisch, reportGenerated, fuehrungsArt, region, roleAnalysisObj, aiNarrative]);
@@ -817,7 +817,7 @@ export default function SollIstBericht() {
                   setAiLoading(true);
                   setAiError(null);
                   try {
-                    const computed = computeSollIst(roleName, candidateName || "Person", roleTriad, candidateProfile, fuehrungsArt, roleAnalysisObj);
+                    const computed = computeSollIst(roleName, candidateName || "Person", roleTriad, candidateProfile, fuehrungsArt, roleAnalysisObj, region === "EN" ? "en" : "de");
                     const payload = {
                       context: { roleName: roleName || "Rolle", candidateName: candidateName || "Person" },
                       profiles: {
@@ -888,16 +888,17 @@ export default function SollIstBericht() {
           </div>
 
           {(() => {
-            const effective = result || (roleTriad ? localizeDeep(computeSollIst(roleName, candidateName || "Person", roleTriad, candidateProfile, fuehrungsArt, roleAnalysisObj), region) : null);
+            const effective = result || (roleTriad ? localizeDeep(computeSollIst(roleName, candidateName || "Person", roleTriad, candidateProfile, fuehrungsArt, roleAnalysisObj, region === "EN" ? "en" : "de"), region) : null);
             if (!effective) return null;
 
             const fitLabel = effective.fitLabel;
-            const fitColor = bioFitColor(fitLabel);
+            const fitRating = effective.fitRating;
+            const fitColor = bioFitColor(fitRating);
 
             let shortFazit: string;
-            if (fitLabel === "Geeignet") {
+            if (fitRating === "GEEIGNET") {
               shortFazit = region === "EN" ? "The person's working style fits the role" : "Arbeitsweise der Person passt zur Stelle";
-            } else if (fitLabel === "Bedingt geeignet") {
+            } else if (fitRating === "BEDINGT") {
               shortFazit = region === "EN" ? "The person's working style partially fits the role" : "Arbeitsweise der Person passt teilweise zur Stelle";
             } else {
               shortFazit = region === "EN" ? "The person's working style does not fit the role" : "Arbeitsweise der Person passt nicht zur Stelle";
@@ -910,7 +911,7 @@ export default function SollIstBericht() {
               ? devScore === 3 ? "Good prospects \u00b7 Low effort" : devScore === 2 ? "Manageable \u00b7 Targeted leadership needed" : "High effort \u00b7 Outcome uncertain"
               : devScore === 3 ? "Gute Aussichten \u00b7 Wenig Aufwand" : devScore === 2 ? "Machbar \u00b7 Gezielte F\u00fchrung n\u00f6tig" : "Hoher Aufwand \u00b7 Ergebnis unsicher";
 
-            const bulletCol = fitLabel === "Geeignet" ? BIO_COLORS.geeignet : fitLabel === "Bedingt geeignet" ? BIO_COLORS.bedingt : BIO_COLORS.nichtGeeignet;
+            const bulletCol = fitRating === "GEEIGNET" ? BIO_COLORS.geeignet : fitRating === "BEDINGT" ? BIO_COLORS.bedingt : BIO_COLORS.nichtGeeignet;
 
             const samePrimary = effective.roleDomKey === effective.candDomKey;
             const sameSecondary = effective.roleDom2Key === effective.candDom2Key;
@@ -919,12 +920,12 @@ export default function SollIstBericht() {
 
             let kritischLabel: string;
             const kritischBullets: string[] = [];
-            if (fitLabel === "Geeignet") {
+            if (fitRating === "GEEIGNET") {
               kritischLabel = region === "EN" ? "Strengths" : "St\u00e4rken";
               kritischBullets.push(region === "EN" ? "Working style is aligned" : "Arbeitsweise stimmt \u00fcberein");
               kritischBullets.push(region === "EN" ? "Decision logic matches" : "Entscheidungslogik passt");
               kritischBullets.push(region === "EN" ? "Pace and structure compatible" : "Tempo und Struktur kompatibel");
-            } else if (fitLabel === "Bedingt geeignet") {
+            } else if (fitRating === "BEDINGT") {
               kritischLabel = region === "EN" ? "Notable" : "Auff\u00e4llig";
               kritischBullets.push(region === "EN" ? "Working style deviates somewhat" : "Auspr\u00e4gung der Arbeitsweise weicht ab");
               kritischBullets.push(region === "EN" ? "Decision logic broadly compatible" : "Entscheidungslogik grunds\u00e4tzlich kompatibel");
@@ -937,11 +938,11 @@ export default function SollIstBericht() {
             }
 
             const auswirkungBullets: string[] = [];
-            if (fitLabel === "Geeignet") {
+            if (fitRating === "GEEIGNET") {
               auswirkungBullets.push(region === "EN" ? "Smooth collaboration" : "Reibungslose Zusammenarbeit");
               auswirkungBullets.push(region === "EN" ? "Stable team dynamic" : "Stabiles Teamgef\u00fcge");
               auswirkungBullets.push(region === "EN" ? "Low management effort" : "Geringer F\u00fchrungsaufwand");
-            } else if (fitLabel === "Bedingt geeignet") {
+            } else if (fitRating === "BEDINGT") {
               auswirkungBullets.push(region === "EN" ? "More coordination needed" : "Mehr Abstimmung n\u00f6tig");
               auswirkungBullets.push(region === "EN" ? "Slight tension potential" : "Leichtes Spannungspotenzial");
               auswirkungBullets.push(region === "EN" ? "Increased management effort" : "Erh\u00f6hter F\u00fchrungsaufwand");
@@ -986,7 +987,7 @@ export default function SollIstBericht() {
                       <div style={{ padding: "14px 16px", borderRadius: 12, background: "rgba(0,0,0,0.02)" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
                           <div style={{ width: 10, height: 10, borderRadius: 5, background: fitColor, flexShrink: 0 }} />
-                          <span style={{ fontSize: 14, fontWeight: 700, color: fitColor }} data-testid="text-summary-fit">{region === "EN" ? (fitLabel === "Geeignet" ? "Suitable" : fitLabel === "Bedingt geeignet" ? "Conditionally suitable" : "Not suitable") : fitLabel}</span>
+                          <span style={{ fontSize: 14, fontWeight: 700, color: fitColor }} data-testid="text-summary-fit">{fitLabel}</span>
                         </div>
                         <p style={{ fontSize: 13, fontWeight: 500, color: "#6E6E73", margin: 0, lineHeight: 1.6 }} data-testid="text-summary-fazit">{shortFazit}</p>
                       </div>
@@ -1157,7 +1158,7 @@ export default function SollIstBericht() {
                     : devScore === 3 ? "niedrig" : devScore === 2 ? "mittel" : "hoch";
                   const devCol = devScore === 3 ? BIO_COLORS.geeignet : devScore === 2 ? BIO_COLORS.bedingt : BIO_COLORS.nichtGeeignet;
                   const gapCol = result.totalGap > 40 ? BIO_COLORS.nichtGeeignet : result.totalGap > 20 ? BIO_COLORS.bedingt : BIO_COLORS.geeignet;
-                  const personLabel = result.candidateName !== "Die Person" ? result.candidateName : "Person";
+                  const personLabel = (result.candidateName !== "Die Person" && result.candidateName !== "The person") ? result.candidateName : "Person";
 
                   const gesamtIntroText = (() => {
                     const fr = result.fitRating;

@@ -362,7 +362,8 @@ export function computeSollIst(
   roleProfile: Triad,
   candProfile: Triad,
   fuehrungsArt: FuehrungsArt = "keine",
-  roleAnalysis?: RoleAnalysis
+  roleAnalysis?: RoleAnalysis,
+  lang: 'de' | 'en' = 'de'
 ): SollIstResult {
   resetVariants();
   const rt = normalizeTriad(roleProfile);
@@ -403,7 +404,7 @@ export function computeSollIst(
   const rk2 = rDom.top2.key;
   const ck = cDom.top1.key;
   const ck2Main = cDom.top2.key;
-  const cn = candidateName || "Die Person";
+  const cn = candidateName || (lang === 'en' ? "The person" : "Die Person");
   const isDualDomRole = rDom.gap1 <= 5 && rDom.gap2 > 5;
   const candSpreadMain = Math.max(ct.impulsiv, ct.intuitiv, ct.analytisch) - Math.min(ct.impulsiv, ct.intuitiv, ct.analytisch);
   const candIsBalFullMain = candSpreadMain <= 5;
@@ -457,6 +458,7 @@ export function computeSollIst(
     istRelations,
     structureRelation: { ...structureRelation, reason: '' },
     fuehrungsArt,
+    lang,
   };
   const texts = buildMatchTexts(textInput);
 
@@ -477,8 +479,12 @@ export function computeSollIst(
     risk: a.interpretation,
   }));
   const riskTimeline: RiskPhase[] = texts.timeline.map((text, i) => ({
-    label: i === 0 ? "Kurzfristig" : i === 1 ? "Mittelfristig" : "Langfristig",
-    period: i === 0 ? "0 - 3 Monate" : i === 1 ? "3 - 12 Monate" : "12+ Monate",
+    label: lang === 'en'
+      ? (i === 0 ? "Short-term" : i === 1 ? "Mid-term" : "Long-term")
+      : (i === 0 ? "Kurzfristig" : i === 1 ? "Mittelfristig" : "Langfristig"),
+    period: lang === 'en'
+      ? (i === 0 ? "0\u20133 months" : i === 1 ? "3\u201312 months" : "12+ months")
+      : (i === 0 ? "0 - 3 Monate" : i === 1 ? "3 - 12 Monate" : "12+ Monate"),
     text,
   }));
   const developmentLevel = texts.development.scoreText === "niedrig" ? 1 : texts.development.scoreText === "mittel" ? 2 : 3;
@@ -497,6 +503,10 @@ export function computeSollIst(
     },
   }));
   const finalText = texts.summary.finalText;
+
+  const displayFitLabel = lang === 'en'
+    ? (fitLabel === "Geeignet" ? "Suitable" : fitLabel === "Bedingt geeignet" ? "Conditionally suitable" : "Not suitable")
+    : fitLabel;
 
   return {
     roleName,
@@ -520,7 +530,7 @@ export function computeSollIst(
     totalGap,
     gapLevel,
     fitRating,
-    fitLabel,
+    fitLabel: displayFitLabel,
     fitSubtype,
     structureRelation,
     fitColor,
