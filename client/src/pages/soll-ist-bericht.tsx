@@ -791,7 +791,7 @@ export default function SollIstBericht() {
                 onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-1px)"; (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 6px 20px rgba(0,113,227,0.35)"; }}
                 onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = "translateY(0)"; (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 4px 16px rgba(0,113,227,0.3)"; }}
               >
-                Bericht erstellen
+                {region === "EN" ? "Generate report" : "Bericht erstellen"}
               </button>
             </div>
             </div>)}
@@ -806,17 +806,19 @@ export default function SollIstBericht() {
 
             let shortFazit: string;
             if (fitLabel === "Geeignet") {
-              shortFazit = "Arbeitsweise der Person passt zur Stelle";
+              shortFazit = region === "EN" ? "The person's working style fits the role" : "Arbeitsweise der Person passt zur Stelle";
             } else if (fitLabel === "Bedingt geeignet") {
-              shortFazit = "Arbeitsweise der Person passt teilweise zur Stelle";
+              shortFazit = region === "EN" ? "The person's working style partially fits the role" : "Arbeitsweise der Person passt teilweise zur Stelle";
             } else {
-              shortFazit = "Arbeitsweise der Person passt nicht zur Stelle";
+              shortFazit = region === "EN" ? "The person's working style does not fit the role" : "Arbeitsweise der Person passt nicht zur Stelle";
             }
 
             const devLevel = effective.developmentLevel;
             const devScore = devLevel === 1 ? 3 : devLevel === 2 ? 2 : 1;
             const devGaugeColor = devScore === 3 ? BIO_COLORS.geeignet : devScore === 2 ? BIO_COLORS.bedingt : BIO_COLORS.nichtGeeignet;
-            const devShort = devScore === 3 ? "Gute Aussichten · Wenig Aufwand" : devScore === 2 ? "Machbar · Gezielte Führung nötig" : "Hoher Aufwand · Ergebnis unsicher";
+            const devShort = region === "EN"
+              ? devScore === 3 ? "Good prospects \u00b7 Low effort" : devScore === 2 ? "Manageable \u00b7 Targeted leadership needed" : "High effort \u00b7 Outcome uncertain"
+              : devScore === 3 ? "Gute Aussichten \u00b7 Wenig Aufwand" : devScore === 2 ? "Machbar \u00b7 Gezielte F\u00fchrung n\u00f6tig" : "Hoher Aufwand \u00b7 Ergebnis unsicher";
 
             const bulletCol = fitLabel === "Geeignet" ? BIO_COLORS.geeignet : fitLabel === "Bedingt geeignet" ? BIO_COLORS.bedingt : BIO_COLORS.nichtGeeignet;
 
@@ -828,35 +830,35 @@ export default function SollIstBericht() {
             let kritischLabel: string;
             const kritischBullets: string[] = [];
             if (fitLabel === "Geeignet") {
-              kritischLabel = "Stärken";
-              kritischBullets.push("Arbeitsweise stimmt überein");
-              kritischBullets.push("Entscheidungslogik passt");
-              kritischBullets.push("Tempo und Struktur kompatibel");
+              kritischLabel = region === "EN" ? "Strengths" : "St\u00e4rken";
+              kritischBullets.push(region === "EN" ? "Working style is aligned" : "Arbeitsweise stimmt \u00fcberein");
+              kritischBullets.push(region === "EN" ? "Decision logic matches" : "Entscheidungslogik passt");
+              kritischBullets.push(region === "EN" ? "Pace and structure compatible" : "Tempo und Struktur kompatibel");
             } else if (fitLabel === "Bedingt geeignet") {
-              kritischLabel = "Auffällig";
-              kritischBullets.push("Ausprägung der Arbeitsweise weicht ab");
-              kritischBullets.push("Entscheidungslogik grundsätzlich kompatibel");
-              kritischBullets.push("Intensität der Hauptprägung nicht deckungsgleich");
+              kritischLabel = region === "EN" ? "Notable" : "Auff\u00e4llig";
+              kritischBullets.push(region === "EN" ? "Working style deviates somewhat" : "Auspr\u00e4gung der Arbeitsweise weicht ab");
+              kritischBullets.push(region === "EN" ? "Decision logic broadly compatible" : "Entscheidungslogik grunds\u00e4tzlich kompatibel");
+              kritischBullets.push(region === "EN" ? "Primary intensity not fully aligned" : "Intensit\u00e4t der Hauptpr\u00e4gung nicht deckungsgleich");
             } else {
-              kritischLabel = "Kritisch";
-              kritischBullets.push("Ausprägung der Arbeitsweise passt nicht");
-              kritischBullets.push("Entscheidungslogik weicht deutlich ab");
-              kritischBullets.push("Intensität weicht zu stark ab");
+              kritischLabel = region === "EN" ? "Critical" : "Kritisch";
+              kritischBullets.push(region === "EN" ? "Working style does not fit" : "Auspr\u00e4gung der Arbeitsweise passt nicht");
+              kritischBullets.push(region === "EN" ? "Decision logic deviates significantly" : "Entscheidungslogik weicht deutlich ab");
+              kritischBullets.push(region === "EN" ? "Intensity deviation too strong" : "Intensit\u00e4t weicht zu stark ab");
             }
 
             const auswirkungBullets: string[] = [];
             if (fitLabel === "Geeignet") {
-              auswirkungBullets.push("Reibungslose Zusammenarbeit");
-              auswirkungBullets.push("Stabiles Teamgefüge");
-              auswirkungBullets.push("Geringer Führungsaufwand");
+              auswirkungBullets.push(region === "EN" ? "Smooth collaboration" : "Reibungslose Zusammenarbeit");
+              auswirkungBullets.push(region === "EN" ? "Stable team dynamic" : "Stabiles Teamgef\u00fcge");
+              auswirkungBullets.push(region === "EN" ? "Low management effort" : "Geringer F\u00fchrungsaufwand");
             } else if (fitLabel === "Bedingt geeignet") {
-              auswirkungBullets.push("Mehr Abstimmung nötig");
-              auswirkungBullets.push("Leichtes Spannungspotenzial");
-              auswirkungBullets.push("Erhöhter Führungsaufwand");
+              auswirkungBullets.push(region === "EN" ? "More coordination needed" : "Mehr Abstimmung n\u00f6tig");
+              auswirkungBullets.push(region === "EN" ? "Slight tension potential" : "Leichtes Spannungspotenzial");
+              auswirkungBullets.push(region === "EN" ? "Increased management effort" : "Erh\u00f6hter F\u00fchrungsaufwand");
             } else {
-              auswirkungBullets.push("Deutlich mehr Abstimmung nötig");
-              auswirkungBullets.push("Konfliktpotenzial im Team");
-              auswirkungBullets.push("Hoher Führungsaufwand");
+              auswirkungBullets.push(region === "EN" ? "Significantly more coordination needed" : "Deutlich mehr Abstimmung n\u00f6tig");
+              auswirkungBullets.push(region === "EN" ? "Conflict potential in the team" : "Konfliktpotenzial im Team");
+              auswirkungBullets.push(region === "EN" ? "High management effort" : "Hoher F\u00fchrungsaufwand");
             }
 
             const BulletItem = ({ text, color }: { text: string; color: string }) => (

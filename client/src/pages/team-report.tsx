@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import { AlertTriangle, Download, Check, CheckCircle2, Users, ChevronDown, Zap, BarChart3, Handshake, Rocket, Settings } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useLocalizedText, localizeDeep, useRegion } from "@/lib/region";
+import { useLocalizedText, localizeDeep, useRegion, translateEngineValue } from "@/lib/region";
 import { normalizeTriad, dominanceModeOf, dominanceLabel, labelComponent } from "@/lib/jobcheck-engine";
 import { computeTeamReport } from "@/lib/team-report-engine";
 import { constellationLabel, detectConstellation } from "@/lib/soll-ist-engine";
@@ -81,7 +81,12 @@ function severityTone(s: Severity) {
   return "bg-green-50 text-green-700 border-green-200";
 }
 
-function severityLabel(s: Severity) {
+function severityLabel(s: Severity, region?: string) {
+  if (region === "EN") {
+    if (s === "critical") return "critical";
+    if (s === "warning") return "conditional";
+    return "fitting";
+  }
   if (s === "critical") return "kritisch";
   if (s === "warning") return "bedingt";
   return "passend";
@@ -1200,8 +1205,8 @@ export default function TeamReport() {
 
                       const resultCards: ResultCard[] = isFK
                         ? [
-                            { title: region === "EN" ? "System impact" : "Systemwirkung", label: la.systemImpact.label!, text: la.systemImpact.text!, colors: variantToColors(la.systemImpact.variant), testId: "v4-card-system-impact" },
-                            { title: region === "EN" ? "Integration effort" : "Integrationsaufwand", label: la.integrationEffort.label!, text: la.integrationEffort.text!, colors: variantToColors(la.integrationEffort.variant), testId: "v4-card-integration-effort" },
+                            { title: region === "EN" ? "System impact" : "Systemwirkung", label: translateEngineValue(la.systemImpact.label, region), text: la.systemImpact.text!, colors: variantToColors(la.systemImpact.variant), testId: "v4-card-system-impact" },
+                            { title: region === "EN" ? "Integration effort" : "Integrationsaufwand", label: translateEngineValue(la.integrationEffort.label, region), text: la.integrationEffort.text!, colors: variantToColors(la.integrationEffort.variant), testId: "v4-card-integration-effort" },
                             ...(la.teamGoalImpact.selectedGoal && la.teamGoalImpact.label !== "Kein Ziel gewählt"
                               ? [{ title: region === "EN" ? "Impact on team goal" : "Wirkung aufs Teamziel", label: la.teamGoalImpact.label!, text: la.teamGoalImpact.reasons[0] || la.teamGoalImpact.text!, colors: variantToColors(la.teamGoalImpact.variant), testId: "v4-card-goal-impact" }]
                               : []),
@@ -1438,11 +1443,11 @@ export default function TeamReport() {
               <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
                 <div className="max-w-3xl">
                   <p className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">
-                    Team-Systemreport · Organisationsdiagnose
+                    {region === "EN" ? "Team System Report \u00b7 Organisational Diagnosis" : "Team-Systemreport \u00b7 Organisationsdiagnose"}
                   </p>
                   <div className="flex items-center gap-4 mb-2">
                     <h1 className="text-3xl font-semibold tracking-tight text-slate-950 lg:text-4xl" data-testid="text-page-title">
-                      {roleName || "Rolle"} · Systemanalyse
+                      {roleName || (region === "EN" ? "Role" : "Rolle")} · {region === "EN" ? "System Analysis" : "Systemanalyse"}
                     </h1>
                     <button onClick={() => window.print()}
                       className="no-print inline-flex h-9 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition-colors"
@@ -1451,14 +1456,14 @@ export default function TeamReport() {
                     </button>
                   </div>
                   <p className="mt-3 max-w-2xl text-base leading-7 text-slate-600">
-                    Strukturelle Teamdynamik-Analyse: Wie wirkt sich die neue Person auf das bestehende Team aus?
+                    {region === "EN" ? "Structural team dynamics analysis: How does the new person affect the existing team?" : "Strukturelle Teamdynamik-Analyse: Wie wirkt sich die neue Person auf das bestehende Team aus?"}
                   </p>
                 </div>
                 <div className="grid min-w-[280px] grid-cols-2 gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4" data-testid="metrics-grid">
-                  <Metric label="Gesamtpassung" value={result.gesamtpassungLabel} valueClass={tone.text} />
-                  <Metric label="Systemwirkung" value={sw.label} valueClass={sw.intensity === "hoch" ? "text-red-600" : "text-slate-900"} />
-                  <Metric label="Teamprofil" value={teamConstLabel} />
-                  <Metric label="Personenprofil" value={istConstLabel} />
+                  <Metric label={region === "EN" ? "Overall fit" : "Gesamtpassung"} value={translateEngineValue(result.gesamtpassungLabel, region)} valueClass={tone.text} />
+                  <Metric label={region === "EN" ? "System impact" : "Systemwirkung"} value={translateEngineValue(sw.label, region)} valueClass={sw.intensity === "hoch" ? "text-red-600" : "text-slate-900"} />
+                  <Metric label={region === "EN" ? "Team profile" : "Teamprofil"} value={teamConstLabel} />
+                  <Metric label={region === "EN" ? "Person profile" : "Personenprofil"} value={istConstLabel} />
                 </div>
               </div>
             </header>
@@ -1468,9 +1473,9 @@ export default function TeamReport() {
               <div className={`rounded-[20px] border ${tone.border} bg-white p-8 shadow-sm`}>
                 <div className="mb-5 flex items-start justify-between gap-4">
                   <div>
-                    <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Entscheidung</p>
+                    <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">{region === "EN" ? "Decision" : "Entscheidung"}</p>
                     <h2 className={`mt-2 text-3xl font-semibold ${tone.text}`} data-testid="text-gesamtpassung">
-                      {result.gesamtpassungLabel}
+                      {translateEngineValue(result.gesamtpassungLabel, region)}
                     </h2>
                   </div>
                   <div className={`rounded-full border px-3 py-1 text-sm font-medium ${tone.pill}`} data-testid="indicator-gesamtpassung">
@@ -1500,15 +1505,15 @@ export default function TeamReport() {
               </div>
 
               <div className="rounded-[20px] border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-systemwirkung-shift">
-                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Systemwirkung</p>
-                <h3 className="mt-2 text-2xl font-semibold text-slate-950">{sw.label}</h3>
+                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">{region === "EN" ? "System impact" : "Systemwirkung"}</p>
+                <h3 className="mt-2 text-2xl font-semibold text-slate-950">{translateEngineValue(sw.label, region)}</h3>
                 <div className={`mt-3 inline-block rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wide ${sw.intensity === "hoch" ? "border-red-200 text-red-700" : sw.intensity === "mittel" ? "border-amber-200 text-amber-700" : "border-slate-200 text-slate-500"}`}>
-                  Intensität: {sw.intensity}
+                  {region === "EN" ? "Intensity" : "Intensit\u00e4t"}: {translateEngineValue(sw.intensity, region)}
                 </div>
                 <div className="mt-5 grid gap-4">
-                  <ShiftPill title="Team aktuell" value={COMP_LABELS[teamDomKey]} tone={domTone(teamDomKey)} />
+                  <ShiftPill title={region === "EN" ? "Current team" : "Team aktuell"} value={COMP_LABELS[teamDomKey]} tone={domTone(teamDomKey)} />
                   <div className="flex items-center justify-center text-2xl text-slate-300">↓</div>
-                  <ShiftPill title="Neue Person bringt" value={COMP_LABELS[istDomKey]} tone={domTone(istDomKey)} />
+                  <ShiftPill title={region === "EN" ? "New person brings" : "Neue Person bringt"} value={COMP_LABELS[istDomKey]} tone={domTone(istDomKey)} />
                 </div>
                 <p className="mt-5 text-sm leading-6 text-slate-600">
                   {sw.description}
@@ -1521,16 +1526,16 @@ export default function TeamReport() {
               <div className="rounded-[20px] border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-strukturvergleich">
                 <div className="mb-6 flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Strukturvergleich</p>
-                    <h3 className="mt-2 text-xl font-semibold text-slate-950">Team · Neue Person</h3>
+                    <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">{region === "EN" ? "Profile comparison" : "Strukturvergleich"}</p>
+                    <h3 className="mt-2 text-xl font-semibold text-slate-950">{region === "EN" ? "Team \u00b7 New person" : "Team \u00b7 Neue Person"}</h3>
                   </div>
                 </div>
                 <div className="grid gap-6 lg:grid-cols-2">
-                  <ProfileCard title="Teamprofil" subtitle="Bestehendes Team" profile={teamProfileArr}
-                    description={`Das Team zeigt ${teamConstLabel.toLowerCase()}. Der stärkste Anteil liegt bei ${COMP_SHORT[teamDomKey]}.`}
+                  <ProfileCard title={region === "EN" ? "Team profile" : "Teamprofil"} subtitle={region === "EN" ? "Existing team" : "Bestehendes Team"} profile={teamProfileArr}
+                    description={region === "EN" ? `The team shows ${teamConstLabel.toLowerCase()}. The strongest component is ${COMP_SHORT[teamDomKey]}.` : `Das Team zeigt ${teamConstLabel.toLowerCase()}. Der st\u00e4rkste Anteil liegt bei ${COMP_SHORT[teamDomKey]}.`}
                   />
-                  <ProfileCard title="Person" subtitle={candidateName || "Person"} profile={istProfileArr}
-                    description={`Die Person arbeitet stärker über ${COMP_SHORT[istDomKey]}, ${istDomKey === "impulsiv" ? "direkte Umsetzung und schnelle Entscheidungen" : istDomKey === "analytisch" ? "strukturierte Planung und Prüftiefe" : "Kommunikation und Beziehungsarbeit"}.`}
+                  <ProfileCard title={region === "EN" ? "Person" : "Person"} subtitle={candidateName || "Person"} profile={istProfileArr}
+                    description={region === "EN" ? `The person works more through ${COMP_SHORT[istDomKey]}, ${istDomKey === "impulsiv" ? "direct execution and quick decisions" : istDomKey === "analytisch" ? "structured planning and analytical depth" : "communication and relationship building"}.` : `Die Person arbeitet st\u00e4rker \u00fcber ${COMP_SHORT[istDomKey]}, ${istDomKey === "impulsiv" ? "direkte Umsetzung und schnelle Entscheidungen" : istDomKey === "analytisch" ? "strukturierte Planung und Pr\u00fcftiefe" : "Kommunikation und Beziehungsarbeit"}.`}
                   />
                 </div>
                 <div className="mt-8 rounded-2xl border border-slate-200 bg-slate-50 p-5" data-testid="chart-triangle">
@@ -1539,8 +1544,8 @@ export default function TeamReport() {
               </div>
 
               <div className="rounded-[20px] border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-deltas">
-                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Team-Person-Abweichung</p>
-                <h3 className="mt-2 text-xl font-semibold text-slate-950">Abweichung je Wirkdimension</h3>
+                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">{region === "EN" ? "Team\u2013Person Gap" : "Team-Person-Abweichung"}</p>
+                <h3 className="mt-2 text-xl font-semibold text-slate-950">{region === "EN" ? "Deviation per dimension" : "Abweichung je Wirkdimension"}</h3>
                 <div className="mt-6 space-y-5">
                   {deltas.map(item => (
                     <div key={item.label}>
@@ -1560,7 +1565,7 @@ export default function TeamReport() {
                 </div>
 
                 <div className="mt-8">
-                  <p className="text-sm font-semibold uppercase tracking-[0.12em] text-slate-500 mb-4">Arbeitslogik</p>
+                  <p className="text-sm font-semibold uppercase tracking-[0.12em] text-slate-500 mb-4">{region === "EN" ? "Working logic" : "Arbeitslogik"}</p>
                   <Prose text={result.fuehrungsprofil} />
                 </div>
               </div>
@@ -1569,21 +1574,21 @@ export default function TeamReport() {
             {/* ── Impact Areas + Risk Timeline ── */}
             <section className="mb-8 grid gap-8 xl:grid-cols-[1.1fr_0.9fr]" data-testid="section-impact-risk">
               <div className="rounded-[20px] border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-impact-areas">
-                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Wirkungsfelder</p>
-                <h3 className="mt-2 text-xl font-semibold text-slate-950">Auswirkung nach Bereich</h3>
+                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">{region === "EN" ? "Impact areas" : "Wirkungsfelder"}</p>
+                <h3 className="mt-2 text-xl font-semibold text-slate-950">{region === "EN" ? "Impact by area" : "Auswirkung nach Bereich"}</h3>
                 <div className="mt-6 space-y-4">
                   {result.impactAreas.map((area, i) => (
                     <div key={i} className={`rounded-2xl border p-5 ${severityTone(area.severity)}`} data-testid={`impact-area-${i}`}>
                       <div className="flex items-center justify-between mb-3">
                         <h4 className="text-base font-semibold" data-testid={`impact-area-label-${i}`}>{area.label}</h4>
                         <span className={`rounded-full border px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide ${severityTone(area.severity)}`} data-testid={`impact-area-severity-${i}`}>
-                          {severityLabel(area.severity)}
+                          {severityLabel(area.severity, region)}
                         </span>
                       </div>
                       <div className="space-y-2 text-sm leading-6">
-                        <p data-testid={`impact-area-teamexpect-${i}`}><span className="font-medium">Team erwartet:</span> {area.teamExpectation}</p>
-                        <p data-testid={`impact-area-candidate-${i}`}><span className="font-medium">Person zeigt:</span> {area.candidatePattern}</p>
-                        <p data-testid={`impact-area-risk-${i}`}><span className="font-medium">Risiko:</span> {area.risk}</p>
+                        <p data-testid={`impact-area-teamexpect-${i}`}><span className="font-medium">{region === "EN" ? "Team expects:" : "Team erwartet:"}</span> {area.teamExpectation}</p>
+                        <p data-testid={`impact-area-candidate-${i}`}><span className="font-medium">{region === "EN" ? "Person shows:" : "Person zeigt:"}</span> {area.candidatePattern}</p>
+                        <p data-testid={`impact-area-risk-${i}`}><span className="font-medium">{region === "EN" ? "Risk:" : "Risiko:"}</span> {area.risk}</p>
                       </div>
                     </div>
                   ))}
@@ -1591,8 +1596,8 @@ export default function TeamReport() {
               </div>
 
               <div className="rounded-[20px] border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-risk-timeline">
-                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Risiko-Zeitleiste</p>
-                <h3 className="mt-2 text-xl font-semibold text-slate-950">Kritische Phasen</h3>
+                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">{region === "EN" ? "Risk timeline" : "Risiko-Zeitleiste"}</p>
+                <h3 className="mt-2 text-xl font-semibold text-slate-950">{region === "EN" ? "Critical phases" : "Kritische Phasen"}</h3>
                 <div className="mt-6 relative">
                   <div className="absolute left-3 top-3 bottom-3 w-px bg-slate-200" />
                   <div className="space-y-6">
@@ -1621,23 +1626,23 @@ export default function TeamReport() {
             {/* ── Systemwirkung Detail + Teamdynamik ── */}
             <section className="mb-8 rounded-[20px] border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-systemwirkung">
               <div className="mb-6">
-                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Wirkung der Besetzung im Arbeitsalltag</p>
-                <h3 className="mt-2 text-xl font-semibold text-slate-950">Wirkung im System</h3>
+                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">{region === "EN" ? "Impact of the placement in daily work" : "Wirkung der Besetzung im Arbeitsalltag"}</p>
+                <h3 className="mt-2 text-xl font-semibold text-slate-950">{region === "EN" ? "System impact" : "Wirkung im System"}</h3>
               </div>
 
               <div className="grid gap-6 lg:grid-cols-2 mb-8">
                 <div className="rounded-2xl border border-slate-200 bg-slate-50/60 p-6">
-                  <h4 className="text-base font-semibold text-slate-950 mb-3">Teamstruktur</h4>
+                  <h4 className="text-base font-semibold text-slate-950 mb-3">{region === "EN" ? "Team structure" : "Teamstruktur"}</h4>
                   <Prose text={result.teamstruktur} />
                 </div>
                 <div className="rounded-2xl border border-slate-200 bg-slate-50/60 p-6">
-                  <h4 className="text-base font-semibold text-slate-950 mb-3">Teamdynamik im Alltag</h4>
+                  <h4 className="text-base font-semibold text-slate-950 mb-3">{region === "EN" ? "Team dynamics in daily work" : "Teamdynamik im Alltag"}</h4>
                   <Prose text={result.teamdynamikAlltag} />
                 </div>
               </div>
 
               <div className="rounded-2xl border border-slate-200 bg-slate-50/60 p-6">
-                <h4 className="text-base font-semibold text-slate-950 mb-3">Kulturwirkung</h4>
+                <h4 className="text-base font-semibold text-slate-950 mb-3">{region === "EN" ? "Cultural impact" : "Kulturwirkung"}</h4>
                 <Prose text={result.kulturwirkung} />
               </div>
 
@@ -1649,8 +1654,8 @@ export default function TeamReport() {
             {/* ── Development Gauge ── */}
             <section className="mb-8 rounded-[20px] border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-development">
               <div className="mb-6">
-                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Entwicklungsbedarf</p>
-                <h3 className="mt-2 text-xl font-semibold text-slate-950">Steuerungsintensität</h3>
+                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">{region === "EN" ? "Development need" : "Entwicklungsbedarf"}</p>
+                <h3 className="mt-2 text-xl font-semibold text-slate-950">{region === "EN" ? "Management intensity" : "Steuerungsintensit\u00e4t"}</h3>
               </div>
               <div className="flex items-center gap-6 mb-5">
                 <div className="flex gap-1.5">
@@ -1665,12 +1670,12 @@ export default function TeamReport() {
                 </div>
                 <div>
                   <div className="text-lg font-semibold text-slate-950" data-testid="text-development-label">{result.developmentLabel}</div>
-                  <div className="text-xs text-slate-500" data-testid="text-development-level">Stufe {result.developmentLevel} von 4</div>
+                  <div className="text-xs text-slate-500" data-testid="text-development-level">{region === "EN" ? `Level ${result.developmentLevel} of 4` : `Stufe ${result.developmentLevel} von 4`}</div>
                 </div>
               </div>
               <p className="text-sm leading-7 text-slate-700 max-w-3xl">{result.developmentText}</p>
               <div className={`mt-5 inline-block rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wide ${result.controlIntensity === "hoch" ? "border-red-200 text-red-700" : result.controlIntensity === "mittel" ? "border-amber-200 text-amber-700" : "border-green-200 text-green-700"}`}>
-                Steuerungsaufwand: {result.controlIntensity}
+                {region === "EN" ? "Management effort" : "Steuerungsaufwand"}: {translateEngineValue(result.controlIntensity, region)}
               </div>
             </section>
 
@@ -1679,9 +1684,9 @@ export default function TeamReport() {
               <div className="rounded-[20px] border border-slate-200 bg-white p-8 shadow-sm">
                 <div className="mb-2 flex items-center gap-3">
                   <div className="h-3 w-3 rounded-full bg-amber-500" />
-                  <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Kontrollierter Druck</p>
+                  <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">{region === "EN" ? "Controlled pressure" : "Kontrollierter Druck"}</p>
                 </div>
-                <h3 className="mt-2 text-xl font-semibold text-slate-950">Verhalten bei steigendem Arbeitsdruck</h3>
+                <h3 className="mt-2 text-xl font-semibold text-slate-950">{region === "EN" ? "Behaviour under increasing work pressure" : "Verhalten bei steigendem Arbeitsdruck"}</h3>
                 <div className="mt-5 rounded-2xl border border-amber-100 bg-amber-50/40 p-5">
                   <p className="text-sm leading-7 text-slate-700">{result.stressBehavior.controlledPressure}</p>
                 </div>
@@ -1689,9 +1694,9 @@ export default function TeamReport() {
               <div className="rounded-[20px] border border-slate-200 bg-white p-8 shadow-sm">
                 <div className="mb-2 flex items-center gap-3">
                   <div className="h-3 w-3 rounded-full bg-red-500" />
-                  <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Unkontrollierter Stress</p>
+                  <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">{region === "EN" ? "Uncontrolled stress" : "Unkontrollierter Stress"}</p>
                 </div>
-                <h3 className="mt-2 text-xl font-semibold text-slate-950">Verhalten bei starker Belastung</h3>
+                <h3 className="mt-2 text-xl font-semibold text-slate-950">{region === "EN" ? "Behaviour under heavy load" : "Verhalten bei starker Belastung"}</h3>
                 <div className="mt-5 rounded-2xl border border-red-100 bg-red-50/40 p-5">
                   <p className="text-sm leading-7 text-slate-700">{result.stressBehavior.uncontrolledStress}</p>
                 </div>
@@ -1701,8 +1706,8 @@ export default function TeamReport() {
             {/* ── Chancen / Risiken side by side ── */}
             <section className="mb-8 grid gap-8 lg:grid-cols-2" data-testid="section-chancen-risiken">
               <div className="rounded-[20px] border border-slate-200 bg-white p-8 shadow-sm">
-                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500 mb-2">Chancen</p>
-                <h3 className="text-xl font-semibold text-slate-950 mb-5">Potenziale der Besetzung</h3>
+                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500 mb-2">{region === "EN" ? "Opportunities" : "Chancen"}</p>
+                <h3 className="text-xl font-semibold text-slate-950 mb-5">{region === "EN" ? "Potential of the placement" : "Potenziale der Besetzung"}</h3>
                 <ul className="space-y-3">
                   {(sw.chancen).map((c, i) => (
                     <li key={i} className="flex items-start gap-3 text-sm leading-6 text-slate-700" data-testid={`chance-${i}`}>
@@ -1716,8 +1721,8 @@ export default function TeamReport() {
                 </div>
               </div>
               <div className="rounded-[20px] border border-slate-200 bg-white p-8 shadow-sm">
-                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500 mb-2">Risiken</p>
-                <h3 className="text-xl font-semibold text-slate-950 mb-5">Strukturelle Risiken</h3>
+                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500 mb-2">{region === "EN" ? "Risks" : "Risiken"}</p>
+                <h3 className="text-xl font-semibold text-slate-950 mb-5">{region === "EN" ? "Structural risks" : "Strukturelle Risiken"}</h3>
                 <ul className="space-y-3">
                   {(sw.risiken).map((r, i) => (
                     <li key={i} className="flex items-start gap-3 text-sm leading-6 text-slate-700" data-testid={`risk-${i}`}>
@@ -1735,8 +1740,8 @@ export default function TeamReport() {
             {/* ── Actions ── */}
             <section className="mb-8">
               <div className="rounded-[20px] border border-slate-200 bg-white p-8 shadow-sm" data-testid="section-fuehrungshebel">
-                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Handlungsempfehlung</p>
-                <h3 className="mt-2 text-xl font-semibold text-slate-950">Führungshebel</h3>
+                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">{region === "EN" ? "Recommendations" : "Handlungsempfehlung"}</p>
+                <h3 className="mt-2 text-xl font-semibold text-slate-950">{region === "EN" ? "Leadership levers" : "F\u00fchrungshebel"}</h3>
                 <ul className="mt-6 space-y-4">
                   {result.actions.map((action, i) => (
                     <li key={i} className="flex items-start gap-3 text-sm leading-6 text-slate-700" data-testid={`lever-${i}`}>
@@ -1755,15 +1760,15 @@ export default function TeamReport() {
               <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center">
                 <div>
                   <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">{region === "EN" ? "Overall assessment" : "Gesamtbewertung"}</p>
-                  <h3 className="mt-2 text-2xl font-semibold text-slate-950">{t("Abschliessende Empfehlung")}</h3>
+                  <h3 className="mt-2 text-2xl font-semibold text-slate-950">{region === "EN" ? "Final recommendation" : "Abschliessende Empfehlung"}</h3>
                   <div className="mt-4 max-w-3xl">
                     <Prose text={result.systemfazit} />
                   </div>
                 </div>
                 <div className={`rounded-2xl border px-6 py-5 text-center ${tone.border} ${tone.bg}`} data-testid="text-final-rating">
-                  <div className={`text-sm font-semibold uppercase tracking-[0.18em] ${tone.text}`}>Ergebnis</div>
-                  <div className={`mt-2 text-2xl font-semibold ${tone.text}`}>{result.gesamtpassungLabel}</div>
-                  <div className="mt-3 text-sm text-slate-600">Systemwirkung · {sw.label}</div>
+                  <div className={`text-sm font-semibold uppercase tracking-[0.18em] ${tone.text}`}>{region === "EN" ? "Result" : "Ergebnis"}</div>
+                  <div className={`mt-2 text-2xl font-semibold ${tone.text}`}>{translateEngineValue(result.gesamtpassungLabel, region)}</div>
+                  <div className="mt-3 text-sm text-slate-600">{region === "EN" ? "System impact" : "Systemwirkung"} \u00b7 {translateEngineValue(sw.label, region)}</div>
                 </div>
               </div>
             </section>

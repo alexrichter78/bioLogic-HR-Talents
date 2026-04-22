@@ -98,6 +98,41 @@ export function localizeStr(text: string, region: Region): string {
   return ssToSz(text);
 }
 
+const ENGINE_VALUE_MAP_EN: Record<string, string> = {
+  "Verstärkung": "Reinforcement",
+  "Spannung": "Tension",
+  "Transformation": "Transformation",
+  "Ergänzung": "Complement",
+  "Korrekturimpuls": "Corrective impulse",
+  "Spannungsreiche Ergänzung": "Tension-rich complement",
+  "Kritische Spannung": "Critical tension",
+  "Spannungsreiche Abweichung": "Tension-rich deviation",
+  "Stabile Passung": "Stable fit",
+  "Anpassungsleistung": "Adaptive performance",
+  "Hoch": "High",
+  "hoch": "high",
+  "Mittel": "Moderate",
+  "mittel": "moderate",
+  "Gering": "Low",
+  "gering": "low",
+  "Niedrig": "Low",
+  "niedrig": "low",
+  "Geeignet": "Suitable",
+  "Bedingt geeignet": "Conditionally suitable",
+  "Nicht geeignet": "Not suitable",
+  "Gesamtpassung": "Overall fit",
+  "Systemwirkung": "System impact",
+  "Teamprofil": "Team profile",
+  "Personenprofil": "Person profile",
+  "Intensität": "Intensity",
+  "Steuerungsaufwand": "Management effort",
+};
+
+export function translateEngineValue(value: string | null | undefined, region: Region): string {
+  if (!value || region !== "EN") return value ?? "";
+  return ENGINE_VALUE_MAP_EN[value] ?? value;
+}
+
 export function localizeDeep<T>(obj: T, region: Region): T {
   if (typeof obj === "string") return localizeStr(obj, region) as unknown as T;
   if (Array.isArray(obj)) return obj.map(item => localizeDeep(item, region)) as unknown as T;
