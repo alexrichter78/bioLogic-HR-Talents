@@ -301,6 +301,9 @@ export default function SollIstBericht() {
     developmentText: string;
     actions: string[];
     finalText: string;
+    impactAreas?: Array<{ id: string; label: string; severity: string; roleNeed: string; candidatePattern: string; risk: string }>;
+    riskTimeline?: Array<{ label: string; period: string; text: string }>;
+    integrationsplan?: Array<{ num: number; title: string; period: string; ziel: string; items: string[]; fokus: { intro: string; bullets: string[] } }> | null;
   } | null>(null);
   const [lastInputHash, setLastInputHash] = useState<string | null>(null);
   const narrativeCacheRef = useRef<Record<string, { narrative: typeof aiNarrative; hash: string }>>({});
@@ -888,7 +891,7 @@ export default function SollIstBericht() {
                   setAiNarrative(null);
                   try {
                     const computed = computeSollIst(roleName, candidateName || "Person", roleTriad, candidateProfile, fuehrungsArt, roleAnalysisObj, region === "FR" ? "fr" : region === "EN" ? "en" : "de");
-                    const payload = {
+                    const payload: Record<string, unknown> = {
                       context: { roleName: roleName || "Rolle", candidateName: candidateName || "Person" },
                       profiles: {
                         role:      { impulsiv: Math.round(roleTriad.impulsiv), intuitiv: Math.round(roleTriad.intuitiv), analytisch: Math.round(roleTriad.analytisch) },
@@ -907,6 +910,13 @@ export default function SollIstBericht() {
                       },
                       region,
                     };
+                    if (region === "FR") {
+                      payload.sourceTexts = {
+                        impactAreas: computed.impactAreas.map(a => ({ id: a.id, label: a.label, severity: a.severity, roleNeed: a.roleNeed, candidatePattern: a.candidatePattern, risk: a.risk })),
+                        riskTimeline: computed.riskTimeline.map(p => ({ label: p.label, period: p.period, text: p.text })),
+                        integrationsplan: computed.integrationsplan?.map(p => ({ num: p.num, title: p.title, period: p.period, ziel: p.ziel, items: p.items, fokus: p.fokus })) ?? null,
+                      };
+                    }
                     const resp = await fetch("/api/generate-soll-ist-narrative", {
                       method: "POST",
                       headers: { "Content-Type": "application/json" },
@@ -1524,7 +1534,13 @@ export default function SollIstBericht() {
                       <div key={area.id} data-testid={`impact-detail-${area.id}`} style={{ borderTop: areaIdx > 0 ? "1px solid rgba(0,0,0,0.06)" : "none" }}>
                         <div style={{ padding: "18px 0 16px" }}>
                           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 10 }}>
-                            <SubHead num={areaIdx + 1} title={area.label} color="#0F3A6E" />
+                            <SubHead num={areaIdx + 1} title={region === "FR" ? (({
+                              "Entscheidungsverhalten": "Comportement décisionnel",
+                              "Arbeitsweise": "Mode de travail",
+                              "Führungswirkung": "Impact managérial",
+                              "Kommunikationsverhalten": "Comportement en communication",
+                              "Wirkung auf Zusammenarbeit und Teamkultur": "Impact sur la collaboration et la culture d'équipe",
+                            } as Record<string, string>)[area.label] ?? area.label) : area.label} color="#0F3A6E" />
                             <span style={{ fontSize: 12, fontWeight: 700, color: sevCol, textTransform: "uppercase", letterSpacing: "0.05em", marginTop: 4 }}>{severityLabel(area.severity, region)}</span>
                           </div>
                           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
@@ -1603,24 +1619,35 @@ export default function SollIstBericht() {
                 const rGapLevel = result.gapLevel;
                 let rFazit: string;
                 const isEN = region === "EN";
-                if (rFitLabel === "Geeignet" || rFitLabel === "Suitable") {
-                  rFazit = isEN
+                const isFRr = region === "FR";
+                if (rFitLabel === "Geeignet" || rFitLabel === "Suitable" || rFitLabel === "Adapté") {
+                  rFazit = isFRr
+                    ? "Le mode de travail de la personne correspond aux exigences du poste. Les tâches, les décisions et le style de travail sont cohérents."
+                    : isEN
                     ? "The person's working style matches the role requirements. Tasks, decisions, and work style are well aligned."
                     : "Die Arbeitsweise der Person ist deckungsgleich mit den Anforderungen der Stelle. Aufgaben, Entscheidungen und Arbeitsstil sind stimmig.";
-                } else if ((rFitLabel === "Bedingt geeignet" || rFitLabel === "Conditionally suitable") && rGapLevel === "gering") {
-                  rFazit = isEN
+                } else if ((rFitLabel === "Bedingt geeignet" || rFitLabel === "Conditionally suitable" || rFitLabel === "Partiellement adapté") && rGapLevel === "gering") {
+                  rFazit = isFRr
+                    ? "La direction générale est similaire, mais la pondération des domaines de travail individuels diffère. Au quotidien, cela peut entraîner un besoin de coordination accru et une charge managériale plus élevée."
+                    : isEN
                     ? "The basic direction is similar, but the weighting of individual work areas differs. In day-to-day practice this can lead to increased coordination effort and higher management demands."
                     : "Die Grundausrichtung ist ähnlich, jedoch unterscheidet sich die Gewichtung einzelner Arbeitsbereiche. Im Alltag kann das zu erhöhtem Abstimmungsbedarf und höherem Führungsaufwand führen.";
-                } else if (rFitLabel === "Bedingt geeignet" || rFitLabel === "Conditionally suitable") {
-                  rFazit = isEN
+                } else if (rFitLabel === "Bedingt geeignet" || rFitLabel === "Conditionally suitable" || rFitLabel === "Partiellement adapté") {
+                  rFazit = isFRr
+                    ? "La direction générale est similaire. Dans certains domaines, des besoins d'adaptation notables se font sentir. En pratique, cela peut générer des tensions dans l'équipe et une charge managériale nettement plus élevée."
+                    : isEN
                     ? "The basic direction is similar, but noticeable adaptation needs are present in some areas. In practice this can create team friction and significantly higher management effort."
                     : "Die Grundausrichtung ist ähnlich. In einzelnen Bereichen zeigt sich jedoch spürbarer Anpassungsbedarf. Im Alltag kann das zu Konflikten im Team und deutlich höherem Führungsaufwand führen.";
-                } else if ((rFitLabel === "Nicht geeignet" || rFitLabel === "Not suitable") && rGapLevel !== "hoch") {
-                  rFazit = isEN
+                } else if ((rFitLabel === "Nicht geeignet" || rFitLabel === "Not suitable" || rFitLabel === "Non adapté") && rGapLevel !== "hoch") {
+                  rFazit = isFRr
+                    ? "L'écart structurel entre le poste et la personne est significatif. En pratique, cela peut entraîner un besoin de coordination accru, des tensions dans l'équipe et une charge managériale considérablement plus élevée."
+                    : isEN
                     ? "The structural deviation between role and person is significant. In practice this can lead to increased coordination needs, team conflicts, and considerably higher management effort."
                     : "Die strukturelle Abweichung zwischen Stelle und Person ist deutlich. Im Alltag kann das zu erhöhtem Abstimmungsbedarf, Konflikten im Team und deutlich höherem Führungsaufwand führen.";
                 } else {
-                  rFazit = isEN
+                  rFazit = isFRr
+                    ? "Les exigences du poste et le mode de travail de la personne diffèrent nettement. Au quotidien, cela peut entraîner un besoin de coordination accru, des conflits dans l'équipe et une charge managériale sensiblement plus élevée."
+                    : isEN
                     ? "The role requirements and the person's working style differ substantially. In practice this can lead to increased coordination effort, team conflicts, and significantly higher management demands."
                     : "Die Anforderungen der Stelle und die Arbeitsweise der Person unterscheiden sich deutlich. Im Alltag kann das zu erhöhtem Abstimmungsbedarf, Konflikten im Team und deutlich höherem Führungsaufwand führen.";
                 }

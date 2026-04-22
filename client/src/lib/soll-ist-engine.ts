@@ -479,10 +479,14 @@ export function computeSollIst(
     risk: a.interpretation,
   }));
   const riskTimeline: RiskPhase[] = texts.timeline.map((text, i) => ({
-    label: lang === 'en'
+    label: lang === 'fr'
+      ? (i === 0 ? "Court terme" : i === 1 ? "Moyen terme" : "Long terme")
+      : lang === 'en'
       ? (i === 0 ? "Short-term" : i === 1 ? "Mid-term" : "Long-term")
       : (i === 0 ? "Kurzfristig" : i === 1 ? "Mittelfristig" : "Langfristig"),
-    period: lang === 'en'
+    period: lang === 'fr'
+      ? (i === 0 ? "0\u20133 mois" : i === 1 ? "3\u201312 mois" : "12+ mois")
+      : lang === 'en'
       ? (i === 0 ? "0\u20133 months" : i === 1 ? "3\u201312 months" : "12+ months")
       : (i === 0 ? "0 - 3 Monate" : i === 1 ? "3 - 12 Monate" : "12+ Monate"),
     text,

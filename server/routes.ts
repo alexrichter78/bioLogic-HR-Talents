@@ -4704,7 +4704,7 @@ Gib nur das JSON-Objekt zurück.`;
   // ─── SollIst narrative (bilingual) ─────────────────────────────────────────
   app.post("/api/generate-soll-ist-narrative", requireAuth, requireFullAccess, async (req, res) => {
     try {
-      const { context, profiles, calculated, region } = req.body as {
+      const { context, profiles, calculated, region, sourceTexts } = req.body as {
         context: {
           roleName: string;
           candidateName: string;
@@ -4725,6 +4725,11 @@ Gib nur das JSON-Objekt zurück.`;
           candConstellationLabel: string;
         };
         region: string;
+        sourceTexts?: {
+          impactAreas: Array<{ id: string; label: string; severity: string; roleNeed: string; candidatePattern: string; risk: string }>;
+          riskTimeline: Array<{ label: string; period: string; text: string }>;
+          integrationsplan: Array<{ num: number; title: string; period: string; ziel: string; items: string[]; fokus: { intro: string; bullets: string[] } }> | null;
+        };
       };
 
       const isEN = region === "EN";
@@ -4760,7 +4765,9 @@ RÈGLES DE STYLE (obligatoires) :
 
 7) "executiveBullets" et "actions" doivent être des tableaux de courtes chaînes en français (max 2 phrases chacune).
 
-8) Renvoie UNIQUEMENT du JSON valide. Pas de markdown, pas de blocs de code, pas de texte supplémentaire.
+8) Si des "sourceTexts" sont fournis dans le message utilisateur, traduis-les fidèlement en français en conservant la structure exacte (id, num, severity inchangés). Adapte librement le style pour respecter les règles 1-6.
+
+9) Renvoie UNIQUEMENT du JSON valide. Pas de markdown, pas de blocs de code, pas de texte supplémentaire.
 
 LISTE DE VÉRIFICATION avant la sortie : Pas de pourcentages ? Pas d'"impulsif/intuitif/analytique" ? Pas de tirets cadratins ? Voix active tout au long ?
 
@@ -4772,7 +4779,10 @@ Schéma JSON de sortie (tous les champs obligatoires) :
   "dominanceShiftText": "string — 2-3 phrases sur l'interaction des axes dominants",
   "developmentText": "string — 2-3 phrases sur l'effort de développement et l'intensité de pilotage nécessaire",
   "actions": ["string", "string", "string"] — 3 recommandations concrètes pour le management,
-  "finalText": "string — conclusion globale en 2-3 phrases et recommandation de recrutement"
+  "finalText": "string — conclusion globale en 2-3 phrases et recommandation de recrutement",
+  "impactAreas": [{ "id": "string", "label": "string", "severity": "string", "roleNeed": "string", "candidatePattern": "string", "risk": "string" }] — traduction des zones d'impact (si sourceTexts fourni),
+  "riskTimeline": [{ "label": "string", "period": "string", "text": "string" }] — traduction de la chronologie (si sourceTexts fourni),
+  "integrationsplan": [{ "num": number, "title": "string", "period": "string", "ziel": "string", "items": ["string"], "fokus": { "intro": "string", "bullets": ["string"] } }] — traduction du plan d'intégration (si sourceTexts fourni, sinon null)
 }`
         : isEN
         ? `You are a specialist in organizational psychology and behavioural diagnostics for the bioLogic HR analytics platform.
@@ -4880,7 +4890,18 @@ Résultat d'adéquation : ${calculated.fitLabel} (${calculated.fitRating})
 Niveau d'écart : ${calculated.gapLevel}
 Niveau de développement : ${calculated.developmentLabel} (niveau ${calculated.developmentLevel} sur 4)
 Intensité de pilotage : ${calculated.controlIntensity}
+${sourceTexts ? `
+TEXTES SOURCE À TRADUIRE EN FRANÇAIS (conserve id, num, severity inchangés ; adapte le style aux règles) :
 
+ZONES D'IMPACT :
+${JSON.stringify(sourceTexts.impactAreas, null, 2)}
+
+CHRONOLOGIE DES RISQUES :
+${JSON.stringify(sourceTexts.riskTimeline, null, 2)}
+
+PLAN D'INTÉGRATION :
+${JSON.stringify(sourceTexts.integrationsplan, null, 2)}
+` : ""}
 Renvoie uniquement l'objet JSON.`
         : isEN
         ? `Generate the MatchCheck narrative for the following data:
@@ -4918,7 +4939,7 @@ Steuerungsintensität: ${calculated.controlIntensity}
 
 Gib nur das JSON-Objekt zurück.`;
 
-      const raw = await callClaudeForText("generate-soll-ist-narrative", systemPrompt, userMsg, { temperature: 0.6, maxTokens: 2000 });
+      const raw = await callClaudeForText("generate-soll-ist-narrative", systemPrompt, userMsg, { temperature: 0.6, maxTokens: isFR ? 5000 : 2000 });
       const jsonStr = raw.replace(/```json\s*/gi, "").replace(/```\s*/g, "").trim();
       const narrative = JSON.parse(jsonStr);
 
