@@ -27,6 +27,8 @@ const SHIFT_LABELS: Record<ShiftType, string> = {
   SPANNUNG: "Starke Veränderung", TRANSFORMATION: "Starke Veränderung", HYBRID: "Anpassung nötig",
 };
 const INTENSITY_LABELS: Record<IntensityLevel, string> = { NIEDRIG: "Niedrig", MITTEL: "Mittel", HOCH: "Hoch" };
+const INTENSITY_LABELS_EN: Record<IntensityLevel, string> = { NIEDRIG: "Low", MITTEL: "Medium", HOCH: "High" };
+function intensityLabel(level: IntensityLevel, region?: string) { return region === "EN" ? INTENSITY_LABELS_EN[level] : INTENSITY_LABELS[level]; }
 const TL_COLORS: Record<TrafficLight, { bg: string; fill: string; label: string; steering: string }> = {
   GREEN: { bg: "rgba(52,199,89,0.08)", fill: "#34C759", label: "Stabil", steering: "Normale Steuerung ausreichend" },
   YELLOW: { bg: "rgba(255,149,0,0.08)", fill: "#FF9500", label: "Steuerbar", steering: "Situative Steuerung empfehlenswert" },
@@ -444,39 +446,39 @@ export default function Teamdynamik() {
         <GlassCard style={{ marginBottom: 20 }} data-testid="tab-analyse">
           <div style={{ textAlign: "center", marginBottom: 28 }}>
             <p style={{ fontSize: 11, fontWeight: 600, color: "#0071E3", letterSpacing: "0.06em", textTransform: "uppercase", margin: "0 0 4px" }}>bioLogic TeamCheck</p>
-            <h1 style={{ fontSize: 24, fontWeight: 700, color: "#34C759", margin: 0, letterSpacing: "-0.02em" }} data-testid="text-page-title">Teamanalyse</h1>
+            <h1 style={{ fontSize: 24, fontWeight: 700, color: "#34C759", margin: 0, letterSpacing: "-0.02em" }} data-testid="text-page-title">{region === "EN" ? "Team analysis" : "Teamanalyse"}</h1>
           </div>
 
           {sollProfile && (
             <div style={{ marginBottom: 20, padding: "16px 20px", borderRadius: 14, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }} data-testid="soll-profile-card">
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
                 <BarChart3 style={{ width: 16, height: 16, color: "#6E6E73" }} />
-                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Gesamtprofil der Stellenanforderung</p>
+                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{region === "EN" ? "Overall role profile" : "Gesamtprofil der Stellenanforderung"}</p>
               </div>
               <ReadOnlyBars triad={sollProfile} />
-              <p style={{ fontSize: 11, color: "#8E8E93", marginTop: 8, textAlign: "center" }}>Soll-Profil aus Rollen-DNA (nicht editierbar)</p>
+              <p style={{ fontSize: 11, color: "#8E8E93", marginTop: 8, textAlign: "center" }}>{region === "EN" ? "Target profile from role DNA (read-only)" : "Soll-Profil aus Rollen-DNA (nicht editierbar)"}</p>
             </div>
           )}
 
           <div style={{ display: "flex", gap: 24, marginBottom: 24, flexWrap: "wrap" }}>
             <div style={{ flex: 1, minWidth: 280 }}>
-              <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", marginBottom: 14 }} data-testid="label-person">{isLeading ? "Neue Führungskraft" : "Neues Teammitglied"}</p>
+              <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", marginBottom: 14 }} data-testid="label-person">{isLeading ? (region === "EN" ? "New leader" : "Neue Führungskraft") : (region === "EN" ? "New team member" : "Neues Teammitglied")}</p>
               <BarSliders triad={personProfile} onChange={setPersonProfile} />
-              <p style={{ fontSize: 11, color: "#8E8E93", marginTop: 8, textAlign: "center" }}>Istprofil aus Soll-Ist-Vergleich</p>
+              <p style={{ fontSize: 11, color: "#8E8E93", marginTop: 8, textAlign: "center" }}>{region === "EN" ? "Actual profile from target–actual comparison" : "Istprofil aus Soll-Ist-Vergleich"}</p>
             </div>
 
             <div style={{ width: 1, background: "rgba(0,0,0,0.06)", alignSelf: "stretch" }} />
 
             <div style={{ flex: 1, minWidth: 280 }}>
-              <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", marginBottom: 14 }}>Teamauswertung</p>
+              <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", marginBottom: 14 }}>{region === "EN" ? "Team evaluation" : "Teamauswertung"}</p>
               <BarSliders triad={teamProfile} onChange={setTeamProfile} />
-              <p style={{ fontSize: 11, color: "#8E8E93", marginTop: 8, textAlign: "center" }}>Profil (max. 67 % pro Komponente)</p>
+              <p style={{ fontSize: 11, color: "#8E8E93", marginTop: 8, textAlign: "center" }}>{region === "EN" ? "Profile (max. 67% per component)" : "Profil (max. 67 % pro Komponente)"}</p>
             </div>
           </div>
 
           <div style={{ borderTop: "1px solid rgba(0,0,0,0.06)", paddingTop: 18, marginBottom: 20, display: "flex", gap: 24, flexWrap: "wrap" }}>
             <div style={{ flex: 1, minWidth: 200 }}>
-              <p style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F", margin: "0 0 10px" }}>Rolle der neuen Person</p>
+              <p style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F", margin: "0 0 10px" }}>{region === "EN" ? "Role of the new person" : "Rolle der neuen Person"}</p>
               <div style={{ display: "flex", gap: 4, background: "rgba(0,0,0,0.03)", borderRadius: 10, padding: 3 }}>
                 <button onClick={() => setIsLeading(true)} data-testid="toggle-leading-yes" style={{
                   flex: 1, padding: "8px 12px", borderRadius: 8, fontSize: 12, fontWeight: isLeading ? 700 : 500,
@@ -487,7 +489,7 @@ export default function Teamdynamik() {
                   display: "flex", alignItems: "center", justifyContent: "center", gap: 5,
                   transition: "all 200ms ease",
                 }}>
-                  <Briefcase style={{ width: 12, height: 12 }} /> Führung
+                  <Briefcase style={{ width: 12, height: 12 }} /> {region === "EN" ? "Leadership" : "Führung"}
                 </button>
                 <button onClick={() => setIsLeading(false)} data-testid="toggle-leading-no" style={{
                   flex: 1, padding: "8px 12px", borderRadius: 8, fontSize: 12, fontWeight: !isLeading ? 700 : 500,
@@ -498,7 +500,7 @@ export default function Teamdynamik() {
                   display: "flex", alignItems: "center", justifyContent: "center", gap: 5,
                   transition: "all 200ms ease",
                 }}>
-                  <Users style={{ width: 12, height: 12 }} /> Teammitglied
+                  <Users style={{ width: 12, height: 12 }} /> {region === "EN" ? "Team member" : "Teammitglied"}
                 </button>
               </div>
             </div>
@@ -507,7 +509,9 @@ export default function Teamdynamik() {
               <p style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F", margin: "0 0 10px" }}>{t("Teamgrösse")}</p>
               <div style={{ display: "flex", gap: 4, background: "rgba(0,0,0,0.03)", borderRadius: 10, padding: 3 }}>
                 {(["KLEIN", "MITTEL", "GROSS"] as TeamSize[]).map(size => {
-                  const labels: Record<TeamSize, string> = { KLEIN: "Klein (2–5)", MITTEL: "Mittel (6–12)", GROSS: t("Gross (13+)") };
+                  const labels: Record<TeamSize, string> = region === "EN"
+                    ? { KLEIN: "Small (2–5)", MITTEL: "Medium (6–12)", GROSS: "Large (13+)" }
+                    : { KLEIN: "Klein (2–5)", MITTEL: "Mittel (6–12)", GROSS: t("Gross (13+)") };
                   const active = teamSize === size;
                   return (
                     <button key={size} onClick={() => setTeamSize(size)} data-testid={`toggle-size-${size.toLowerCase()}`} style={{
@@ -580,7 +584,7 @@ export default function Teamdynamik() {
                   <input type="text" value={teamName} onChange={e => setTeamName(e.target.value)}
                     data-testid="input-team-name"
                     style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", background: "none", border: "none", outline: "none", padding: 0, letterSpacing: "-0.02em", width: "auto", maxWidth: 220 }} />
-                  <span style={{ fontSize: 10, fontWeight: 700, padding: "3px 10px", borderRadius: 6, background: tl.bg, color: tl.fill }} data-testid="badge-status">{tl.label}</span>
+                  <span style={{ fontSize: 10, fontWeight: 700, padding: "3px 10px", borderRadius: 6, background: tl.bg, color: tl.fill }} data-testid="badge-status">{region === "EN" ? { GREEN: "Stable", YELLOW: "Manageable", RED: "Tension field" }[result.trafficLight] : tl.label}</span>
                   {departmentType !== "ALLGEMEIN" && (
                     <span style={{ fontSize: 10, fontWeight: 600, padding: "3px 10px", borderRadius: 6, background: "rgba(0,113,227,0.08)", color: "#0071E3" }} data-testid="badge-department">
                       {getDepartmentInfo(departmentType).label}
@@ -591,9 +595,9 @@ export default function Teamdynamik() {
               </div>
             </div>
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-              <KPITile label="Transformationsscore" value={result.scores.TS} sub={INTENSITY_LABELS[result.intensityLevel]} color={result.scores.TS > 50 ? "#FF3B30" : result.scores.TS > 25 ? "#FF9500" : "#34C759"} />
-              <KPITile label="Verteilungslücke" value={`${result.scores.DG}`} sub={`DC: ${result.scores.DC}`} />
-              <KPITile label="Konfliktindex" value={result.scores.CI} sub={`Steuerung: ${INTENSITY_LABELS[result.steeringNeed]}`} color={result.scores.CI > 50 ? "#FF3B30" : result.scores.CI > 25 ? "#FF9500" : "#34C759"} />
+              <KPITile label={region === "EN" ? "Transformation score" : "Transformationsscore"} value={result.scores.TS} sub={intensityLabel(result.intensityLevel, region)} color={result.scores.TS > 50 ? "#FF3B30" : result.scores.TS > 25 ? "#FF9500" : "#34C759"} />
+              <KPITile label={region === "EN" ? "Distribution gap" : "Verteilungslücke"} value={`${result.scores.DG}`} sub={`DC: ${result.scores.DC}`} />
+              <KPITile label={region === "EN" ? "Conflict index" : "Konfliktindex"} value={result.scores.CI} sub={`${region === "EN" ? "Steering" : "Steuerung"}: ${intensityLabel(result.steeringNeed, region)}`} color={result.scores.CI > 50 ? "#FF3B30" : result.scores.CI > 25 ? "#FF9500" : "#34C759"} />
             </div>
             {(() => {
               const tlKey = result.trafficLight;

@@ -22,6 +22,11 @@ const WELCOME_MSG: Message = {
   role: "assistant",
   content: "Willkommen bei Louis – deinem bioLogic Coach für Entscheidungen im richtigen Moment.\n\nIch unterstütze dich bei Fragen rund um Führung, Personalentscheidungen, Assessment, Bewerbungsgespräche und Kommunikation.\n\nWie kann ich dir helfen?",
 };
+const WELCOME_MSG_EN: Message = {
+  role: "assistant",
+  content: "Welcome to Louis – your bioLogic Coach for decisions at the right moment.\n\nI support you with questions around leadership, HR decisions, assessment, interviews and communication.\n\nHow can I help you?",
+};
+const isWelcomeMsg = (m: Message) => m === WELCOME_MSG || m === WELCOME_MSG_EN;
 
 type PromptCategory = { category: string; prompts: string[]; requiresAnalysis?: boolean };
 
@@ -542,30 +547,36 @@ export default function KICoach() {
   const LOUIS_STORAGE_KEY = user?.id ? `louis_chat_v1_u${user.id}` : "louis_chat_v1_anon";
   const LOUIS_TTL_MS = 24 * 60 * 60 * 1000;
   const [messages, setMessages] = useState<Message[]>([WELCOME_MSG]);
+  useEffect(() => {
+    setMessages(prev => {
+      if (prev.length === 1 && isWelcomeMsg(prev[0])) return [region === "EN" ? WELCOME_MSG_EN : WELCOME_MSG];
+      return prev;
+    });
+  }, [region]);
 
   useEffect(() => {
     try {
       const raw = localStorage.getItem(LOUIS_STORAGE_KEY);
-      if (!raw) { setMessages([WELCOME_MSG]); return; }
+      if (!raw) { setMessages([region === "EN" ? WELCOME_MSG_EN : WELCOME_MSG]); return; }
       const parsed = JSON.parse(raw) as { savedAt: number; messages: Message[] };
       if (!parsed.savedAt || Date.now() - parsed.savedAt > LOUIS_TTL_MS) {
         localStorage.removeItem(LOUIS_STORAGE_KEY);
-        setMessages([WELCOME_MSG]);
+        setMessages([region === "EN" ? WELCOME_MSG_EN : WELCOME_MSG]);
         return;
       }
       if (!Array.isArray(parsed.messages) || parsed.messages.length === 0) {
-        setMessages([WELCOME_MSG]);
+        setMessages([region === "EN" ? WELCOME_MSG_EN : WELCOME_MSG]);
         return;
       }
       setMessages(parsed.messages);
     } catch {
-      setMessages([WELCOME_MSG]);
+      setMessages([region === "EN" ? WELCOME_MSG_EN : WELCOME_MSG]);
     }
   }, [LOUIS_STORAGE_KEY]);
 
   useEffect(() => {
     try {
-      const toSave = messages.filter(m => m !== WELCOME_MSG);
+      const toSave = messages.filter(m => !isWelcomeMsg(m));
       if (toSave.length === 0) {
         localStorage.removeItem(LOUIS_STORAGE_KEY);
         return;
@@ -657,7 +668,7 @@ export default function KICoach() {
   }, [historyOpen, user?.id, loadConversations]);
 
   const persistConversation = useCallback(async (msgsToSave: Message[], convId: number | null) => {
-    const real = msgsToSave.filter(m => m !== WELCOME_MSG);
+    const real = msgsToSave.filter(m => !isWelcomeMsg(m));
     if (real.length === 0) return;
     const firstUser = real.find(m => m.role === "user");
     const autoTitle = (firstUser?.content || "Unterhaltung").replace(/\s+/g, " ").trim().slice(0, 60);
@@ -691,7 +702,7 @@ export default function KICoach() {
       skipNextPersistRef.current = false;
       return;
     }
-    const real = messages.filter(m => m !== WELCOME_MSG);
+    const real = messages.filter(m => !isWelcomeMsg(m));
     if (real.length === 0) return;
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     const idAtSchedule = currentConversationId;
@@ -705,14 +716,14 @@ export default function KICoach() {
   const startNewConversation = useCallback(() => {
     if (saveTimerRef.current) { clearTimeout(saveTimerRef.current); saveTimerRef.current = null; }
     skipNextPersistRef.current = true;
-    setMessages([WELCOME_MSG]);
+    setMessages([region === "EN" ? WELCOME_MSG_EN : WELCOME_MSG]);
     setCurrentConversationId(null);
     setInput("");
     setPendingImage(null);
     setPendingDoc(null);
     try { localStorage.removeItem(LOUIS_STORAGE_KEY); } catch {}
     setHistoryOpen(false);
-  }, []);
+  }, [region]);
 
   const loadConversation = useCallback(async (id: number) => {
     try {
@@ -734,7 +745,7 @@ export default function KICoach() {
     try {
       await fetch(`/api/coach-conversations/${id}`, { method: "DELETE", credentials: "include" });
       if (currentConversationId === id) {
-        setMessages([WELCOME_MSG]);
+        setMessages([region === "EN" ? WELCOME_MSG_EN : WELCOME_MSG]);
         setCurrentConversationId(null);
       }
       loadConversations();
@@ -1027,7 +1038,7 @@ export default function KICoach() {
 
     let timeout: ReturnType<typeof setTimeout> | undefined;
     try {
-      const chatHistory = newMessages.filter(m => m !== WELCOME_MSG).map(m => ({
+      const chatHistory = newMessages.filter(m => !isWelcomeMsg(m)).map(m => ({
         ...m,
         content: stripButtonMarker(m.content),
       }));
@@ -1254,7 +1265,7 @@ export default function KICoach() {
     setLoading(true);
 
     const chatHistory = newMessages
-      .filter(m => m !== WELCOME_MSG)
+      .filter(m => !isWelcomeMsg(m))
       .map(m => ({ role: m.role, content: stripButtonMarker(m.content) }));
 
     (async () => {
@@ -1511,7 +1522,7 @@ export default function KICoach() {
   };
 
   const exportChat = () => {
-    const chatMessages = messages.filter(m => m !== WELCOME_MSG);
+    const chatMessages = messages.filter(m => !isWelcomeMsg(m));
     if (chatMessages.length === 0) return;
     const now = new Date();
     const locale = region === "EN" ? "en-GB" : "de-DE";
@@ -1779,44 +1790,44 @@ export default function KICoach() {
               </button>
               <button
                 onClick={exportChat}
-                disabled={messages.filter(m => m !== WELCOME_MSG).length === 0}
+                disabled={messages.filter(m => !isWelcomeMsg(m)).length === 0}
                 data-testid="button-export-chat"
                 title={ui.coach.exportTitle}
                 style={{
                   width: 36, height: 36, borderRadius: 10, border: "none",
-                  background: messages.filter(m => m !== WELCOME_MSG).length > 0 ? "rgba(0,113,227,0.08)" : "rgba(0,0,0,0.03)",
+                  background: messages.filter(m => !isWelcomeMsg(m)).length > 0 ? "rgba(0,113,227,0.08)" : "rgba(0,0,0,0.03)",
                   display: "flex", alignItems: "center", justifyContent: "center",
-                  cursor: messages.filter(m => m !== WELCOME_MSG).length > 0 ? "pointer" : "default",
+                  cursor: messages.filter(m => !isWelcomeMsg(m)).length > 0 ? "pointer" : "default",
                   transition: "all 200ms ease",
                 }}
               >
                 <Download style={{
                   width: 16, height: 16,
-                  color: messages.filter(m => m !== WELCOME_MSG).length > 0 ? "#0071E3" : "#C7C7CC",
+                  color: messages.filter(m => !isWelcomeMsg(m)).length > 0 ? "#0071E3" : "#C7C7CC",
                 }} />
               </button>
               <button
                 onClick={() => {
-                  const hasChat = messages.filter(m => m !== WELCOME_MSG).length > 0;
+                  const hasChat = messages.filter(m => !isWelcomeMsg(m)).length > 0;
                   if (!hasChat) return;
                   if (!window.confirm(ui.coach.clearChatConfirm)) return;
-                  setMessages([WELCOME_MSG]);
+                  setMessages([region === "EN" ? WELCOME_MSG_EN : WELCOME_MSG]);
                   try { localStorage.removeItem(LOUIS_STORAGE_KEY); } catch {}
                 }}
-                disabled={messages.filter(m => m !== WELCOME_MSG).length === 0}
+                disabled={messages.filter(m => !isWelcomeMsg(m)).length === 0}
                 data-testid="button-clear-chat"
                 title={ui.coach.clearChatTitle}
                 style={{
                   width: 36, height: 36, borderRadius: 10, border: "none",
-                  background: messages.filter(m => m !== WELCOME_MSG).length > 0 ? "rgba(255,59,48,0.08)" : "rgba(0,0,0,0.03)",
+                  background: messages.filter(m => !isWelcomeMsg(m)).length > 0 ? "rgba(255,59,48,0.08)" : "rgba(0,0,0,0.03)",
                   display: "flex", alignItems: "center", justifyContent: "center",
-                  cursor: messages.filter(m => m !== WELCOME_MSG).length > 0 ? "pointer" : "default",
+                  cursor: messages.filter(m => !isWelcomeMsg(m)).length > 0 ? "pointer" : "default",
                   transition: "all 200ms ease",
                 }}
               >
                 <Trash2 style={{
                   width: 16, height: 16,
-                  color: messages.filter(m => m !== WELCOME_MSG).length > 0 ? "#FF3B30" : "#C7C7CC",
+                  color: messages.filter(m => !isWelcomeMsg(m)).length > 0 ? "#FF3B30" : "#C7C7CC",
                 }} />
               </button>
             </div>
@@ -2072,7 +2083,7 @@ export default function KICoach() {
                   color: msg.role === "user" ? "#FFFFFF" : "#1D1D1F",
                   fontSize: 14, lineHeight: 1.6,
                 }}>
-                  {formatMessage(parseButtonsFromContent(msg === WELCOME_MSG ? ui.coach.welcome : msg.content).cleanContent)}
+                  {formatMessage(parseButtonsFromContent(isWelcomeMsg(msg) ? ui.coach.welcome : msg.content).cleanContent)}
                   {msg.documentName && (
                     <div style={{ marginTop: 8, display: "flex", alignItems: "center", gap: 5, background: "rgba(255,255,255,0.2)", borderRadius: 8, padding: "4px 8px", fontSize: 11, color: msg.role === "user" ? "rgba(255,255,255,0.9)" : "#0071E3", maxWidth: "fit-content" }}>
                       <FileText style={{ width: 11, height: 11, flexShrink: 0 }} />
@@ -2231,7 +2242,7 @@ export default function KICoach() {
                     </div>
                   )}
                 </div>
-                {msg.role === "assistant" && msg !== WELCOME_MSG && msg.content && (
+                {msg.role === "assistant" && !isWelcomeMsg(msg) && msg.content && (
                   <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 6, paddingLeft: 4 }}>
                     <div style={{ display: "flex", gap: 4 }}>
                       <button

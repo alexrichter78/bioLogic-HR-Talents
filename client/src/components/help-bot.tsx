@@ -2,15 +2,19 @@ import { useState, useRef, useEffect } from "react";
 import { HelpCircle, X, Send, Loader2, Mail, CheckCircle2 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { apiRequest } from "@/lib/queryClient";
+import { useRegion } from "@/lib/region";
 
 type Message = { role: "assistant" | "user"; content: string };
 
-const WELCOME = "Hallo! Ich bin der bioLogic Hilfe-Assistent. Wie kann ich dir weiterhelfen?\n\nIch kann dir bei Fragen zur Plattform helfen – z.B. zu JobCheck, MatchCheck, TeamCheck oder Louis (KI-Coach).";
+const WELCOME_DE = "Hallo! Ich bin der bioLogic Hilfe-Assistent. Wie kann ich dir weiterhelfen?\n\nIch kann dir bei Fragen zur Plattform helfen – z.B. zu JobCheck, MatchCheck, TeamCheck oder Louis (KI-Coach).";
+const WELCOME_EN = "Hello! I'm the bioLogic Help Assistant. How can I help you?\n\nI can assist with questions about the platform – e.g. JobCheck, MatchCheck, TeamCheck or Louis (AI Coach).";
 
 export default function HelpBot() {
   const { user } = useAuth();
+  const { region } = useRegion();
+  const welcome = region === "EN" ? WELCOME_EN : WELCOME_DE;
   const [open, setOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([{ role: "assistant", content: WELCOME }]);
+  const [messages, setMessages] = useState<Message[]>([{ role: "assistant", content: welcome }]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
@@ -18,6 +22,15 @@ export default function HelpBot() {
   const [escalateLoading, setEscalateLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    setMessages(prev => {
+      if (prev.length === 1 && (prev[0].content === WELCOME_DE || prev[0].content === WELCOME_EN)) {
+        return [{ role: "assistant", content: region === "EN" ? WELCOME_EN : WELCOME_DE }];
+      }
+      return prev;
+    });
+  }, [region]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -46,7 +59,7 @@ export default function HelpBot() {
 
     try {
       const res = await apiRequest("POST", "/api/help-bot", {
-        messages: updated.filter((m) => m.content !== WELCOME),
+        messages: updated.filter((m) => m.content !== WELCOME_DE && m.content !== WELCOME_EN),
       });
       const data = await res.json();
       setMessages((prev) => [...prev, { role: "assistant", content: data.reply }]);
@@ -56,7 +69,7 @@ export default function HelpBot() {
     } catch {
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: "Es ist ein Fehler aufgetreten. Bitte versuche es erneut." },
+        { role: "assistant", content: region === "EN" ? "An error occurred. Please try again." : "Es ist ein Fehler aufgetreten. Bitte versuche es erneut." },
       ]);
     } finally {
       setLoading(false);
@@ -67,8 +80,8 @@ export default function HelpBot() {
     setEscalateLoading(true);
     try {
       const conversation = messages
-        .filter((m) => m.content !== WELCOME)
-        .map((m) => `${m.role === "user" ? "Kunde" : "Bot"}: ${m.content}`)
+        .filter((m) => m.content !== WELCOME_DE && m.content !== WELCOME_EN)
+        .map((m) => `${m.role === "user" ? (region === "EN" ? "Customer" : "Kunde") : "Bot"}: ${m.content}`)
         .join("\n\n");
 
       let supportEmail = "alexander.richter@foresmind.de";
@@ -92,13 +105,15 @@ export default function HelpBot() {
         ...prev,
         {
           role: "assistant",
-          content: "Deine Anfrage wurde erfolgreich weitergeleitet. Unser Team wird sich so schnell wie möglich bei dir melden.",
+          content: region === "EN"
+            ? "Your request has been forwarded successfully. Our team will get back to you as soon as possible."
+            : "Deine Anfrage wurde erfolgreich weitergeleitet. Unser Team wird sich so schnell wie möglich bei dir melden.",
         },
       ]);
     } catch {
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: "Die E-Mail konnte leider nicht gesendet werden. Bitte versuche es später erneut." },
+        { role: "assistant", content: region === "EN" ? "The email could not be sent. Please try again later." : "Die E-Mail konnte leider nicht gesendet werden. Bitte versuche es später erneut." },
       ]);
     } finally {
       setEscalateLoading(false);
@@ -156,8 +171,8 @@ export default function HelpBot() {
             flexShrink: 0,
           }}>
             <div>
-              <p style={{ fontSize: 16, fontWeight: 700, color: "#FFF", margin: 0 }}>Hilfe & Support</p>
-              <p style={{ fontSize: 12, color: "rgba(255,255,255,0.8)", margin: "2px 0 0" }}>Wie können wir dir helfen?</p>
+              <p style={{ fontSize: 16, fontWeight: 700, color: "#FFF", margin: 0 }}>{region === "EN" ? "Help & Support" : "Hilfe & Support"}</p>
+              <p style={{ fontSize: 12, color: "rgba(255,255,255,0.8)", margin: "2px 0 0" }}>{region === "EN" ? "How can we help you?" : "Wie können wir dir helfen?"}</p>
             </div>
             <button
               onClick={() => setOpen(false)}
@@ -203,14 +218,14 @@ export default function HelpBot() {
                   data-testid="button-help-escalate"
                 >
                   {escalateLoading ? <Loader2 style={{ width: 14, height: 14, animation: "spin 1s linear infinite" }} /> : <Mail style={{ width: 14, height: 14 }} />}
-                  Anfrage an Support senden
+                  {region === "EN" ? "Send request to support" : "Anfrage an Support senden"}
                 </button>
               </div>
             )}
             {emailSent && (
               <div style={{ display: "flex", justifyContent: "center", marginBottom: 10 }}>
                 <span style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 12, color: "#34C759", fontWeight: 600 }}>
-                  <CheckCircle2 style={{ width: 14, height: 14 }} /> E-Mail wurde gesendet
+                  <CheckCircle2 style={{ width: 14, height: 14 }} /> {region === "EN" ? "Email sent" : "E-Mail wurde gesendet"}
                 </span>
               </div>
             )}
@@ -223,7 +238,7 @@ export default function HelpBot() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Frage eingeben..."
+                placeholder={region === "EN" ? "Ask a question..." : "Frage eingeben..."}
                 rows={1}
                 style={{
                   flex: 1, resize: "none", border: "1.5px solid rgba(0,0,0,0.08)",

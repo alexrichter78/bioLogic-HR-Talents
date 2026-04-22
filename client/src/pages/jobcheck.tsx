@@ -351,10 +351,11 @@ function CalloutBox({ text, color, icon: Icon }: { text: string; color: string; 
 }
 
 function StatusBadge({ status }: { status: "geeignet" | "bedingt" | "kritisch" }) {
+  const { region } = useRegion();
   const config = {
-    geeignet: { icon: CircleCheck, color: "#34C759", bg: "rgba(52,199,89,0.08)", label: "Geeignet" },
-    bedingt: { icon: CircleMinus, color: "#FF9500", bg: "rgba(255,149,0,0.08)", label: "Bedingt geeignet" },
-    kritisch: { icon: CircleAlert, color: "#C41E3A", bg: "rgba(196,30,58,0.08)", label: "Kritisch" },
+    geeignet: { icon: CircleCheck, color: "#34C759", bg: "rgba(52,199,89,0.08)", label: region === "EN" ? "Suitable" : "Geeignet" },
+    bedingt: { icon: CircleMinus, color: "#FF9500", bg: "rgba(255,149,0,0.08)", label: region === "EN" ? "Conditionally suitable" : "Bedingt geeignet" },
+    kritisch: { icon: CircleAlert, color: "#C41E3A", bg: "rgba(196,30,58,0.08)", label: region === "EN" ? "Critical" : "Kritisch" },
   }[status];
   const Icon = config.icon;
   return (
@@ -868,9 +869,9 @@ export default function JobCheck() {
                     <div style={{ marginTop: 20 }}>
                       <p style={{ fontSize: 14, fontWeight: 600, color: "#48484A", margin: "0 0 14px", letterSpacing: "0.02em" }}>{region === "EN" ? "Meaning of the components" : "Bedeutung der Komponenten"}</p>
                       {[
-                        { label: region === "EN" ? "Intuitive" : "Intuitiv", color: COLORS.int, desc: "Erkennen, was Gesprächspartner oder Team brauchen und Kommunikation darauf abstimmen." },
-                        { label: region === "EN" ? "Impulsive" : "Impulsiv", color: COLORS.imp, desc: "Aufgaben schnell vorantreiben, Prioritäten setzen und Ergebnisse liefern." },
-                        { label: region === "EN" ? "Analytical" : "Analytisch", color: COLORS.ana, desc: "Strukturen schaffen, Abläufe organisieren und Entscheidungen nachvollziehbar vorbereiten." },
+                        { label: region === "EN" ? "Intuitive" : "Intuitiv", color: COLORS.int, desc: region === "EN" ? "Sensing what conversation partners or the team need and adapting communication accordingly." : "Erkennen, was Gesprächspartner oder Team brauchen und Kommunikation darauf abstimmen." },
+                        { label: region === "EN" ? "Impulsive" : "Impulsiv", color: COLORS.imp, desc: region === "EN" ? "Driving tasks forward quickly, setting priorities and delivering results." : "Aufgaben schnell vorantreiben, Prioritäten setzen und Ergebnisse liefern." },
+                        { label: region === "EN" ? "Analytical" : "Analytisch", color: COLORS.ana, desc: region === "EN" ? "Creating structures, organising processes and preparing decisions transparently." : "Strukturen schaffen, Abläufe organisieren und Entscheidungen nachvollziehbar vorbereiten." },
                       ].map((d, i) => (
                         <div key={d.label} style={{ marginBottom: i < 2 ? 14 : 0 }}>
                           <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
@@ -1198,7 +1199,7 @@ export default function JobCheck() {
 
                     <div style={{ display: "flex", gap: 16, marginTop: 16 }} data-testid="jc-detail-cards">
                       <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: "rgba(255,149,0,0.04)", border: "1px solid rgba(255,149,0,0.15)" }}>
-                        <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>Kritischer Bereich</div>
+                        <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>{region === "EN" ? "Critical area" : "Kritischer Bereich"}</div>
                         <div style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", lineHeight: 1.5 }} data-testid="jc-kritischer-bereich">{engine.criticalAreaLabel}</div>
                       </div>
                       <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: "rgba(26,93,171,0.04)", border: "1px solid rgba(26,93,171,0.12)" }}>
