@@ -1777,7 +1777,109 @@ export async function registerRoutes(
         }
       }
 
-      const prompt = `${region === "EN" ? "You are an expert in job profiles and competency analysis for English-speaking organisations." : "Du bist ein Experte für Berufsprofile und Kompetenzanalyse im deutschsprachigen Raum."}
+      const prompt = region === "EN"
+        ? `You are an expert in job profiles and competency analysis for English-speaking organisations.
+${getRegionInstruction(region)}${analyseKontext}
+## ROLE PROFILE — FULL CONTEXT
+
+**Role/Job:** ${beruf}
+**Management responsibility:** ${fuehrung || "None"}
+**Success focus:** ${erfolgsfokus || "Not specified"}
+**Task character:** ${aufgabencharakter || "Not specified"}
+**Work logic:** ${arbeitslogik || "Not specified"}
+${zusatzInfo ? `**Additional role context:** ${zusatzInfo}\n\nCONSIDER this context when creating tasks and competencies. Tasks must be specifically tailored to this role profile.` : ""}
+
+## ASSESSMENT METHODOLOGY — SITUATION OVER SINGLE WORD
+
+NEVER evaluate individual words from a task in isolation. ALWAYS analyse the COMPLETE situation:
+
+**Step 1 — Capture the full meaning:** What does the task describe OVERALL? What is the OUTCOME of this task?
+**Step 2 — Identify the core competency:** What PRIMARY capability does someone need to perform this task successfully? Thinking/Knowledge? Feeling/Relationship? Acting/Driving?
+**Step 3 — Apply role context:** HOW is this task performed in the specific role "${beruf}" with ${aufgabencharakter || "mixed"} task character and ${arbeitslogik || "unspecified"} work logic?
+
+## THREE COMPETENCY AREAS
+(OUTPUT RULE: In the JSON, always use the EXACT German terms "Analytisch", "Intuitiv", "Impulsiv" — do NOT translate them to English.)
+
+### "Analytisch" (= Technical/Methodological — THINKING & UNDERSTANDING)
+Core question: Does this task primarily require MENTAL WORK — applying knowledge, processing data, working in systems, mastering complex matters, making professional assessments?
+
+Typical situations (Analytisch):
+- Any task requiring SYSTEMATIC WORK in systems (ERP, CRM, SAP, software, databases)
+- Any task requiring PROFESSIONAL ASSESSMENT or FACTUAL WEIGHING — even if the word "conflict" or "clarify" appears
+- Any task involving DATA, NUMBERS, DEADLINES, PROCESSES
+- Any task covering DOCUMENTATION, REPORTING, MONITORING
+- Any task requiring CONVEYING EXPERTISE or EXPLAINING
+
+### "Intuitiv" (= Social/Relationship Intelligence — FEELING & CONNECTING)
+Core question: Does this task primarily require EMOTIONAL INTELLIGENCE — reading people, shaping relationships, building trust, sensing moods?
+
+Typical situations (Intuitiv):
+- Any task where the INTERPERSONAL dimension is central
+- Any task requiring EMPATHY, LISTENING, UNDERSTANDING THE PERSON
+- Any task concerned with HOW the relationship works, not WHAT the content is
+
+### "Impulsiv" (= Action/Execution Drive — ACTING & PUSHING)
+Core question: Does this task primarily require DRIVE — decisions under uncertainty, delivering results against resistance, urgency and pragmatism?
+
+Typical situations (Impulsiv):
+- Any task requiring DECISIONS UNDER PRESSURE or UNCERTAINTY
+- Any task that must DELIVER RESULTS AGAINST RESISTANCE
+- Any task requiring RISK ACCEPTANCE and TAKING OWNERSHIP
+- NOT: routine tasks, administrative processes, systematic workflows — even if they are "operational"
+
+## SITUATION ASSESSMENT — EXAMPLES
+
+Same words, different situations:
+- "Resolve conflicts over technical decisions" → Situation: PROFESSIONAL assessment of alternatives → **Analytisch**
+- "Moderate conflicts within the team" → Situation: Resolving INTERPERSONAL tensions → **Intuitiv**
+- "Escalate conflicts with client over deadline" → Situation: PUSH through under pressure → **Impulsiv**
+
+- "Trigger purchase orders in ERP" → Situation: SYSTEMATIC work in system → **Analytisch**
+- "Monitor delivery dates and follow up" → Situation: MONITORING and process control → **Analytisch**
+- "Book and clarify goods receipts" → Situation: DATA PROCESSING in system → **Analytisch**
+- "Maintain master data in ERP" → Situation: SYSTEMATIC data maintenance → **Analytisch**
+
+- "Analyse client requirements professionally" → Situation: PROFESSIONAL ASSESSMENT → **Analytisch**
+- "Maintain client relationships long-term" → Situation: RELATIONSHIP BUILDING → **Intuitiv**
+- "Decide immediately on client complaints" → Situation: DECISION under pressure → **Impulsiv**
+
+## CONTEXT WEIGHTING
+
+- Task character "${aufgabencharakter || "Not specified"}": Influences distribution, but NOT the situation assessment. An ERP booking stays Analytisch even with operational character.
+- Work logic "${arbeitslogik || "Not specified"}": Sets a tendency but NEVER overrides the situation analysis.
+- Success focus "${erfolgsfokus || "Not specified"}": Influences the level assessment (Hoch/Mittel/Niedrig).
+
+## TASK
+
+Create for the role "${beruf}" in the full context described above:
+
+1. **Main tasks (haupt)**: Exactly 15 typical main tasks for this specific role "${beruf}". Each as a complete, role-specific English sentence (80–120 characters) describing the concrete action AND its purpose/context. Example format: "Prepare dishes according to recipes and creative own creations to a high quality standard." or "Order and control goods as well as monitor material usage and costs." — NOT generic keywords like "Planning" or "Control", but concrete role-typical tasks with professional specificity. Assess EACH individually using the situation methodology above.
+
+2. **Human competencies (neben)**: Exactly 10 relevant human competencies (soft skills). Assess EACH in the context of this specific role.
+
+${hasFuehrung ? `3. **Leadership competencies (fuehrung)**: Exactly 10 relevant leadership competencies appropriate to the leadership level "${fuehrung}". Assess EACH in the context of this role.` : ""}
+
+## LEVEL RULES
+- "Hoch": Critical for role success (max 6 for main tasks, max 4 for others)
+- "Mittel": Important, but not core profile
+- "Niedrig": Required, but not central
+
+## CONFIDENCE ASSESSMENT
+
+For EACH task/competency: provide a "confidence" value (0–100) indicating how clearly the assignment to the chosen competency area is.
+- 80–100: Very clear, unambiguously assigned to one area
+- 55–79: Predominantly clear, minor elements from other areas
+- 0–54: Ambiguous, the task has strong elements from multiple areas
+
+CRITICAL: The JSON field "kompetenz" must always use EXACTLY these German terms: "Impulsiv", "Intuitiv", or "Analytisch". The field "niveau" must always use EXACTLY: "Niedrig", "Mittel", or "Hoch". Do NOT translate these to English in the JSON output.
+
+Reply exclusively as JSON:
+{
+  "haupt": [{"name": "...", "kompetenz": "Impulsiv|Intuitiv|Analytisch", "niveau": "Niedrig|Mittel|Hoch", "confidence": 0-100}],
+  "neben": [{"name": "...", "kompetenz": "Impulsiv|Intuitiv|Analytisch", "niveau": "Niedrig|Mittel|Hoch", "confidence": 0-100}]${hasFuehrung ? `,
+  "fuehrung": [{"name": "...", "kompetenz": "Impulsiv|Intuitiv|Analytisch", "niveau": "Niedrig|Mittel|Hoch", "confidence": 0-100}]` : ""}
+}`
+        : `Du bist ein Experte für Berufsprofile und Kompetenzanalyse im deutschsprachigen Raum.
 ${getRegionInstruction(region)}${analyseKontext}
 ## ROLLENPROFIL – GESAMTKONTEXT
 
@@ -1981,6 +2083,8 @@ Beispiel für 3 Einträge:
         }
       }
 
+      const isEN = region === "EN";
+
       const hauptItems = (taetigkeiten || []).filter((t: any) => t.kategorie === "haupt");
       const nebenItems = (taetigkeiten || []).filter((t: any) => t.kategorie === "neben");
       const fuehrungItems = (taetigkeiten || []).filter((t: any) => t.kategorie === "fuehrung");
@@ -1994,13 +2098,19 @@ Beispiel für 3 Einträge:
         const mittel = items.filter((t: any) => t.niveau === "Mittel");
         const gering = items.filter((t: any) => t.niveau === "Gering");
         let out = "";
-        if (hoch.length > 0) out += `**Niveau HOCH (kritisch für Rollenerfolg, individuelle Eignungsprüfung erforderlich):**\n${hoch.map((t: any) => `- ${t.name} (${t.kompetenz})`).join("\n")}\n\n`;
-        if (mittel.length > 0) out += `**Niveau MITTEL (Standardanforderung, erlernbar):**\n${mittel.map((t: any) => `- ${t.name} (${t.kompetenz})`).join("\n")}\n\n`;
-        if (gering.length > 0) out += `**Niveau GERING (Basisanforderung, wenig differenzierend):**\n${gering.map((t: any) => `- ${t.name} (${t.kompetenz})`).join("\n")}\n`;
+        if (isEN) {
+          if (hoch.length > 0) out += `**Level HIGH (critical for role success — individual assessment required):**\n${hoch.map((t: any) => `- ${t.name} (${t.kompetenz})`).join("\n")}\n\n`;
+          if (mittel.length > 0) out += `**Level MEDIUM (standard requirement, can be developed):**\n${mittel.map((t: any) => `- ${t.name} (${t.kompetenz})`).join("\n")}\n\n`;
+          if (gering.length > 0) out += `**Level LOW (basic requirement, not differentiating):**\n${gering.map((t: any) => `- ${t.name} (${t.kompetenz})`).join("\n")}\n`;
+        } else {
+          if (hoch.length > 0) out += `**Niveau HOCH (kritisch für Rollenerfolg, individuelle Eignungsprüfung erforderlich):**\n${hoch.map((t: any) => `- ${t.name} (${t.kompetenz})`).join("\n")}\n\n`;
+          if (mittel.length > 0) out += `**Niveau MITTEL (Standardanforderung, erlernbar):**\n${mittel.map((t: any) => `- ${t.name} (${t.kompetenz})`).join("\n")}\n\n`;
+          if (gering.length > 0) out += `**Niveau GERING (Basisanforderung, wenig differenzierend):**\n${gering.map((t: any) => `- ${t.name} (${t.kompetenz})`).join("\n")}\n`;
+        }
         return out.trim();
       };
 
-      const erfolgsfokusText = (erfolgsfokusLabels || []).join(", ") || "Nicht angegeben";
+      const erfolgsfokusText = (erfolgsfokusLabels || []).join(", ") || (isEN ? "Not specified" : "Nicht angegeben");
 
       const describeGaps = (bg: any, label: string) => {
         if (!bg) return "";
@@ -2015,33 +2125,51 @@ Beispiel für 3 Einträge:
         const gapAll = Math.abs(first.value - third.value);
 
         let desc = `${label}: ${first.key} (${first.value}%) > ${second.key} (${second.value}%) > ${third.key} (${third.value}%)\n`;
-        if (gapAll <= 6) {
-          desc += `→ GLEICHGEWICHT: Alle drei Kompetenzen nahezu gleichauf (max. Differenz ${gapAll}%). Keine dominiert.\n`;
-        } else if (first.value >= 55) {
-          desc += `→ STARKE DOMINANZ: ${first.key} ist mit ${first.value}% klar überlegen. Vorsprung auf Platz 2: ${gap12} Prozentpunkte.\n`;
-        } else if (gap12 >= 15) {
-          desc += `→ HOHE DOMINANZ: ${first.key} führt mit großem Abstand (${gap12} Pp. vor ${second.key}). ${third.key} ist klar nachrangig.\n`;
-        } else if (gap12 >= 8) {
-          desc += `→ DEUTLICHE DOMINANZ: ${first.key} führt erkennbar (${gap12} Pp. vor ${second.key}). Klare Rangfolge.\n`;
-        } else if (gap12 <= 5 && gap23 > 5) {
-          desc += `→ DOPPELSTRUKTUR: ${first.key} und ${second.key} bilden ein Tandem (nur ${gap12} Pp. Differenz). ${third.key} ist deutlich nachrangig (${gap23} Pp. Abstand).\n`;
-        } else if (gap12 >= 5) {
-          desc += `→ LEICHTE TENDENZ: ${first.key} liegt leicht vorn (${gap12} Pp. Vorsprung). Keine ausgeprägte Dominanz.\n`;
+        if (isEN) {
+          if (gapAll <= 6) {
+            desc += `→ BALANCED: All three competencies nearly equal (max. difference ${gapAll}%). None dominates.\n`;
+          } else if (first.value >= 55) {
+            desc += `→ STRONG DOMINANCE: ${first.key} clearly leads at ${first.value}%. Gap to 2nd place: ${gap12} points.\n`;
+          } else if (gap12 >= 15) {
+            desc += `→ HIGH DOMINANCE: ${first.key} leads by a large margin (${gap12} pts ahead of ${second.key}). ${third.key} is clearly secondary.\n`;
+          } else if (gap12 >= 8) {
+            desc += `→ CLEAR DOMINANCE: ${first.key} leads noticeably (${gap12} pts ahead of ${second.key}). Clear ranking.\n`;
+          } else if (gap12 <= 5 && gap23 > 5) {
+            desc += `→ DUAL STRUCTURE: ${first.key} and ${second.key} form a tandem (only ${gap12} pts difference). ${third.key} is clearly secondary (${gap23} pts gap).\n`;
+          } else if (gap12 >= 5) {
+            desc += `→ SLIGHT TENDENCY: ${first.key} slightly ahead (${gap12} pts lead). No pronounced dominance.\n`;
+          } else {
+            desc += `→ EVEN: Minor differences between competencies.\n`;
+          }
         } else {
-          desc += `→ AUSGEGLICHEN: Geringe Differenzen zwischen den Kompetenzen.\n`;
+          if (gapAll <= 6) {
+            desc += `→ GLEICHGEWICHT: Alle drei Kompetenzen nahezu gleichauf (max. Differenz ${gapAll}%). Keine dominiert.\n`;
+          } else if (first.value >= 55) {
+            desc += `→ STARKE DOMINANZ: ${first.key} ist mit ${first.value}% klar überlegen. Vorsprung auf Platz 2: ${gap12} Prozentpunkte.\n`;
+          } else if (gap12 >= 15) {
+            desc += `→ HOHE DOMINANZ: ${first.key} führt mit großem Abstand (${gap12} Pp. vor ${second.key}). ${third.key} ist klar nachrangig.\n`;
+          } else if (gap12 >= 8) {
+            desc += `→ DEUTLICHE DOMINANZ: ${first.key} führt erkennbar (${gap12} Pp. vor ${second.key}). Klare Rangfolge.\n`;
+          } else if (gap12 <= 5 && gap23 > 5) {
+            desc += `→ DOPPELSTRUKTUR: ${first.key} und ${second.key} bilden ein Tandem (nur ${gap12} Pp. Differenz). ${third.key} ist deutlich nachrangig (${gap23} Pp. Abstand).\n`;
+          } else if (gap12 >= 5) {
+            desc += `→ LEICHTE TENDENZ: ${first.key} liegt leicht vorn (${gap12} Pp. Vorsprung). Keine ausgeprägte Dominanz.\n`;
+          } else {
+            desc += `→ AUSGEGLICHEN: Geringe Differenzen zwischen den Kompetenzen.\n`;
+          }
         }
         return desc;
       };
 
       const gapAnalysis = [
-        describeGaps(gesamt, "Gesamtprofil"),
-        describeGaps(haupt, "Tätigkeiten"),
-        describeGaps(neben, "Humankompetenzen"),
-        describeGaps(rahmen, "Rahmenbedingungen"),
-        isLeadership ? describeGaps(fuehrungBG, "Führungskompetenzen") : null,
+        describeGaps(gesamt, isEN ? "Overall profile" : "Gesamtprofil"),
+        describeGaps(haupt, isEN ? "Main tasks" : "Tätigkeiten"),
+        describeGaps(neben, isEN ? "Human competencies" : "Humankompetenzen"),
+        describeGaps(rahmen, isEN ? "Contextual factors" : "Rahmenbedingungen"),
+        isLeadership ? describeGaps(fuehrungBG, isEN ? "Leadership competencies" : "Führungskompetenzen") : null,
       ].filter(Boolean).join("\n");
 
-      const PROFILE_TYPE_DESCRIPTIONS: Record<string, string> = {
+      const PROFILE_TYPE_DESCRIPTIONS_DE: Record<string, string> = {
         "balanced_all": "Ausgeglichenes Profil: Alle drei Kompetenzen (Impulsiv, Intuitiv, Analytisch) sind nahezu gleichauf. Die Rolle verlangt Vielseitigkeit ohne klare Spezialisierung. Beschreibe die Rolle als vielfältig und balanciert.",
         "strong_imp": "Stark Impulsiv-dominiert: Handlungs- und Umsetzungskompetenz dominiert mit großem Vorsprung. Die Rolle verlangt primär Durchsetzung, schnelle Entscheidungen und Ergebnisorientierung. Analytisches und Intuitives sind klar nachrangig.",
         "strong_ana": "Stark Analytisch-dominiert: Fach- und Methodenkompetenz dominiert mit großem Vorsprung. Die Rolle verlangt primär systematisches Denken, Fachwissen und strukturiertes Vorgehen. Impulsives und Intuitives sind klar nachrangig.",
@@ -2057,9 +2185,172 @@ Beispiel für 3 Einträge:
         "hybrid_imp_int": "Impulsiv-Intuitive Doppelstruktur: Handlungs- und Beziehungskompetenz liegen nah beieinander und bilden ein Tandem. Die Rolle verlangt sowohl Durchsetzung als auch Empathie. Analytisches ist deutlich nachrangig.",
       };
 
-      const profileDescription = PROFILE_TYPE_DESCRIPTIONS[profileType || "balanced_all"] || PROFILE_TYPE_DESCRIPTIONS["balanced_all"];
+      const PROFILE_TYPE_DESCRIPTIONS_EN: Record<string, string> = {
+        "balanced_all": "Balanced profile: all three competency areas (Impulsiv, Intuitiv, Analytisch) are nearly equal. The role demands versatility without a clear specialisation. Describe the role as broad and multifaceted.",
+        "strong_imp": "Strongly Pace-and-Decision-dominant: action and execution drive dominates by a large margin. The role demands primarily decisiveness, fast decisions and results orientation. Structure and relationships are clearly secondary.",
+        "strong_ana": "Strongly Structure-and-Diligence-dominant: technical and methodological competency dominates by a large margin. The role demands primarily systematic thinking, professional expertise and structured approaches. Pace and relationships are clearly secondary.",
+        "strong_int": "Strongly Communication-and-Relationships-dominant: social and relationship intelligence dominates by a large margin. The role demands primarily empathy, relationship building and emotional intelligence. Pace and structure are clearly secondary.",
+        "dominant_imp": "Pace-and-Decision-dominant: action focus leads clearly but not overwhelmingly. The role needs primarily execution strength, complemented by the second strongest area.",
+        "dominant_ana": "Structure-and-Diligence-dominant: technical expertise leads clearly but not overwhelmingly. The role needs primarily methodical approaches, complemented by the second strongest area.",
+        "dominant_int": "Communication-and-Relationships-dominant: relational competency leads clearly. The role needs primarily social capabilities, complemented by the second strongest area.",
+        "light_imp": "Slightly Pace-and-Decision-oriented: action focus is slightly ahead, but without clear dominance. The role leans towards execution, yet also requires breadth in the other areas.",
+        "light_ana": "Slightly Structure-and-Diligence-oriented: technical focus is slightly ahead, but without clear dominance. The role leans towards systematic work, yet also requires breadth in the other areas.",
+        "light_int": "Slightly Communication-and-Relationships-oriented: relational focus is slightly ahead, but without clear dominance. The role leans towards people work, yet also requires breadth in the other areas.",
+        "hybrid_imp_ana": "Pace-and-Decision / Structure-and-Diligence dual structure: action and technical competency are close together and form a tandem. The role demands both execution strength and methodical thinking. Relationships are clearly secondary.",
+        "hybrid_ana_int": "Structure-and-Diligence / Communication-and-Relationships dual structure: technical and relational competency are close together and form a tandem. The role demands both professional depth and interpersonal skill. Pace is clearly secondary.",
+        "hybrid_imp_int": "Pace-and-Decision / Communication-and-Relationships dual structure: action and relational competency are close together and form a tandem. The role demands both drive and empathy. Structure is clearly secondary.",
+      };
 
-      const prompt = `Du bist ein Experte für strukturelle Rollenanalyse und Besetzungsentscheidungen im deutschsprachigen Raum.
+      const profileDescription = isEN
+        ? (PROFILE_TYPE_DESCRIPTIONS_EN[profileType || "balanced_all"] || PROFILE_TYPE_DESCRIPTIONS_EN["balanced_all"])
+        : (PROFILE_TYPE_DESCRIPTIONS_DE[profileType || "balanced_all"] || PROFILE_TYPE_DESCRIPTIONS_DE["balanced_all"]);
+
+      const prompt = isEN
+        ? `You are an expert in structural role analysis and hiring decisions for English-speaking organisations.
+You have a point of view and you express it. No academic tone. No HR-handbook speak. Write for people who make fast, concrete decisions.
+
+## TASK
+
+Create a complete structural role analysis report for the role "${beruf}" in the area "${bereich || "Not specified"}".
+
+The report is for HR decision-makers and senior managers. It describes the STRUCTURAL requirements of the role — independent of CV, industry background or past performance metrics.
+
+## ROLE PROFILE — FULL DATA
+
+**Role:** ${beruf}
+**Area:** ${bereich || "Not specified"}
+**Management responsibility:** ${fuehrungstyp || "None"}
+**Task character:** ${aufgabencharakter || "Not specified"}
+**Work logic:** ${arbeitslogik || "Not specified"}
+**Success focus:** ${erfolgsfokusText}
+
+## PROFILE CLASSIFICATION
+
+**Profile type:** ${profileType || "balanced_all"}
+**Intensity:** ${intensity || "balanced"}
+**Meaning:** ${profileDescription}
+
+## GAP ANALYSIS (exactly calculated — do NOT change)
+
+${gapAnalysis}
+
+## CALCULATED PROFILE VALUES (exact — do NOT change)
+
+Overall profile: Impulsiv ${gesamt?.imp || 33}% / Intuitiv ${gesamt?.int || 33}% / Analytisch ${gesamt?.ana || 34}%
+Contextual factors: Impulsiv ${rahmen?.imp || 33}% / Intuitiv ${rahmen?.int || 33}% / Analytisch ${rahmen?.ana || 34}%
+${isLeadership ? `Leadership competencies: Impulsiv ${fuehrungBG?.imp || 33}% / Intuitiv ${fuehrungBG?.int || 33}% / Analytisch ${fuehrungBG?.ana || 34}%` : "No management responsibility"}
+Main tasks: Impulsiv ${haupt?.imp || 33}% / Intuitiv ${haupt?.int || 33}% / Analytisch ${haupt?.ana || 34}%
+Human competencies: Impulsiv ${neben?.imp || 33}% / Intuitiv ${neben?.int || 33}% / Analytisch ${neben?.ana || 34}%
+
+## COMPETENCY AREAS (reference)
+
+- **Impulsiv** = Pace and Decision (action, execution, deciding under pressure, driving results)
+- **Intuitiv** = Communication and Relationships (empathy, connecting, relationship building, social intelligence)
+- **Analytisch** = Structure and Diligence (thinking, structuring, analysing, applying professional expertise)
+
+## ROLE DATA — SORTED BY LEVEL
+
+### Main tasks:
+${formatItemsByNiveau(hauptItems) || "None provided"}
+
+### Human competencies:
+${formatItemsByNiveau(nebenItems) || "None provided"}
+
+${fuehrungItems.length > 0 ? `### Leadership competencies:\n${formatItemsByNiveau(fuehrungItems)}` : ""}
+
+## LEVEL RULES (CRITICAL for text generation)
+
+The level describes how critical a task/competency is for role success:
+
+- **Level HIGH**: This is DECISIVE for role success. Requires individual candidate assessment. In text: emphasise these prominently, frame them as core challenges, link them to hiring risks.
+- **Level MEDIUM**: Standard requirement that can be developed. In text: mention as expected capability, without special emphasis.
+- **Level LOW**: Basic requirement, not differentiating. In text: mention briefly or embed in general statements.
+
+When multiple items are Level HIGH, describe the COMBINATION as a particular challenge. More HIGH-level items = more demanding requirement profile.
+
+## STYLE AND TONE
+
+- Direct, professional, no-nonsense. No marketing language, no clichés.
+- Use role-specific vocabulary (e.g. for Sales: pipeline, forecast, close rate, territory; for IT: architecture, code review, deployment, sprint; for Finance: reconciliation, compliance, reporting cycle)
+- Bullet lists for areas of responsibility, success metrics, leadership levers, required competencies
+- Frame tension fields as "X vs. Y"
+- Risk scenarios ALWAYS end with an "In practice this means..." closing sentence
+- Conclusion with "What this role needs is someone who:" + bullet list
+
+## MANDATORY RULES
+
+1. NO percentages in text. Profile values are shown in charts. Describe proportions qualitatively only: "clearly dominant", "nearly equal", "noticeably secondary", "clearly in the background".
+2. NO em-dashes (-- or —) in text. Split into two sentences or use a colon instead.
+3. Use the GAP ANALYSIS above to describe proportions CORRECTLY. If it says "BALANCED", do NOT describe dominance. If it says "STRONG DOMINANCE", emphasise clear superiority. Follow the ranking exactly.
+4. If intensity="strong": use phrasing like "clearly dominated by", "unambiguously shaped by"
+5. If intensity="light": use "noticeable tendency towards", "slight orientation to"
+6. If intensity="balanced": describe versatility and balance
+7. If intensity="clear": use "noticeably shaped by", "clearly led by"
+8. For management roles: distinguish clearly between line management, functional leadership and coordination
+9. Without management: describe how the role exerts influence WITHOUT a management lever (through expertise, performance, persuasion)
+10. All texts must be SPECIFIC to "${beruf}". No generic formulations.
+11. HIGH-level items must be highlighted as especially critical. LOW-level items are only mentioned briefly.
+
+## JSON OUTPUT FORMAT
+
+Reply exclusively as JSON with exactly this structure (field NAMES must stay as shown — values in English):
+
+{
+  "rollencharakter": "One descriptive phrase capturing the role's structural character, e.g. 'Results-driven with analytical grounding' or 'Relationship-led with strong execution focus'",
+  "dominanteKomponente": "Dominant focus area plus secondary, e.g. 'Pace and Decision with Structure and Diligence support' or 'Dual structure: Structure and Diligence with Communication and Relationships'",
+  "einleitung": "2-3 short paragraphs separated by \\n\\n. Each paragraph max 2-3 sentences. First paragraph: what decides success in this role? What determines effectiveness? Second paragraph: why is professional knowledge alone insufficient? What is structurally decisive? Final paragraph: 'This report describes the structural requirements of the role, independent of [role-specific reference].'",
+  "gesamtprofil": "3-4 short paragraphs separated by \\n\\n. Each max 2-3 sentences. First: which competency area dominates and why? Second: what does this mean for the role day-to-day? Third: what function do the secondary areas serve? Final sentence: 'Effectiveness comes [primarily from / through] ...'",
+  "rahmenbedingungen": {
+    "beschreibung": "2-3 short paragraphs separated by \\n\\n, each 2-3 sentences. Describe the task character, explain the work logic, and spell out what the role concretely demands",
+    "verantwortungsfelder": ["Concrete area of responsibility 1", "Area 2", "...at least 5"],
+    "erfolgsmessung": ["Concrete success factor 1", "Factor 2", "...at least 4"],
+    "spannungsfelder_rahmen": ["Tension 1 vs. counter-pull 1", "Tension 2 vs. counter-pull 2", "...at least 3"]
+  },
+  "fuehrungskontext": ${isLeadership ? `{
+    "beschreibung": "2-3 short paragraphs separated by \\n\\n, each 2-3 sentences. What type of leadership? How does management impact arise?",
+    "wirkungshebel": ["Concrete leadership lever 1", "Lever 2", "...at least 4"],
+    "analytische_anforderungen": ["Structural leadership requirement 1", "...", "at least 3"],
+    "schlusssatz": "What happens without this structural grounding?"
+  }` : `{
+    "beschreibung": "2-3 short paragraphs separated by \\n\\n, each 2-3 sentences. How does the role exert influence WITHOUT a management team? Through which mechanisms does impact arise?",
+    "wirkungshebel": ["Indirect impact lever 1", "Lever 2", "...at least 3"],
+    "schlusssatz": "Consequence: without a management lever, impact concentrates on..."
+  }`},
+  "kompetenzanalyse": {
+    "taetigkeiten_text": "2 short paragraphs separated by \\n\\n, each 2-3 sentences. Interpretation of the task profile values",
+    "taetigkeiten_anforderungen": ["Structural requirement 1", "Requirement 2", "...at least 5"],
+    "taetigkeiten_schluss": "Closing sentence: what does this role fundamentally demand?",
+    "human_text": "2 short paragraphs separated by \\n\\n, each 2-3 sentences. Interpretation of the human competency profile values",
+    "human_anforderungen": ["Required competency 1", "Competency 2", "...at least 5"],
+    "human_schluss": "Closing sentence: what role do interpersonal capabilities play here?"
+  },
+  "spannungsfelder": ["Tension 1 vs. counter-pull 1", "Tension 2 vs. counter-pull 2", "at least 4 entries"],
+  "spannungsfelder_schluss": "The person must be able to [actively manage / navigate independently / consciously balance] these tensions. The goal is not to avoid them.",
+  "risikobewertung": [
+    {
+      "label": "Too much structure applied",
+      "bullets": ["Consequence 1", "Consequence 2", "Consequence 3", "at least 4"],
+      "alltagssatz": "In practice this means [role-specific description]."
+    },
+    {
+      "label": "Too much pace driven",
+      "bullets": ["Consequence 1", "Consequence 2", "Consequence 3", "at least 4"],
+      "alltagssatz": "In practice this means [role-specific description]."
+    },
+    {
+      "label": "Too much relationship prioritised",
+      "bullets": ["Consequence 1", "Consequence 2", "Consequence 3", "at least 4"],
+      "alltagssatz": "In practice this means [role-specific description]."
+    }
+  ],
+  "fazit": {
+    "kernsatz": "1-2 sentences: summary of the role's structural character",
+    "persoenlichkeit": ["Characteristic 1 the person must bring", "Characteristic 2", "at least 5 entries"],
+    "fehlbesetzung": "1 sentence: what happens when the structural fit is wrong?",
+    "schlusssatz": "1 sentence: what this report provides the foundation for"
+  }
+}`
+        : `Du bist ein Experte für strukturelle Rollenanalyse und Besetzungsentscheidungen im deutschsprachigen Raum.
 ${getRegionInstruction(region)}
 ## AUFGABE
 
@@ -2234,7 +2525,57 @@ Antworte ausschließlich als JSON mit exakt dieser Struktur:
         `- ${t.name} (${t.kompetenz}, ${t.niveau})`
       ).join("\n");
 
-      const prompt = `Du bist ein Experte für Rollenanalyse und Kompetenzprofile. Analysiere das folgende Rollenprofil im GESAMTKONTEXT und erstelle drei Analysebereiche.
+      const prompt = region === "EN"
+        ? `You are an expert in role analysis and competency profiles for English-speaking organisations.
+${getRegionInstruction(region)}
+
+## ROLE PROFILE — FULL CONTEXT
+
+**Role:** ${beruf}
+**Management responsibility:** ${fuehrung || "None"}
+**Success focus:** ${erfolgsfokus || "Not specified"}
+**Task character:** ${aufgabencharakter || "Not specified"}
+**Work logic:** ${arbeitslogik || "Not specified"}
+
+## COMPETENCY AREAS (for classification reference)
+- "Analytisch" = Technical/Methodological (thinking, understanding, structuring, applying expertise)
+- "Intuitiv" = Social/Relationship Intelligence (feeling, connecting, empathy, nurturing relationships)
+- "Impulsiv" = Action/Execution Drive (doing, pushing, deciding, delivering results)
+
+The classification depends on context: "communication skills" can be Analytisch (conveying expertise), Intuitiv (building relationships) or Impulsiv (closing deals) depending on how the role actually uses them.
+
+## PROFILE DATA
+
+**Main tasks:**
+${formatItems(haupt)}
+
+**Human competencies:**
+${formatItems(neben)}
+
+${fuehrungItems.length > 0 ? `**Leadership competencies:**\n${formatItems(fuehrungItems)}` : ""}
+
+## ANALYSIS TASK
+
+Create a context-specific analysis. Check whether the competency area classifications are coherent in the context of the role. Point out any inconsistencies you observe.
+
+Write each section as flowing, connected prose — not bullet points. Be direct and specific. Name the role "${beruf}" explicitly in the text.
+
+**Section 1 — Competency distribution and role profile:**
+Analyse the distribution of the three competency areas. Which dominates? Does this distribution fit the task character (${aufgabencharakter || "n/a"}) and work logic (${arbeitslogik || "n/a"})? What does this say about the role type and who typically succeeds in it? What is the overall requirement level?
+
+**Section 2 — Task analysis and requirement profile:**
+Which tasks and competencies require the highest level and why? Where are the critical requirements in the context of the success focus (${erfolgsfokus || "n/a"})? Which competency combinations are particularly important for this specific role — and what happens when one of them is missing?
+
+**Section 3 — Hiring recommendations and development pathways:**
+Which competencies must be specifically examined when selecting candidates? Where could capability gaps arise and what would the practical impact be? Provide concrete recommendations for hiring and realistic development paths for candidates who partially match the profile.
+
+Reply as JSON:
+{
+  "bereich1": "...(detailed flowing prose, 4-6 sentences)...",
+  "bereich2": "...(detailed flowing prose, 4-6 sentences)...",
+  "bereich3": "...(detailed flowing prose, 4-6 sentences)..."
+}`
+        : `Du bist ein Experte für Rollenanalyse und Kompetenzprofile. Analysiere das folgende Rollenprofil im GESAMTKONTEXT und erstelle drei Analysebereiche.
 ${getRegionInstruction(region)}
 
 ## ROLLENPROFIL – GESAMTKONTEXT
@@ -2748,9 +3089,75 @@ WICHTIG:
       }
 
       const isLeading = context?.is_leading === true;
-      const personRole = isLeading ? "Führungskraft" : "Teammitglied";
+      const isEN = region === "EN";
+      const personRole = isLeading
+        ? (isEN ? "new leader" : "Führungskraft")
+        : (isEN ? "new team member" : "Teammitglied");
 
-      const systemPrompt = `Du erstellst einen einheitlichen Team-Systemreport (bioLogic) als Managementdokument.
+      const systemPrompt = isEN
+        ? `You are creating a unified Team System Report as a management document.
+Readers do not know the model. You describe work and decision logic within the team — not personality.
+Write factually, precisely, without coaching language and without psychological diagnoses.
+You have a point of view and you express it. No textbook language. No HR-handbook speak.
+
+IMPORTANT — Role distinction:
+The incoming person is a ${personRole}. This fundamentally changes the entire analysis:
+
+${isLeading ? `LEADERSHIP MODE:
+- The new person takes over leadership of the team. They set decision logic, prioritisation and management style.
+- Analyse how the new leader's decision logic changes the existing team dynamics.
+- Describe the shift as a "leadership change": how does decision culture, prioritisation and work rhythm change?
+- Frame risks from a leadership perspective: loss of acceptance, resistance, culture clash, over-steering.
+- Frame opportunities from a leadership perspective: professionalisation, results discipline, strategic clarity.
+- Leadership levers are actions the new leader can implement directly.
+- In the integration plan: the new leader shapes actively, the team responds.
+- Throughout: use "the new leader" or "the new leadership", not "the new person".` :
+`TEAM MEMBER MODE:
+- The new person joins the existing team — not in a leadership role.
+- Analyse how the new team member influences the existing team dynamics (without management authority).
+- Describe the shift as a "team addition": how does collaboration, work rhythm and team balance change?
+- Risks: integration difficulties, friction with existing team, quiet isolation, pressure to conform.
+- Opportunities: new perspectives, capability complementation, broader coverage, fresh momentum.
+- Leadership levers are actions existing management should take to steer the integration.
+- In the integration plan: the existing team and management steer integration, the new member is brought on board.
+- Throughout: use "the new team member" or "the new person", not "the new leader".`}
+
+Mandatory principles:
+- Never use model terms without a functional translation (Impulsiv/Intuitiv/Analytisch only as work logic descriptions).
+- Always use plain English labels: "Pace and Decision" (Impulsiv), "Communication and Relationships" (Intuitiv), "Structure and Diligence" (Analytisch).
+- Every risk statement includes a concrete impact (speed, quality, KPI, team dynamics, management effort).
+- No clichés, no repetitions, no metaphors.
+- Bullet points: max 2 sentences each — observation + effect.
+- Reference job tasks and KPI priorities from the input data.
+- No em-dashes (— or --). Split sentences or use a colon instead.
+- No percentages or raw scores in the narrative text. Describe qualitatively: "clearly in the foreground", "noticeably present", "closely matched", "clearly secondary".
+
+The calculated values (DG, DC, RG, TS, CI, intensity, shift type, management need) are already deterministically calculated and passed as input. Use them exactly — do NOT recalculate.
+
+Output format:
+Output the report only (no explanations, no JSON). Use exactly this structure:
+
+1. Executive System Summary
+2. Profile Overview (Team / ${isLeading ? "New Leader" : "New Team Member"} / Target optional)
+3. System Type and Shift Axis
+4. System Impact in Day-to-Day Work (4 areas: Decisions/Priorities, Quality, Pace, Collaboration)
+5. Task and KPI Impact (derived from tasks and kpi_focus)
+6. Conflict and Pressure Forecast
+7. Team Maturity (5 dimensions)
+8. Opportunities (max 6)
+9. Risks (max 6)
+10. Leadership Levers (max 6, concrete)
+11. Integration Plan (30 days, 3 phases)
+12. Measurement Points (3–5, objective)
+13. Overall Assessment (clear, 4–6 sentences)
+
+Numerical values:
+- TS as a number 0–100 (rounded), Intensity (Low/Medium/High)
+- DG, DC, RG, CI optional as secondary values in Summary (brief, 1 line)
+
+Forbidden terms:
+personality, type, mindset, unlocking potential, appreciative, holistic, authentic, carried.`
+        : `Du erstellst einen einheitlichen Team-Systemreport (bioLogic) als Managementdokument.
 Die Leser kennen das Modell nicht. Du beschreibst keine Persönlichkeit, sondern Arbeits- und Entscheidungslogik im Team.
 Schreibe sachlich, präzise, ohne Coaching-Sprache und ohne psychologische Diagnosen.
 ${getRegionInstruction(region)}
@@ -2810,7 +3217,9 @@ Numerische Werte:
 Verbotene Begriffe:
 Persönlichkeit, Typ, Mindset, Potenzial entfalten, wertschätzend, ganzheitlich, authentisch, getragen.`;
 
-      const userContent = `Erstelle den Team-Systemreport basierend auf folgenden Daten:\n\n${JSON.stringify({ context, profiles, computed, levers }, null, 2)}`;
+      const userContent = isEN
+        ? `Create the Team System Report based on the following data:\n\n${JSON.stringify({ context, profiles, computed, levers }, null, 2)}`
+        : `Erstelle den Team-Systemreport basierend auf folgenden Daten:\n\n${JSON.stringify({ context, profiles, computed, levers }, null, 2)}`;
 
       const report = await callClaudeForText("generate-team-report", systemPrompt, userContent, { temperature: 0.6, maxTokens: 4096 });
       res.json({ report });
