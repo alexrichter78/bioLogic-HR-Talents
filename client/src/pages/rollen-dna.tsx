@@ -2222,12 +2222,20 @@ export default function RollenDNA() {
                     <div style={{ width: 28, height: 28, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, background: "rgba(0,0,0,0.06)", color: "#AEAEB2" }}>3</div>
                   </div>
                   <h2 style={{ fontSize: 28, fontWeight: 700, color: "#34C759", letterSpacing: "-0.02em", margin: "0 0 8px" }} data-testid="text-step-1-title">
-                    Welche Stelle möchtest du analysieren?
+                    {region === "FR" ? "Quel poste souhaites-tu analyser ?" : region === "EN" ? "Which role do you want to analyse?" : "Welche Stelle möchtest du analysieren?"}
                   </h2>
                   <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.6, margin: "0 0 28px" }}>
-                    Gib die Berufsbezeichnung oder Stellenbezeichnung ein, z.B. „Vertriebsleiter", „HR Business Partner" oder „Projektmanager IT".
+                    {region === "FR"
+                      ? "Indique le titre ou la désignation du poste, p.ex. « Directeur commercial », « HR Business Partner » ou « Chef de projet IT »."
+                      : region === "EN"
+                        ? "Enter the job title or role name, e.g. \"Sales Director\", \"HR Business Partner\" or \"IT Project Manager\"."
+                        : "Gib die Berufsbezeichnung oder Stellenbezeichnung ein, z.B. Vertriebsleiter, HR Business Partner oder Projektmanager IT."}
                     <br />
-                    Kein passender Vorschlag? Einfach ausschreiben – wir erkennen die Stelle automatisch.
+                    {region === "FR"
+                      ? "Aucune suggestion ? Tu peux simplement décrire le poste et nous le reconnaissons automatiquement."
+                      : region === "EN"
+                        ? "No matching suggestion? Simply type the role and we will recognise it automatically."
+                        : "Kein passender Vorschlag? Einfach ausschreiben – wir erkennen die Stelle automatisch."}
                   </p>
 
                   <div className="mb-0" style={{ zIndex: 100 }} data-testid="input-beruf-wrapper">
@@ -2237,7 +2245,7 @@ export default function RollenDNA() {
                         ref={inputRef}
                         type="text"
                         autoComplete="off"
-                        placeholder="z.B. Key Account Manager, Teamleiter Produktion, ..."
+                        placeholder={region === "FR" ? "p.ex. Responsable grands comptes, Chef d'équipe production, ..." : region === "EN" ? "e.g. Key Account Manager, Production Team Lead, ..." : "z.B. Key Account Manager, Teamleiter Produktion, ..."}
                         value={beruf}
                         onChange={(e) => {
                           setBeruf(e.target.value);
@@ -2355,14 +2363,14 @@ export default function RollenDNA() {
 
 
                     <div style={{ marginTop: 28 }}>
-                      <p style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", margin: "0 0 6px" }}>Optionale Ergänzungen</p>
+                      <p style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", margin: "0 0 6px" }}>{region === "FR" ? "Informations complémentaires (optionnel)" : region === "EN" ? "Optional additions" : "Optionale Ergänzungen"}</p>
                       <p style={{ fontSize: 13, color: "#6E6E73", margin: "0 0 12px" }}>
-                        Was macht diese Stelle in deinem Unternehmen besonders? Je konkreter, desto genauer die Analyse.
+                        {region === "FR" ? "Qu'est-ce qui rend ce poste particulier dans ton entreprise ? Plus c'est concret, plus l'analyse est précise." : region === "EN" ? "What makes this role special in your organisation? The more specific, the more accurate the analysis." : "Was macht diese Stelle in deinem Unternehmen besonders? Je konkreter, desto genauer die Analyse."}
                       </p>
                       <textarea
                         value={zusatzInfo}
                         onChange={(e) => setZusatzInfo(e.target.value)}
-                        placeholder="z.B. Schwerpunkt Key Account, hoher Reiseanteil, Schichtmodell, Branche Pharma, ..."
+                        placeholder={region === "FR" ? "p.ex. Accent Key Account, déplacements fréquents, travail posté, secteur pharma, ..." : region === "EN" ? "e.g. Key Account focus, high travel share, shift model, pharma industry, ..." : "z.B. Schwerpunkt Key Account, hoher Reiseanteil, Schichtmodell, Branche Pharma, ..."}
                         className="w-full border border-border/40 focus:border-primary/40 rounded-lg px-3 py-2 text-sm resize-none placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary/20 transition-all"
                         style={{ background: "rgba(255, 248, 225, 0.5)" }}
                         rows={2}
@@ -2371,9 +2379,9 @@ export default function RollenDNA() {
                     </div>
 
                     <div style={{ marginTop: 32, borderTop: "1px solid rgba(0,0,0,0.06)", paddingTop: 24 }}>
-                      <p style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", margin: "0 0 2px" }}>Arbeitsmarkt</p>
+                      <p style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", margin: "0 0 2px" }}>{region === "FR" ? "Marché de l'emploi" : region === "EN" ? "Job market" : "Arbeitsmarkt"}</p>
                       <p style={{ fontSize: 13, color: "#6E6E73", margin: "0 0 8px" }}>
-                        Vorschläge werden für die aktiven Länder angezeigt. Zum Ein- oder Ausschalten einfach klicken.
+                        {region === "FR" ? "Les suggestions s'affichent pour les pays actifs. Clique pour activer ou désactiver." : region === "EN" ? "Suggestions are shown for the active countries. Click to enable or disable." : "Vorschläge werden für die aktiven Länder angezeigt. Zum Ein- oder Ausschalten einfach klicken."}
                       </p>
                       <div className="flex items-center gap-2" data-testid="land-filter">
                         {([
@@ -2666,9 +2674,11 @@ export default function RollenDNA() {
               <CollapsedStep
                 step={3}
                 title={region === "FR" ? "Tâches et compétences" : region === "EN" ? "Tasks & competencies" : "Tätigkeiten & Kompetenzen"}
-                summary={region === "EN"
-                  ? `${taetigkeiten.filter(t => t.kategorie === "haupt").length} tasks · ${taetigkeiten.filter(t => t.kategorie === "neben").length} human skills${taetigkeiten.filter(t => t.kategorie === "fuehrung").length > 0 ? ` · ${taetigkeiten.filter(t => t.kategorie === "fuehrung").length} leadership` : ""}`
-                  : `${taetigkeiten.filter(t => t.kategorie === "haupt").length} Tätigkeiten · ${taetigkeiten.filter(t => t.kategorie === "neben").length} Humankompetenzen${taetigkeiten.filter(t => t.kategorie === "fuehrung").length > 0 ? ` · ${taetigkeiten.filter(t => t.kategorie === "fuehrung").length} Führung` : ""}`}
+                summary={region === "FR"
+                  ? `${taetigkeiten.filter(t => t.kategorie === "haupt").length} activités · ${taetigkeiten.filter(t => t.kategorie === "neben").length} compétences humaines${taetigkeiten.filter(t => t.kategorie === "fuehrung").length > 0 ? ` · ${taetigkeiten.filter(t => t.kategorie === "fuehrung").length} management` : ""}`
+                  : region === "EN"
+                    ? `${taetigkeiten.filter(t => t.kategorie === "haupt").length} tasks · ${taetigkeiten.filter(t => t.kategorie === "neben").length} human skills${taetigkeiten.filter(t => t.kategorie === "fuehrung").length > 0 ? ` · ${taetigkeiten.filter(t => t.kategorie === "fuehrung").length} leadership` : ""}`
+                    : `${taetigkeiten.filter(t => t.kategorie === "haupt").length} Tätigkeiten · ${taetigkeiten.filter(t => t.kategorie === "neben").length} Humankompetenzen${taetigkeiten.filter(t => t.kategorie === "fuehrung").length > 0 ? ` · ${taetigkeiten.filter(t => t.kategorie === "fuehrung").length} Führung` : ""}`}
                 onEdit={() => goToStep(3)}
                 icon={Layers}
               />
