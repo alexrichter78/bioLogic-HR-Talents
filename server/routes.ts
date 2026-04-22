@@ -3535,21 +3535,25 @@ Du befindest dich GERADE in einer aktiven Gesprächssimulation. WICHTIGE REGELN:
       const systemPrompt = isEN
         ? `You are a specialist in organizational psychology and behavioral diagnostics for the bioLogic HR analytics platform.
 Your task: write concise, professional narrative text sections for a team-fit report in ENGLISH.
-Rules:
-- Write NATIVELY in English. Do NOT translate from German.
-- Be objective and precise. No coaching-speak, no platitudes, no psychological diagnoses.
-- Each section: 2–4 sentences, factual, addressing real workplace implications.
-- Base your analysis on the provided profile numbers and calculated values ONLY.
-- Return ONLY valid JSON — no markdown, no code fences, no extra text.
 
-Output JSON schema (all fields required, all values English strings or arrays of English strings):
+Writing rules — follow exactly:
+- Write NATIVELY in English. Do NOT translate from German.
+- Be objective and factual. No coaching-speak, no platitudes, no psychological diagnoses.
+- Each section: 2-4 short, active sentences. Address real workplace implications only.
+- Never use percentages or raw numbers to describe profiles. Use qualitative words: "clearly in the foreground", "noticeably present", "closely matched", "just ahead", "clearly dominant", "broadly balanced", "similar weight".
+- Never use model jargon. Never write the words "impulsive", "intuitive", or "analytical". Instead use: "Pace and Decision" for the action-oriented dimension, "Communication and Relationships" for the people-oriented dimension, "Structure and Diligence" for the process-oriented dimension.
+- Never use em-dashes. Use commas, colons, or full stops instead.
+- Keep sentences short and active. One idea per sentence.
+- Return ONLY valid JSON. No markdown, no code fences, no extra text.
+
+Output JSON schema (all fields required, all values English strings):
 {
-  "fuehrungsprofil": "string — how this person's behavioral pattern shapes their day-to-day working style and interactions",
+  "fuehrungsprofil": "string — how this person's behavioural pattern shapes their day-to-day working style and interactions with the team",
   "teamdynamikAlltag": "string — what tensions or synergies arise between person and team profile in daily work",
-  "systemwirkung": "string — broader systemic impact of this placement on team processes",
-  "kulturwirkung": "string — how the person's pattern influences team culture and shared norms",
-  "chancen": "string — 2–3 concrete opportunities this person brings to the team",
-  "risiken": "string — 2–3 concrete risks or friction points to monitor",
+  "systemwirkung": "string — broader systemic impact of this placement on team processes and effectiveness",
+  "kulturwirkung": "string — how the person's pattern influences team culture and shared working norms",
+  "chancen": "string — 2-3 concrete opportunities this person brings to the team",
+  "risiken": "string — 2-3 concrete risks or friction points leadership should monitor",
   "systemfazit": "string — overall conclusion: fit quality and key recommendation for leadership"
 }`
         : `Du bist Spezialist für Organisationspsychologie und Verhaltensdiagnostik der bioLogic HR-Analytics-Plattform.
@@ -3581,13 +3585,13 @@ ${context.roleLevel ? `Role level: ${context.roleLevel}` : ""}
 ${context.taskStructure ? `Task structure: ${context.taskStructure}` : ""}
 ${context.workStyle ? `Work style: ${context.workStyle}` : ""}
 
-Team profile: Impulsive ${profiles.team.impulsiv}% / Intuitive ${profiles.team.intuitiv}% / Analytical ${profiles.team.analytisch}%
-Person profile: Impulsive ${profiles.person.impulsiv}% / Intuitive ${profiles.person.intuitiv}% / Analytical ${profiles.person.analytisch}%
-Team constellation: ${calculated.teamConstellationLabel}
-Person constellation: ${calculated.istConstellationLabel}
+Team profile: Pace and Decision ${profiles.team.impulsiv} / Communication and Relationships ${profiles.team.intuitiv} / Structure and Diligence ${profiles.team.analytisch}
+Person profile: Pace and Decision ${profiles.person.impulsiv} / Communication and Relationships ${profiles.person.intuitiv} / Structure and Diligence ${profiles.person.analytisch}
+Team pattern: ${calculated.teamConstellationLabel}
+Person pattern: ${calculated.istConstellationLabel}
 
 Overall fit: ${calculated.gesamtpassungLabel} (${calculated.gesamtpassung})
-Profile gap: ${calculated.teamIstGap}%
+Profile gap: ${calculated.teamIstGap}
 Management intensity: ${calculated.controlIntensity}
 Development level: ${calculated.developmentLevel}/4
 ${calculated.teamGoalLabel ? `Team goal assessment: ${calculated.teamGoalLabel}` : ""}

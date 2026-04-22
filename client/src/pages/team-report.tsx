@@ -799,9 +799,10 @@ export default function TeamReport() {
         candidateName: candidateName || "Person",
         teamGoal: teamGoal || null,
         roleType: roleTypeForCard === "fuehrung" ? "fuehrung" : "teammitglied",
+        lang: region === "EN" ? "en" : "de",
       });
     } catch { return null; }
-  }, [roleName, candidateName, istTriad.impulsiv, istTriad.intuitiv, istTriad.analytisch, teamTriad.impulsiv, teamTriad.intuitiv, teamTriad.analytisch, teamGoal, roleTypeForCard]);
+  }, [roleName, candidateName, istTriad.impulsiv, istTriad.intuitiv, istTriad.analytisch, teamTriad.impulsiv, teamTriad.intuitiv, teamTriad.analytisch, teamGoal, roleTypeForCard, region]);
 
   const leadershipAssessment = useMemo(() => {
     return calculateLeadershipAssessment(istTriad, teamTriad, roleTypeForCard, teamGoal || null, region);
