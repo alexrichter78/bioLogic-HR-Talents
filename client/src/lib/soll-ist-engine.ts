@@ -316,6 +316,25 @@ export function constellationLabel(c: ConstellationType): string {
   return labels[c];
 }
 
+export function constellationLabelEN(c: ConstellationType): string {
+  const labels: Record<ConstellationType, string> = {
+    H_DOM: "Clear action focus",
+    B_DOM: "Clear relationship focus",
+    S_DOM: "Clear structure focus",
+    H_GT_B: "Action focus with relationship element",
+    H_GT_S: "Action focus with structure element",
+    B_GT_H: "Relationship focus with action element",
+    B_GT_S: "Relationship focus with structure element",
+    S_GT_H: "Structure focus with action element",
+    S_GT_B: "Structure focus with relationship element",
+    H_NEAR_B: "Dual focus: action and relationship",
+    H_NEAR_S: "Dual focus: action and structure",
+    B_NEAR_S: "Dual focus: relationship and structure",
+    BALANCED: "Balanced profile",
+  };
+  return labels[c];
+}
+
 function primaryKey(c: ConstellationType): ComponentKey {
   if (c.startsWith("H")) return "impulsiv";
   if (c.startsWith("B")) return "intuitiv";

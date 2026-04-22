@@ -6,7 +6,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useLocalizedText, localizeDeep, useRegion, translateEngineValue } from "@/lib/region";
 import { normalizeTriad, dominanceModeOf, dominanceLabel, labelComponent } from "@/lib/jobcheck-engine";
 import { computeTeamReport } from "@/lib/team-report-engine";
-import { constellationLabel, detectConstellation } from "@/lib/soll-ist-engine";
+import { constellationLabel, constellationLabelEN, detectConstellation } from "@/lib/soll-ist-engine";
 import { getSystemwirkung } from "@/lib/teamcheck-v2-engine";
 import { computeTeamCheckV4 } from "@/lib/teamcheck-v4-engine";
 import { calculateLeadershipAssessment } from "@/lib/leadership-system-impact";
@@ -34,10 +34,22 @@ const COMP_LABELS: Record<ComponentKey, string> = {
   analytisch: "Struktur / Analyse",
 };
 
+const COMP_LABELS_EN: Record<ComponentKey, string> = {
+  impulsiv: "Execution / Speed",
+  intuitiv: "Collaboration / Communication",
+  analytisch: "Structure / Analysis",
+};
+
 const COMP_SHORT: Record<ComponentKey, string> = {
   impulsiv: "Umsetzung",
   intuitiv: "Zusammenarbeit",
   analytisch: "Struktur",
+};
+
+const COMP_SHORT_EN: Record<ComponentKey, string> = {
+  impulsiv: "Execution",
+  intuitiv: "Collaboration",
+  analytisch: "Structure",
 };
 
 const BAR_CSS: Record<ComponentKey, string> = {
@@ -666,6 +678,8 @@ export default function TeamReport() {
 
   const istConstLabel = constellationLabel(detectConstellation(istProfile));
   const teamConstLabel = constellationLabel(detectConstellation(teamProfileN));
+  const istConstLabelEN = constellationLabelEN(detectConstellation(istProfile));
+  const teamConstLabelEN = constellationLabelEN(detectConstellation(teamProfileN));
 
   const liveResult: TeamReportResult = useMemo(() => {
     let roleLevel = "-";
@@ -778,8 +792,8 @@ export default function TeamReport() {
   }, [roleName, candidateName, istTriad.impulsiv, istTriad.intuitiv, istTriad.analytisch, teamTriad.impulsiv, teamTriad.intuitiv, teamTriad.analytisch, teamGoal, roleTypeForCard]);
 
   const leadershipAssessment = useMemo(() => {
-    return calculateLeadershipAssessment(istTriad, teamTriad, roleTypeForCard, teamGoal || null);
-  }, [istTriad.impulsiv, istTriad.intuitiv, istTriad.analytisch, teamTriad.impulsiv, teamTriad.intuitiv, teamTriad.analytisch, roleTypeForCard, teamGoal]);
+    return calculateLeadershipAssessment(istTriad, teamTriad, roleTypeForCard, teamGoal || null, region);
+  }, [istTriad.impulsiv, istTriad.intuitiv, istTriad.analytisch, teamTriad.impulsiv, teamTriad.intuitiv, teamTriad.analytisch, roleTypeForCard, teamGoal, region]);
 
   const result: TeamReportResult | null = reportGenerated ? liveResult : null;
 
@@ -800,7 +814,7 @@ export default function TeamReport() {
   const deltas: { label: string; team: number; ist: number; delta: string; deltaTone: string }[] = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
     const d = Math.round(istProfile[k] - teamProfileN[k]);
     return {
-      label: COMP_LABELS[k],
+      label: (region === "EN" ? COMP_LABELS_EN : COMP_LABELS)[k],
       team: Math.round(teamProfileN[k]),
       ist: Math.round(istProfile[k]),
       delta: d >= 0 ? `+${d}` : `${d}`,
@@ -1208,7 +1222,7 @@ export default function TeamReport() {
                             { title: region === "EN" ? "System impact" : "Systemwirkung", label: translateEngineValue(la.systemImpact.label, region), text: la.systemImpact.text!, colors: variantToColors(la.systemImpact.variant), testId: "v4-card-system-impact" },
                             { title: region === "EN" ? "Integration effort" : "Integrationsaufwand", label: translateEngineValue(la.integrationEffort.label, region), text: la.integrationEffort.text!, colors: variantToColors(la.integrationEffort.variant), testId: "v4-card-integration-effort" },
                             ...(la.teamGoalImpact.selectedGoal && la.teamGoalImpact.label !== "Kein Ziel gewählt"
-                              ? [{ title: region === "EN" ? "Impact on team goal" : "Wirkung aufs Teamziel", label: la.teamGoalImpact.label!, text: la.teamGoalImpact.reasons[0] || la.teamGoalImpact.text!, colors: variantToColors(la.teamGoalImpact.variant), testId: "v4-card-goal-impact" }]
+                              ? [{ title: region === "EN" ? "Impact on team goal" : "Wirkung aufs Teamziel", label: translateEngineValue(la.teamGoalImpact.label, region), text: la.teamGoalImpact.reasons[0] || la.teamGoalImpact.text!, colors: variantToColors(la.teamGoalImpact.variant), testId: "v4-card-goal-impact" }]
                               : []),
                           ]
                         : [
@@ -1462,8 +1476,8 @@ export default function TeamReport() {
                 <div className="grid min-w-[280px] grid-cols-2 gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4" data-testid="metrics-grid">
                   <Metric label={region === "EN" ? "Overall fit" : "Gesamtpassung"} value={translateEngineValue(result.gesamtpassungLabel, region)} valueClass={tone.text} />
                   <Metric label={region === "EN" ? "System impact" : "Systemwirkung"} value={translateEngineValue(sw.label, region)} valueClass={sw.intensity === "hoch" ? "text-red-600" : "text-slate-900"} />
-                  <Metric label={region === "EN" ? "Team profile" : "Teamprofil"} value={teamConstLabel} />
-                  <Metric label={region === "EN" ? "Person profile" : "Personenprofil"} value={istConstLabel} />
+                  <Metric label={region === "EN" ? "Team profile" : "Teamprofil"} value={region === "EN" ? teamConstLabelEN : teamConstLabel} />
+                  <Metric label={region === "EN" ? "Person profile" : "Personenprofil"} value={region === "EN" ? istConstLabelEN : istConstLabel} />
                 </div>
               </div>
             </header>
@@ -1511,9 +1525,9 @@ export default function TeamReport() {
                   {region === "EN" ? "Intensity" : "Intensit\u00e4t"}: {translateEngineValue(sw.intensity, region)}
                 </div>
                 <div className="mt-5 grid gap-4">
-                  <ShiftPill title={region === "EN" ? "Current team" : "Team aktuell"} value={COMP_LABELS[teamDomKey]} tone={domTone(teamDomKey)} />
+                  <ShiftPill title={region === "EN" ? "Current team" : "Team aktuell"} value={(region === "EN" ? COMP_LABELS_EN : COMP_LABELS)[teamDomKey]} tone={domTone(teamDomKey)} />
                   <div className="flex items-center justify-center text-2xl text-slate-300">↓</div>
-                  <ShiftPill title={region === "EN" ? "New person brings" : "Neue Person bringt"} value={COMP_LABELS[istDomKey]} tone={domTone(istDomKey)} />
+                  <ShiftPill title={region === "EN" ? "New person brings" : "Neue Person bringt"} value={(region === "EN" ? COMP_LABELS_EN : COMP_LABELS)[istDomKey]} tone={domTone(istDomKey)} />
                 </div>
                 <p className="mt-5 text-sm leading-6 text-slate-600">
                   {sw.description}
@@ -1532,10 +1546,10 @@ export default function TeamReport() {
                 </div>
                 <div className="grid gap-6 lg:grid-cols-2">
                   <ProfileCard title={region === "EN" ? "Team profile" : "Teamprofil"} subtitle={region === "EN" ? "Existing team" : "Bestehendes Team"} profile={teamProfileArr}
-                    description={region === "EN" ? `The team shows ${teamConstLabel.toLowerCase()}. The strongest component is ${COMP_SHORT[teamDomKey]}.` : `Das Team zeigt ${teamConstLabel.toLowerCase()}. Der st\u00e4rkste Anteil liegt bei ${COMP_SHORT[teamDomKey]}.`}
+                    description={region === "EN" ? `The team shows ${teamConstLabelEN.toLowerCase()}. The strongest component is ${COMP_SHORT_EN[teamDomKey]}.` : `Das Team zeigt ${teamConstLabel.toLowerCase()}. Der st\u00e4rkste Anteil liegt bei ${COMP_SHORT[teamDomKey]}.`}
                   />
                   <ProfileCard title={region === "EN" ? "Person" : "Person"} subtitle={candidateName || "Person"} profile={istProfileArr}
-                    description={region === "EN" ? `The person works more through ${COMP_SHORT[istDomKey]}, ${istDomKey === "impulsiv" ? "direct execution and quick decisions" : istDomKey === "analytisch" ? "structured planning and analytical depth" : "communication and relationship building"}.` : `Die Person arbeitet st\u00e4rker \u00fcber ${COMP_SHORT[istDomKey]}, ${istDomKey === "impulsiv" ? "direkte Umsetzung und schnelle Entscheidungen" : istDomKey === "analytisch" ? "strukturierte Planung und Pr\u00fcftiefe" : "Kommunikation und Beziehungsarbeit"}.`}
+                    description={region === "EN" ? `The person works more through ${COMP_SHORT_EN[istDomKey]}, ${istDomKey === "impulsiv" ? "direct execution and quick decisions" : istDomKey === "analytisch" ? "structured planning and analytical depth" : "communication and relationship building"}.` : `Die Person arbeitet st\u00e4rker \u00fcber ${COMP_SHORT[istDomKey]}, ${istDomKey === "impulsiv" ? "direkte Umsetzung und schnelle Entscheidungen" : istDomKey === "analytisch" ? "strukturierte Planung und Pr\u00fcftiefe" : "Kommunikation und Beziehungsarbeit"}.`}
                   />
                 </div>
                 <div className="mt-8 rounded-2xl border border-slate-200 bg-slate-50 p-5" data-testid="chart-triangle">

@@ -126,6 +126,10 @@ const ENGINE_VALUE_MAP_EN: Record<string, string> = {
   "Personenprofil": "Person profile",
   "Intensität": "Intensity",
   "Steuerungsaufwand": "Management effort",
+  "Passend": "Suitable",
+  "Teilweise passend": "Partially suitable",
+  "Kritisch": "Critical",
+  "Kein Ziel gewählt": "No goal selected",
 };
 
 export function translateEngineValue(value: string | null | undefined, region: Region): string {
