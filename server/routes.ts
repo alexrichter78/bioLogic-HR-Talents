@@ -2912,6 +2912,10 @@ TASK: Produce this JSON. NO numbers or percentages. NO model jargon.
 {
   "intro": "EXACTLY 2 paragraphs separated by \\n\\n. First: what this team integration analysis shows for ${hasRole ? `the role '${roleName}'` : "this new position"} and the existing team. Second: what the focus picture comparison between person and team means for integration — practical and concrete. NO disclaimer paragraph.",
   "bewertungSummary": "2-3 sentences. Clear integration recommendation based on the assessment. ${isLeading ? "Address leadership impact on the team specifically. " : ""}End with a concrete, actionable recommendation.",
+  "warumText": "2-3 sentences. Explain concretely why the integration assessment turned out this way — what drives this result based on the focus picture comparison. No generic statements.",
+  "wirkungText": "2 paragraphs separated by \\n\\n. First: how this person's working style shows up in daily team interactions. Second: where complementary strengths and friction points will emerge in practice.",
+  "druckText": "2 sentences. How this person behaves under pressure, and what that means for the team in high-stakes situations.",
+  "schlussfazit": "1 sentence. A clear, direct closing summary of the integration decision.",
   "integrationAdvice": "2 sentences. What specifically needs to happen in the first weeks to make integration successful.",
   "teamDynamics": "2 sentences. How this addition changes the team's overall working dynamic."
 }`
@@ -2942,6 +2946,10 @@ AUFGABE: Erzeuge dieses JSON. KEINE Zahlen oder Prozentwerte. KEINE Modellbegrif
 {
   "intro": "GENAU 2 Absätze mit \\n\\n getrennt. Erster Absatz: was diese Team-Integrationsanalyse für ${hasRole ? `die Stelle '${roleName}'` : "diese neue Position"} und das bestehende Team zeigt. Zweiter Absatz: was das Schwerpunkt-Bild von Person und Team für die Integration bedeutet – konkret und praxisnah. KEIN Hinweis-Absatz.",
   "bewertungSummary": "2-3 Sätze. Klare Integrationsempfehlung auf Basis der Bewertung. ${isLeading ? "Geht explizit auf die Führungswirkung auf das Team ein. " : ""}Ende mit einer konkreten, prüfbaren Handlungsempfehlung.",
+  "warumText": "2-3 Sätze. Erkläre konkret, warum die Integrationsbewertung so ausgefallen ist — was treibt dieses Ergebnis aus dem Vergleich der Schwerpunkte. Keine generischen Aussagen.",
+  "wirkungText": "2 Absätze mit \\n\\n getrennt. Erster Absatz: wie der Arbeitsstil dieser Person im täglichen Teamumgang sichtbar wird. Zweiter Absatz: wo ergänzende Stärken und Reibungspunkte in der Praxis entstehen.",
+  "druckText": "2 Sätze. Wie diese Person unter Druck agiert und was das für das Team in kritischen Situationen bedeutet.",
+  "schlussfazit": "1 Satz. Ein klares, direktes Abschlussfazit zur Integrationsentscheidung.",
   "integrationAdvice": "2 Sätze. Was konkret in den ersten Wochen passieren muss, damit die Integration gelingt.",
   "teamDynamics": "2 Sätze. Wie dieser Zuwachs die Arbeitsdynamik des gesamten Teams verändert."
 }`;
@@ -2949,7 +2957,7 @@ AUFGABE: Erzeuge dieses JSON. KEINE Zahlen oder Prozentwerte. KEINE Modellbegrif
       const fullPrompt = `${systemPrompt}\n\n${userContent}`;
       const data = await callClaudeForJson("generate-teamcheck-text", fullPrompt, {
         temperature: 0.6,
-        maxTokens: 2048,
+        maxTokens: 3200,
         model: "claude-haiku-4-5",
       });
       res.json(data);
