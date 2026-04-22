@@ -360,6 +360,172 @@ const roleRequirementText_EN = {
   outro: "",
 };
 
+const analysisPrincipleText_FR = {
+  title: "Principe fondamental de l'analyse",
+  body: [
+    "Chaque personne dispose des trois modes fondamentaux de pensée et d'action : Rythme et Décision, Communication et Relations, et Structure et Rigueur.",
+    "Ces trois composantes sont toujours présentes. La différence réside dans leur ordre et leur pondération.",
+    "Cette structure détermine la façon dont les personnes décident, communiquent et agissent au quotidien.",
+    "Selon la situation, l'effet visible peut varier : dans le travail quotidien, sous pression ou dans des situations détendues.",
+  ],
+};
+
+const roleRequirementText_FR = {
+  intro: [
+    "Cette évaluation décrit la logique de travail du poste.",
+    "Les exigences sont réparties selon les trois dimensions Rythme et Décision, Communication et Relations et Structure et Rigueur.",
+    "Cela permet d'identifier quelle forme d'efficacité est au centre du quotidien professionnel de ce poste.",
+  ],
+  outro: "",
+};
+
+const roleResultTextsFR: Record<ResultKey, RoleResultEntry> = {
+  IMP_INT_ANA: {
+    headline: "L'action active marque le quotidien, sous pression davantage d'échange avec les autres",
+    body: [
+      "Dans le travail quotidien, ce poste est avant tout marqué par une manière de travailler active et orientée vers les décisions. Les sujets sont pris en charge tôt, les responsabilités assumées et les décisions prises comparativement rapidement. Le poste dégage ainsi une dynamique forte et orientée vers l'action.",
+      "Lorsque la pression monte, l'échange avec les autres devient plus important. Les entretiens, la coordination et la prise en compte de différentes perspectives contribuent à consolider les décisions et à développer des solutions ensemble.",
+      "Cette combinaison fait en sorte que les sujets ne se mettent pas seulement rapidement en mouvement, mais sont également développés en dialogue avec les autres. Les décisions sont ainsi portées et mises en oeuvre.",
+    ],
+    leadership: "Dans le travail de management, cela se traduit par des décisions claires, une responsabilité visible et une communication ouverte avec l'environnement.",
+  },
+  IMP_ANA_INT: {
+    headline: "Décisions et mise en oeuvre marquent le quotidien, sous pression davantage de structure et de contrôle",
+    body: [
+      "Dans le travail quotidien, ce poste est avant tout marqué par la capacité décisionnelle et l'orientation vers la mise en oeuvre. Les sujets sont pris en charge activement, les responsabilités assumées et les décisions prises comparativement rapidement.",
+      "Lorsque la pression monte, le besoin de structure, de planification et de contrôle augmente souvent. Les sujets sont examinés plus attentivement, les processus mieux organisés et les décisions davantage étayées par l'analyse.",
+      "Cette combinaison fait en sorte que les décisions ne sont pas seulement prises, mais aussi structurées et mises en oeuvre. Le dynamisme est complété par l'ordre.",
+    ],
+    leadership: "Dans le travail de management, cela se traduit par une orientation claire vers les objectifs, un pilotage structuré et des décisions engageantes.",
+  },
+  INT_IMP_ANA: {
+    headline: "La collaboration marque le quotidien, sous pression des décisions et actions plus rapides",
+    body: [
+      "Dans le travail quotidien, la collaboration et l'échange avec les autres sont au premier plan. Les entretiens, la coordination et un bon sens des situations caractérisent la manière de travailler.",
+      "Lorsque la pression monte, les décisions peuvent être prises de manière plus directe et plus rapide, afin de faire avancer les sujets.",
+      "Cette combinaison fait en sorte que la collaboration ne passe pas seulement par les échanges, mais se traduit aussi en actions concrètes.",
+    ],
+    leadership: "Dans le travail de management, cela se traduit par une communication ouverte, une forte présence dans l'équipe et la capacité à faire avancer les sujets ensemble.",
+  },
+  INT_ANA_IMP: {
+    headline: "La collaboration marque le quotidien, sous pression davantage de structure et de clarté",
+    body: [
+      "Dans le travail quotidien, la collaboration et la coordination caractérisent avant tout ce poste. L'échange, les entretiens et un bon sens des personnes sont au coeur de la pratique.",
+      "Lorsque la pression monte, le besoin de structure, de planification et de processus clairs augmente souvent. Les décisions sont davantage étayées par l'analyse et l'organisation.",
+      "Cette combinaison fait en sorte que la collaboration ne fonctionne pas seulement par les échanges, mais est aussi stabilisée par des structures claires.",
+    ],
+    leadership: "Dans le travail de management, cela se traduit par un management orienté vers le dialogue, des décisions compréhensibles et une organisation structurée de la collaboration.",
+  },
+  ANA_IMP_INT: {
+    headline: "Structure et planification marquent le quotidien, sous pression des décisions plus rapides",
+    body: [
+      "Dans le travail quotidien, la structure, la planification et la clarté professionnelle caractérisent avant tout la manière de travailler. Les sujets sont analysés et préparés avec soin avant que des décisions soient prises.",
+      "Lorsque la pression monte, les décisions peuvent être prises plus rapidement et de manière plus directe afin de faire avancer les sujets.",
+      "Cette combinaison associe une planification soignée à une capacité de mise en oeuvre claire.",
+    ],
+    leadership: "Dans le travail de management, cela se traduit par des structures claires, des décisions fondées et une mise en oeuvre cohérente.",
+  },
+  ANA_INT_IMP: {
+    headline: "Structure et planification marquent le quotidien, sous pression davantage d'échange et de coordination",
+    body: [
+      "Dans le travail quotidien, la structure, la planification et la clarté professionnelle sont au centre. Les sujets sont préparés systématiquement et réfléchis avec soin.",
+      "Lorsque la pression monte, l'échange avec les autres prend de l'importance. Les entretiens et la coordination contribuent à partager les décisions.",
+      "Cette combinaison fait en sorte que les décisions sont à la fois réfléchies et coordonnées.",
+    ],
+    leadership: "Dans le travail de management, cela se traduit par des structures claires, des décisions compréhensibles et une coordination ouverte au sein de l'équipe.",
+  },
+  IMP_INT__ANA: {
+    headline: "Action active et collaboration marquent le quotidien, sous pression davantage de structure",
+    body: [
+      "Dans le travail quotidien, l'orientation vers l'action et la collaboration fonctionnent de façon particulièrement étroite. Les sujets sont activement portés en avant et coordonnés simultanément avec les autres.",
+      "Lorsque la pression monte, le besoin de davantage de structure et d'orientation augmente souvent, afin de mieux organiser les sujets et de consolider les décisions.",
+      "Cette combinaison associe la dynamique à la coordination commune et fait en sorte que le mouvement et la collaboration sont possibles simultanément.",
+    ],
+    leadership: "Dans le travail de management, cela se traduit par une communication active, des décisions claires et une forte présence dans l'équipe.",
+  },
+  IMP_ANA__INT: {
+    headline: "Décisions et structure marquent le quotidien, sous pression davantage d'échange",
+    body: [
+      "Dans le travail quotidien, la capacité décisionnelle et la manière de travailler structurée se combinent de façon particulièrement étroite. Les sujets sont portés activement en avant et simultanément planifiés avec soin.",
+      "Lorsque la pression monte, l'échange avec les autres prend davantage d'importance. Les entretiens aident à réfléchir aux décisions et à intégrer différentes perspectives.",
+      "Cette combinaison fait en sorte que les décisions sont mises en oeuvre de manière à la fois cohérente et compréhensible.",
+    ],
+    leadership: "Dans le travail de management, cela se traduit par une orientation claire, un pilotage structuré et un dialogue ouvert.",
+  },
+  INT_IMP__ANA: {
+    headline: "Collaboration et activité marquent le quotidien, sous pression davantage de structure",
+    body: [
+      "Dans le travail quotidien, la collaboration et l'activité fonctionnent de façon particulièrement étroite. Les sujets sont développés en échange avec les autres et en même temps portés activement en avant.",
+      "Lorsque la pression monte, le besoin de davantage de structure et d'ordre augmente souvent, afin de consolider les décisions.",
+      "Cette combinaison associe la dynamique à la coordination commune et fait en sorte que la collaboration reste opérationnelle.",
+    ],
+    leadership: "Dans le travail de management, cela se traduit par une communication ouverte, une forte présence dans l'équipe et des décisions claires.",
+  },
+  INT_ANA__IMP: {
+    headline: "Collaboration et structure marquent le quotidien, sous pression des décisions plus rapides",
+    body: [
+      "Dans le travail quotidien, la collaboration et la manière de travailler structurée se combinent de façon particulièrement étroite. L'échange et des processus clairs caractérisent le travail quotidien.",
+      "Lorsque la pression monte, les décisions peuvent être prises de manière plus directe et plus rapide afin de faire avancer les sujets.",
+      "Cette combinaison fait en sorte que la collaboration est soutenue par des structures claires et des étapes concrètes.",
+    ],
+    leadership: "Dans le travail de management, cela se traduit par une communication ouverte, une planification structurée et une orientation claire pour l'équipe.",
+  },
+  ANA_IMP__INT: {
+    headline: "Structure et mise en oeuvre marquent le quotidien, sous pression davantage d'échange",
+    body: [
+      "Dans le travail quotidien, la capacité décisionnelle et la manière de travailler structurée se combinent de façon particulièrement étroite. Les sujets sont portés activement en avant et simultanément planifiés avec soin.",
+      "Lorsque la pression monte, l'échange avec les autres prend davantage d'importance. Les entretiens aident à réfléchir aux décisions et à intégrer différentes perspectives.",
+      "Cette combinaison fait en sorte que les décisions sont mises en oeuvre de manière à la fois cohérente et compréhensible.",
+    ],
+    leadership: "Dans le travail de management, cela se traduit par une orientation claire, un pilotage structuré et un dialogue ouvert.",
+  },
+  ANA_INT__IMP: {
+    headline: "Structure et collaboration marquent le quotidien, sous pression des décisions plus rapides",
+    body: [
+      "Dans le travail quotidien, la collaboration et la manière de travailler structurée se combinent de façon particulièrement étroite. L'échange et des processus clairs caractérisent le travail quotidien.",
+      "Lorsque la pression monte, les décisions peuvent être prises de manière plus directe et plus rapide afin de faire avancer les sujets.",
+      "Cette combinaison fait en sorte que la collaboration est soutenue par des structures claires et des étapes concrètes.",
+    ],
+    leadership: "Dans le travail de management, cela se traduit par une communication ouverte, une planification structurée et une orientation claire pour l'équipe.",
+  },
+  BD_IMP: {
+    headline: "Les décisions rapides marquent le quotidien, sous pression davantage d'échange ou de structure",
+    body: [
+      "Dans le travail quotidien, l'orientation vers la décision et l'action caractérise avant tout la manière de travailler. Les sujets sont pris en charge activement et portés en avant.",
+      "A côté de cette orientation claire, deux directions complémentaires de force quasi égale se manifestent cependant : le souhait d'échange avec les autres ainsi que le besoin de structure et de planification.",
+      "Ces deux aspects sont en concurrence permanente. Selon la situation, davantage de coordination ou davantage de structure peut donc être visible.",
+    ],
+    leadership: "Dans le travail de management, cela se traduit par des décisions claires, combinées à une adaptation situationnelle entre dialogue et structure.",
+  },
+  BD_INT: {
+    headline: "La collaboration marque le quotidien, sous pression davantage de structure ou des décisions plus rapides",
+    body: [
+      "Dans le travail quotidien, la collaboration et la coordination caractérisent avant tout la manière de travailler. Les entretiens, l'échange et un bon sens des personnes sont au premier plan.",
+      "Dans le même temps, deux directions complémentaires de force quasi égale agissent en arrière-plan : le souhait de structure et de planification d'une part, et l'impulsion vers une décision rapide et une mise en oeuvre directe d'autre part.",
+      "Ces deux tendances sont en concurrence permanente et peuvent être plus ou moins visibles selon la situation.",
+    ],
+    leadership: "Dans le travail de management, cela se traduit par un management orienté vers le dialogue avec une tension interne entre pilotage soigneux et mise en oeuvre rapide.",
+  },
+  BD_ANA: {
+    headline: "La structure marque le quotidien, sous pression des décisions plus rapides ou davantage d'échange",
+    body: [
+      "Dans le travail quotidien, la structure, la planification et la clarté professionnelle caractérisent la manière de travailler. Les sujets sont examinés et préparés avec soin.",
+      "Dans le même temps, deux directions complémentaires de force quasi égale agissent en arrière-plan : l'impulsion vers une mise en oeuvre rapide ainsi que le souhait d'échange et de coordination avec les autres.",
+      "Ces deux directions sont en concurrence l'une avec l'autre et peuvent apparaître plus ou moins fortement selon la situation.",
+    ],
+    leadership: "Dans le travail de management, cela se traduit par des structures claires, combinées à une adaptation situationnelle entre décision et dialogue.",
+  },
+  BALANCED: {
+    headline: "Profil équilibré",
+    body: [
+      "Dans ce profil, différentes approches sont de force similaire. Le poste n'est ainsi pas orienté unilatéralement, mais peut s'adapter de manière flexible à des exigences variées.",
+      "Selon la situation, il est possible de passer de la mise en oeuvre à la collaboration et à l'analyse structurée. Quelle composante est la plus visible dépend souvent de la tâche, de l'environnement et de la situation de pression.",
+      "Cette polyvalence fait en sorte que le poste est particulièrement efficace là où la flexibilité, la vue d'ensemble et une approche variable sont demandées.",
+    ],
+    leadership: "Dans le travail de management, cela se traduit par un pilotage adapté à la situation et la capacité de passer selon les besoins entre clarté, dialogue et mise en oeuvre.",
+  },
+};
+
 const roleResultTextsEN: Record<ResultKey, RoleResultEntry> = {
   IMP_INT_ANA: {
     headline: "Active action shapes daily work \u2014 under pressure, more exchange with others",
@@ -508,7 +674,9 @@ const roleResultTextsEN: Record<ResultKey, RoleResultEntry> = {
 };
 
 function getRoleResultEntry(key: ResultKey, region: string): RoleResultEntry {
-  return region === "EN" ? roleResultTextsEN[key] : roleResultTexts[key]; // FR uses DE text objects (Claude generates in FR)
+  if (region === "EN") return roleResultTextsEN[key];
+  if (region === "FR") return roleResultTextsFR[key];
+  return roleResultTexts[key];
 }
 
 function generateBioCheckText(bg: BioGram, isLeadership: boolean, region?: string, _fuehrungsBg?: BioGram): string {
@@ -3063,8 +3231,8 @@ export default function RollenDNA() {
                         background: "#FFFFFF",
                         border: "1px solid rgba(0,0,0,0.06)",
                       }} data-testid="card-grundprinzip">
-                        <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0", display: "flex", alignItems: "center", gap: 6 }}><Info style={{ width: 15, height: 15, color: "#1D1D1F", flexShrink: 0 }} />{analysisPrincipleText.title}</h3>
-                        <p lang="de" style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: 0, ...reportTextStyle }}>{localizeText(analysisPrincipleText.body.join(" "))}</p>
+                        <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0", display: "flex", alignItems: "center", gap: 6 }}><Info style={{ width: 15, height: 15, color: "#1D1D1F", flexShrink: 0 }} />{(region === "FR" ? analysisPrincipleText_FR : region === "EN" ? analysisPrincipleText_EN : analysisPrincipleText).title}</h3>
+                        <p lang="de" style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: 0, ...reportTextStyle }}>{localizeText((region === "FR" ? analysisPrincipleText_FR : region === "EN" ? analysisPrincipleText_EN : analysisPrincipleText).body.join(" "))}</p>
                       </div>
 
                       <div style={{
@@ -3076,14 +3244,14 @@ export default function RollenDNA() {
                       }} data-testid="card-anforderungsprofil">
                         <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0", display: "flex", alignItems: "center", gap: 6 }}><ClipboardList style={{ width: 15, height: 15, color: "#1D1D1F", flexShrink: 0 }} />{region === "FR" ? "Profil d'exigences du poste" : region === "EN" ? "Requirements profile of the role" : "Anforderungsprofil der Stelle"}</h3>
                         <p lang="de" style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: "0 0 14px 0", ...reportTextStyle }}>
-                          {localizeText(roleRequirementText.intro.join(" "))}
+                          {localizeText((region === "FR" ? roleRequirementText_FR : region === "EN" ? roleRequirementText_EN : roleRequirementText).intro.join(" "))}
                         </p>
 
                         <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 10 }}>
                           {[
-                            { label: region === "EN" ? "Impulsive" : "Impulsiv", color: "#C41E3A", bg: "rgba(196,30,58,0.05)", border: "rgba(196,30,58,0.12)", desc: region === "FR" ? "Exécution, décisions et responsabilité des résultats" : region === "EN" ? "Execution, decisions and accountability for results" : "Umsetzung, Entscheidung und Ergebnisverantwortung" },
-                            { label: region === "EN" ? "Intuitive" : "Intuitiv", color: "#F39200", bg: "rgba(243,146,0,0.05)", border: "rgba(243,146,0,0.12)", desc: region === "FR" ? "Collaboration et action adaptée au contexte" : region === "EN" ? "Collaboration and context-aware action" : "Zusammenarbeit und kontextbezogenes Handeln" },
-                            { label: region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", bg: "rgba(26,93,171,0.05)", border: "rgba(26,93,171,0.12)", desc: region === "FR" ? "Structure, planification et précision technique" : region === "EN" ? "Structure, planning and technical precision" : "Struktur, Planung und fachliche Präzision" },
+                            { label: region === "FR" ? "Rythme et Décision" : region === "EN" ? "Impulsive" : "Impulsiv", color: "#C41E3A", bg: "rgba(196,30,58,0.05)", border: "rgba(196,30,58,0.12)", desc: region === "FR" ? "Exécution, décisions et responsabilité des résultats" : region === "EN" ? "Execution, decisions and accountability for results" : "Umsetzung, Entscheidung und Ergebnisverantwortung" },
+                            { label: region === "FR" ? "Communication et Relations" : region === "EN" ? "Intuitive" : "Intuitiv", color: "#F39200", bg: "rgba(243,146,0,0.05)", border: "rgba(243,146,0,0.12)", desc: region === "FR" ? "Collaboration et action adaptée au contexte" : region === "EN" ? "Collaboration and context-aware action" : "Zusammenarbeit und kontextbezogenes Handeln" },
+                            { label: region === "FR" ? "Structure et Rigueur" : region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", bg: "rgba(26,93,171,0.05)", border: "rgba(26,93,171,0.12)", desc: region === "FR" ? "Structure, planification et précision technique" : region === "EN" ? "Structure, planning and technical precision" : "Struktur, Planung und fachliche Präzision" },
                           ].map(d => (
                             <div key={d.label} style={{
                               background: d.bg,
@@ -3561,8 +3729,8 @@ export default function RollenDNA() {
                       background: "#FFFFFF",
                       border: "1px solid rgba(0,0,0,0.06)",
                     }} data-testid="card-grundprinzip-collapsed">
-                      <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0", display: "flex", alignItems: "center", gap: 6 }}><Info style={{ width: 15, height: 15, color: "#1D1D1F", flexShrink: 0 }} />{analysisPrincipleText.title}</h3>
-                      <p lang="de" style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: 0, ...reportTextStyle }}>{localizeText(analysisPrincipleText.body.join(" "))}</p>
+                      <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0", display: "flex", alignItems: "center", gap: 6 }}><Info style={{ width: 15, height: 15, color: "#1D1D1F", flexShrink: 0 }} />{(region === "FR" ? analysisPrincipleText_FR : region === "EN" ? analysisPrincipleText_EN : analysisPrincipleText).title}</h3>
+                      <p lang="de" style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: 0, ...reportTextStyle }}>{localizeText((region === "FR" ? analysisPrincipleText_FR : region === "EN" ? analysisPrincipleText_EN : analysisPrincipleText).body.join(" "))}</p>
                     </div>
 
                     <div style={{
@@ -3574,14 +3742,14 @@ export default function RollenDNA() {
                     }} data-testid="card-anforderungsprofil-collapsed">
                       <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0", display: "flex", alignItems: "center", gap: 6 }}><ClipboardList style={{ width: 15, height: 15, color: "#1D1D1F", flexShrink: 0 }} />{region === "FR" ? "Profil d'exigences du poste" : region === "EN" ? "Requirements profile of the role" : "Anforderungsprofil der Stelle"}</h3>
                       <p lang="de" style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: "0 0 14px 0", ...reportTextStyle }}>
-                        {localizeText(roleRequirementText.intro.join(" "))}
+                        {localizeText((region === "FR" ? roleRequirementText_FR : region === "EN" ? roleRequirementText_EN : roleRequirementText).intro.join(" "))}
                       </p>
 
                       <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 10 }}>
                         {[
-                          { label: region === "EN" ? "Impulsive" : "Impulsiv", color: "#C41E3A", bg: "rgba(196,30,58,0.05)", border: "rgba(196,30,58,0.12)", desc: region === "FR" ? "Exécution, décisions et responsabilité des résultats" : region === "EN" ? "Execution, decisions and accountability for results" : "Umsetzung, Entscheidung und Ergebnisverantwortung" },
-                          { label: region === "EN" ? "Intuitive" : "Intuitiv", color: "#F39200", bg: "rgba(243,146,0,0.05)", border: "rgba(243,146,0,0.12)", desc: region === "FR" ? "Collaboration et action adaptée au contexte" : region === "EN" ? "Collaboration and context-aware action" : "Zusammenarbeit und kontextbezogenes Handeln" },
-                          { label: region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", bg: "rgba(26,93,171,0.05)", border: "rgba(26,93,171,0.12)", desc: region === "FR" ? "Structure, planification et précision technique" : region === "EN" ? "Structure, planning and technical precision" : "Struktur, Planung und fachliche Präzision" },
+                          { label: region === "FR" ? "Rythme et Décision" : region === "EN" ? "Impulsive" : "Impulsiv", color: "#C41E3A", bg: "rgba(196,30,58,0.05)", border: "rgba(196,30,58,0.12)", desc: region === "FR" ? "Exécution, décisions et responsabilité des résultats" : region === "EN" ? "Execution, decisions and accountability for results" : "Umsetzung, Entscheidung und Ergebnisverantwortung" },
+                          { label: region === "FR" ? "Communication et Relations" : region === "EN" ? "Intuitive" : "Intuitiv", color: "#F39200", bg: "rgba(243,146,0,0.05)", border: "rgba(243,146,0,0.12)", desc: region === "FR" ? "Collaboration et action adaptée au contexte" : region === "EN" ? "Collaboration and context-aware action" : "Zusammenarbeit und kontextbezogenes Handeln" },
+                          { label: region === "FR" ? "Structure et Rigueur" : region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", bg: "rgba(26,93,171,0.05)", border: "rgba(26,93,171,0.12)", desc: region === "FR" ? "Structure, planification et précision technique" : region === "EN" ? "Structure, planning and technical precision" : "Struktur, Planung und fachliche Präzision" },
                         ].map(d => (
                           <div key={d.label} style={{
                             background: d.bg,
@@ -3595,7 +3763,7 @@ export default function RollenDNA() {
                         ))}
                       </div>
 
-                      <p lang="de" style={{ fontSize: 14, color: "#48484A", lineHeight: 1.6, margin: "12px 0 0 0", ...reportTextStyle }}>{localizeText(roleRequirementText.outro)}</p>
+                      <p lang="de" style={{ fontSize: 14, color: "#48484A", lineHeight: 1.6, margin: "12px 0 0 0", ...reportTextStyle }}>{localizeText((region === "FR" ? roleRequirementText_FR : region === "EN" ? roleRequirementText_EN : roleRequirementText).outro)}</p>
                     </div>
                   </>)}
 
