@@ -1606,7 +1606,9 @@ export default function SollIstBericht() {
                   </div>
                 </div>
                 <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "14px 0 0", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang={region === "FR" ? "fr" : region === "EN" ? "en" : "de"}>
-                  {region === "EN"
+                  {region === "FR"
+                    ? "Sous une pression croissante, ces schémas de comportement tendent à s'intensifier et font apparaitre des risques pour la coordination, le management et la collaboration."
+                    : region === "EN"
                     ? "Under increasing work pressure, these behavioural patterns tend to intensify — creating risks for coordination, leadership, and teamwork."
                     : "Unter zunehmendem Arbeitsdruck können sich diese Verhaltensmuster verstärken. Dadurch entstehen im Arbeitsalltag Risiken für Abstimmung, Führung und Zusammenarbeit."}
                 </p>

@@ -66,7 +66,7 @@ export interface MatchTextInput {
   istRelations: PairRelations;
   structureRelation: StructureRelation;
   fuehrungsArt?: 'keine' | 'fachlich' | 'disziplinarisch';
-  lang?: 'de' | 'en';
+  lang?: 'de' | 'en' | 'fr';
 }
 
 export interface SummaryBlock {
@@ -126,7 +126,7 @@ export interface MatchTextResult {
 const EQ_TOL = 5;
 
 /* ── Module-level language context (set by buildMatchTexts) ─────────────── */
-let _lang: 'de' | 'en' = 'de';
+let _lang: 'de' | 'en' | 'fr' = 'de';
 
 /* ── Bilingual label constants ──────────────────────────────────────────── */
 const COMP_SHORT: Record<TriadKey, string> = {
@@ -162,10 +162,26 @@ const COMP_ADJ_EN: Record<TriadKey, string> = {
   A: 'analytical',
 };
 
+const COMP_SHORT_FR: Record<TriadKey, string> = {
+  I: 'Rythme / Décision',
+  N: 'Communication / Relations',
+  A: 'Structure / Rigueur',
+};
+const COMP_NOUN_FR: Record<TriadKey, string> = {
+  I: 'le rythme et la décision',
+  N: 'la communication et les relations',
+  A: 'la structure et la rigueur',
+};
+const COMP_ADJ_FR: Record<TriadKey, string> = {
+  I: 'orientée action',
+  N: 'orientée relations',
+  A: 'analytique',
+};
+
 /* ── Language-aware accessors ───────────────────────────────────────────── */
-function cs(key: TriadKey): string { return _lang === 'en' ? COMP_SHORT_EN[key] : COMP_SHORT[key]; }
-function cn(key: TriadKey): string { return _lang === 'en' ? COMP_NOUN_EN[key] : COMP_NOUN[key]; }
-function ca(key: TriadKey): string { return _lang === 'en' ? COMP_ADJ_EN[key] : COMP_ADJ[key]; }
+function cs(key: TriadKey): string { return _lang === 'en' ? COMP_SHORT_EN[key] : _lang === 'fr' ? COMP_SHORT_FR[key] : COMP_SHORT[key]; }
+function cn(key: TriadKey): string { return _lang === 'en' ? COMP_NOUN_EN[key] : _lang === 'fr' ? COMP_NOUN_FR[key] : COMP_NOUN[key]; }
+function ca(key: TriadKey): string { return _lang === 'en' ? COMP_ADJ_EN[key] : _lang === 'fr' ? COMP_ADJ_FR[key] : COMP_ADJ[key]; }
 function vars() { return _lang === 'en' ? textVariantsEN : textVariants; }
 
 function sortProfile(profile: TriadProfile): Array<{ key: TriadKey; value: number }> {
@@ -815,6 +831,36 @@ function buildImpactAreas(input: MatchTextInput): ImpactArea[] {
 
 function buildStress(input: MatchTextInput): StressBlock {
   const sp = getSpecialCases(input.roleProfile, input.candProfile);
+
+  if (_lang === 'fr') {
+    if (sp.candIsBalFull) {
+      return {
+        controlledPressure: "Sous une pression modérée, cette personne ne montre pas de priorité clairement définie. Les trois composantes étant presque égales, la réaction varie selon la situation : parfois par le rythme, parfois par la coordination, parfois par la structure. Le comportement paraît ainsi peu prévisible.",
+        uncontrolledStress: "Sous une charge élevée, il n'y a pas d'ancre stable. La personne peut passer d'une logique à l'autre, parfois plus impulsive, parfois plus orientée relations, parfois plus contrôlée. Ce basculement devient clairement perceptible au quotidien et peut déstabiliser l'entourage.",
+      };
+    }
+    if (sp.candIsDualDom) {
+      return {
+        controlledPressure: `Quand la pression augmente, la personne s'appuie sur la logique actuellement dominante. Les deux composantes principales étant presque aussi fortes, la réaction varie selon la situation : parfois davantage via ${cn(sp.cDom.top)}, parfois via ${cn(sp.cDom.second)}.`,
+        uncontrolledStress: sp.cDom.third === 'N'
+          ? "Sous très forte charge, l'accent peut se déplacer vers l'écoute, la médiation et la coordination interpersonnelle."
+          : sp.cDom.third === 'A'
+            ? "Sous très forte charge, l'accent peut se déplacer vers l'ordre, la vérification et la sécurisation. Les décisions deviennent plus lentes mais plus contrôlées."
+            : "Sous très forte charge, l'accent peut se déplacer vers le rythme et l'action directe. Les décisions deviennent plus rapides et plus immédiates.",
+      };
+    }
+    const candIsBottomPair = sp.cDom.gap1 > EQ_TOL && sp.cDom.gap2 <= EQ_TOL;
+    if (candIsBottomPair) {
+      return {
+        controlledPressure: `Quand la pression monte, la tendance vers ${cn(sp.cDom.top)} se renforce dans un premier temps. La personne cherche à maintenir contrôle et vue d'ensemble via sa logique principale.`,
+        uncontrolledStress: `Sous très forte charge, le comportement peut évoluer selon les situations. ${cn(sp.cDom.second)} et ${cn(sp.cDom.third)} étant presque aussi prononcées, ces deux composantes secondaires entrent en concurrence. Selon la situation, la réaction passe alors davantage par ${cn(sp.cDom.second)} ou par ${cn(sp.cDom.third)}. Le comportement devient ainsi plus variable et moins prévisible.`,
+      };
+    }
+    return {
+      controlledPressure: `Sous une pression modérée, la tendance vers ${cn(sp.cDom.top)} se renforce dans un premier temps.`,
+      uncontrolledStress: `Sous une charge élevée, le comportement peut se déplacer vers ${cn(sp.cDom.second)}. La hiérarchie des priorités de travail bascule alors en faveur de la deuxième logique la plus forte.`,
+    };
+  }
 
   if (_lang === 'en') {
     if (sp.candIsBalFull) {
