@@ -442,6 +442,13 @@ Schreibe ALLE Texte in Schweizer Hochdeutsch:
 Schreibe ALLE Texte in österreichischem Hochdeutsch:
 - Verwende österreichische Begriffe wo üblich (z.B. "Jänner" statt "Januar", "heuer" statt "dieses Jahr").${addressLine}\n`;
   }
+  if (region === "EN") {
+    return `\n\n## LANGUAGE REGION: ENGLISH
+Write ALL "name" field values in clear, professional British English.
+- Activity descriptions and competence names must be in English.
+- Keep ALL classification values exactly as specified: kompetenz must be exactly "Impulsiv", "Intuitiv", or "Analytisch" (unchanged); niveau must be exactly "Niedrig", "Mittel", or "Hoch" (unchanged). These are internal codes that must never be translated.
+- Use formal professional English appropriate for HR and recruitment contexts.\n`;
+  }
   return "";
 }
 
@@ -1762,7 +1769,7 @@ export async function registerRoutes(
         }
       }
 
-      const prompt = `Du bist ein Experte für Berufsprofile und Kompetenzanalyse im deutschsprachigen Raum.
+      const prompt = `${region === "EN" ? "You are an expert in job profiles and competency analysis for English-speaking organisations." : "Du bist ein Experte für Berufsprofile und Kompetenzanalyse im deutschsprachigen Raum."}
 ${getRegionInstruction(region)}${analyseKontext}
 ## ROLLENPROFIL – GESAMTKONTEXT
 
