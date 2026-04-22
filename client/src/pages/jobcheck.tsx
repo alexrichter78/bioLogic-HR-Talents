@@ -221,7 +221,7 @@ function ChapterBadge({ num, color }: { num: number; color: string }) {
   );
 }
 
-function SoftBar({ items }: { items: { label: string; value: number; color: string }[] }) {
+function SoftBar({ items, region }: { items: { label: string; value: number; color: string }[]; region?: string }) {
   return (
     <div style={{ background: "#F0F0F2", borderRadius: 16, padding: "16px 18px", display: "flex", flexDirection: "column", gap: 14 }}>
       {items.map(bar => {
@@ -229,7 +229,7 @@ function SoftBar({ items }: { items: { label: string; value: number; color: stri
         const isSmall = widthPct < 18;
         return (
           <div key={bar.label} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <span style={{ fontSize: 14, color: "#48484A", width: 72, flexShrink: 0 }}>{bar.label}</span>
+            <span style={{ fontSize: region === "FR" ? 11 : 14, color: "#48484A", width: region === "FR" ? 115 : 72, flexShrink: 0, lineHeight: "1.35" }}>{bar.label}</span>
             <div style={{ flex: 1, position: "relative", height: 26 }}>
               <div style={{
                 position: "absolute", inset: 0,
@@ -263,12 +263,12 @@ function SoftBar({ items }: { items: { label: string; value: number; color: stri
   );
 }
 
-function BarSlider({ label, value, color, onChange }: { label: string; value: number; color: string; onChange: (v: number) => void }) {
+function BarSlider({ label, value, color, onChange, region }: { label: string; value: number; color: string; onChange: (v: number) => void; region?: string }) {
   const widthPct = (value / 67) * 100;
   const isSmall = widthPct < 18;
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-      <span style={{ fontSize: 14, color: "#48484A", width: 72, flexShrink: 0 }}>{label}</span>
+      <span style={{ fontSize: region === "FR" ? 11 : 14, color: "#48484A", width: region === "FR" ? 115 : 72, flexShrink: 0, lineHeight: "1.35" }}>{label}</span>
       <div style={{ flex: 1, position: "relative", height: 26 }}>
         <div style={{
           position: "absolute", inset: 0,
@@ -683,7 +683,7 @@ export default function JobCheck() {
                 <div>
                   <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", marginBottom: 14 }}>{jc.sollHeader}</p>
                   {roleProfile && (
-                    <SoftBar items={[
+                    <SoftBar region={region} items={[
                       { label: jc.labelImpulsiv, value: roleProfile.impulsiv, color: COLORS.imp },
                       { label: jc.labelIntuitiv, value: roleProfile.intuitiv, color: COLORS.int },
                       { label: jc.labelAnalytisch, value: roleProfile.analytisch, color: COLORS.ana },
@@ -705,9 +705,9 @@ export default function JobCheck() {
                   <p style={{ fontSize: 14, color: "#48484A", marginBottom: 16 }}>{jc.istDescription}</p>
 
                   <div style={{ background: "#F0F0F2", borderRadius: 16, padding: "16px 18px", display: "flex", flexDirection: "column", gap: 14 }}>
-                    <BarSlider label={jc.labelImpulsiv} value={candImp} color={COLORS.imp} onChange={setCandImp} />
-                    <BarSlider label={jc.labelIntuitiv} value={candInt} color={COLORS.int} onChange={setCandInt} />
-                    <BarSlider label={jc.labelAnalytisch} value={candAna} color={COLORS.ana} onChange={setCandAna} />
+                    <BarSlider label={jc.labelImpulsiv} value={candImp} color={COLORS.imp} onChange={setCandImp} region={region} />
+                    <BarSlider label={jc.labelIntuitiv} value={candInt} color={COLORS.int} onChange={setCandInt} region={region} />
+                    <BarSlider label={jc.labelAnalytisch} value={candAna} color={COLORS.ana} onChange={setCandAna} region={region} />
                   </div>
                   <p style={{ fontSize: 11, color: "#6E6E73", marginTop: 8, textAlign: "center" }}>{jc.normalizedNote}</p>
                   {(() => {
