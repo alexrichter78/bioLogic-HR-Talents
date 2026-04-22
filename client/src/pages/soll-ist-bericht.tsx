@@ -1,6 +1,4 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
 import { useLocation } from "wouter";
 import { AlertTriangle, Download, Loader2, ChevronLeft, ChevronDown, SlidersHorizontal, Zap, Compass, Triangle, CheckCircle2, AlertCircle, ArrowRight, Printer } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
@@ -107,84 +105,6 @@ function biggestGapText(rt: Triad, ct: Triad): string {
 }
 
 
-
-interface MatchCheckAIText {
-  intro: string;
-  gesamtIntro: string;
-  dominanceShift: string;
-  managementSummary: string;
-  executiveBullets: string[];
-  constellationRisks: string[];
-  biggestGapText: string;
-  componentDescriptions: { impulsiv: string; analytisch: string; intuitiv: string };
-  impactAreas: Array<{ label: string; roleNeed: string; candidatePattern: string; risk: string }>;
-  stressControlled: string;
-  stressUncontrolled: string;
-  stressFooter: string;
-  riskTimeline: Array<{ label: string; period: string; text: string }>;
-  finalFazit: string;
-  finalText: string;
-  integrationsplan: Array<{ title: string; period: string; ziel: string; items: string[]; fokus: { intro: string; bullets: string[] } }> | null;
-}
-
-function computeGesamtIntroText(result: SollIstResult): string {
-  const fr = result.fitRating;
-  const ci = result.controlIntensity;
-  const gl = result.gapLevel;
-  const dl = result.developmentLabel;
-  if (fr === "GEEIGNET") {
-    if (ci === "gering" && gl === "gering") {
-      return "Die Gesamtbewertung spricht für eine sehr gute Passung. Die strukturelle Übereinstimmung ist hoch, der Steuerungs- und Entwicklungsaufwand gering. Die Besetzung kann ohne besondere Massnahmen erfolgen.";
-    }
-    if (ci === "mittel" || gl === "mittel") {
-      return "Die Gesamtbewertung spricht für eine gute Passung. Die strukturelle Übereinstimmung ist gegeben, der Steuerungs- und Entwicklungsaufwand überschaubar. Eine erfolgreiche Besetzung ist mit geringem Führungsaufwand realistisch.";
-    }
-    return "Die Gesamtbewertung spricht für eine solide Passung. Die Arbeitslogik stimmt grundsätzlich überein. Der Entwicklungsaufwand ist begrenzt und die Besetzung kann mit normalem Führungsaufwand gelingen.";
-  }
-  if (fr === "BEDINGT") {
-    if (ci === "hoch" || dl === "hoch") {
-      return "Die Gesamtbewertung spricht für eine eingeschränkte Passung. Die strukturelle Abweichung ist spürbar, der Steuerungs- und Entwicklungsaufwand erhöht. Eine erfolgreiche Besetzung erfordert gezielte Führung und regelmässige Abstimmung.";
-    }
-    if ((result as any).fitSubtype === "STRUCTURE_MATCH_INTENSITY_OFF") {
-      return "Die Gesamtbewertung spricht für eine bedingte Passung. Die Arbeitslogik ist in ihrer Grundstruktur stimmig. In der Gewichtung zeigen sich jedoch leichte Abweichungen. Eine erfolgreiche Besetzung ist mit gezielter Führung realistisch.";
-    }
-    if (gl === "gering") {
-      return "Die Gesamtbewertung spricht für eine bedingte Passung. Die Profilabweichung ist gering, doch die Arbeitslogik unterscheidet sich in einzelnen Bereichen. Mit gezielter Führung ist eine erfolgreiche Besetzung realistisch.";
-    }
-    return "Die Gesamtbewertung spricht für eine bedingte Passung. Die Arbeitslogik weicht in einzelnen Bereichen ab. Eine erfolgreiche Besetzung ist mit bewusster Führung und klarer Erwartungshaltung möglich.";
-  }
-  if (ci === "hoch" && (gl === "hoch" || dl === "hoch")) {
-    return "Die Gesamtbewertung spricht für eine kritische Passung. Die strukturelle Abweichung ist deutlich, der Steuerungs- und Entwicklungsaufwand entsprechend hoch. Eine erfolgreiche Besetzung wäre nur unter klarer Führung und mit bewusstem Integrationsaufwand realistisch.";
-  }
-  if (ci === "mittel") {
-    return "Die Gesamtbewertung spricht für eine unzureichende Passung. Die Arbeitslogik weicht in wesentlichen Bereichen ab. Selbst mit intensiver Führung und Entwicklungsmassnahmen bleibt das Risiko einer Fehlbesetzung erheblich.";
-  }
-  return "Die Gesamtbewertung spricht für eine kritische Passung. Die strukturelle Abweichung ist erheblich und der erforderliche Führungs- und Entwicklungsaufwand sehr hoch. Eine Besetzung ist unter diesen Voraussetzungen mit hohem Risiko verbunden.";
-}
-
-function computeRFazit(result: SollIstResult): string {
-  const rFitLabel = result.fitLabel;
-  const rGapLevel = result.gapLevel;
-  if (rFitLabel === "Geeignet") {
-    return "Die Arbeitsweise der Person ist deckungsgleich mit den Anforderungen der Stelle. Aufgaben, Entscheidungen und Arbeitsstil sind stimmig.";
-  }
-  if (rFitLabel === "Bedingt geeignet" && rGapLevel === "gering") {
-    return "Die Grundausrichtung ist ähnlich, jedoch unterscheidet sich die Gewichtung einzelner Arbeitsbereiche. Im Alltag kann das zu erhöhtem Abstimmungsbedarf und höherem Führungsaufwand führen.";
-  }
-  if (rFitLabel === "Bedingt geeignet") {
-    return "Die Grundausrichtung ist ähnlich. In einzelnen Bereichen zeigt sich jedoch spürbarer Anpassungsbedarf. Im Alltag kann das zu Konflikten im Team und deutlich höherem Führungsaufwand führen.";
-  }
-  if (rFitLabel === "Nicht geeignet" && rGapLevel !== "hoch") {
-    return "Die strukturelle Abweichung zwischen Stelle und Person ist deutlich. Im Alltag kann das zu erhöhtem Abstimmungsbedarf, Konflikten im Team und deutlich höherem Führungsaufwand führen.";
-  }
-  return "Die Anforderungen der Stelle und die Arbeitsweise der Person unterscheiden sich deutlich. Im Alltag kann das zu erhöhtem Abstimmungsbedarf, Konflikten im Team und deutlich höherem Führungsaufwand führen.";
-}
-
-function severityLabelEN(s: Severity) {
-  if (s === "critical") return "Critical";
-  if (s === "warning") return "With deviation";
-  return "Broadly aligned";
-}
 
 function TriangleChart({ role, candidate }: { role: Triad; candidate: Triad }) {
   const { region: _r } = useRegion();
@@ -398,61 +318,6 @@ export default function SollIstBericht() {
     const raw = computeSollIst(roleName, candidateName || "Person", roleTriad, candidateProfile, fuehrungsArt, roleAnalysisObj);
     return localizeDeep(raw, region);
   }, [roleTriad, roleName, candidateName, candidateProfile.impulsiv, candidateProfile.intuitiv, candidateProfile.analytisch, reportGenerated, fuehrungsArt, region, roleAnalysisObj]);
-
-  const aiPayload = useMemo(() => {
-    if (!result || region !== "EN") return null;
-    return {
-      roleName: result.roleName,
-      candidateName: result.candidateName,
-      fitRating: result.fitRating,
-      fitLabel: result.fitLabel,
-      controlIntensity: result.controlIntensity,
-      gapLevel: result.gapLevel,
-      developmentLevel: result.developmentLevel,
-      totalGap: result.totalGap,
-      fitSubtype: (result as any).fitSubtype,
-      roleTriad: result.roleTriad,
-      candTriad: result.candTriad,
-      roleDomKey: result.roleDomKey,
-      candDomKey: result.candDomKey,
-      locale: "en",
-      germanTexts: {
-        intro: "Diese Passungsanalyse zeigt, wie gut Person und Position in ihrer Arbeitslogik zusammenpassen. Sie macht sichtbar, wo Übereinstimmungen bestehen, wo Abweichungen entstehen und welcher Führungs- oder Entwicklungsaufwand daraus im Alltag zu erwarten ist.",
-        gesamtIntro: computeGesamtIntroText(result),
-        dominanceShift: result.dominanceShiftText.split(/\n\n+/)[0],
-        managementSummary: result.summaryText.split(/\n\n+/)[0],
-        executiveBullets: result.executiveBullets,
-        constellationRisks: result.constellationRisks,
-        biggestGapText: biggestGapText(result.roleTriad, result.candTriad),
-        componentDescriptions: {
-          impulsiv: "Steht für zügiges Handeln, klare Prioritäten und konsequente Umsetzung.",
-          analytisch: "Sichert Struktur, Sorgfalt und nachvollziehbare Abläufe.",
-          intuitiv: "Unterstützt das Erkennen von Bedürfnissen und die passende Abstimmung im Team.",
-        },
-        impactAreas: result.impactAreas,
-        stressControlled: result.stressBehavior.controlledPressure,
-        stressUncontrolled: result.stressBehavior.uncontrolledStress,
-        riskTimeline: result.riskTimeline,
-        finalFazit: computeRFazit(result),
-        finalText: result.finalText,
-        integrationsplan: result.integrationsplan,
-      },
-    };
-  }, [result, region]);
-
-  const aiTextQuery = useQuery<MatchCheckAIText>({
-    queryKey: ["/api/generate-matchcheck-text", aiPayload ? JSON.stringify({ fitRating: aiPayload.fitRating, roleName: aiPayload.roleName, roleTriad: aiPayload.roleTriad, candTriad: aiPayload.candTriad }) : "none"],
-    queryFn: async () => {
-      const res = await apiRequest("POST", "/api/generate-matchcheck-text", aiPayload);
-      return await res.json();
-    },
-    enabled: !!aiPayload,
-    staleTime: Infinity,
-    retry: false,
-  });
-
-  const aiText = region === "EN" ? (aiTextQuery.data ?? null) : null;
-  const aiLoading = region === "EN" && !!result && aiTextQuery.isLoading;
 
   const exportPdf = useCallback(async () => {
     if (!result || isExportingPdf || !roleTriad || !reportRef.current) return;
@@ -1134,15 +999,7 @@ export default function SollIstBericht() {
               <ChevronLeft style={{ width: 16, height: 16 }} />
               {region === "EN" ? "Back to MatchCheck" : "Zurück zum MatchCheck"}
             </button>
-            <div style={{ position: "relative", background: "#FFFFFF", borderRadius: 20, overflow: "hidden", boxShadow: "0 4px 40px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.03)" }} data-testid="print-report-card" data-bericht lang={region === "EN" ? "en" : "de"}>
-
-              {/* AI loading overlay */}
-              {aiLoading && (
-                <div style={{ position: "absolute", inset: 0, background: "rgba(255,255,255,0.82)", backdropFilter: "blur(8px)", zIndex: 50, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16 }}>
-                  <Loader2 style={{ width: 36, height: 36, color: "#0071E3", animation: "spin 0.9s linear infinite" }} />
-                  <p style={{ fontSize: 15, fontWeight: 600, color: "#1D1D1F", margin: 0 }}>Translating report to English…</p>
-                </div>
-              )}
+            <div style={{ position: "relative", background: "#FFFFFF", borderRadius: 20, overflow: "hidden", boxShadow: "0 4px 40px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.03)" }} data-testid="print-report-card" data-bericht lang="de">
 
               {/* ─── DARK HEADER ─── */}
               <div data-pdf-block className="report-header" data-testid="section-header">
@@ -1186,25 +1043,61 @@ export default function SollIstBericht() {
               {/* ─── EXECUTIVE DECISION CONTENT (weisser Hintergrund) ─── */}
               <div style={{ padding: "28px 44px 0" }}>
                 <p data-pdf-block style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 16px", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de" data-testid="text-einleitung">
-                  {aiText?.intro ?? "Diese Passungsanalyse zeigt, wie gut Person und Position in ihrer Arbeitslogik zusammenpassen. Sie macht sichtbar, wo Übereinstimmungen bestehen, wo Abweichungen entstehen und welcher Führungs- oder Entwicklungsaufwand daraus im Alltag zu erwarten ist."}
+                  Diese Passungsanalyse zeigt, wie gut Person und Position in ihrer Arbeitslogik zusammenpassen. Sie macht sichtbar, wo Übereinstimmungen bestehen, wo Abweichungen entstehen und welcher Führungs- oder Entwicklungsaufwand daraus im Alltag zu erwarten ist.
                 </p>
                 <div data-pdf-block style={{ background: "linear-gradient(135deg, rgba(255,59,48,0.06) 0%, rgba(255,59,48,0.03) 100%)", borderRadius: 10, padding: "16px 20px", border: "1px solid rgba(255,59,48,0.2)", marginBottom: 24 }}>
                   <p style={{ fontSize: 13, fontWeight: 700, color: "#FF3B30", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
                     {REPORT_INTRO_DISCLAIMER}
                   </p>
                 </div>
-                <SectionHead num={1} title={region === "EN" ? "Overall Assessment" : "Gesamtbewertung"} />
+                <SectionHead num={1} title="Gesamtbewertung" />
                 {(() => {
                   const cCol = bioControlColor(result.controlIntensity);
-                  const cLabel = region === "EN" ? (result.controlIntensity === "hoch" ? "High" : result.controlIntensity === "mittel" ? "Medium" : "Low") : (result.controlIntensity === "hoch" ? "Hoch" : result.controlIntensity === "mittel" ? "Mittel" : "Gering");
+                  const cLabel = result.controlIntensity === "hoch" ? "Hoch" : result.controlIntensity === "mittel" ? "Mittel" : "Gering";
                   const devLevel = result.developmentLevel;
                   const devScore = devLevel === 1 ? 3 : devLevel === 2 ? 2 : 1;
-                  const devLabel = region === "EN" ? (devScore === 3 ? "low" : devScore === 2 ? "medium" : "high") : (devScore === 3 ? "niedrig" : devScore === 2 ? "mittel" : "hoch");
+                  const devLabel = devScore === 3 ? "niedrig" : devScore === 2 ? "mittel" : "hoch";
                   const devCol = devScore === 3 ? BIO_COLORS.geeignet : devScore === 2 ? BIO_COLORS.bedingt : BIO_COLORS.nichtGeeignet;
                   const gapCol = result.totalGap > 40 ? BIO_COLORS.nichtGeeignet : result.totalGap > 20 ? BIO_COLORS.bedingt : BIO_COLORS.geeignet;
                   const personLabel = result.candidateName !== "Die Person" ? result.candidateName : "Person";
 
-                  const gesamtIntroText = aiText?.gesamtIntro ?? computeGesamtIntroText(result);
+                  const gesamtIntroText = (() => {
+                    const fr = result.fitRating;
+                    const ci = result.controlIntensity;
+                    const gl = result.gapLevel;
+                    const dl = result.developmentLabel;
+
+                    if (fr === "GEEIGNET") {
+                      if (ci === "gering" && gl === "gering") {
+                        return t("Die Gesamtbewertung spricht für eine sehr gute Passung. Die strukturelle Übereinstimmung ist hoch, der Steuerungs- und Entwicklungsaufwand gering. Die Besetzung kann ohne besondere Massnahmen erfolgen.");
+                      }
+                      if (ci === "mittel" || gl === "mittel") {
+                        return "Die Gesamtbewertung spricht für eine gute Passung. Die strukturelle Übereinstimmung ist gegeben, der Steuerungs- und Entwicklungsaufwand überschaubar. Eine erfolgreiche Besetzung ist mit geringem Führungsaufwand realistisch.";
+                      }
+                      return "Die Gesamtbewertung spricht für eine solide Passung. Die Arbeitslogik stimmt grundsätzlich überein. Der Entwicklungsaufwand ist begrenzt und die Besetzung kann mit normalem Führungsaufwand gelingen.";
+                    }
+
+                    if (fr === "BEDINGT") {
+                      if (ci === "hoch" || dl === "hoch") {
+                        return t("Die Gesamtbewertung spricht für eine eingeschränkte Passung. Die strukturelle Abweichung ist spürbar, der Steuerungs- und Entwicklungsaufwand erhöht. Eine erfolgreiche Besetzung erfordert gezielte Führung und regelmässige Abstimmung.");
+                      }
+                      if (result.fitSubtype === "STRUCTURE_MATCH_INTENSITY_OFF") {
+                        return "Die Gesamtbewertung spricht für eine bedingte Passung. Die Arbeitslogik ist in ihrer Grundstruktur stimmig. In der Gewichtung zeigen sich jedoch leichte Abweichungen. Eine erfolgreiche Besetzung ist mit gezielter Führung realistisch.";
+                      }
+                      if (gl === "gering") {
+                        return "Die Gesamtbewertung spricht für eine bedingte Passung. Die Profilabweichung ist gering, doch die Arbeitslogik unterscheidet sich in einzelnen Bereichen. Mit gezielter Führung ist eine erfolgreiche Besetzung realistisch.";
+                      }
+                      return "Die Gesamtbewertung spricht für eine bedingte Passung. Die Arbeitslogik weicht in einzelnen Bereichen ab. Eine erfolgreiche Besetzung ist mit bewusster Führung und klarer Erwartungshaltung möglich.";
+                    }
+
+                    if (ci === "hoch" && (gl === "hoch" || dl === "hoch")) {
+                      return "Die Gesamtbewertung spricht für eine kritische Passung. Die strukturelle Abweichung ist deutlich, der Steuerungs- und Entwicklungsaufwand entsprechend hoch. Eine erfolgreiche Besetzung wäre nur unter klarer Führung und mit bewusstem Integrationsaufwand realistisch.";
+                    }
+                    if (ci === "mittel") {
+                      return t("Die Gesamtbewertung spricht für eine unzureichende Passung. Die Arbeitslogik weicht in wesentlichen Bereichen ab. Selbst mit intensiver Führung und Entwicklungsmassnahmen bleibt das Risiko einer Fehlbesetzung erheblich.");
+                    }
+                    return "Die Gesamtbewertung spricht für eine kritische Passung. Die strukturelle Abweichung ist erheblich und der erforderliche Führungs- und Entwicklungsaufwand sehr hoch. Eine Besetzung ist unter diesen Voraussetzungen mit hohem Risiko verbunden.";
+                  })();
 
                   return (
                     <>
@@ -1215,22 +1108,22 @@ export default function SollIstBericht() {
                         <div style={{ display: "flex", gap: 16, marginTop: 20, paddingTop: 18, borderTop: "1px solid rgba(0,0,0,0.06)" }}>
                           <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: `${fitCol}08`, border: `1px solid ${fitCol}25` }}>
                             <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>{region === "EN" ? "Basic fit" : "Grundpassung"}</div>
-                            <div style={{ fontSize: 17, fontWeight: 700, color: fitCol }} data-testid="status-grundpassung">{region === "EN" ? (result.fitRating === "GEEIGNET" ? "Suitable" : result.fitRating === "BEDINGT" ? "Conditionally suitable" : "Not suitable") : result.fitLabel}</div>
+                            <div style={{ fontSize: 17, fontWeight: 700, color: fitCol }} data-testid="status-grundpassung">{result.fitLabel}</div>
                           </div>
                           <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: `${cCol}08`, border: `1px solid ${cCol}25` }}>
-                            <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>{region === "EN" ? "Leadership Effort" : "Führungsaufwand"}</div>
+                            <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>Führungsaufwand</div>
                             <div style={{ fontSize: 17, fontWeight: 700, color: cCol }} data-testid="status-führungsaufwand">{cLabel}</div>
                           </div>
                         </div>
                         <div style={{ display: "flex", gap: 16, marginTop: 16 }}>
                           <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: `${gapCol}08`, border: `1px solid ${gapCol}25` }}>
-                            <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>{region === "EN" ? "Profile Deviation" : "Profilabweichung"}</div>
-                            <div style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", lineHeight: 1.5 }} data-testid="status-profilabweichung">{region === "EN" ? (result.gapLevel === "hoch" ? "High" : result.gapLevel === "mittel" ? "Medium" : "Low") : result.gapLevel}</div>
+                            <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>Profilabweichung</div>
+                            <div style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", lineHeight: 1.5 }} data-testid="status-profilabweichung">{result.gapLevel}</div>
                           </div>
                           <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: `${devCol}08`, border: `1px solid ${devCol}25` }}>
                             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
                               <div style={{ width: 10, height: 10, borderRadius: 5, background: devCol, flexShrink: 0 }} />
-                              <span style={{ fontSize: 14, fontWeight: 700, color: devCol }} data-testid="status-entwicklungsaufwand">{region === "EN" ? "Development effort" : "Entwicklungsaufwand"}: {devLabel}</span>
+                              <span style={{ fontSize: 14, fontWeight: 700, color: devCol }} data-testid="status-entwicklungsaufwand">Entwicklungsaufwand: {devLabel}</span>
                             </div>
                             <div style={{ display: "flex", gap: 5 }}>
                               {Array.from({ length: 3 }).map((_, i) => {
@@ -1261,10 +1154,10 @@ export default function SollIstBericht() {
 
                         return (
                           <div data-pdf-block style={{ marginBottom: 22, padding: "20px 24px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)" }} data-testid="section-ueberblick">
-                            <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 16px", textAlign: "center" }}>{region === "EN" ? "Quick Overview" : "Kurzübersicht"}</p>
+                            <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 16px", textAlign: "center" }}>Kurzübersicht</p>
                             <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "center", gap: 16 }}>
                               <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center" }}>
-                                <p style={{ fontSize: 12, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 10px" }}>{region === "EN" ? "Role" : "Stelle"}</p>
+                                <p style={{ fontSize: 12, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 10px" }}>Stelle</p>
                                 <div style={{ display: "flex", flexDirection: "column", gap: 8, alignItems: "center" }}>
                                   {roleKeys.map(k => (
                                     <div key={k} style={{ padding: "10px 20px", borderRadius: 20, background: `${BAR_HEX[k]}14`, border: `1px solid ${BAR_HEX[k]}30` }}>
@@ -1277,7 +1170,7 @@ export default function SollIstBericht() {
                                 <span style={{ fontSize: 18, fontWeight: 700, color: matchColor, lineHeight: 1 }}>{matchSymbol}</span>
                               </div>
                               <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center" }}>
-                                <p style={{ fontSize: 12, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 10px" }}>{region === "EN" ? "Candidate" : "Person"}</p>
+                                <p style={{ fontSize: 12, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 10px" }}>Person</p>
                                 <div style={{ display: "flex", flexDirection: "column", gap: 8, alignItems: "center" }}>
                                   {candKeys.map(k => (
                                     <div key={k} style={{ padding: "10px 20px", borderRadius: 20, background: `${BAR_HEX[k]}14`, border: `1px solid ${BAR_HEX[k]}30` }}>
@@ -1293,17 +1186,17 @@ export default function SollIstBericht() {
 
                       {/* AUSWIRKUNG IM ARBEITSALLTAG */}
                       <div data-pdf-block style={{ marginBottom: 22 }} data-testid="section-auswirkung">
-                        <SubHead num={1} title={region === "EN" ? "Impact on Daily Work" : "Auswirkung im Arbeitsalltag"} color="#0F3A6E" />
+                        <SubHead num={1} title="Auswirkung im Arbeitsalltag" color="#0F3A6E" />
                         <p style={{ margin: 0, fontSize: 14, lineHeight: 1.85, color: "#48484A", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
-                          {aiText?.dominanceShift ?? result.dominanceShiftText.split(/\n\n+/)[0]}
+                          {result.dominanceShiftText.split(/\n\n+/)[0]}
                         </p>
                       </div>
 
                       {/* MANAGEMENTKURZFAZIT */}
                       <div data-pdf-block style={{ marginBottom: 22 }} data-testid="section-fazit">
-                        <SubHead num={2} title={region === "EN" ? "Management Summary" : "Managementkurzfazit"} color="#0F3A6E" />
+                        <SubHead num={2} title="Managementkurzfazit" color="#0F3A6E" />
                         <p style={{ fontSize: 14, lineHeight: 1.85, color: "#48484A", margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de" data-testid="text-summary-fazit">
-                          {aiText?.managementSummary ?? result.summaryText.split(/\n\n+/)[0]}
+                          {result.summaryText.split(/\n\n+/)[0]}
                         </p>
                       </div>
 
@@ -1312,8 +1205,8 @@ export default function SollIstBericht() {
                         <div data-pdf-block style={{ marginBottom: 0 }} data-testid="section-executive-bullets">
                           {result.executiveBullets.length > 0 && (
                             <div style={{ marginBottom: result.constellationRisks.length > 0 ? 14 : 0 }}>
-                              <SubHead num={3} title={region === "EN" ? "Why this result" : "Warum dieses Ergebnis"} color="#0F3A6E" />
-                              {(aiText?.executiveBullets ?? result.executiveBullets).map((b, i) => (
+                              <SubHead num={3} title="Warum dieses Ergebnis" color="#0F3A6E" />
+                              {result.executiveBullets.map((b, i) => (
                                 <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
                                   <span style={{ width: 5, height: 5, borderRadius: 3, background: "#0F3A6E", flexShrink: 0 }} />
                                   <span style={{ fontSize: 14, lineHeight: 1.6, color: "#48484A" }}>{b}</span>
@@ -1323,8 +1216,8 @@ export default function SollIstBericht() {
                           )}
                           {result.constellationRisks.length > 0 && (
                             <div>
-                              <SubHead num={4} title={region === "EN" ? "Risks of this constellation" : "Risiken dieser Konstellation"} color="#0F3A6E" />
-                              {(aiText?.constellationRisks ?? result.constellationRisks).map((r, i) => (
+                              <SubHead num={4} title="Risiken dieser Konstellation" color="#0F3A6E" />
+                              {result.constellationRisks.map((r, i) => (
                                 <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
                                   <span style={{ width: 5, height: 5, borderRadius: 3, background: "#0F3A6E", flexShrink: 0 }} />
                                   <span style={{ fontSize: 14, lineHeight: 1.6, color: "#48484A" }}>{r}</span>
@@ -1343,13 +1236,13 @@ export default function SollIstBericht() {
               <div style={{ padding: "36px 44px 48px" }}>
 
               <div data-pdf-block style={{ ...sep, borderBottom: "none" }} data-testid="section-comparison-bars">
-                <SectionHead num={2} title={region === "EN" ? "Profile Comparison" : "Vergleich der Profile"} />
+                <SectionHead num={2} title="Vergleich der Profile" />
                 <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 20px", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
-                  {aiText?.biggestGapText ?? biggestGapText(result.roleTriad, result.candTriad)}
+                  {biggestGapText(result.roleTriad, result.candTriad)}
                 </p>
                 <div className="grid gap-6 grid-cols-1 sm:grid-cols-2" style={{ marginBottom: 14 }}>
                   <div style={{ borderRadius: 16, border: "1px solid rgba(0,0,0,0.06)", background: "linear-gradient(135deg, #fafbfd, #f5f7fb)", padding: 24, boxShadow: "0 2px 8px rgba(0,0,0,0.02)" }}>
-                    <p style={{ fontSize: 15, fontWeight: 600, color: "#1D1D1F", margin: "0 0 20px" }}>{region === "EN" ? "Target Profile" : "Soll-Profil"} <span style={{ fontWeight: 400, color: "#8E8E93" }}>({region === "EN" ? "Role" : "Stelle"})</span></p>
+                    <p style={{ fontSize: 15, fontWeight: 600, color: "#1D1D1F", margin: "0 0 20px" }}>Soll-Profil <span style={{ fontWeight: 400, color: "#8E8E93" }}>(Stelle)</span></p>
                     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                       {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
                         const val = Math.round(roleTriad![k]);
@@ -1374,7 +1267,7 @@ export default function SollIstBericht() {
                     </div>
                   </div>
                   <div style={{ borderRadius: 16, border: "1px solid rgba(0,0,0,0.06)", background: "linear-gradient(135deg, #fafbfd, #f5f7fb)", padding: 24, boxShadow: "0 2px 8px rgba(0,0,0,0.02)" }}>
-                    <p style={{ fontSize: 15, fontWeight: 600, color: "#1D1D1F", margin: "0 0 20px" }}>{region === "EN" ? "Actual Profile" : "Ist-Profil"} <span style={{ fontWeight: 400, color: "#8E8E93" }}>({region === "EN" ? "Candidate" : "Person"})</span></p>
+                    <p style={{ fontSize: 15, fontWeight: 600, color: "#1D1D1F", margin: "0 0 20px" }}>Ist-Profil <span style={{ fontWeight: 400, color: "#8E8E93" }}>(Person)</span></p>
                     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                       {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
                         const val = Math.round(candidateProfile[k]);
@@ -1403,9 +1296,9 @@ export default function SollIstBericht() {
                   <p style={{ fontSize: 13, fontWeight: 600, color: "#48484A", margin: "0 0 12px" }}>{region === "EN" ? "Meaning of the components" : "Bedeutung der Komponenten"}</p>
                   <div style={{ display: "flex", gap: 12 }}>
                     {([
-                      { key: "impulsiv", label: region === "EN" ? "Impulsive" : "Impulsiv", color: BAR_HEX.impulsiv, text: region === "EN" ? (aiText?.componentDescriptions?.impulsiv ?? "Represents swift action, clear priorities, and consistent execution.") : "Steht für zügiges Handeln, klare Prioritäten und konsequente Umsetzung." },
-                      { key: "analytisch", label: region === "EN" ? "Analytical" : "Analytisch", color: BAR_HEX.analytisch, text: region === "EN" ? (aiText?.componentDescriptions?.analytisch ?? "Ensures structure, diligence, and traceable processes.") : "Sichert Struktur, Sorgfalt und nachvollziehbare Abläufe." },
-                      { key: "intuitiv", label: region === "EN" ? "Intuitive" : "Intuitiv", color: BAR_HEX.intuitiv, text: region === "EN" ? (aiText?.componentDescriptions?.intuitiv ?? "Supports reading people needs and aligning effectively within the team.") : "Unterstützt das Erkennen von Bedürfnissen und die passende Abstimmung im Team." },
+                      { key: "impulsiv", label: region === "EN" ? "Impulsive" : "Impulsiv", color: BAR_HEX.impulsiv, text: "Steht für zügiges Handeln, klare Prioritäten und konsequente Umsetzung." },
+                      { key: "analytisch", label: region === "EN" ? "Analytical" : "Analytisch", color: BAR_HEX.analytisch, text: "Sichert Struktur, Sorgfalt und nachvollziehbare Abläufe." },
+                      { key: "intuitiv", label: region === "EN" ? "Intuitive" : "Intuitiv", color: BAR_HEX.intuitiv, text: "Unterstützt das Erkennen von Bedürfnissen und die passende Abstimmung im Team." },
                     ] as const).map(kb => (
                       <div key={kb.key} style={{ flex: 1, display: "flex", flexDirection: "column" }}>
                         <div style={{ flex: 1, padding: "14px 16px", borderRadius: 10, background: `linear-gradient(135deg, ${kb.color}12, ${kb.color}06)`, border: `1px solid ${kb.color}20`, display: "flex", flexDirection: "column" }}>
@@ -1423,32 +1316,31 @@ export default function SollIstBericht() {
               </div>
 
               <div data-pdf-block style={{ ...sep, borderBottom: "none" }} data-testid="section-impact-matrix">
-                <SectionHead num={3} title={region === "EN" ? "Impact of this hire on daily operations" : "Wirkung der Besetzung im Arbeitsalltag"} />
+                <SectionHead num={3} title="Wirkung der Besetzung im Arbeitsalltag" />
                 <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
                   {result.impactAreas.map((area, areaIdx) => {
-                    const aiArea = aiText?.impactAreas?.[areaIdx];
                     const sevCol = area.severity === "critical" ? "#FF3B30" : area.severity === "warning" ? "#FF9500" : "#34C759";
                     return (
                       <div key={area.id} data-testid={`impact-detail-${area.id}`} style={{ borderTop: areaIdx > 0 ? "1px solid rgba(0,0,0,0.06)" : "none" }}>
                         <div style={{ padding: "18px 0 16px" }}>
                           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 10 }}>
-                            <SubHead num={areaIdx + 1} title={aiArea?.label ?? area.label} color="#0F3A6E" />
-                            <span style={{ fontSize: 12, fontWeight: 700, color: sevCol, textTransform: "uppercase", letterSpacing: "0.05em", marginTop: 4 }}>{region === "EN" ? severityLabelEN(area.severity) : severityLabel(area.severity)}</span>
+                            <SubHead num={areaIdx + 1} title={area.label} color="#0F3A6E" />
+                            <span style={{ fontSize: 12, fontWeight: 700, color: sevCol, textTransform: "uppercase", letterSpacing: "0.05em", marginTop: 4 }}>{severityLabel(area.severity)}</span>
                           </div>
                           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
                             <div data-text-left style={{ background: "#FAFAFA", borderRadius: 10, padding: "12px 14px", border: "1px solid rgba(0,0,0,0.07)" }}>
-                              <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 6px" }}>{region === "EN" ? "Role requirement" : "Stellenanforderung"}</p>
-                              <p style={{ fontSize: 14, lineHeight: 1.75, color: "#48484A", margin: 0, wordBreak: "break-word", overflowWrap: "break-word" }}>{aiArea?.roleNeed ?? area.roleNeed}</p>
+                              <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 6px" }}>Stellenanforderung</p>
+                              <p style={{ fontSize: 14, lineHeight: 1.75, color: "#48484A", margin: 0, wordBreak: "break-word", overflowWrap: "break-word" }} lang="de">{area.roleNeed}</p>
                             </div>
                             <div data-text-left style={{ background: "#FAFAFA", borderRadius: 10, padding: "12px 14px", border: "1px solid rgba(0,0,0,0.07)" }}>
-                              <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 6px" }}>{region === "EN" ? "Candidate" : "Person"}</p>
-                              <p style={{ fontSize: 14, lineHeight: 1.75, color: "#48484A", margin: 0, wordBreak: "break-word", overflowWrap: "break-word" }}>{aiArea?.candidatePattern ?? area.candidatePattern}</p>
+                              <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 6px" }}>Person</p>
+                              <p style={{ fontSize: 14, lineHeight: 1.75, color: "#48484A", margin: 0, wordBreak: "break-word", overflowWrap: "break-word" }} lang="de">{area.candidatePattern}</p>
                             </div>
                           </div>
                           <div style={{ display: "flex", borderRadius: 8, background: `${sevCol}08`, alignItems: "stretch" }}>
                             <div style={{ width: 4, flexShrink: 0, background: sevCol, borderRadius: 999, margin: "8px 0 8px 8px" }} />
                             <div style={{ padding: "10px 14px", flex: 1 }}>
-                            <p style={{ fontSize: 14, lineHeight: 1.85, margin: 0, color: "#48484A", wordBreak: "break-word", overflowWrap: "break-word", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any}>{aiArea?.risk ?? area.risk}</p>
+                            <p style={{ fontSize: 14, lineHeight: 1.85, margin: 0, color: "#48484A", wordBreak: "break-word", overflowWrap: "break-word", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">{area.risk}</p>
                             </div>
                           </div>
                         </div>
@@ -1459,42 +1351,41 @@ export default function SollIstBericht() {
               </div>
 
               <div data-pdf-block style={{ ...sep, borderBottom: "none" }} data-testid="section-stress-behavior">
-                <SectionHead num={4} title={region === "EN" ? "Behaviour under pressure" : "Verhalten unter Druck"} />
+                <SectionHead num={4} title="Verhalten unter Druck" />
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                   <div style={{ padding: "16px 18px", borderRadius: 12, background: "#FF950008", border: "1px solid #FF950018", overflow: "visible" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
                       <AlertCircle style={{ width: 14, height: 14, color: "#FF9500", flexShrink: 0 }} />
-                      <p style={{ fontSize: 12, fontWeight: 700, color: "#FF9500", textTransform: "uppercase", letterSpacing: "0.05em", margin: 0 }}>{region === "EN" ? "Controlled pressure" : "Kontrollierter Druck"}</p>
+                      <p style={{ fontSize: 12, fontWeight: 700, color: "#FF9500", textTransform: "uppercase", letterSpacing: "0.05em", margin: 0 }}>Kontrollierter Druck</p>
                     </div>
-                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, wordBreak: "break-word", overflowWrap: "break-word", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">{aiText?.stressControlled ?? result.stressBehavior.controlledPressure}</p>
+                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, wordBreak: "break-word", overflowWrap: "break-word", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">{result.stressBehavior.controlledPressure}</p>
                   </div>
                   <div style={{ padding: "16px 18px", borderRadius: 12, background: "#FF3B3008", border: "1px solid #FF3B3018", overflow: "visible" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
                       <AlertTriangle style={{ width: 14, height: 14, color: "#FF3B30", flexShrink: 0 }} />
-                      <p style={{ fontSize: 12, fontWeight: 700, color: "#FF3B30", textTransform: "uppercase", letterSpacing: "0.05em", margin: 0 }}>{region === "EN" ? "Uncontrolled stress" : "Unkontrollierter Stress"}</p>
+                      <p style={{ fontSize: 12, fontWeight: 700, color: "#FF3B30", textTransform: "uppercase", letterSpacing: "0.05em", margin: 0 }}>Unkontrollierter Stress</p>
                     </div>
-                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, wordBreak: "break-word", overflowWrap: "break-word", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">{aiText?.stressUncontrolled ?? result.stressBehavior.uncontrolledStress}</p>
+                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, wordBreak: "break-word", overflowWrap: "break-word", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">{result.stressBehavior.uncontrolledStress}</p>
                   </div>
                 </div>
                 <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "14px 0 0", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
-                  {aiText?.stressFooter ?? "Unter zunehmendem Arbeitsdruck können sich diese Verhaltensmuster verstärken. Dadurch entstehen im Arbeitsalltag Risiken für Abstimmung, Führung und Zusammenarbeit."}
+                  Unter zunehmendem Arbeitsdruck können sich diese Verhaltensmuster verstärken. Dadurch entstehen im Arbeitsalltag Risiken für Abstimmung, Führung und Zusammenarbeit.
                 </p>
               </div>
 
               <div data-pdf-block style={{ ...sep, borderBottom: "none" }} data-testid="section-risk-timeline">
-                <SectionHead num={5} title={region === "EN" ? "Risk Forecast" : "Risikoprognose"} />
+                <SectionHead num={5} title="Risikoprognose" />
                 <div style={{ position: "relative", paddingLeft: 28 }}>
                   <div style={{ position: "absolute", left: 9, top: 8, bottom: 8, width: 2, background: "rgba(0,0,0,0.08)", borderRadius: 1 }} />
                   <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
                     {result.riskTimeline.map((phase, i) => {
-                      const aiPhase = aiText?.riskTimeline?.[i];
                       const phaseCol = i === 0 ? "#34C759" : i === 1 ? "#FF9500" : "#C41E3A";
                       return (
                         <div key={i} style={{ position: "relative" }}>
                           <div style={{ position: "absolute", left: -22, top: 14, width: 10, height: 10, borderRadius: 5, background: phaseCol, boxShadow: `0 0 0 3px ${phaseCol}20` }} />
                           <div style={{ padding: "12px 16px", borderRadius: 12, background: `${phaseCol}06`, border: `1px solid ${phaseCol}15` }}>
-                            <p style={{ fontSize: 12, fontWeight: 700, color: phaseCol, marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.05em" }}>{aiPhase?.label ?? phase.label} <span style={{ fontWeight: 500, textTransform: "none", letterSpacing: "0" }}>{aiPhase?.period ?? phase.period}</span></p>
-                            <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, wordBreak: "break-word", overflowWrap: "break-word", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any}>{aiPhase?.text ?? phase.text}</p>
+                            <p style={{ fontSize: 12, fontWeight: 700, color: phaseCol, marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.05em" }}>{phase.label} <span style={{ fontWeight: 500, textTransform: "none", letterSpacing: "0" }}>{phase.period}</span></p>
+                            <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, wordBreak: "break-word", overflowWrap: "break-word", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">{phase.text}</p>
                           </div>
                         </div>
                       );
@@ -1504,13 +1395,27 @@ export default function SollIstBericht() {
               </div>
 
               {(() => {
-                const rFitLabel = result.fitRating === "GEEIGNET" ? (region === "EN" ? "Suitable" : "Geeignet") : result.fitRating === "BEDINGT" ? (region === "EN" ? "Conditionally suitable" : "Bedingt geeignet") : (region === "EN" ? "Not suitable" : "Nicht geeignet");
+                const rFitLabel = result.fitLabel;
                 const rFitColor = result.fitColor;
-                const rFazit = aiText?.finalFazit ?? computeRFazit(result);
+
+                const rGapLevel = result.gapLevel;
+                let rFazit: string;
+                if (rFitLabel === "Geeignet") {
+                  rFazit = "Die Arbeitsweise der Person ist deckungsgleich mit den Anforderungen der Stelle. Aufgaben, Entscheidungen und Arbeitsstil sind stimmig.";
+                } else if (rFitLabel === "Bedingt geeignet" && rGapLevel === "gering") {
+                  rFazit = "Die Grundausrichtung ist ähnlich, jedoch unterscheidet sich die Gewichtung einzelner Arbeitsbereiche. Im Alltag kann das zu erhöhtem Abstimmungsbedarf und höherem Führungsaufwand führen.";
+                } else if (rFitLabel === "Bedingt geeignet") {
+                  rFazit = "Die Grundausrichtung ist ähnlich. In einzelnen Bereichen zeigt sich jedoch spürbarer Anpassungsbedarf. Im Alltag kann das zu Konflikten im Team und deutlich höherem Führungsaufwand führen.";
+                } else if (rFitLabel === "Nicht geeignet" && rGapLevel !== "hoch") {
+                  rFazit = "Die strukturelle Abweichung zwischen Stelle und Person ist deutlich. Im Alltag kann das zu erhöhtem Abstimmungsbedarf, Konflikten im Team und deutlich höherem Führungsaufwand führen.";
+                } else {
+                  rFazit = "Die Anforderungen der Stelle und die Arbeitsweise der Person unterscheiden sich deutlich. Im Alltag kann das zu erhöhtem Abstimmungsbedarf, Konflikten im Team und deutlich höherem Führungsaufwand führen.";
+                }
+
 
                 return (
                   <div data-pdf-block style={{ ...sep, borderBottom: "none" }} data-testid="section-development">
-                    <SectionHead num={6} title={region === "EN" ? "Overall Assessment" : "Gesamtbewertung"} />
+                    <SectionHead num={6} title="Gesamtbewertung" />
 
                     <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 14 }}>
                       <div style={{ width: 16, height: 16, borderRadius: 8, background: rFitColor, flexShrink: 0, boxShadow: `0 0 0 3px ${rFitColor}20` }} />
@@ -1521,43 +1426,36 @@ export default function SollIstBericht() {
                     </div>
 
                     <div style={{ background: `${rFitColor}08`, borderLeft: `3px solid ${rFitColor}`, borderRadius: "0 8px 8px 0", padding: "12px 16px", marginBottom: 22 }}>
-                      <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any}>{rFazit}</p>
+                      <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">{rFazit}</p>
                     </div>
 
-                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, wordBreak: "break-word", overflowWrap: "break-word", hyphens: "auto", WebkitHyphens: "auto" } as any}>{aiText?.finalText ?? result.finalText}</p>
+                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, wordBreak: "break-word", overflowWrap: "break-word", hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">{result.finalText}</p>
                   </div>
                 );
               })()}
 
               {result.integrationsplan && (
                 <div data-pdf-block style={{ ...sep, borderBottom: "none" }} data-testid="section-integrationsplan">
-                  <SectionHead num={7} title={region === "EN" ? "30-Day Integration Plan" : "30-Tage-Integrationsplan"} />
+                  <SectionHead num={7} title="30-Tage-Integrationsplan" />
                   <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-                    {result.integrationsplan.map((phase, phaseIdx) => {
-                      const aiPlan = aiText?.integrationsplan?.[phaseIdx];
+                    {result.integrationsplan.map(phase => {
                       const phaseCol = phase.num === 1 ? "#0071E3" : phase.num === 2 ? "#F39200" : "#34C759";
-                      const phaseTitle = aiPlan?.title ?? phase.title;
-                      const phasePeriod = aiPlan?.period ?? phase.period;
-                      const phaseZiel = aiPlan?.ziel ?? phase.ziel;
-                      const phaseItems = aiPlan?.items ?? phase.items;
-                      const phaseFokusIntro = aiPlan?.fokus?.intro ?? phase.fokus.intro;
-                      const phaseFokusBullets = aiPlan?.fokus?.bullets ?? phase.fokus.bullets;
                       return (
                         <div key={phase.num} data-testid={`integration-phase-${phase.num}`} style={{ borderRadius: 14, overflow: "hidden", border: `1px solid ${phaseCol}20` }}>
                           <div style={{ padding: "12px 20px", background: `${phaseCol}10`, borderBottom: `1px solid ${phaseCol}15`, display: "flex", alignItems: "baseline", gap: 10 }}>
                             <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 26, height: 26, borderRadius: 13, background: phaseCol, color: "#fff", fontSize: 13, fontWeight: 700, flexShrink: 0 }}>{phase.num}</span>
                             <div>
-                              <span style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F" }}>{phaseTitle}</span>
-                              <span style={{ fontSize: 13, fontWeight: 500, color: "#8E8E93", marginLeft: 8 }}>{phasePeriod}</span>
+                              <span style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F" }}>{phase.title}</span>
+                              <span style={{ fontSize: 13, fontWeight: 500, color: "#8E8E93", marginLeft: 8 }}>{phase.period}</span>
                             </div>
                           </div>
                           <div style={{ padding: "16px 20px" }}>
                             <p style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", margin: "0 0 14px", lineHeight: 1.7 }}>
-                              <span style={{ fontWeight: 700 }}>{region === "EN" ? "Goal: " : "Ziel: "}</span>{phaseZiel}
+                              <span style={{ fontWeight: 700 }}>Ziel: </span>{phase.ziel}
                             </p>
 
                             <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 16 }}>
-                              {phaseItems.map((item, i) => (
+                              {phase.items.map((item, i) => (
                                 <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
                                   <div style={{ width: 6, height: 6, borderRadius: 3, background: phaseCol, flexShrink: 0, marginTop: 9 }} />
                                   <span style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7 }}>{item}</span>
@@ -1566,10 +1464,10 @@ export default function SollIstBericht() {
                             </div>
 
                             <div style={{ padding: "14px 16px", borderRadius: 10, background: `${phaseCol}06`, borderLeft: `4px solid ${phaseCol}` }}>
-                              <p style={{ fontSize: 11, fontWeight: 700, color: phaseCol, textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 6px" }}>{region === "EN" ? "What matters" : "Worauf es ankommt"}</p>
-                              <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: "0 0 8px", hyphens: "auto", WebkitHyphens: "auto" } as any}>{phaseFokusIntro}</p>
+                              <p style={{ fontSize: 11, fontWeight: 700, color: phaseCol, textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 6px" }}>Worauf es ankommt</p>
+                              <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: "0 0 8px", hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">{phase.fokus.intro}</p>
                               <ul style={{ margin: 0, paddingLeft: 0, listStyle: "none" }}>
-                                {phaseFokusBullets.map((b, bi) => (
+                                {phase.fokus.bullets.map((b, bi) => (
                                   <li key={bi} style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, marginBottom: 4, paddingLeft: 18, position: "relative" }}>
                                     <span style={{ position: "absolute", left: 0, top: 9, width: 6, height: 6, borderRadius: "50%", background: phaseCol, opacity: 0.7 }} />
                                     {b}
@@ -1588,7 +1486,7 @@ export default function SollIstBericht() {
 
               <div style={{ marginTop: 48, paddingTop: 20, borderTop: "1px solid rgba(0,0,0,0.06)", textAlign: "center" }}>
                 <span style={{ fontSize: 11, color: "#C0C0C5" }}>
-                  © {new Date().getFullYear()} bioLogic Talent Navigator · {region === "EN" ? "Fit Analysis" : "Passungsanalyse"} · {region === "EN" ? "Created" : "Erstellt am"} {new Date().toLocaleDateString(region === "EN" ? "en-GB" : "de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })}
+                  © {new Date().getFullYear()} bioLogic Talent Navigator · Passungsanalyse · Erstellt am {new Date().toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })}
                 </span>
               </div>
 
@@ -1601,7 +1499,7 @@ export default function SollIstBericht() {
                 style={{ display: "inline-flex", alignItems: "center", gap: 8, height: 40, padding: "0 20px", borderRadius: 14, border: "1px solid rgba(0,0,0,0.08)", background: "#FFF", fontSize: 14, fontWeight: 600, color: "#6E6E73", cursor: "pointer" }}
                 data-testid="button-reconfigure"
               >
-                {region === "EN" ? "Adjust profile" : "Profil anpassen"}
+                Profil anpassen
               </button>
             </div>
           </div>
