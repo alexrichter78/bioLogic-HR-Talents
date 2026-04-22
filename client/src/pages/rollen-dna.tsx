@@ -2367,10 +2367,10 @@ export default function RollenDNA() {
                     </p>
                   </div>
                   <div style={{ textAlign: "right", fontSize: 14, color: "#48484A", lineHeight: 1.8 }}>
-                    <div>Tätigkeiten <span style={{ fontWeight: 600, color: "#1D1D1F" }}>{hauptCount} / 15</span></div>
-                    <div>Humankompetenzen <span style={{ fontWeight: 600, color: "#1D1D1F" }}>{nebenCount} / 10</span></div>
+                    <div>{region === "EN" ? "Tasks" : "Tätigkeiten"} <span style={{ fontWeight: 600, color: "#1D1D1F" }}>{hauptCount} / 15</span></div>
+                    <div>{region === "EN" ? "Human competences" : "Humankompetenzen"} <span style={{ fontWeight: 600, color: "#1D1D1F" }}>{nebenCount} / 10</span></div>
                     {fuehrung !== "Keine" && (
-                      <div>Führungskompetenzen <span style={{ fontWeight: 600, color: "#1D1D1F" }}>{fuehrungCount} / 10</span></div>
+                      <div>{region === "EN" ? "Leadership competences" : "Führungskompetenzen"} <span style={{ fontWeight: 600, color: "#1D1D1F" }}>{fuehrungCount} / 10</span></div>
                     )}
                   </div>
                 </div>
@@ -2398,9 +2398,9 @@ export default function RollenDNA() {
                     data-testid="tabs-taetigkeiten"
                   >
                     {([
-                      { key: "haupt" as TaetigkeitKategorie, label: "Tätigkeiten", count: hauptCount },
-                      { key: "neben" as TaetigkeitKategorie, label: "Humankompetenzen", count: nebenCount },
-                      ...(fuehrung !== "Keine" ? [{ key: "fuehrung" as TaetigkeitKategorie, label: "Führungskompetenzen", count: fuehrungCount }] : []),
+                      { key: "haupt" as TaetigkeitKategorie, label: region === "EN" ? "Tasks" : "Tätigkeiten", count: hauptCount },
+                      { key: "neben" as TaetigkeitKategorie, label: region === "EN" ? "Human competences" : "Humankompetenzen", count: nebenCount },
+                      ...(fuehrung !== "Keine" ? [{ key: "fuehrung" as TaetigkeitKategorie, label: region === "EN" ? "Leadership competences" : "Führungskompetenzen", count: fuehrungCount }] : []),
                     ]).map(tab => {
                       const isActive = activeTab === tab.key;
                       return (
@@ -2462,16 +2462,16 @@ export default function RollenDNA() {
                           margin: "0 auto 16px",
                         }} />
                         <p style={{ fontSize: 15, color: "#0071E3", fontWeight: 500 }}>
-                          KI erstellt Stellenprofil für „{beruf}“
+                          {region === "EN" ? `AI is creating role profile for “${beruf}”` : `KI erstellt Stellenprofil für „${beruf}“`}
                         </p>
                         <p style={{ fontSize: 13, color: "#6E6E73", marginTop: 4, marginBottom: 20 }}>
-                          Das kann einige Sekunden dauern.
+                          {region === "EN" ? "This may take a few seconds." : "Das kann einige Sekunden dauern."}
                         </p>
                         <div style={{ display: "inline-flex", flexDirection: "column", gap: 10, textAlign: "left" }}>
                           {[
-                            { label: "Tätigkeiten werden erstellt", step: 0 },
-                            { label: "Humankompetenzen werden ermittelt", step: 1 },
-                            { label: "Führungskompetenzen werden analysiert", step: 2 },
+                            { label: region === "EN" ? "Tasks are being created" : "Tätigkeiten werden erstellt", step: 0 },
+                            { label: region === "EN" ? "Human competences are being identified" : "Humankompetenzen werden ermittelt", step: 1 },
+                            { label: region === "EN" ? "Leadership competences are being analysed" : "Führungskompetenzen werden analysiert", step: 2 },
                           ].map((item) => {
                             const done = generatingStep > item.step;
                             const active = generatingStep === item.step;
@@ -2531,7 +2531,7 @@ export default function RollenDNA() {
                     ) : filteredTaetigkeiten.length === 0 ? (
                       <div className="text-center py-12">
                         <p style={{ fontSize: 15, color: "#6E6E73" }}>
-                          Noch keine {activeTab === "haupt" ? "Tätigkeiten" : activeTab === "neben" ? "Humankompetenzen" : "Führungskompetenzen"} hinzugefügt.
+                          {region === "EN" ? <>No {activeTab === "haupt" ? "tasks" : activeTab === "neben" ? "human competences" : "leadership competences"} added yet.</> : <>Noch keine {activeTab === "haupt" ? "Tätigkeiten" : activeTab === "neben" ? "Humankompetenzen" : "Führungskompetenzen"} hinzugefügt.</>}
                         </p>
                       </div>
                     ) : (
@@ -2616,7 +2616,7 @@ export default function RollenDNA() {
                               </div>
 
                               <div style={{ marginTop: 14, display: "grid", gridTemplateColumns: "max-content auto", rowGap: 10, columnGap: 8, alignItems: "center" }}>
-                                  <span style={{ fontSize: 12, fontWeight: 500, color: "#48484A", textTransform: "uppercase", letterSpacing: "0.5px", whiteSpace: "nowrap" }}>Gewichtung</span>
+                                  <span style={{ fontSize: 12, fontWeight: 500, color: "#48484A", textTransform: "uppercase", letterSpacing: "0.5px", whiteSpace: "nowrap" }}>{region === "EN" ? "Weighting" : "Gewichtung"}</span>
                                   <div style={{ display: "flex", gap: 6 }}>
                                     {NIVEAU_OPTIONS.map(n => (
                                       <button
@@ -2642,12 +2642,12 @@ export default function RollenDNA() {
                                         data-testid={`niveau-${t.id}-${n.toLowerCase()}`}
                                       >
                                         {t.niveau === n && <Check style={{ width: 10, height: 10 }} />}
-                                        {n}
+                                        {region === "EN" ? { Niedrig: "Low", Mittel: "Medium", Hoch: "High" }[n] : n}
                                       </button>
                                     ))}
                                   </div>
 
-                                  <span style={{ fontSize: 12, fontWeight: 500, color: "#48484A", textTransform: "uppercase", letterSpacing: "0.5px", whiteSpace: "nowrap" }}>Schwerpunkt</span>
+                                  <span style={{ fontSize: 12, fontWeight: 500, color: "#48484A", textTransform: "uppercase", letterSpacing: "0.5px", whiteSpace: "nowrap" }}>{region === "EN" ? "Focus" : "Schwerpunkt"}</span>
                                   <div style={{ display: "flex", gap: 6 }}>
                                     {KOMPETENZ_OPTIONS.map(k => (
                                       <button
@@ -2729,8 +2729,8 @@ export default function RollenDNA() {
                   {!isGenerating && (
                     <p style={{ fontSize: 12, color: "#AEAEB2", textAlign: "center", marginTop: 16 }}>
                       {currentTabCount >= currentTabMax
-                        ? `Maximum von ${currentTabMax} erreicht`
-                        : `Maximal ${currentTabMax} ${activeTab === "haupt" ? "Tätigkeiten" : activeTab === "neben" ? "Humankompetenzen" : "Führungskompetenzen"}`
+                        ? region === "EN" ? `Maximum of ${currentTabMax} reached` : `Maximum von ${currentTabMax} erreicht`
+                        : region === "EN" ? `Max. ${currentTabMax} ${activeTab === "haupt" ? "tasks" : activeTab === "neben" ? "human competences" : "leadership competences"}` : `Maximal ${currentTabMax} ${activeTab === "haupt" ? "Tätigkeiten" : activeTab === "neben" ? "Humankompetenzen" : "Führungskompetenzen"}`
                       }
                     </p>
                   )}
@@ -2790,7 +2790,7 @@ export default function RollenDNA() {
                           localStorage.setItem("rollenDnaCompleted", "true");
                         }}
                       >
-                        zur Stellendefinition
+                        {region === "EN" ? "To role definition" : "zur Stellendefinition"}
                         <ChevronRight className="w-5 h-5" />
                       </Button>
                     );
