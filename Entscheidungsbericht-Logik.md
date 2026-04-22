@@ -24,6 +24,7 @@
 15. [AI-Strukturbericht (Backend)](#15-ai-strukturbericht-backend)
 16. [Rollenspezifische Terminologie](#16-rollenspezifische-terminologie)
 17. [Konstellationstexte](#17-konstellationstexte)
+18. [KI-Schreibregeln (JobCheck & MatchCheck)](#18-ki-schreibregeln-jobcheck--matchcheck)
 
 ---
 
@@ -752,3 +753,126 @@ Eingabe: Rollenprofil (Soll) + Kandidatenprofil (Ist)
     ├── developmentFromControl → Entwicklungsprognose
     └── integrationPlan → 90-Tage-Plan (3 Phasen)
 ```
+
+---
+
+## 18. KI-Schreibregeln (JobCheck & MatchCheck)
+
+Diese Regeln gelten verbindlich für alle KI-generierten Texte in beiden Berichten: den **JobCheck-Entscheidungsbericht** (`/api/generate-bericht`) und den **MatchCheck-Passungsbericht** (`/api/generate-soll-ist-narrative`). Sie sind in den jeweiligen System-Prompts hinterlegt und müssen bei jeder Prompt-Änderung erhalten bleiben.
+
+---
+
+### 18.1 Regeln – Deutsch (DE/CH/AT)
+
+#### Verboten
+
+| Regel | Falsch | Richtig |
+|-------|--------|---------|
+| **Keine Prozentzahlen oder Zahlenwerte** im Ausgabetext | "Die impulsive Komponente liegt bei 52 %" | "Tempo und Entscheidung steht klar im Vordergrund" |
+| | "Abstand von 3 Punkten" | "nahezu gleichauf" |
+| | "knapp 40" | "erkennbar im Hintergrund" |
+| **Keine Modellbegriffe** (bioLogic-intern) | "impulsiv", "intuitiv", "analytisch" | "Tempo und Entscheidung", "Kommunikation und Beziehung", "Struktur und Sorgfalt" |
+| | "Komponente", "Triade", "Profilklasse" | "Schwerpunkt", "Hauptfokus", "begleitet die Stelle" |
+| | "BAL_FULL", "DUAL_TOP", "CLEAR_TOP", "ORDER", "Gap" | Klartext-Beschreibung |
+| **Keine Gedankenstriche** (– oder —) im Fließtext | "Die Person handelt schnell – manchmal zu schnell" | Satz aufteilen oder Doppelpunkt |
+| **Kein Passiv** | "Es sollte sichergestellt werden, dass …" | "Wer hier sitzt, stellt sicher, dass …" |
+| **Keine Disclaimer** im Berichtskörper | "wertfrei zu verstehen", "ersetzt keine Einzelfallbetrachtung", "Tendenzen, keine starren Bilder" | Dieser Hinweis steht separat im Bericht |
+| **Keine Floskeln** | "im Rahmen eines ganzheitlichen Ansatzes", "ein signifikanter Mehrwert" | Direkter Satz mit konkreter Aussage |
+
+#### Geboten: Qualitative Intensitätsvokabeln
+
+Wenn über Verhältnisse zwischen den drei Schwerpunkten gesprochen wird:
+
+| Verhältnis | Vokabeln (Beispiele) |
+|------------|----------------------|
+| Klare Dominanz | "deutlich im Vordergrund", "klar dominierend", "eindeutig prägend" |
+| Mässige Dominanz | "erkennbar führend", "deutlich davor", "merklich stärker" |
+| Leichte Tendenz | "leichte Ausrichtung", "knapp davor", "erkennbare Tendenz" |
+| Nahezu gleichauf | "nahezu gleichauf", "praktisch gleichauf", "ähnlich stark ausgeprägt" |
+| Sekundär | "klar mitprägend", "spürbar vorhanden", "begleitet den Schwerpunkt" |
+| Im Hintergrund | "im Hintergrund", "erkennbar nachrangig", "deutlich sekundär" |
+
+#### Drei Schwerpunkte – Klartext-Labels (DE)
+
+| bioLogic-intern | Klartext im Bericht |
+|-----------------|---------------------|
+| Impulsiv | **Tempo und Entscheidung** |
+| Intuitiv | **Kommunikation und Beziehung** |
+| Analytisch | **Struktur und Sorgfalt** |
+
+#### Tonalität
+
+- Direkt, aktiv, haltungsstark. Keine akademische Umständlichkeit.
+- Jeder Absatz endet mit einer klaren Aussage: Was bedeutet das für die Besetzung?
+- Rollenspezifisches Vokabular verwenden (siehe Abschnitt 16 für Branchenterminologie).
+- Für den JobCheck: Risikobeschreibungen enden immer mit "Im Alltag entsteht …"
+
+---
+
+### 18.2 Regeln – Englisch (EN)
+
+#### Verboten
+
+| Regel | Wrong | Right |
+|-------|-------|-------|
+| **No numbers or percentages** in output text | "Impulsive drive at 40% vs. 45%" | "both profiles are closely matched on pace" |
+| | "a gap of 3 points" | "slightly ahead", "noticeably higher" |
+| | "around 52" | "clearly in the foreground" |
+| **No model jargon** (bioLogic-internal) | "impulsive", "intuitive", "analytical" | "Pace and Decision", "Communication and Relationships", "Structure and Diligence" |
+| | "component", "triad", "profile class", "gap", "BAL_FULL", "top1/top2/top3" | plain-English labels |
+| **No em-dashes** (– or —) in prose | "acts quickly — sometimes too quickly" | split into two sentences |
+| **No passive voice** | "it should be ensured that …" | "whoever fills this role ensures …" |
+| **No disclaimers** inside the report body | "value-free", "does not replace individual assessment" | shown separately in the report |
+| **No filler phrases** | "in the context of a holistic approach", "a significant added value" | direct sentence with a concrete point |
+
+#### Required: Qualitative Intensity Vocabulary
+
+| Relationship | Vocabulary (examples) |
+|-------------|----------------------|
+| Clear dominance | "clearly in the foreground", "clearly dominant", "unmistakably shapes the role" |
+| Moderate dominance | "noticeably ahead", "clearly stronger", "markedly more prominent" |
+| Slight tendency | "slightly ahead", "a recognisable lean", "just ahead" |
+| Practically on par | "practically on par", "closely matched", "similar in weight" |
+| Secondary | "supports the role", "noticeably present", "plays a clear secondary part" |
+| Background | "in the background", "clearly secondary", "plays a supporting role" |
+
+#### Three Focus Areas – Plain-English Labels (EN)
+
+| bioLogic-internal | Plain label in report |
+|-------------------|-----------------------|
+| Impulsiv | **Pace and Decision** |
+| Intuitiv | **Communication and Relationships** |
+| Analytisch | **Structure and Diligence** |
+
+#### Tone
+
+- Short sentences. Active voice. No coaching-speak, no intensifiers ("really", "extremely").
+- Each section: key statement first → brief justification → one concrete implication.
+- Refer concretely to role title, named tasks, context — never generic.
+- No repetition between sections.
+
+---
+
+### 18.3 Geltungsbereich je Report
+
+| Report | Endpunkt | Regeln gelten für |
+|--------|----------|-------------------|
+| JobCheck – Stellenanalyse | `POST /api/generate-bericht` | Alle Textfelder im JSON-Output (einleitung, gesamtprofil, rahmenbedingungen, fuehrungskontext, kompetenzanalyse, spannungsfelder, risikobewertung, fazit) |
+| MatchCheck – Passungsbericht | `POST /api/generate-soll-ist-narrative` | Alle Textfelder im JSON-Output (summaryText, executiveBullets, constellationRisks, dominanceShiftText, developmentText, actions, finalText) |
+
+> **Hinweis zur Umsetzung:** Die Prozentwerte werden dem Modell im User-Prompt als Eingabedaten übergeben, damit es die Verhältnisse korrekt einordnen kann. Das Modell muss diese Zahlen jedoch **nicht** in den generierten Text übernehmen — ausschliesslich qualitative Beschreibungen verwenden. Der System-Prompt enthält dazu den expliziten Hinweis: *"These numbers are for context only. DO NOT reproduce them in the text."*
+
+---
+
+### 18.4 Checkliste vor jeder Prompt-Änderung
+
+Bevor ein System- oder User-Prompt in diesen Endpunkten geändert wird, sicherstellen:
+
+- [ ] Verbot von Prozentzahlen und Zahlenwerten im Text vorhanden?
+- [ ] Verbot der Modellbegriffe (impulsiv/intuitiv/analytisch/Komponente/Triade) vorhanden?
+- [ ] Klartext-Labels definiert (DE: Tempo/Kommunikation/Struktur — EN: Pace/Communication/Structure)?
+- [ ] Qualitative Intensitätsvokabeln als Beispiele angegeben?
+- [ ] Verbot von Gedankenstrichen (DE) / em-dashes (EN) vorhanden?
+- [ ] Kein Passiv (DE) / Active voice (EN) verlangt?
+- [ ] Verbot von Disclaimern im Berichtstext vorhanden?
+- [ ] Hinweis im User-Prompt: Zahlen sind nur Kontext, nicht für den Text übernehmen?
