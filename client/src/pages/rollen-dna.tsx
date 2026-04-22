@@ -2671,7 +2671,7 @@ export default function RollenDNA() {
                                         }}
                                         data-testid={`kompetenz-${t.id}-${k.toLowerCase()}`}
                                       >
-                                        {k}
+                                        {region === "EN" ? { Impulsiv: "Impulsive", Intuitiv: "Intuitive", Analytisch: "Analytical" }[k] : k}
                                       </button>
                                     ))}
                                   </div>
