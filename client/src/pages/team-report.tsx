@@ -823,12 +823,9 @@ export default function TeamReport() {
     : resultBase;
 
   const handleGenerateReport = async () => {
-    if (aiNarrative && currentInputHash === lastInputHash) {
-      setReportGenerated(true);
-      return;
-    }
     setAiLoading(true);
     setAiError(null);
+    setAiNarrative(null);
     try {
       let roleLevel = "-";
       let taskStructure = "-";

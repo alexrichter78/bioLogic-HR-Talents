@@ -846,12 +846,9 @@ export default function SollIstBericht() {
               <button
                 onClick={async () => {
                   if (!roleTriad) return;
-                  if (aiNarrative && currentInputHash === lastInputHash) {
-                    setReportGenerated(true);
-                    return;
-                  }
                   setAiLoading(true);
                   setAiError(null);
+                  setAiNarrative(null);
                   try {
                     const computed = computeSollIst(roleName, candidateName || "Person", roleTriad, candidateProfile, fuehrungsArt, roleAnalysisObj, region === "EN" ? "en" : "de");
                     const payload = {
@@ -1107,7 +1104,7 @@ export default function SollIstBericht() {
           <div ref={reportRef} style={{ maxWidth: 820, margin: "0 auto" }} data-testid="print-report-wrapper">
             <button
               className="no-print"
-              onClick={() => { setReportGenerated(false); setAiNarrative(null); setAiError(null); window.scrollTo(0, 0); }}
+              onClick={() => { setReportGenerated(false); setLastInputHash(null); setAiNarrative(null); setAiError(null); window.scrollTo(0, 0); }}
               style={{
                 display: "inline-flex",
                 alignItems: "center",
@@ -1665,7 +1662,7 @@ export default function SollIstBericht() {
 
             <div style={{ display: "flex", justifyContent: "center", padding: "24px 0" }} className="no-print">
               <button
-                onClick={() => { setReportGenerated(false); setAiNarrative(null); setAiError(null); }}
+                onClick={() => { setReportGenerated(false); setLastInputHash(null); setAiNarrative(null); setAiError(null); }}
                 style={{ display: "inline-flex", alignItems: "center", gap: 8, height: 40, padding: "0 20px", borderRadius: 14, border: "1px solid rgba(0,0,0,0.08)", background: "#FFF", fontSize: 14, fontWeight: 600, color: "#6E6E73", cursor: "pointer" }}
                 data-testid="button-reconfigure"
               >
