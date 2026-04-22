@@ -73,7 +73,8 @@ export default function TeamCheckReportV4() {
   const isMobile = useIsMobile();
   const { region } = useRegion();
   const isEN = region === "EN";
-  const t = (de: string, en: string) => isEN ? en : de;
+  const isFR = region === "FR";
+  const t = (de: string, en: string, fr?: string) => isFR ? (fr ?? de) : isEN ? en : de;
   const axisLabel = makeAxisLabel(region);
   const [result, setResult] = useState<TeamCheckV4Result | null>(null);
   const reportRef = useRef<HTMLDivElement>(null);
@@ -404,10 +405,10 @@ export default function TeamCheckReportV4() {
                   }}
                   data-testid="button-print-v4"
                   className="report-header-btn"
-                  title={t("1:1 Qualität — im Druckdialog 'Als PDF speichern' wählen", "Print or save as PDF")}
+                  title={t("1:1 Qualität — im Druckdialog 'Als PDF speichern' wählen", "Print or save as PDF", "Dans la boîte de dialogue, sélectionnez « Enregistrer en PDF »")}
                 >
                   <Printer style={{ width: 15, height: 15 }} />
-                  <span>{t("Drucken", "Print")}</span>
+                  <span>{t("Drucken", "Print", "Imprimer")}</span>
                 </button>
               </div>
             </div>
@@ -428,24 +429,28 @@ export default function TeamCheckReportV4() {
 
               {/* === Section 1: Gesamtbewertung === */}
               <div style={sectionStyle} data-testid="v4-section-gesamtbewertung">
-              <SectionHead num={1} title="Gesamtbewertung" id="gesamtbewertung" />
+              <SectionHead num={1} title={t("Gesamtbewertung", "Overall assessment", "Évaluation globale")} id="gesamtbewertung" />
 
               <div style={{ margin: "0 0 24px" }} data-testid="v4-hero-bewertung">
                 <TextBlock text={aiNarrative?.fuehrungsprofil || result.gesamtbewertungText} />
 
                 <div data-pdf-block style={{ display: "flex", gap: 16, marginTop: 16, breakInside: "avoid" }} data-testid="v4-two-axis">
                   <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: `${bCol}08`, border: `1px solid ${bCol}25` }} data-testid="v4-gesamt-card">
-                    <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>{t("Gesamteinschätzung", "Overall assessment")}</div>
+                    <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>{t("Gesamteinschätzung", "Overall assessment", "Évaluation globale")}</div>
                     <div style={{ fontSize: 17, fontWeight: 700, color: bCol }} data-testid="v4-gesamt-label">{result.gesamteinschaetzung}</div>
                   </div>
                   <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: `${axisColor(result.passungZumTeam)}08`, border: `1px solid ${axisColor(result.passungZumTeam)}25` }}>
-                    <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>{t("Passung zum Team", "Team fit")}</div>
+                    <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>{t("Passung zum Team", "Team fit", "Adéquation à l'équipe")}</div>
                     <div style={{ fontSize: 17, fontWeight: 700, color: axisColor(result.passungZumTeam) }} data-testid="v4-passung-team">{axisLabel(result.passungZumTeam)}</div>
                   </div>
                 </div>
 
                 {(() => {
-                  const COMP_LABEL: Record<string, string> = isEN ? {
+                  const COMP_LABEL: Record<string, string> = isFR ? {
+                    impulsiv: "Rythme et Décision",
+                    intuitiv: "Communication et Relations",
+                    analytisch: "Structure et Rigueur",
+                  } : isEN ? {
                     impulsiv: "Pace and Decision",
                     intuitiv: "Communication and Relationships",
                     analytisch: "Structure and Diligence",
@@ -458,7 +463,7 @@ export default function TeamCheckReportV4() {
                   const matchColor = result.sameDominance ? "#34C759" : "#D64045";
                   return (
                     <div data-pdf-block style={{ marginTop: 16, padding: "20px 24px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)", breakInside: "avoid" }} data-testid="v4-kurzuebersicht-dominanz">
-                      <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 16px", textAlign: "center" }}>{t("Kurzübersicht", "Overview")}</p>
+                      <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 16px", textAlign: "center" }}>{t("Kurzübersicht", "Overview", "Aperçu")}</p>
                       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "center", gap: 16 }}>
                         <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center" }}>
                           <p style={{ fontSize: 12, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 10px" }}>Person</p>
@@ -482,11 +487,11 @@ export default function TeamCheckReportV4() {
 
                 <div data-pdf-block style={{ display: "flex", gap: 16, marginTop: 16, breakInside: "avoid" }} data-testid="v4-kurzueberblick">
                   <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)" }}>
-                    <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>{t("Stärke der Besetzung", "Key strength")}</div>
+                    <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>{t("Stärke der Besetzung", "Key strength", "Point fort de la composition")}</div>
                     <div style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", lineHeight: 1.5 }} data-testid="v4-hauptstaerke">{result.hauptstaerke}</div>
                   </div>
                   <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)" }}>
-                    <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>{t("Risiko der Besetzung", "Key risk")}</div>
+                    <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>{t("Risiko der Besetzung", "Key risk", "Risque principal de la composition")}</div>
                     <div style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", lineHeight: 1.5 }} data-testid="v4-hauptabweichung">{result.hauptabweichung}</div>
                   </div>
                 </div>
@@ -538,29 +543,29 @@ export default function TeamCheckReportV4() {
                 };
                 return (
                   <div style={sectionStyle} data-testid="v4-section-vergleich">
-                    <SectionHead num={2} title={t("Vergleich der Profile", "Profile comparison")} id="vergleich" />
+                    <SectionHead num={2} title={t("Vergleich der Profile", "Profile comparison", "Comparaison des profils")} id="vergleich" />
                     <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 20px", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any}>{gapText}</p>
                     <div data-pdf-block style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginBottom: 14 }}>
                       <div style={{ borderRadius: 16, border: "1px solid rgba(0,0,0,0.06)", background: "linear-gradient(135deg, #fafbfd, #f5f7fb)", padding: 24, boxShadow: "0 2px 8px rgba(0,0,0,0.02)" }}>
-                        <p style={{ fontSize: 15, fontWeight: 600, color: "#1D1D1F", margin: "0 0 20px" }}>{t("Team-Profil", "Team profile")}</p>
+                        <p style={{ fontSize: 15, fontWeight: 600, color: "#1D1D1F", margin: "0 0 20px" }}>{t("Team-Profil", "Team profile", "Profil de l'équipe")}</p>
                         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                           {keys.map(k => renderBar(k, Math.round(result.teamTriad[k])))}
                         </div>
                       </div>
                       <div style={{ borderRadius: 16, border: "1px solid rgba(0,0,0,0.06)", background: "linear-gradient(135deg, #fafbfd, #f5f7fb)", padding: 24, boxShadow: "0 2px 8px rgba(0,0,0,0.02)" }}>
-                        <p style={{ fontSize: 15, fontWeight: 600, color: "#1D1D1F", margin: "0 0 20px" }}>{t("Personen-Profil", "Person profile")}</p>
+                        <p style={{ fontSize: 15, fontWeight: 600, color: "#1D1D1F", margin: "0 0 20px" }}>{t("Personen-Profil", "Person profile", "Profil de la personne")}</p>
                         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                           {keys.map(k => renderBar(k, Math.round(result.personTriad[k])))}
                         </div>
                       </div>
                     </div>
                     <div data-pdf-block style={{ marginTop: 20, padding: "18px 20px", borderRadius: 12, background: "#F8F9FA", border: "1px solid rgba(0,0,0,0.06)" }}>
-                      <p style={{ fontSize: 13, fontWeight: 600, color: "#48484A", margin: "0 0 12px" }}>{t("Bedeutung der Komponenten", "What the dimensions mean")}</p>
+                      <p style={{ fontSize: 13, fontWeight: 600, color: "#48484A", margin: "0 0 12px" }}>{t("Bedeutung der Komponenten", "What the dimensions mean", "Signification des composantes")}</p>
                       <div style={{ display: "flex", gap: 12 }}>
                         {([
-                          { key: "impulsiv" as ComponentKey, label: t("Impulsiv", "Pace and Decision"), color: COMP_HEX.impulsiv, text: t("Steht für zügiges Handeln, klare Prioritäten und konsequente Umsetzung.", "Drives pace, clear priorities and direct results.") },
-                          { key: "analytisch" as ComponentKey, label: t("Analytisch", "Structure and Diligence"), color: COMP_HEX.analytisch, text: t("Sichert Struktur, Sorgfalt und nachvollziehbare Abläufe.", "Ensures structure, thoroughness and reliable processes.") },
-                          { key: "intuitiv" as ComponentKey, label: t("Intuitiv", "Communication and Relationships"), color: COMP_HEX.intuitiv, text: t("Unterstützt das Erkennen von Bedürfnissen und die passende Abstimmung im Team.", "Supports collaboration, sensing needs and aligning the team.") },
+                          { key: "impulsiv" as ComponentKey, label: t("Impulsiv", "Pace and Decision", "Rythme et Décision"), color: COMP_HEX.impulsiv, text: t("Steht für zügiges Handeln, klare Prioritäten und konsequente Umsetzung.", "Drives pace, clear priorities and direct results.", "Incarne la rapidité d'action, des priorités claires et une mise en œuvre résolue.") },
+                          { key: "analytisch" as ComponentKey, label: t("Analytisch", "Structure and Diligence", "Structure et Rigueur"), color: COMP_HEX.analytisch, text: t("Sichert Struktur, Sorgfalt und nachvollziehbare Abläufe.", "Ensures structure, thoroughness and reliable processes.", "Garantit la structure, la rigueur et des processus transparents.") },
+                          { key: "intuitiv" as ComponentKey, label: t("Intuitiv", "Communication and Relationships", "Communication et Relations"), color: COMP_HEX.intuitiv, text: t("Unterstützt das Erkennen von Bedürfnissen und die passende Abstimmung im Team.", "Supports collaboration, sensing needs and aligning the team.", "Favorise la compréhension des besoins et la coordination au sein de l'équipe.") },
                         ]).map(kb => (
                           <div key={kb.key} style={{ flex: 1, display: "flex", flexDirection: "column" }}>
                             <div style={{ flex: 1, padding: "14px 16px", borderRadius: 10, background: `linear-gradient(135deg, ${kb.color}12, ${kb.color}06)`, border: `1px solid ${kb.color}20`, display: "flex", flexDirection: "column" }}>
@@ -579,24 +584,24 @@ export default function TeamCheckReportV4() {
 
               {/* === Section 3: Warum dieses Ergebnis entsteht === */}
               <div data-pdf-block style={sectionStyle} data-testid="v4-section-warum">
-                <SectionHead num={3} title={t("Warum dieses Ergebnis entsteht", "Why this result occurs")} id="warum" />
+                <SectionHead num={3} title={t("Warum dieses Ergebnis entsteht", "Why this result occurs", "Pourquoi ce résultat")} id="warum" />
                 <TextBlock text={aiNarrative?.systemwirkung || result.warumText} />
               </div>
 
               {/* === Section 4: Wirkung im Arbeitsalltag === */}
               <div data-pdf-block style={sectionStyle} data-testid="v4-section-wirkung">
-                <SectionHead num={4} title={t("Wirkung im Arbeitsalltag", "Day-to-day impact")} id="wirkung" />
+                <SectionHead num={4} title={t("Wirkung im Arbeitsalltag", "Day-to-day impact", "Impact au quotidien")} id="wirkung" />
                 <TextBlock text={aiNarrative?.teamdynamikAlltag || result.wirkungAlltagText} />
               </div>
 
               {/* === Section 5: Chancen und Risiken === */}
               <div data-pdf-block style={sectionStyle} data-testid="v4-section-chancen-risiken">
-                <SectionHead num={5} title={t("Chancen und Risiken dieser Besetzung", "Opportunities and risks")} id="chancen-risiken" />
+                <SectionHead num={5} title={t("Chancen und Risiken dieser Besetzung", "Opportunities and risks", "Opportunités et risques")} id="chancen-risiken" />
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 24 }}>
                   <div style={{ padding: "20px", borderRadius: 12, background: "rgba(52,199,89,0.04)", border: "1px solid rgba(52,199,89,0.15)" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
                       <span style={{ width: 22, height: 22, borderRadius: 11, background: "#1B7A3D", color: "#FFF", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700 }}>+</span>
-                      <span style={{ fontSize: 15, fontWeight: 700, color: "#1B7A3D" }}>{t("Chancen", "Opportunities")}</span>
+                      <span style={{ fontSize: 15, fontWeight: 700, color: "#1B7A3D" }}>{t("Chancen", "Opportunities", "Opportunités")}</span>
                     </div>
                     {result.chancen.map((ch, i) => (
                       <div key={i} style={{ marginBottom: i < result.chancen.length - 1 ? 16 : 0, paddingBottom: i < result.chancen.length - 1 ? 16 : 0, borderBottom: i < result.chancen.length - 1 ? "1px solid rgba(52,199,89,0.12)" : "none" }}>
@@ -608,7 +613,7 @@ export default function TeamCheckReportV4() {
                   <div style={{ padding: "20px", borderRadius: 12, background: "rgba(255,59,48,0.03)", border: "1px solid rgba(255,59,48,0.12)" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
                       <span style={{ width: 22, height: 22, borderRadius: 11, background: "#C41E3A", color: "#FFF", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700 }}>–</span>
-                      <span style={{ fontSize: 15, fontWeight: 700, color: "#C41E3A" }}>{t("Risiken", "Risks")}</span>
+                      <span style={{ fontSize: 15, fontWeight: 700, color: "#C41E3A" }}>{t("Risiken", "Risks", "Risques")}</span>
                     </div>
                     {result.risiken.map((ri, i) => (
                       <div key={i} style={{ marginBottom: i < result.risiken.length - 1 ? 16 : 0, paddingBottom: i < result.risiken.length - 1 ? 16 : 0, borderBottom: i < result.risiken.length - 1 ? "1px solid rgba(255,59,48,0.08)" : "none" }}>
@@ -625,14 +630,14 @@ export default function TeamCheckReportV4() {
 
               {/* === Section 5: Verhalten unter Druck === */}
               <div data-pdf-block style={sectionStyle} data-testid="v4-section-druck">
-                <SectionHead num={6} title={t("Verhalten unter Druck", "Behaviour under pressure")} id="druck" />
+                <SectionHead num={6} title={t("Verhalten unter Druck", "Behaviour under pressure", "Comportement sous pression")} id="druck" />
                 <TextBlock text={aiNarrative?.kulturwirkung || result.druckText} />
               </div>
 
               {/* === Section 6 (only Führungskraft): Führungshinweis === */}
               {result.fuehrungshinweis && (
                 <div data-pdf-block style={sectionStyle} data-testid="v4-section-fuehrung">
-                  <SectionHead num={7} title={t("Was als Führungskraft für dieses Team wichtig ist", "What matters in this leadership role")} id="fuehrung" />
+                  <SectionHead num={7} title={t("Was als Führungskraft für dieses Team wichtig ist", "What matters in this leadership role", "Ce qui compte pour manager cette équipe")} id="fuehrung" />
                   <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 14 }}>
                     {result.fuehrungshinweis.map((item, i) => (
                       <div key={item.title} data-pdf-block style={{ padding: "18px 20px", borderRadius: 12, background: "#FFF", borderLeft: "3px solid #343A48", border: "1px solid rgba(0,0,0,0.06)", borderLeftWidth: 3, borderLeftColor: "#343A48", boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }} data-testid={`v4-fuehrung-${i}`}>
@@ -652,7 +657,7 @@ export default function TeamCheckReportV4() {
                 const planNum = result.fuehrungshinweis ? 8 : 7;
                 return (
                   <div style={sectionStyle} data-testid="v4-section-integrationsplan">
-                    <SectionHead num={planNum} title={t("30-Tage-Integrationsplan", "30-day integration plan")} id="integrationsplan" />
+                    <SectionHead num={planNum} title={t("30-Tage-Integrationsplan", "30-day integration plan", "Plan d'intégration de 30 jours")} id="integrationsplan" />
                     <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
                       {result.integrationsplan.map(phase => {
                         const phaseCol = phase.num === 1 ? "#0071E3" : phase.num === 2 ? "#F39200" : "#34C759";
@@ -667,18 +672,18 @@ export default function TeamCheckReportV4() {
                             </div>
                             <div style={{ padding: "16px 20px" }}>
                               <p style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", margin: "0 0 14px", lineHeight: 1.7 }}>
-                                <span style={{ fontWeight: 700 }}>{t("Ziel: ", "Goal: ")}</span>{phase.ziel}
+                                <span style={{ fontWeight: 700 }}>{t("Ziel: ", "Goal: ", "Objectif : ")}</span>{phase.ziel}
                               </p>
 
                               <div style={{ marginBottom: 20 }}>
-                                <p style={{ fontSize: 11, fontWeight: 700, color: "#1D1D1F", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 8px" }}>{t("Was jetzt konkret wichtig ist", "What matters right now")}</p>
+                                <p style={{ fontSize: 11, fontWeight: 700, color: "#1D1D1F", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 8px" }}>{t("Was jetzt konkret wichtig ist", "What matters right now", "Ce qui est concret maintenant")}</p>
                                 {phase.beschreibung.split("\n\n").map((para, pi) => (
                                   <p key={pi} style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 10px", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any}>{para}</p>
                                 ))}
                               </div>
 
                               <div data-pdf-block style={{ marginBottom: 20 }}>
-                                <p style={{ fontSize: 11, fontWeight: 700, color: "#1D1D1F", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 8px" }}>{t("Praxisbezug im Alltag", "In practice")}</p>
+                                <p style={{ fontSize: 11, fontWeight: 700, color: "#1D1D1F", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 8px" }}>{t("Praxisbezug im Alltag", "In practice", "Application pratique")}</p>
                                 <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                                   {phase.praxis.map((item, idx) => (
                                     <div key={idx} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
@@ -690,7 +695,7 @@ export default function TeamCheckReportV4() {
                               </div>
 
                               <div data-pdf-block style={{ marginBottom: 20 }}>
-                                <p style={{ fontSize: 11, fontWeight: 700, color: "#34C759", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 8px" }}>{t("Woran man merkt, dass es gut läuft", "Signs that it is working")}</p>
+                                <p style={{ fontSize: 11, fontWeight: 700, color: "#34C759", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 8px" }}>{t("Woran man merkt, dass es gut läuft", "Signs that it is working", "Signes que ça fonctionne")}</p>
                                 <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                                   {phase.signale.map((s, si) => (
                                     <div key={si} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
@@ -702,12 +707,12 @@ export default function TeamCheckReportV4() {
                               </div>
 
                               <div data-pdf-block style={{ padding: "14px 16px", borderRadius: 10, background: "rgba(0,0,0,0.02)", borderLeft: "3px solid #8E8E93", marginBottom: 16 }}>
-                                <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 6px" }}>{t("Worauf die Führungskraft achten sollte", "Leadership note")}</p>
+                                <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 6px" }}>{t("Worauf die Führungskraft achten sollte", "Leadership note", "Note pour le manager")}</p>
                                 <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any}>{phase.fuehrungstipp}</p>
                               </div>
 
                               <div data-pdf-block style={{ padding: "14px 16px", borderRadius: 10, background: `${phaseCol}06`, borderLeft: `4px solid ${phaseCol}` }}>
-                                <p style={{ fontSize: 11, fontWeight: 700, color: phaseCol, textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 6px" }}>{t("Worauf es ankommt", "Focus areas")}</p>
+                                <p style={{ fontSize: 11, fontWeight: 700, color: phaseCol, textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 6px" }}>{t("Worauf es ankommt", "Focus areas", "Points clés")}</p>
                                 <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: "0 0 8px", hyphens: "auto", WebkitHyphens: "auto" } as any}>{phase.fokus.intro}</p>
                                 <ul style={{ margin: 0, paddingLeft: 0, listStyle: "none" }}>
                                   {phase.fokus.bullets.map((b, bi) => (
@@ -725,7 +730,7 @@ export default function TeamCheckReportV4() {
                     </div>
 
                     <div data-pdf-block style={{ marginTop: 28, padding: "18px 20px", borderRadius: 12, background: "#FFF5F5", border: "1px solid rgba(196,30,58,0.12)" }} data-testid="v4-integration-warnsignale">
-                      <p style={{ fontSize: 11, fontWeight: 700, color: "#C41E3A", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 10px" }}>{t("Typische Warnsignale in den ersten 30 Tagen", "Early warning signals")}</p>
+                      <p style={{ fontSize: 11, fontWeight: 700, color: "#C41E3A", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 10px" }}>{t("Typische Warnsignale in den ersten 30 Tagen", "Early warning signals", "Signaux d'alerte typiques dans les 30 premiers jours")}</p>
                       <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                         {result.intWarnsignale.map((w, wi) => (
                           <div key={wi} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
@@ -737,7 +742,7 @@ export default function TeamCheckReportV4() {
                     </div>
 
                     <div data-pdf-block style={{ marginTop: 16, padding: "18px 20px", borderRadius: 12, background: "rgba(0,113,227,0.03)", border: "1px solid rgba(0,113,227,0.12)" }} data-testid="v4-integration-leitfragen">
-                      <p style={{ fontSize: 11, fontWeight: 700, color: "#0071E3", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 10px" }}>{t("Leitfragen für das 30-Tage-Gespräch", "Guide questions for the 30-day conversation")}</p>
+                      <p style={{ fontSize: 11, fontWeight: 700, color: "#0071E3", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 10px" }}>{t("Leitfragen für das 30-Tage-Gespräch", "Guide questions for the 30-day conversation", "Questions guides pour l'entretien à 30 jours")}</p>
                       <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                         {result.intLeitfragen.map((q, qi) => (
                           <div key={qi} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
@@ -749,7 +754,7 @@ export default function TeamCheckReportV4() {
                     </div>
 
                     <div data-pdf-block style={{ marginTop: 16, padding: "16px 18px", borderRadius: 10, background: "rgba(0,0,0,0.02)", borderLeft: "3px solid #8E8E93" }} data-testid="v4-integration-verantwortung">
-                      <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 6px" }}>{t("Wichtig", "Note")}</p>
+                      <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 6px" }}>{t("Wichtig", "Note", "Important")}</p>
                       <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any}>{result.intVerantwortung}</p>
                     </div>
                   </div>
@@ -761,7 +766,7 @@ export default function TeamCheckReportV4() {
                 const riskNum = result.fuehrungshinweis ? 9 : 8;
                 return (
                   <div data-pdf-block style={sectionStyle} data-testid="v4-section-risikoprognose">
-                    <SectionHead num={riskNum} title={t("Risikoprognose", "Risk forecast")} id="risikoprognose" />
+                    <SectionHead num={riskNum} title={t("Risikoprognose", "Risk forecast", "Prévision des risques")} id="risikoprognose" />
                     <div style={{ position: "relative", paddingLeft: 28 }}>
                       <div style={{ position: "absolute", left: 9, top: 8, bottom: 8, width: 2, background: "rgba(0,0,0,0.08)", borderRadius: 1 }} />
                       <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
@@ -788,7 +793,7 @@ export default function TeamCheckReportV4() {
                 const ohneNum = result.fuehrungshinweis ? 10 : 9;
                 return (
                   <div data-pdf-block style={sectionStyle} data-testid="v4-section-team-ohne-person">
-                    <SectionHead num={ohneNum} title={t("Was passiert, wenn das Team so bleibt", "Without this person")} id="team-ohne-person" />
+                    <SectionHead num={ohneNum} title={t("Was passiert, wenn das Team so bleibt", "Without this person", "Sans cette personne, que se passe-t-il ?")} id="team-ohne-person" />
                     {result.teamOhnePersonText.split("\n\n").map((p, i) => (
                       <p key={i} style={bodyText}>{p}</p>
                     ))}
@@ -801,7 +806,7 @@ export default function TeamCheckReportV4() {
                 const empNum = result.fuehrungshinweis ? 11 : 10;
                 return (
                   <div data-pdf-block style={sectionStyle} data-testid="v4-section-empfehlungen">
-                    <SectionHead num={empNum} title={t("Was jetzt wichtig ist", "Key recommendations")} id="empfehlungen" />
+                    <SectionHead num={empNum} title={t("Was jetzt wichtig ist", "Key recommendations", "Ce qui est important maintenant")} id="empfehlungen" />
                     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                       {result.empfehlungen.map((emp, i) => (
                         <div key={emp.title} style={{ padding: "16px 20px", borderRadius: 12, background: "#FFF", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }} data-testid={`v4-empfehlung-${i}`}>
@@ -824,7 +829,7 @@ export default function TeamCheckReportV4() {
                 const fazitNum = result.fuehrungshinweis ? 12 : 11;
                 return (
                   <div data-pdf-block style={{ marginBottom: 36 }} data-testid="v4-section-schlussfazit">
-                    <SectionHead num={fazitNum} title={t("Fazit", "Conclusion")} id="schlussfazit" />
+                    <SectionHead num={fazitNum} title={t("Fazit", "Conclusion", "Conclusion")} id="schlussfazit" />
                     <div style={{ padding: "20px 24px", borderRadius: 14, background: "#F8F9FA", border: "1px solid rgba(0,0,0,0.06)" }} data-testid="v4-schlussfazit-text">
                       {(aiNarrative?.systemfazit || result.schlussfazit).split("\n\n").map((p, i, arr) => (
                         <p key={i} style={{ fontSize: 14, lineHeight: 1.85, color: "#1D1D1F", margin: i < arr.length - 1 ? "0 0 12px" : 0, textAlign: "justify", textAlignLast: "left", hyphens: "auto", WebkitHyphens: "auto" } as any}>{p}</p>
@@ -836,7 +841,7 @@ export default function TeamCheckReportV4() {
 
               <div style={{ padding: "24px 0", borderTop: "1px solid rgba(0,0,0,0.08)" }} data-testid="v4-footer">
                 <p style={{ fontSize: 12, color: "#B0B0B5", margin: 0, textAlign: "center", lineHeight: 1.6 }}>
-                  © {new Date().getFullYear()} bioLogic Talent Navigator · {t("Passungsanalyse", "Fit Analysis")} · {t("Erstellt am", "Generated on")} {today}
+                  © {new Date().getFullYear()} bioLogic Talent Navigator · {t("Passungsanalyse", "Fit Analysis", "Analyse d'adéquation")} · {t("Erstellt am", "Generated on", "Créé le")} {today}
                 </p>
               </div>
 
