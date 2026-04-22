@@ -791,7 +791,7 @@ export default function SollIstBericht() {
                 onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-1px)"; (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 6px 20px rgba(0,113,227,0.35)"; }}
                 onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = "translateY(0)"; (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 4px 16px rgba(0,113,227,0.3)"; }}
               >
-                Bericht erstellen
+                {region === "EN" ? "Generate report" : "Bericht erstellen"}
               </button>
             </div>
             </div>)}
@@ -806,17 +806,17 @@ export default function SollIstBericht() {
 
             let shortFazit: string;
             if (fitLabel === "Geeignet") {
-              shortFazit = "Arbeitsweise der Person passt zur Stelle";
+              shortFazit = region === "EN" ? "Working style matches the role" : "Arbeitsweise der Person passt zur Stelle";
             } else if (fitLabel === "Bedingt geeignet") {
-              shortFazit = "Arbeitsweise der Person passt teilweise zur Stelle";
+              shortFazit = region === "EN" ? "Working style partially matches the role" : "Arbeitsweise der Person passt teilweise zur Stelle";
             } else {
-              shortFazit = "Arbeitsweise der Person passt nicht zur Stelle";
+              shortFazit = region === "EN" ? "Working style does not match the role" : "Arbeitsweise der Person passt nicht zur Stelle";
             }
 
             const devLevel = effective.developmentLevel;
             const devScore = devLevel === 1 ? 3 : devLevel === 2 ? 2 : 1;
             const devGaugeColor = devScore === 3 ? BIO_COLORS.geeignet : devScore === 2 ? BIO_COLORS.bedingt : BIO_COLORS.nichtGeeignet;
-            const devShort = devScore === 3 ? "Gute Aussichten · Wenig Aufwand" : devScore === 2 ? "Machbar · Gezielte Führung nötig" : "Hoher Aufwand · Ergebnis unsicher";
+            const devShort = region === "EN" ? (devScore === 3 ? "Good prospects · Little effort" : devScore === 2 ? "Feasible · Targeted leadership required" : "High effort · Outcome uncertain") : (devScore === 3 ? "Gute Aussichten · Wenig Aufwand" : devScore === 2 ? "Machbar · Gezielte Führung nötig" : "Hoher Aufwand · Ergebnis unsicher");
 
             const bulletCol = fitLabel === "Geeignet" ? BIO_COLORS.geeignet : fitLabel === "Bedingt geeignet" ? BIO_COLORS.bedingt : BIO_COLORS.nichtGeeignet;
 
@@ -828,35 +828,35 @@ export default function SollIstBericht() {
             let kritischLabel: string;
             const kritischBullets: string[] = [];
             if (fitLabel === "Geeignet") {
-              kritischLabel = "Stärken";
-              kritischBullets.push("Arbeitsweise stimmt überein");
-              kritischBullets.push("Entscheidungslogik passt");
-              kritischBullets.push("Tempo und Struktur kompatibel");
+              kritischLabel = region === "EN" ? "Strengths" : "Stärken";
+              kritischBullets.push(region === "EN" ? "Working style aligns" : "Arbeitsweise stimmt überein");
+              kritischBullets.push(region === "EN" ? "Decision-making logic fits" : "Entscheidungslogik passt");
+              kritischBullets.push(region === "EN" ? "Pace and structure compatible" : "Tempo und Struktur kompatibel");
             } else if (fitLabel === "Bedingt geeignet") {
-              kritischLabel = "Auffällig";
-              kritischBullets.push("Ausprägung der Arbeitsweise weicht ab");
-              kritischBullets.push("Entscheidungslogik grundsätzlich kompatibel");
-              kritischBullets.push("Intensität der Hauptprägung nicht deckungsgleich");
+              kritischLabel = region === "EN" ? "Notable" : "Auffällig";
+              kritischBullets.push(region === "EN" ? "Working style intensity differs" : "Ausprägung der Arbeitsweise weicht ab");
+              kritischBullets.push(region === "EN" ? "Decision-making logic broadly compatible" : "Entscheidungslogik grundsätzlich kompatibel");
+              kritischBullets.push(region === "EN" ? "Intensity of dominant trait not aligned" : "Intensität der Hauptprägung nicht deckungsgleich");
             } else {
-              kritischLabel = "Kritisch";
-              kritischBullets.push("Ausprägung der Arbeitsweise passt nicht");
-              kritischBullets.push("Entscheidungslogik weicht deutlich ab");
-              kritischBullets.push("Intensität weicht zu stark ab");
+              kritischLabel = region === "EN" ? "Critical" : "Kritisch";
+              kritischBullets.push(region === "EN" ? "Working style intensity does not fit" : "Ausprägung der Arbeitsweise passt nicht");
+              kritischBullets.push(region === "EN" ? "Decision-making logic differs significantly" : "Entscheidungslogik weicht deutlich ab");
+              kritischBullets.push(region === "EN" ? "Intensity diverges too strongly" : "Intensität weicht zu stark ab");
             }
 
             const auswirkungBullets: string[] = [];
             if (fitLabel === "Geeignet") {
-              auswirkungBullets.push("Reibungslose Zusammenarbeit");
-              auswirkungBullets.push("Stabiles Teamgefüge");
-              auswirkungBullets.push("Geringer Führungsaufwand");
+              auswirkungBullets.push(region === "EN" ? "Smooth collaboration" : "Reibungslose Zusammenarbeit");
+              auswirkungBullets.push(region === "EN" ? "Stable team structure" : "Stabiles Teamgefüge");
+              auswirkungBullets.push(region === "EN" ? "Low leadership effort" : "Geringer Führungsaufwand");
             } else if (fitLabel === "Bedingt geeignet") {
-              auswirkungBullets.push("Mehr Abstimmung nötig");
-              auswirkungBullets.push("Leichtes Spannungspotenzial");
-              auswirkungBullets.push("Erhöhter Führungsaufwand");
+              auswirkungBullets.push(region === "EN" ? "More alignment required" : "Mehr Abstimmung nötig");
+              auswirkungBullets.push(region === "EN" ? "Slight potential for tension" : "Leichtes Spannungspotenzial");
+              auswirkungBullets.push(region === "EN" ? "Increased leadership effort" : "Erhöhter Führungsaufwand");
             } else {
-              auswirkungBullets.push("Deutlich mehr Abstimmung nötig");
-              auswirkungBullets.push("Konfliktpotenzial im Team");
-              auswirkungBullets.push("Hoher Führungsaufwand");
+              auswirkungBullets.push(region === "EN" ? "Significantly more alignment required" : "Deutlich mehr Abstimmung nötig");
+              auswirkungBullets.push(region === "EN" ? "Potential for team conflict" : "Konfliktpotenzial im Team");
+              auswirkungBullets.push(region === "EN" ? "High leadership effort" : "Hoher Führungsaufwand");
             }
 
             const BulletItem = ({ text, color }: { text: string; color: string }) => (
@@ -997,7 +997,7 @@ export default function SollIstBericht() {
               data-testid="link-back-matchcheck"
             >
               <ChevronLeft style={{ width: 16, height: 16 }} />
-              Zurück zum MatchCheck
+              {region === "EN" ? "Back to MatchCheck" : "Zurück zum MatchCheck"}
             </button>
             <div style={{ position: "relative", background: "#FFFFFF", borderRadius: 20, overflow: "hidden", boxShadow: "0 4px 40px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.03)" }} data-testid="print-report-card" data-bericht lang="de">
 
@@ -1029,11 +1029,11 @@ export default function SollIstBericht() {
                     title="Im Druckdialog 'Als PDF speichern' wählen"
                   >
                     <Printer style={{ width: 15, height: 15 }} />
-                    <span>Drucken</span>
+                    <span>{region === "EN" ? "Print" : "Drucken"}</span>
                   </button>
                 </div>
 
-                <div className="report-kicker">PASSUNGSANALYSE</div>
+                <div className="report-kicker">{region === "EN" ? "FIT ANALYSIS" : "PASSUNGSANALYSE"}</div>
                 <h1 className="report-title" data-testid="text-page-title">MatchCheck</h1>
                 <div className="report-subtitle">{result.roleName}</div>
 

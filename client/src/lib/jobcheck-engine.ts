@@ -343,6 +343,15 @@ export function dominanceModeOf(tIn: Triad): DominanceResult {
 }
 
 export function labelComponent(k: ComponentKey) {
+  let isEN = false;
+  try {
+    isEN = typeof localStorage !== "undefined" && localStorage.getItem("appRegion") === "EN";
+  } catch {}
+  if (isEN) {
+    if (k === "impulsiv") return "Impulsive";
+    if (k === "intuitiv") return "Intuitive";
+    return "Analytical";
+  }
   if (k === "impulsiv") return "Impulsiv";
   if (k === "intuitiv") return "Intuitiv";
   return "Analytisch";
