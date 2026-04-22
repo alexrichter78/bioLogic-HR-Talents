@@ -786,7 +786,13 @@ export default function JobCheck() {
                       ); })()}
                       <div>
                         <p style={{ fontSize: 11, fontWeight: 700, color: fitColor(engine.overallFit), textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 2px" }}>{region === "FR" ? "Évaluation globale" : region === "EN" ? "Overall rating" : "Gesamteinstufung"}</p>
-                        <p style={{ fontSize: 18, fontWeight: 750, color: "#1D1D1F", margin: 0 }}>{statusLabel(engine.overallFit)}</p>
+                        <p style={{ fontSize: 18, fontWeight: 750, color: "#1D1D1F", margin: 0 }}>
+                          {region === "FR"
+                            ? engine.overallFit === "SUITABLE" ? "Adapté" : engine.overallFit === "CONDITIONAL" ? "Partiellement adapté" : "Non adapté"
+                            : region === "EN"
+                            ? engine.overallFit === "SUITABLE" ? "Suitable" : engine.overallFit === "CONDITIONAL" ? "Conditionally suitable" : "Not suitable"
+                            : statusLabel(engine.overallFit)}
+                        </p>
                       </div>
                     </div>
 
@@ -842,10 +848,10 @@ export default function JobCheck() {
                                   <div style={{ position: "absolute", top: 0, left: 0, height: "50%", width: `${(Math.min(sollVal, 67) / 67) * 100}%`, background: `${d.color}40`, borderRadius: "8px 8px 0 0", transition: "width 0.4s ease" }} />
                                   <div style={{ position: "absolute", bottom: 0, left: 0, height: "50%", width: `${(Math.min(istVal, 67) / 67) * 100}%`, background: d.color, borderRadius: "0 0 8px 8px", transition: "width 0.4s ease" }} />
                                   <div style={{ position: "absolute", top: 0, left: 8, height: "50%", display: "flex", alignItems: "center" }}>
-                                    <span style={{ fontSize: 10, fontWeight: 700, color: "#1D1D1F" }}>Soll {sollVal}%</span>
+                                    <span style={{ fontSize: 10, fontWeight: 700, color: "#1D1D1F" }}>{region === "FR" ? "Cible" : region === "EN" ? "Target" : "Soll"} {sollVal}%</span>
                                   </div>
                                   <div style={{ position: "absolute", bottom: 0, left: 8, height: "50%", display: "flex", alignItems: "center" }}>
-                                    <span style={{ fontSize: 10, fontWeight: 700, color: "#fff" }}>Ist {istVal}%</span>
+                                    <span style={{ fontSize: 10, fontWeight: 700, color: "#fff" }}>{region === "FR" ? "Réel" : region === "EN" ? "Actual" : "Ist"} {istVal}%</span>
                                   </div>
                                 </div>
                               </div>
@@ -857,12 +863,25 @@ export default function JobCheck() {
 
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginTop: 20, marginBottom: 14 }}>
                       <div style={{ padding: "12px 14px", borderRadius: 14, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)", textAlign: "center" }}>
-                        <p style={{ fontSize: 10, fontWeight: 700, color: "#6E6E73", textTransform: "uppercase", margin: "0 0 4px" }}>Führungsaufwand</p>
-                        <p style={{ fontSize: 16, fontWeight: 750, color: controlColor(engine.controlIntensity), margin: 0 }}>{controlLabel(engine.controlIntensity)}</p>
+                        <p style={{ fontSize: 10, fontWeight: 700, color: "#6E6E73", textTransform: "uppercase", margin: "0 0 4px" }}>{region === "FR" ? "Intensité de pilotage" : region === "EN" ? "Management effort" : "Führungsaufwand"}</p>
+                        <p style={{ fontSize: 16, fontWeight: 750, color: controlColor(engine.controlIntensity), margin: 0 }}>
+                          {region === "FR"
+                            ? engine.controlIntensity === "LOW" ? "Faible" : engine.controlIntensity === "MEDIUM" ? "Modérée" : "Élevée"
+                            : region === "EN"
+                            ? engine.controlIntensity === "LOW" ? "Low" : engine.controlIntensity === "MEDIUM" ? "Medium" : "High"
+                            : controlLabel(engine.controlIntensity)}
+                        </p>
                       </div>
                       <div style={{ padding: "12px 14px", borderRadius: 14, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)", textAlign: "center" }}>
                         <p style={{ fontSize: 10, fontWeight: 700, color: "#6E6E73", textTransform: "uppercase", margin: "0 0 4px" }}>{region === "FR" ? "Écart" : region === "EN" ? "Deviation" : "Abweichung"}</p>
-                        <p style={{ fontSize: 16, fontWeight: 750, color: "#1D1D1F", margin: 0 }}>{engine.mismatchScore <= 8 ? "Gering" : engine.mismatchScore <= 15 ? "Moderat" : "Hoch"}{engine.koTriggered ? " · K.O." : ""}</p>
+                        <p style={{ fontSize: 16, fontWeight: 750, color: "#1D1D1F", margin: 0 }}>
+                          {region === "FR"
+                            ? engine.mismatchScore <= 8 ? "Faible" : engine.mismatchScore <= 15 ? "Modéré" : "Élevé"
+                            : region === "EN"
+                            ? engine.mismatchScore <= 8 ? "Low" : engine.mismatchScore <= 15 ? "Moderate" : "High"
+                            : engine.mismatchScore <= 8 ? "Gering" : engine.mismatchScore <= 15 ? "Moderat" : "Hoch"}
+                          {engine.koTriggered ? " · K.O." : ""}
+                        </p>
                       </div>
                     </div>
 
@@ -907,38 +926,68 @@ export default function JobCheck() {
                     let calloutColor: string;
                     let sectionTitle: string;
 
+                    const lc = (k: typeof rk) => labelComponent(k, region === "FR" ? "FR" : region === "EN" ? "EN" : undefined);
+
                     if (isEqualDist) {
-                      calloutText = `Die Person zeigt keinen erkennbaren Schwerpunkt. Die Stelle braucht eine klare ${labelComponent(rk)}-Ausrichtung. Ohne klaren Schwerpunkt fehlt die Grundlage, um Prioritäten gezielt zu setzen und konsequent zu entscheiden.`;
+                      calloutText = region === "FR"
+                        ? `La personne ne présente aucune orientation claire. Le poste exige une orientation « ${lc(rk)} » marquée. Sans dominante claire, il manque la base pour fixer des priorités et décider avec cohérence.`
+                        : region === "EN"
+                        ? `The person shows no clear dominant focus. The role requires a clear ${lc(rk)} orientation. Without a dominant focus, the foundation for setting priorities and deciding consistently is missing.`
+                        : `Die Person zeigt keinen erkennbaren Schwerpunkt. Die Stelle braucht eine klare ${lc(rk)}-Ausrichtung. Ohne klaren Schwerpunkt fehlt die Grundlage, um Prioritäten gezielt zu setzen und konsequent zu entscheiden.`;
                       calloutColor = "#FF3B30";
-                      sectionTitle = "Gleichverteilung";
+                      sectionTitle = region === "FR" ? "Répartition égale" : region === "EN" ? "Equal distribution" : "Gleichverteilung";
                     } else if (dualConflict) {
                       const c2k = engine.candDominance.top2.key;
-                      const c2L = labelComponent(c2k);
+                      const c2L = lc(c2k);
                       const roleInDual = ck === rk || c2k === rk;
                       if (roleInDual) {
-                        calloutText = `Doppeldominanz: Die ${labelComponent(rk)}-Arbeitsweise ist vorhanden, konkurriert aber mit einer gleich starken ${c2L}-Prägung. Die Stelle braucht eine eindeutige ${labelComponent(rk)}-Ausrichtung – Prioritäten und konsequentes Handeln werden instabil.`;
+                        calloutText = region === "FR"
+                          ? `Double dominance : l'orientation « ${lc(rk)} » est présente, mais entre en compétition avec une orientation « ${c2L} » de même force. Le poste exige une orientation « ${lc(rk)} » sans ambiguïté ; les priorités et la cohérence d'action en seront fragilisées.`
+                          : region === "EN"
+                          ? `Dual dominance: ${lc(rk)} orientation is present but competes with an equally strong ${c2L} pattern. The role needs a clear ${lc(rk)} orientation — priorities and consistent action will become unstable.`
+                          : `Doppeldominanz: Die ${lc(rk)}-Arbeitsweise ist vorhanden, konkurriert aber mit einer gleich starken ${c2L}-Prägung. Die Stelle braucht eine eindeutige ${lc(rk)}-Ausrichtung – Prioritäten und konsequentes Handeln werden instabil.`;
                         calloutColor = "#FF9500";
                       } else {
-                        calloutText = `Die Person arbeitet ${labelComponent(ck)}-/${c2L}-geprägt. Die für die Stelle entscheidende ${labelComponent(rk)}-Arbeitsweise fehlt. Entscheidungen und Prioritäten sind kritisch betroffen.`;
+                        calloutText = region === "FR"
+                          ? `La personne travaille avec une orientation « ${lc(ck)} »/« ${c2L} ». L'orientation « ${lc(rk)} », déterminante pour le poste, est absente. Les décisions et les priorités sont critiquement affectées.`
+                          : region === "EN"
+                          ? `The person has a ${lc(ck)}/${c2L} orientation. The ${lc(rk)} working style critical to the role is missing. Decisions and priorities are critically affected.`
+                          : `Die Person arbeitet ${lc(ck)}-/${c2L}-geprägt. Die für die Stelle entscheidende ${lc(rk)}-Arbeitsweise fehlt. Entscheidungen und Prioritäten sind kritisch betroffen.`;
                         calloutColor = "#FF3B30";
                       }
-                      sectionTitle = "Doppeldominanz";
+                      sectionTitle = region === "FR" ? "Double dominance" : region === "EN" ? "Dual dominance" : "Doppeldominanz";
                     } else if (sameDom && intensityDiff <= 5) {
-                      calloutText = `Beide Profile sind ${labelComponent(rk)}-geprägt, die Ausprägung ist nahezu gleichauf. Arbeitsweise und Prioritäten bilden die Stellenanforderung stabil ab.`;
+                      calloutText = region === "FR"
+                        ? `Les deux profils partagent une orientation « ${lc(rk)} ». Les modes de travail et les priorités reflètent de façon stable les exigences du poste.`
+                        : region === "EN"
+                        ? `Both profiles have a ${lc(rk)} orientation, with nearly identical intensity. Working style and priorities stably reflect the role requirements.`
+                        : `Beide Profile sind ${lc(rk)}-geprägt, die Ausprägung ist nahezu gleichauf. Arbeitsweise und Prioritäten bilden die Stellenanforderung stabil ab.`;
                       calloutColor = "#34C759";
-                      sectionTitle = "Profilvergleich";
+                      sectionTitle = region === "FR" ? "Comparaison des profils" : region === "EN" ? "Profile comparison" : "Profilvergleich";
                     } else if (sameDom && intensityDiff <= 15) {
-                      calloutText = `Beide Profile sind ${labelComponent(rk)}-geprägt. Die Grundrichtung stimmt, die Ausprägung liegt jedoch unter dem, was die Stelle braucht. Mit gezielter Führung steuerbar.`;
+                      calloutText = region === "FR"
+                        ? `Les deux profils partagent une orientation « ${lc(rk)} ». La direction fondamentale est juste, mais l'intensité est inférieure à ce que le poste requiert. Pilotable avec un management ciblé.`
+                        : region === "EN"
+                        ? `Both profiles share a ${lc(rk)} orientation. The direction aligns, but intensity is below what the role requires. Manageable with targeted leadership.`
+                        : `Beide Profile sind ${lc(rk)}-geprägt. Die Grundrichtung stimmt, die Ausprägung liegt jedoch unter dem, was die Stelle braucht. Mit gezielter Führung steuerbar.`;
                       calloutColor = "#FF9500";
-                      sectionTitle = "Profilvergleich";
+                      sectionTitle = region === "FR" ? "Comparaison des profils" : region === "EN" ? "Profile comparison" : "Profilvergleich";
                     } else if (sameDom) {
-                      calloutText = `Beide Profile sind ${labelComponent(rk)}-geprägt, aber die geforderte Ausprägung fehlt deutlich. Qualität und stabile Abläufe sind gefährdet.`;
+                      calloutText = region === "FR"
+                        ? `Les deux profils partagent une orientation « ${lc(rk)} », mais l'intensité requise fait clairement défaut. La qualité et la régularité des processus sont menacées.`
+                        : region === "EN"
+                        ? `Both profiles share a ${lc(rk)} orientation, but required intensity is clearly missing. Quality and stable processes are at risk.`
+                        : `Beide Profile sind ${lc(rk)}-geprägt, aber die geforderte Ausprägung fehlt deutlich. Qualität und stabile Abläufe sind gefährdet.`;
                       calloutColor = "#FF3B30";
-                      sectionTitle = "Profilvergleich";
+                      sectionTitle = region === "FR" ? "Comparaison des profils" : region === "EN" ? "Profile comparison" : "Profilvergleich";
                     } else {
-                      calloutText = `Die Stelle braucht eine ${labelComponent(rk)}-Arbeitsweise, die Person arbeitet ${labelComponent(ck)}-geprägt. Die zentrale Arbeitslogik der Stelle wird grundlegend verschoben.`;
+                      calloutText = region === "FR"
+                        ? `Le poste exige une orientation « ${lc(rk)} », la personne travaille avec une orientation « ${lc(ck)} ». La logique de travail centrale du poste est fondamentalement déplacée.`
+                        : region === "EN"
+                        ? `The role requires a ${lc(rk)} working style; the person operates with a ${lc(ck)} orientation. The core working logic of the role is fundamentally misaligned.`
+                        : `Die Stelle braucht eine ${lc(rk)}-Arbeitsweise, die Person arbeitet ${lc(ck)}-geprägt. Die zentrale Arbeitslogik der Stelle wird grundlegend verschoben.`;
                       calloutColor = "#FF3B30";
-                      sectionTitle = "Unterschied zwischen Stelle und Person";
+                      sectionTitle = region === "FR" ? "Divergence poste-personne" : region === "EN" ? "Role-person mismatch" : "Unterschied zwischen Stelle und Person";
                     }
 
                     return (
@@ -963,9 +1012,9 @@ export default function JobCheck() {
                           background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)",
                         }}>
                           <div style={{ textAlign: "center" }}>
-                            <p style={{ fontSize: 11, fontWeight: 700, color: "#6E6E73", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>Soll</p>
+                            <p style={{ fontSize: 11, fontWeight: 700, color: "#6E6E73", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>{region === "FR" ? "Cible" : region === "EN" ? "Target" : "Soll"}</p>
                             <div style={{ padding: "6px 16px", borderRadius: 10, background: `${rc}12`, border: `1px solid ${rc}25` }}>
-                              <span style={{ fontSize: 15, fontWeight: 700, color: rc }}>{labelComponent(rk)}</span>
+                              <span style={{ fontSize: 15, fontWeight: 700, color: rc }}>{lc(rk)}</span>
                               <span style={{ fontSize: 12, fontWeight: 600, color: rc, opacity: 0.7, marginLeft: 4 }}>{roleVal}%</span>
                             </div>
                           </div>
@@ -979,7 +1028,7 @@ export default function JobCheck() {
                             <ChevronRight style={{ width: 20, height: 20, color: "#FF3B30" }} />
                           )}
                           <div style={{ textAlign: "center" }}>
-                            <p style={{ fontSize: 11, fontWeight: 700, color: "#6E6E73", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>Ist</p>
+                            <p style={{ fontSize: 11, fontWeight: 700, color: "#6E6E73", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>{region === "FR" ? "Réel" : region === "EN" ? "Actual" : "Ist"}</p>
                             {isEqualDist ? (
                               <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                                 {[engine.candDominance.top1, engine.candDominance.top2, engine.candDominance.top3].map((comp) => {
@@ -1006,7 +1055,7 @@ export default function JobCheck() {
                               </div>
                             ) : (
                               <div style={{ padding: "6px 16px", borderRadius: 10, background: `${cc}12`, border: `1px solid ${cc}25` }}>
-                                <span style={{ fontSize: 15, fontWeight: 700, color: cc }}>{labelComponent(ck)}</span>
+                                <span style={{ fontSize: 15, fontWeight: 700, color: cc }}>{lc(ck)}</span>
                                 <span style={{ fontSize: 12, fontWeight: 600, color: cc, opacity: 0.7, marginLeft: 4 }}>{candVal}%</span>
                               </div>
                             )}
@@ -1185,17 +1234,33 @@ export default function JobCheck() {
                       <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>{region === "FR" ? "Évaluation globale" : region === "EN" ? "Overall assessment" : "Gesamtbewertung"}</span>
                     </div>
                     <div style={{ fontSize: 28, fontWeight: 800, color: fitColor(engine.overallFit), margin: "20px 0 0", letterSpacing: "-0.02em" }} data-testid="jc-gesamt-label">
-                      {statusLabel(engine.overallFit)}
+                      {region === "FR"
+                        ? engine.overallFit === "SUITABLE" ? "Adapté" : engine.overallFit === "CONDITIONAL" ? "Partiellement adapté" : "Non adapté"
+                        : region === "EN"
+                        ? engine.overallFit === "SUITABLE" ? "Suitable" : engine.overallFit === "CONDITIONAL" ? "Conditionally suitable" : "Not suitable"
+                        : statusLabel(engine.overallFit)}
                     </div>
 
                     <div style={{ display: "flex", gap: 16, marginTop: 20, paddingTop: 18, borderTop: "1px solid rgba(0,0,0,0.06)" }} data-testid="jc-two-axis">
                       <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: `${fitColor(engine.overallFit)}08`, border: `1px solid ${fitColor(engine.overallFit)}25` }}>
                         <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>{region === "FR" ? "Adéquation de base" : region === "EN" ? "Basic fit" : "Grundpassung"}</div>
-                        <div style={{ fontSize: 17, fontWeight: 700, color: fitColor(engine.overallFit) }} data-testid="jc-grundpassung">{statusLabel(engine.overallFit)}</div>
+                        <div style={{ fontSize: 17, fontWeight: 700, color: fitColor(engine.overallFit) }} data-testid="jc-grundpassung">
+                          {region === "FR"
+                            ? engine.overallFit === "SUITABLE" ? "Adapté" : engine.overallFit === "CONDITIONAL" ? "Partiellement adapté" : "Non adapté"
+                            : region === "EN"
+                            ? engine.overallFit === "SUITABLE" ? "Suitable" : engine.overallFit === "CONDITIONAL" ? "Conditionally suitable" : "Not suitable"
+                            : statusLabel(engine.overallFit)}
+                        </div>
                       </div>
                       <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: `${controlColor(engine.controlIntensity)}08`, border: `1px solid ${controlColor(engine.controlIntensity)}25` }}>
-                        <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>Führungsaufwand</div>
-                        <div style={{ fontSize: 17, fontWeight: 700, color: controlColor(engine.controlIntensity) }} data-testid="jc-fuehrungsaufwand">{controlLabel(engine.controlIntensity)}</div>
+                        <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>{region === "FR" ? "Intensité de pilotage" : region === "EN" ? "Management effort" : "Führungsaufwand"}</div>
+                        <div style={{ fontSize: 17, fontWeight: 700, color: controlColor(engine.controlIntensity) }} data-testid="jc-fuehrungsaufwand">
+                          {region === "FR"
+                            ? engine.controlIntensity === "LOW" ? "Faible" : engine.controlIntensity === "MEDIUM" ? "Modérée" : "Élevée"
+                            : region === "EN"
+                            ? engine.controlIntensity === "LOW" ? "Low" : engine.controlIntensity === "MEDIUM" ? "Medium" : "High"
+                            : controlLabel(engine.controlIntensity)}
+                        </div>
                       </div>
                     </div>
 
@@ -1207,7 +1272,11 @@ export default function JobCheck() {
                       <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: "rgba(26,93,171,0.04)", border: "1px solid rgba(26,93,171,0.12)" }}>
                         <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>{region === "FR" ? "Recommandation" : region === "EN" ? "Recommendation" : "Empfehlung"}</div>
                         <div style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", lineHeight: 1.5 }} data-testid="jc-empfehlung">
-                          {engine.overallFit === "SUITABLE" ? "Besetzung strukturell passend" : engine.overallFit === "CONDITIONAL" ? "Besetzung möglich mit Integrations-Setup" : "Für diese Stelle nicht strukturgerecht"}
+                          {region === "FR"
+                            ? engine.overallFit === "SUITABLE" ? "Adéquation structurelle confirmée" : engine.overallFit === "CONDITIONAL" ? "Prise de poste possible avec dispositif d'intégration" : "Profil non aligné structurellement"
+                            : region === "EN"
+                            ? engine.overallFit === "SUITABLE" ? "Structurally sound fit" : engine.overallFit === "CONDITIONAL" ? "Placement possible with integration setup" : "Not structurally aligned for this role"
+                            : engine.overallFit === "SUITABLE" ? "Besetzung strukturell passend" : engine.overallFit === "CONDITIONAL" ? "Besetzung möglich mit Integrations-Setup" : "Für diese Stelle nicht strukturgerecht"}
                         </div>
                       </div>
                     </div>

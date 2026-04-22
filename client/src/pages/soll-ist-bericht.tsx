@@ -1248,7 +1248,7 @@ export default function SollIstBericht() {
                     : devScore === 3 ? "niedrig" : devScore === 2 ? "mittel" : "hoch";
                   const devCol = devScore === 3 ? BIO_COLORS.geeignet : devScore === 2 ? BIO_COLORS.bedingt : BIO_COLORS.nichtGeeignet;
                   const gapCol = result.totalGap > 40 ? BIO_COLORS.nichtGeeignet : result.totalGap > 20 ? BIO_COLORS.bedingt : BIO_COLORS.geeignet;
-                  const personLabel = (result.candidateName !== "Die Person" && result.candidateName !== "The person") ? result.candidateName : "Person";
+                  const personLabel = (result.candidateName !== "Die Person" && result.candidateName !== "The person" && result.candidateName !== "La personne") ? result.candidateName : "Person";
 
                   const gesamtIntroText = (() => {
                     const fr = result.fitRating;
@@ -1256,55 +1256,76 @@ export default function SollIstBericht() {
                     const gl = result.gapLevel;
                     const dl = result.developmentLabel;
                     const en = region === "EN";
+                    const isFR = region === "FR";
 
                     if (fr === "GEEIGNET") {
                       if (ci === "gering" && gl === "gering") {
-                        return en
+                        return isFR
+                          ? "L'évaluation globale indique une très bonne adéquation. La concordance structurelle est élevée, l'effort de pilotage et de développement est faible. La prise de poste peut se faire sans mesures particulières."
+                          : en
                           ? "The overall assessment indicates a very strong fit. Structural alignment is high, management and development effort is low. Placement can proceed without special measures."
                           : t("Die Gesamtbewertung spricht für eine sehr gute Passung. Die strukturelle Übereinstimmung ist hoch, der Steuerungs- und Entwicklungsaufwand gering. Die Besetzung kann ohne besondere Massnahmen erfolgen.");
                       }
                       if (ci === "mittel" || gl === "mittel") {
-                        return en
+                        return isFR
+                          ? "L'évaluation globale indique une bonne adéquation. La concordance structurelle est présente, l'effort de pilotage reste gérable. Une prise de poste réussie est réaliste avec un accompagnement modéré."
+                          : en
                           ? "The overall assessment indicates a good fit. Structural alignment is present and management effort is manageable. Successful placement is realistic with moderate leadership."
                           : "Die Gesamtbewertung spricht für eine gute Passung. Die strukturelle Übereinstimmung ist gegeben, der Steuerungs- und Entwicklungsaufwand überschaubar. Eine erfolgreiche Besetzung ist mit geringem Führungsaufwand realistisch.";
                       }
-                      return en
+                      return isFR
+                        ? "L'évaluation globale indique une adéquation solide. La logique de travail est globalement alignée. L'effort de développement est limité et la prise de poste peut réussir avec un pilotage normal."
+                        : en
                         ? "The overall assessment indicates a solid fit. The working logic is broadly aligned. Development effort is limited and placement can succeed with normal management."
                         : "Die Gesamtbewertung spricht für eine solide Passung. Die Arbeitslogik stimmt grundsätzlich überein. Der Entwicklungsaufwand ist begrenzt und die Besetzung kann mit normalem Führungsaufwand gelingen.";
                     }
 
                     if (fr === "BEDINGT") {
                       if (ci === "hoch" || dl === "hoch") {
-                        return en
+                        return isFR
+                          ? "L'évaluation globale indique une adéquation limitée. L'écart structurel est perceptible, l'effort de pilotage et de développement est élevé. Une prise de poste réussie exige un management ciblé et des ajustements réguliers."
+                          : en
                           ? "The overall assessment indicates a limited fit. Structural deviation is noticeable and management/development effort is elevated. Successful placement requires targeted leadership and regular alignment."
                           : t("Die Gesamtbewertung spricht für eine eingeschränkte Passung. Die strukturelle Abweichung ist spürbar, der Steuerungs- und Entwicklungsaufwand erhöht. Eine erfolgreiche Besetzung erfordert gezielte Führung und regelmässige Abstimmung.");
                       }
                       if (result.fitSubtype === "STRUCTURE_MATCH_INTENSITY_OFF") {
-                        return en
+                        return isFR
+                          ? "L'évaluation globale indique une adéquation conditionnelle. La logique de travail est structurellement cohérente, mais des différences de pondération sont présentes. Une prise de poste réussie est réaliste avec un management ciblé."
+                          : en
                           ? "The overall assessment indicates a conditional fit. The basic working logic is structurally sound, but weighting differences are present. Successful placement is realistic with targeted leadership."
                           : "Die Gesamtbewertung spricht für eine bedingte Passung. Die Arbeitslogik ist in ihrer Grundstruktur stimmig. In der Gewichtung zeigen sich jedoch leichte Abweichungen. Eine erfolgreiche Besetzung ist mit gezielter Führung realistisch.";
                       }
                       if (gl === "gering") {
-                        return en
+                        return isFR
+                          ? "L'évaluation globale indique une adéquation conditionnelle. L'écart de profil est faible, mais les styles de travail diffèrent sur certains points. Avec un management ciblé, la prise de poste est réaliste."
+                          : en
                           ? "The overall assessment indicates a conditional fit. The profile deviation is low, but working styles differ in some areas. With targeted leadership, successful placement is realistic."
                           : "Die Gesamtbewertung spricht für eine bedingte Passung. Die Profilabweichung ist gering, doch die Arbeitslogik unterscheidet sich in einzelnen Bereichen. Mit gezielter Führung ist eine erfolgreiche Besetzung realistisch.";
                       }
-                      return en
+                      return isFR
+                        ? "L'évaluation globale indique une adéquation conditionnelle. La logique de travail diffère sur certains aspects. Une prise de poste réussie est possible avec un management conscient et des attentes clairement formulées."
+                        : en
                         ? "The overall assessment indicates a conditional fit. Working logic deviates in some areas. Successful placement is possible with conscious leadership and clear expectations."
                         : "Die Gesamtbewertung spricht für eine bedingte Passung. Die Arbeitslogik weicht in einzelnen Bereichen ab. Eine erfolgreiche Besetzung ist mit bewusster Führung und klarer Erwartungshaltung möglich.";
                     }
 
                     if (ci === "hoch" && (gl === "hoch" || dl === "hoch")) {
-                      return en
+                      return isFR
+                        ? "L'évaluation globale indique une adéquation critique. L'écart structurel est significatif et l'effort de pilotage et de développement correspondant. Une prise de poste réussie ne serait réaliste qu'avec un management clair et un effort d'intégration délibéré."
+                        : en
                         ? "The overall assessment indicates a critical fit. Structural deviation is significant and management/development effort correspondingly high. Successful placement would only be realistic with clear leadership and deliberate integration effort."
                         : "Die Gesamtbewertung spricht für eine kritische Passung. Die strukturelle Abweichung ist deutlich, der Steuerungs- und Entwicklungsaufwand entsprechend hoch. Eine erfolgreiche Besetzung wäre nur unter klarer Führung und mit bewusstem Integrationsaufwand realistisch.";
                     }
                     if (ci === "mittel") {
-                      return en
+                      return isFR
+                        ? "L'évaluation globale indique une adéquation insuffisante. La logique de travail diffère de manière substantielle. Même avec un management intensif et des mesures de développement, le risque de mauvaise affectation reste considérable."
+                        : en
                         ? "The overall assessment indicates an insufficient fit. Working logic deviates in key areas. Even with intensive leadership and development measures, the risk of misplacement remains considerable."
                         : t("Die Gesamtbewertung spricht für eine unzureichende Passung. Die Arbeitslogik weicht in wesentlichen Bereichen ab. Selbst mit intensiver Führung und Entwicklungsmassnahmen bleibt das Risiko einer Fehlbesetzung erheblich.");
                     }
-                    return en
+                    return isFR
+                      ? "L'évaluation globale indique une adéquation critique. L'écart structurel est important et l'effort de pilotage et de développement requis très élevé. Une prise de poste dans ces conditions comporte un risque significatif."
+                      : en
                       ? "The overall assessment indicates a critical fit. Structural deviation is substantial and required management/development effort very high. Placement under these conditions carries significant risk."
                       : "Die Gesamtbewertung spricht für eine kritische Passung. Die strukturelle Abweichung ist erheblich und der erforderliche Führungs- und Entwicklungsaufwand sehr hoch. Eine Besetzung ist unter diesen Voraussetzungen mit hohem Risiko verbunden.";
                   })();
