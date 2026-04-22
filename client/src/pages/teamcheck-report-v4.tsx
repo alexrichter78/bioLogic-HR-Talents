@@ -100,7 +100,7 @@ export default function TeamCheckReportV4() {
       if (raw) {
         try {
           const parsed = JSON.parse(raw) as TeamCheckV4Input;
-          const computed = computeTeamCheckV4({ ...parsed, lang: region === "EN" ? "en" : "de" });
+          const computed = computeTeamCheckV4({ ...parsed, lang: region === "FR" ? "fr" : region === "EN" ? "en" : "de" });
           setResult(localizeDeep(computed, region));
         } catch {}
       }
@@ -112,7 +112,7 @@ export default function TeamCheckReportV4() {
     if (!raw) { navigate("/team-report"); return; }
     try {
       const parsed = JSON.parse(raw) as TeamCheckV4Input;
-      const computed = computeTeamCheckV4({ ...parsed, lang: region === "EN" ? "en" : "de" });
+      const computed = computeTeamCheckV4({ ...parsed, lang: region === "FR" ? "fr" : region === "EN" ? "en" : "de" });
       setResult(localizeDeep(computed, region));
 
       const tp = parsed.teamProfile;

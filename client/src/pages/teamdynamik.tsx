@@ -28,7 +28,11 @@ const SHIFT_LABELS: Record<ShiftType, string> = {
 };
 const INTENSITY_LABELS: Record<IntensityLevel, string> = { NIEDRIG: "Niedrig", MITTEL: "Mittel", HOCH: "Hoch" };
 const INTENSITY_LABELS_EN: Record<IntensityLevel, string> = { NIEDRIG: "Low", MITTEL: "Medium", HOCH: "High" };
-function intensityLabel(level: IntensityLevel, region?: string) { return region === "EN" ? INTENSITY_LABELS_EN[level] : INTENSITY_LABELS[level]; }
+const INTENSITY_LABELS_FR: Record<IntensityLevel, string> = { NIEDRIG: "Faible", MITTEL: "Moyen", HOCH: "Élevé" };
+function intensityLabel(level: IntensityLevel, region?: string) {
+  if (region === "FR") return INTENSITY_LABELS_FR[level];
+  return region === "EN" ? INTENSITY_LABELS_EN[level] : INTENSITY_LABELS[level];
+}
 const TL_COLORS: Record<TrafficLight, { bg: string; fill: string; label: string; steering: string }> = {
   GREEN: { bg: "rgba(52,199,89,0.08)", fill: "#34C759", label: "Stabil", steering: "Normale Steuerung ausreichend" },
   YELLOW: { bg: "rgba(255,149,0,0.08)", fill: "#FF9500", label: "Steuerbar", steering: "Situative Steuerung empfehlenswert" },
@@ -92,14 +96,15 @@ function BarSlider({ label, value, color, onChange }: { label: string; value: nu
 function BarSliders({ triad, onChange }: { triad: Triad; onChange: (t: Triad) => void }) {
   const { region } = useRegion();
   const en = region === "EN";
+  const fr = region === "FR";
   const handleChange = (key: ComponentKey, rawVal: number) => {
     onChange({ ...triad, [key]: Math.min(rawVal, MAX_BIO) });
   };
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-      <BarSlider label={en ? "Impulsive" : "Impulsiv"} value={triad.impulsiv} color={COLORS.imp} onChange={v => handleChange("impulsiv", v)} />
-      <BarSlider label={en ? "Intuitive" : "Intuitiv"} value={triad.intuitiv} color={COLORS.int} onChange={v => handleChange("intuitiv", v)} />
-      <BarSlider label={en ? "Analytical" : "Analytisch"} value={triad.analytisch} color={COLORS.ana} onChange={v => handleChange("analytisch", v)} />
+      <BarSlider label={fr ? "Rythme et Décision" : en ? "Impulsive" : "Impulsiv"} value={triad.impulsiv} color={COLORS.imp} onChange={v => handleChange("impulsiv", v)} />
+      <BarSlider label={fr ? "Communication et Relations" : en ? "Intuitive" : "Intuitiv"} value={triad.intuitiv} color={COLORS.int} onChange={v => handleChange("intuitiv", v)} />
+      <BarSlider label={fr ? "Structure et Rigueur" : en ? "Analytical" : "Analytisch"} value={triad.analytisch} color={COLORS.ana} onChange={v => handleChange("analytisch", v)} />
     </div>
   );
 }
@@ -285,9 +290,9 @@ function ReportChapter({ section, chapterIndex }: { section: ParsedSection; chap
 function ReadOnlyBars({ triad }: { triad: Triad }) {
   const { region } = useRegion();
   const bars: { label: string; value: number; color: string }[] = [
-    { label: region === "EN" ? "Impulsive" : "Impulsiv", value: triad.impulsiv, color: COLORS.imp },
-    { label: region === "EN" ? "Intuitive" : "Intuitiv", value: triad.intuitiv, color: COLORS.int },
-    { label: region === "EN" ? "Analytical" : "Analytisch", value: triad.analytisch, color: COLORS.ana },
+    { label: region === "FR" ? "Rythme et Décision" : region === "EN" ? "Impulsive" : "Impulsiv", value: triad.impulsiv, color: COLORS.imp },
+    { label: region === "FR" ? "Communication et Relations" : region === "EN" ? "Intuitive" : "Intuitiv", value: triad.intuitiv, color: COLORS.int },
+    { label: region === "FR" ? "Structure et Rigueur" : region === "EN" ? "Analytical" : "Analytisch", value: triad.analytisch, color: COLORS.ana },
   ];
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -455,39 +460,39 @@ export default function Teamdynamik() {
         <GlassCard style={{ marginBottom: 20 }} data-testid="tab-analyse">
           <div style={{ textAlign: "center", marginBottom: 28 }}>
             <p style={{ fontSize: 11, fontWeight: 600, color: "#0071E3", letterSpacing: "0.06em", textTransform: "uppercase", margin: "0 0 4px" }}>bioLogic TeamCheck</p>
-            <h1 style={{ fontSize: 24, fontWeight: 700, color: "#34C759", margin: 0, letterSpacing: "-0.02em" }} data-testid="text-page-title">{region === "EN" ? "Team analysis" : "Teamanalyse"}</h1>
+            <h1 style={{ fontSize: 24, fontWeight: 700, color: "#34C759", margin: 0, letterSpacing: "-0.02em" }} data-testid="text-page-title">{region === "FR" ? "Analyse d'équipe" : region === "EN" ? "Team analysis" : "Teamanalyse"}</h1>
           </div>
 
           {sollProfile && (
             <div style={{ marginBottom: 20, padding: "16px 20px", borderRadius: 14, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }} data-testid="soll-profile-card">
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
                 <BarChart3 style={{ width: 16, height: 16, color: "#6E6E73" }} />
-                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{region === "EN" ? "Overall role profile" : "Gesamtprofil der Stellenanforderung"}</p>
+                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{region === "FR" ? "Profil global du poste" : region === "EN" ? "Overall role profile" : "Gesamtprofil der Stellenanforderung"}</p>
               </div>
               <ReadOnlyBars triad={sollProfile} />
-              <p style={{ fontSize: 11, color: "#8E8E93", marginTop: 8, textAlign: "center" }}>{region === "EN" ? "Target profile from role DNA (read-only)" : "Soll-Profil aus Rollen-DNA (nicht editierbar)"}</p>
+              <p style={{ fontSize: 11, color: "#8E8E93", marginTop: 8, textAlign: "center" }}>{region === "FR" ? "Profil cible issu de la DNA du poste (lecture seule)" : region === "EN" ? "Target profile from role DNA (read-only)" : "Soll-Profil aus Rollen-DNA (nicht editierbar)"}</p>
             </div>
           )}
 
           <div style={{ display: "flex", gap: 24, marginBottom: 24, flexWrap: "wrap" }}>
             <div style={{ flex: 1, minWidth: 280 }}>
-              <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", marginBottom: 14 }} data-testid="label-person">{isLeading ? (region === "EN" ? "New leader" : "Neue Führungskraft") : (region === "EN" ? "New team member" : "Neues Teammitglied")}</p>
+              <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", marginBottom: 14 }} data-testid="label-person">{isLeading ? (region === "FR" ? "Nouveau manager" : region === "EN" ? "New leader" : "Neue Führungskraft") : (region === "FR" ? "Nouveau membre de l'équipe" : region === "EN" ? "New team member" : "Neues Teammitglied")}</p>
               <BarSliders triad={personProfile} onChange={setPersonProfile} />
-              <p style={{ fontSize: 11, color: "#8E8E93", marginTop: 8, textAlign: "center" }}>{region === "EN" ? "Actual profile from target–actual comparison" : "Istprofil aus Soll-Ist-Vergleich"}</p>
+              <p style={{ fontSize: 11, color: "#8E8E93", marginTop: 8, textAlign: "center" }}>{region === "FR" ? "Profil réel issu de la comparaison cible/réel" : region === "EN" ? "Actual profile from target–actual comparison" : "Istprofil aus Soll-Ist-Vergleich"}</p>
             </div>
 
             <div style={{ width: 1, background: "rgba(0,0,0,0.06)", alignSelf: "stretch" }} />
 
             <div style={{ flex: 1, minWidth: 280 }}>
-              <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", marginBottom: 14 }}>{region === "EN" ? "Team evaluation" : "Teamauswertung"}</p>
+              <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", marginBottom: 14 }}>{region === "FR" ? "Évaluation d'équipe" : region === "EN" ? "Team evaluation" : "Teamauswertung"}</p>
               <BarSliders triad={teamProfile} onChange={setTeamProfile} />
-              <p style={{ fontSize: 11, color: "#8E8E93", marginTop: 8, textAlign: "center" }}>{region === "EN" ? "Profile (max. 67% per component)" : "Profil (max. 67 % pro Komponente)"}</p>
+              <p style={{ fontSize: 11, color: "#8E8E93", marginTop: 8, textAlign: "center" }}>{region === "FR" ? "Profil (max. 67 % par composante)" : region === "EN" ? "Profile (max. 67% per component)" : "Profil (max. 67 % pro Komponente)"}</p>
             </div>
           </div>
 
           <div style={{ borderTop: "1px solid rgba(0,0,0,0.06)", paddingTop: 18, marginBottom: 20, display: "flex", gap: 24, flexWrap: "wrap" }}>
             <div style={{ flex: 1, minWidth: 200 }}>
-              <p style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F", margin: "0 0 10px" }}>{region === "EN" ? "Role of the new person" : "Rolle der neuen Person"}</p>
+              <p style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F", margin: "0 0 10px" }}>{region === "FR" ? "Rôle de la nouvelle personne" : region === "EN" ? "Role of the new person" : "Rolle der neuen Person"}</p>
               <div style={{ display: "flex", gap: 4, background: "rgba(0,0,0,0.03)", borderRadius: 10, padding: 3 }}>
                 <button onClick={() => setIsLeading(true)} data-testid="toggle-leading-yes" style={{
                   flex: 1, padding: "8px 12px", borderRadius: 8, fontSize: 12, fontWeight: isLeading ? 700 : 500,
@@ -498,7 +503,7 @@ export default function Teamdynamik() {
                   display: "flex", alignItems: "center", justifyContent: "center", gap: 5,
                   transition: "all 200ms ease",
                 }}>
-                  <Briefcase style={{ width: 12, height: 12 }} /> {region === "EN" ? "Leadership" : "Führung"}
+                  <Briefcase style={{ width: 12, height: 12 }} /> {region === "FR" ? "Direction" : region === "EN" ? "Leadership" : "Führung"}
                 </button>
                 <button onClick={() => setIsLeading(false)} data-testid="toggle-leading-no" style={{
                   flex: 1, padding: "8px 12px", borderRadius: 8, fontSize: 12, fontWeight: !isLeading ? 700 : 500,
@@ -509,7 +514,7 @@ export default function Teamdynamik() {
                   display: "flex", alignItems: "center", justifyContent: "center", gap: 5,
                   transition: "all 200ms ease",
                 }}>
-                  <Users style={{ width: 12, height: 12 }} /> {region === "EN" ? "Team member" : "Teammitglied"}
+                  <Users style={{ width: 12, height: 12 }} /> {region === "FR" ? "Membre d'équipe" : region === "EN" ? "Team member" : "Teammitglied"}
                 </button>
               </div>
             </div>
@@ -518,7 +523,9 @@ export default function Teamdynamik() {
               <p style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F", margin: "0 0 10px" }}>{t("Teamgrösse")}</p>
               <div style={{ display: "flex", gap: 4, background: "rgba(0,0,0,0.03)", borderRadius: 10, padding: 3 }}>
                 {(["KLEIN", "MITTEL", "GROSS"] as TeamSize[]).map(size => {
-                  const labels: Record<TeamSize, string> = region === "EN"
+                  const labels: Record<TeamSize, string> = region === "FR"
+                    ? { KLEIN: "Petit (2–5)", MITTEL: "Moyen (6–12)", GROSS: "Grand (13+)" }
+                    : region === "EN"
                     ? { KLEIN: "Small (2–5)", MITTEL: "Medium (6–12)", GROSS: "Large (13+)" }
                     : { KLEIN: "Klein (2–5)", MITTEL: "Mittel (6–12)", GROSS: t("Gross (13+)") };
                   const active = teamSize === size;
@@ -593,7 +600,7 @@ export default function Teamdynamik() {
                   <input type="text" value={teamName} onChange={e => setTeamName(e.target.value)}
                     data-testid="input-team-name"
                     style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", background: "none", border: "none", outline: "none", padding: 0, letterSpacing: "-0.02em", width: "auto", maxWidth: 220 }} />
-                  <span style={{ fontSize: 10, fontWeight: 700, padding: "3px 10px", borderRadius: 6, background: tl.bg, color: tl.fill }} data-testid="badge-status">{region === "EN" ? { GREEN: "Stable", YELLOW: "Manageable", RED: "Tension field" }[result.trafficLight] : tl.label}</span>
+                  <span style={{ fontSize: 10, fontWeight: 700, padding: "3px 10px", borderRadius: 6, background: tl.bg, color: tl.fill }} data-testid="badge-status">{region === "FR" ? { GREEN: "Stable", YELLOW: "Gérable", RED: "Zone de tension" }[result.trafficLight] : region === "EN" ? { GREEN: "Stable", YELLOW: "Manageable", RED: "Tension field" }[result.trafficLight] : tl.label}</span>
                   {departmentType !== "ALLGEMEIN" && (
                     <span style={{ fontSize: 10, fontWeight: 600, padding: "3px 10px", borderRadius: 6, background: "rgba(0,113,227,0.08)", color: "#0071E3" }} data-testid="badge-department">
                       {getDepartmentInfo(departmentType).label}
@@ -604,9 +611,9 @@ export default function Teamdynamik() {
               </div>
             </div>
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-              <KPITile label={region === "EN" ? "Transformation score" : "Transformationsscore"} value={result.scores.TS} sub={intensityLabel(result.intensityLevel, region)} color={result.scores.TS > 50 ? "#FF3B30" : result.scores.TS > 25 ? "#FF9500" : "#34C759"} />
-              <KPITile label={region === "EN" ? "Distribution gap" : "Verteilungslücke"} value={`${result.scores.DG}`} sub={`DC: ${result.scores.DC}`} />
-              <KPITile label={region === "EN" ? "Conflict index" : "Konfliktindex"} value={result.scores.CI} sub={`${region === "EN" ? "Steering" : "Steuerung"}: ${intensityLabel(result.steeringNeed, region)}`} color={result.scores.CI > 50 ? "#FF3B30" : result.scores.CI > 25 ? "#FF9500" : "#34C759"} />
+              <KPITile label={region === "FR" ? "Score de transformation" : region === "EN" ? "Transformation score" : "Transformationsscore"} value={result.scores.TS} sub={intensityLabel(result.intensityLevel, region)} color={result.scores.TS > 50 ? "#FF3B30" : result.scores.TS > 25 ? "#FF9500" : "#34C759"} />
+              <KPITile label={region === "FR" ? "Écart de distribution" : region === "EN" ? "Distribution gap" : "Verteilungslücke"} value={`${result.scores.DG}`} sub={`DC: ${result.scores.DC}`} />
+              <KPITile label={region === "FR" ? "Indice de conflit" : region === "EN" ? "Conflict index" : "Konfliktindex"} value={result.scores.CI} sub={`${region === "FR" ? "Pilotage" : region === "EN" ? "Steering" : "Steuerung"}: ${intensityLabel(result.steeringNeed, region)}`} color={result.scores.CI > 50 ? "#FF3B30" : result.scores.CI > 25 ? "#FF9500" : "#34C759"} />
             </div>
             {(() => {
               const tlKey = result.trafficLight;
@@ -792,9 +799,9 @@ export default function Teamdynamik() {
           const vc = getViewContent(viewMode, result, result.activeMatrixCell);
           if (!vc.showMatrix && viewMode === "CEO") return null;
           const domLabels: { key: DominanceType; label: string; short: string; color: string }[] = [
-            { key: "IMPULSIV", label: region === "EN" ? "Impulsive" : "Impulsiv", short: "IMP", color: COLORS.imp },
-            { key: "INTUITIV", label: region === "EN" ? "Intuitive" : "Intuitiv", short: "INT", color: COLORS.int },
-            { key: "ANALYTISCH", label: region === "EN" ? "Analytical" : "Analytisch", short: "ANA", color: COLORS.ana },
+            { key: "IMPULSIV", label: region === "FR" ? "Rythme et Décision" : region === "EN" ? "Impulsive" : "Impulsiv", short: "IMP", color: COLORS.imp },
+            { key: "INTUITIV", label: region === "FR" ? "Communication et Relations" : region === "EN" ? "Intuitive" : "Intuitiv", short: "INT", color: COLORS.int },
+            { key: "ANALYTISCH", label: region === "FR" ? "Structure et Rigueur" : region === "EN" ? "Analytical" : "Analytisch", short: "ANA", color: COLORS.ana },
           ];
           const personDom = result.dominancePerson;
           const teamDom = result.dominanceTeam;

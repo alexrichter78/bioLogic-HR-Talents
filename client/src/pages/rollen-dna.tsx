@@ -508,7 +508,7 @@ const roleResultTextsEN: Record<ResultKey, RoleResultEntry> = {
 };
 
 function getRoleResultEntry(key: ResultKey, region: string): RoleResultEntry {
-  return region === "EN" ? roleResultTextsEN[key] : roleResultTexts[key];
+  return region === "EN" ? roleResultTextsEN[key] : roleResultTexts[key]; // FR uses DE text objects (Claude generates in FR)
 }
 
 function generateBioCheckText(bg: BioGram, isLeadership: boolean, region?: string, _fuehrungsBg?: BioGram): string {
@@ -732,7 +732,7 @@ function CollapsedStep({
         data-testid={`button-edit-step-${step}`}
       >
         <Pencil style={{ width: 13, height: 13 }} />
-        {region === "EN" ? "Edit" : "Bearbeiten"}
+        {region === "FR" ? "Modifier" : region === "EN" ? "Edit" : "Bearbeiten"}
       </button>
       <ChevronDown className="w-4 h-4 text-muted-foreground/40 flex-shrink-0" />
     </div>
@@ -2031,10 +2031,10 @@ export default function RollenDNA() {
             <div className="w-full mx-auto" style={{ maxWidth: 1100, padding: isMobile ? "0 12px" : "0 24px" }}>
               <div className="text-center">
                 <h1 style={{ fontSize: 24, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 2px", color: "#34C759" }} data-testid="text-rollen-dna-title">
-                  {region === "EN" ? "Define role profile" : "Stellenprofil definieren"}
+                  {region === "FR" ? "Définir le profil du poste" : region === "EN" ? "Define role profile" : "Stellenprofil definieren"}
                 </h1>
                 <p style={{ fontSize: 14, color: "#48484A", fontWeight: 450, margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }} data-testid="text-rollen-dna-subtitle">
-                  {region === "EN" ? "Capture the requirements and working logic of the position as a basis for the decision report, fit analysis and TeamCheck." : "Erfasse die Anforderungen und Arbeitslogik der Stelle als Grundlage für den Entscheidungsbericht, die Passungsanalyse sowie den TeamCheck."}
+                  {region === "FR" ? "Capturez les exigences et la logique de travail du poste pour servir de base au rapport de décision, à l'analyse d'adéquation et au TeamCheck." : region === "EN" ? "Capture the requirements and working logic of the position as a basis for the decision report, fit analysis and TeamCheck." : "Erfasse die Anforderungen und Arbeitslogik der Stelle als Grundlage für den Entscheidungsbericht, die Passungsanalyse sowie den TeamCheck."}
                 </p>
               </div>
 
@@ -2258,7 +2258,7 @@ export default function RollenDNA() {
                       }}
                       data-testid="button-step-1-weiter"
                     >
-                      {editingFromOverview ? (region === "EN" ? "Apply" : "Übernehmen") : (region === "EN" ? "Analyse role" : "Stelle analysieren")}
+                      {editingFromOverview ? (region === "FR" ? "Appliquer" : region === "EN" ? "Apply" : "Übernehmen") : (region === "FR" ? "Analyser le poste" : region === "EN" ? "Analyse role" : "Stelle analysieren")}
                       <ArrowRight className="w-4 h-4" />
                     </Button>
                   </div>
@@ -2267,7 +2267,7 @@ export default function RollenDNA() {
             ) : (
               <CollapsedStep
                 step={1}
-                title={region === "EN" ? "Selected role / title" : "Ausgewählte Stelle / Bezeichnung"}
+                title={region === "FR" ? "Poste / Titre sélectionné" : region === "EN" ? "Selected role / title" : "Ausgewählte Stelle / Bezeichnung"}
                 summary={beruf}
                 onEdit={() => goToStep(1)}
                 icon={Briefcase}
@@ -2283,10 +2283,10 @@ export default function RollenDNA() {
                     <div style={{ width: 28, height: 28, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, background: "rgba(0,0,0,0.06)", color: "#AEAEB2" }}>3</div>
                   </div>
                   <h2 style={{ fontSize: 28, fontWeight: 700, color: "#34C759", letterSpacing: "-0.02em" }} className="dark:text-foreground/90" data-testid="text-step-2-title">
-                    {region === "EN" ? "Role framework conditions" : "Rahmenbedingungen der Stelle"}
+                    {region === "FR" ? "Conditions-cadres du poste" : region === "EN" ? "Role framework conditions" : "Rahmenbedingungen der Stelle"}
                   </h2>
                   <p style={{ fontSize: 14, color: "#48484A", marginTop: 6 }}>
-                    {region === "EN" ? "Define the basic characteristics of this role. The details help determine the structural role logic." : "Definiere die grundlegenden Merkmale dieser Stelle. Die Angaben helfen dabei, die strukturelle Stellenlogik zu bestimmen."}
+                    {region === "FR" ? "Définissez les caractéristiques de base de ce poste. Les informations aident à déterminer la logique structurelle du rôle." : region === "EN" ? "Define the basic characteristics of this role. The details help determine the structural role logic." : "Definiere die grundlegenden Merkmale dieser Stelle. Die Angaben helfen dabei, die strukturelle Stellenlogik zu bestimmen."}
                   </p>
                 </div>
 
@@ -2310,14 +2310,14 @@ export default function RollenDNA() {
                         <div className="flex items-center gap-3">
                           <Layers style={{ width: 20, height: 20, color: "#34C759", strokeWidth: 1.5 }} />
                           <h3 style={{ fontSize: 22, fontWeight: 600, color: "#34C759" }} className="dark:text-foreground/90">
-                            {region === "EN" ? "Type of tasks" : "Art der Aufgaben"}
+                            {region === "FR" ? "Type de tâches" : region === "EN" ? "Type of tasks" : "Art der Aufgaben"}
                           </h3>
                         </div>
                         <p style={{ fontSize: 14, color: "#6E6E73", marginTop: 6, paddingLeft: 32 }}>
                           {getRegionOptions(region).subtitles.aufgabencharakter}
                         </p>
                         <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", marginTop: 4, paddingLeft: 32 }}>
-                          {region === "EN" ? "(Please select one option)" : "(Bitte ein Feld auswählen)"}
+                          {region === "FR" ? "(Sélectionnez une option)" : region === "EN" ? "(Please select one option)" : "(Bitte ein Feld auswählen)"}
                         </p>
                         <div style={{ marginTop: 20 }}>
                           <DescriptiveOptionGroup
@@ -2338,14 +2338,14 @@ export default function RollenDNA() {
                         <div className="flex items-center gap-3">
                           <Activity style={{ width: 20, height: 20, color: "#34C759", strokeWidth: 1.5 }} />
                           <h3 style={{ fontSize: 22, fontWeight: 600, color: "#34C759" }} className="dark:text-foreground/90">
-                            {region === "EN" ? "Working style of the role" : "Arbeitsweise der Stelle"}
+                            {region === "FR" ? "Style de travail du poste" : region === "EN" ? "Working style of the role" : "Arbeitsweise der Stelle"}
                           </h3>
                         </div>
                         <p style={{ fontSize: 14, color: "#6E6E73", marginTop: 6, paddingLeft: 32 }}>
                           {getRegionOptions(region).subtitles.arbeitslogik}
                         </p>
                         <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", marginTop: 4, paddingLeft: 32 }}>
-                          {region === "EN" ? "(Please select one option)" : "(Bitte ein Feld auswählen)"}
+                          {region === "FR" ? "(Sélectionnez une option)" : region === "EN" ? "(Please select one option)" : "(Bitte ein Feld auswählen)"}
                         </p>
                         <div style={{ marginTop: 20 }}>
                           <DescriptiveOptionGroup
@@ -2366,14 +2366,14 @@ export default function RollenDNA() {
                         <div className="flex items-center gap-3">
                           <Target style={{ width: 20, height: 20, color: "#34C759", strokeWidth: 1.5 }} />
                           <h3 style={{ fontSize: 22, fontWeight: 600, color: "#34C759" }} className="dark:text-foreground/90">
-                            {region === "EN" ? "Success focus" : "Erfolgsfokus"}
+                            {region === "FR" ? "Priorité de réussite" : region === "EN" ? "Success focus" : "Erfolgsfokus"}
                           </h3>
                         </div>
                         <p style={{ fontSize: 14, color: "#6E6E73", marginTop: 6, paddingLeft: 32 }}>
                           {getRegionOptions(region).subtitles.erfolgsfokus}
                         </p>
                         <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", marginTop: 4, paddingLeft: 32 }}>
-                          {region === "EN" ? "(Please select two options)" : "(Bitte zwei Felder auswählen)"}
+                          {region === "FR" ? "(Sélectionnez deux options)" : region === "EN" ? "(Please select two options)" : "(Bitte zwei Felder auswählen)"}
                         </p>
                         <div style={{ marginTop: 20 }}>
                           <DescriptiveOptionGroupIndexed
@@ -2394,14 +2394,14 @@ export default function RollenDNA() {
                         <div className="flex items-center gap-3">
                           <Users style={{ width: 20, height: 20, color: "#34C759", strokeWidth: 1.5 }} />
                           <h3 style={{ fontSize: 22, fontWeight: 600, color: "#34C759" }} className="dark:text-foreground/90">
-                            {region === "EN" ? "Leadership responsibility" : "Führungsverantwortung"}
+                            {region === "FR" ? "Responsabilité de management" : region === "EN" ? "Leadership responsibility" : "Führungsverantwortung"}
                           </h3>
                         </div>
                         <p style={{ fontSize: 14, color: "#6E6E73", marginTop: 6, paddingLeft: 32 }}>
                           {getRegionOptions(region).subtitles.fuehrung}
                         </p>
                         <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", marginTop: 4, paddingLeft: 32 }}>
-                          {region === "EN" ? "(Please select one option)" : "(Bitte ein Feld auswählen)"}
+                          {region === "FR" ? "(Sélectionnez une option)" : region === "EN" ? "(Please select one option)" : "(Bitte ein Feld auswählen)"}
                         </p>
                         <div style={{ marginTop: 20 }}>
                           <DescriptiveOptionGroup
@@ -2457,7 +2457,7 @@ export default function RollenDNA() {
                       data-testid="button-step-2-zurueck"
                     >
                       <ArrowLeft className="w-5 h-5" />
-                      {region === "EN" ? "Back" : "Zurück"}
+                      {region === "FR" ? "Retour" : region === "EN" ? "Back" : "Zurück"}
                     </Button>
                     <Button
                       disabled={!step2Valid}
@@ -2476,7 +2476,7 @@ export default function RollenDNA() {
                       className="gap-2"
                       data-testid="button-step-2-weiter"
                     >
-                      {editingFromOverview ? (region === "EN" ? "Apply" : "Übernehmen") : (region === "EN" ? "Next" : "Weiter")}
+                      {editingFromOverview ? (region === "FR" ? "Appliquer" : region === "EN" ? "Apply" : "Übernehmen") : (region === "FR" ? "Suivant" : region === "EN" ? "Next" : "Weiter")}
                       <ArrowRight className="w-5 h-5" />
                     </Button>
                   </div>
@@ -2485,19 +2485,19 @@ export default function RollenDNA() {
             ) : !allCollapsed && currentStep > 2 ? (
               <CollapsedStep
                 step={2}
-                title={region === "EN" ? "Role framework conditions" : "Rahmenbedingungen der Stelle"}
-                summary={region === "EN" ? "Basic characteristics of this role / title." : "Grundlegende Merkmale dieser Stelle / Bezeichnung."}
+                title={region === "FR" ? "Conditions-cadres du poste" : region === "EN" ? "Role framework conditions" : "Rahmenbedingungen der Stelle"}
+                summary={region === "FR" ? "Caractéristiques de base de ce poste / titre." : region === "EN" ? "Basic characteristics of this role / title." : "Grundlegende Merkmale dieser Stelle / Bezeichnung."}
                 onEdit={() => goToStep(2)}
                 icon={Settings}
               />
             ) : (
-              <LockedStep step={2} title={region === "EN" ? "Role framework conditions" : "Rahmenbedingungen der Stelle"} />
+              <LockedStep step={2} title={region === "FR" ? "Conditions-cadres du poste" : region === "EN" ? "Role framework conditions" : "Rahmenbedingungen der Stelle"} />
             )}
 
             {allCollapsed ? null : currentStep >= 4 && taetigkeiten.length > 0 ? (
               <CollapsedStep
                 step={3}
-                title={region === "EN" ? "Tasks & competencies" : "Tätigkeiten & Kompetenzen"}
+                title={region === "FR" ? "Tâches et compétences" : region === "EN" ? "Tasks & competencies" : "Tätigkeiten & Kompetenzen"}
                 summary={region === "EN"
                   ? `${taetigkeiten.filter(t => t.kategorie === "haupt").length} tasks · ${taetigkeiten.filter(t => t.kategorie === "neben").length} human skills${taetigkeiten.filter(t => t.kategorie === "fuehrung").length > 0 ? ` · ${taetigkeiten.filter(t => t.kategorie === "fuehrung").length} leadership` : ""}`
                   : `${taetigkeiten.filter(t => t.kategorie === "haupt").length} Tätigkeiten · ${taetigkeiten.filter(t => t.kategorie === "neben").length} Humankompetenzen${taetigkeiten.filter(t => t.kategorie === "fuehrung").length > 0 ? ` · ${taetigkeiten.filter(t => t.kategorie === "fuehrung").length} Führung` : ""}`}
@@ -2514,17 +2514,17 @@ export default function RollenDNA() {
                       <div style={{ width: 28, height: 28, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, background: "#34C759", color: "#fff" }}>3</div>
                     </div>
                     <h2 style={{ fontSize: 28, fontWeight: 700, color: "#34C759", letterSpacing: "-0.02em" }} className="dark:text-foreground/90" data-testid="text-step-3-title">
-                      {region === "EN" ? "Tasks & competencies" : "Tätigkeiten & Kompetenzen"}
+                      {region === "FR" ? "Tâches et compétences" : region === "EN" ? "Tasks & competencies" : "Tätigkeiten & Kompetenzen"}
                     </h2>
                     <p style={{ fontSize: 14, color: "#48484A", marginTop: 4 }}>
-                      {region === "EN" ? "Shape the concrete structure of this role." : "Forme die konkrete Struktur dieser Stelle."}
+                      {region === "FR" ? "Définissez la structure concrète de ce poste." : region === "EN" ? "Shape the concrete structure of this role." : "Forme die konkrete Struktur dieser Stelle."}
                     </p>
                   </div>
                   <div style={{ textAlign: "right", fontSize: 14, color: "#48484A", lineHeight: 1.8 }}>
-                    <div>{region === "EN" ? "Tasks" : "Tätigkeiten"} <span style={{ fontWeight: 600, color: "#1D1D1F" }}>{hauptCount} / 15</span></div>
-                    <div>{region === "EN" ? "Human competences" : "Humankompetenzen"} <span style={{ fontWeight: 600, color: "#1D1D1F" }}>{nebenCount} / 10</span></div>
+                    <div>{region === "FR" ? "Tâches" : region === "EN" ? "Tasks" : "Tätigkeiten"} <span style={{ fontWeight: 600, color: "#1D1D1F" }}>{hauptCount} / 15</span></div>
+                    <div>{region === "FR" ? "Compétences humaines" : region === "EN" ? "Human competences" : "Humankompetenzen"} <span style={{ fontWeight: 600, color: "#1D1D1F" }}>{nebenCount} / 10</span></div>
                     {fuehrung !== "Keine" && (
-                      <div>{region === "EN" ? "Leadership competences" : "Führungskompetenzen"} <span style={{ fontWeight: 600, color: "#1D1D1F" }}>{fuehrungCount} / 10</span></div>
+                      <div>{region === "FR" ? "Compétences de management" : region === "EN" ? "Leadership competences" : "Führungskompetenzen"} <span style={{ fontWeight: 600, color: "#1D1D1F" }}>{fuehrungCount} / 10</span></div>
                     )}
                   </div>
                 </div>
@@ -2535,8 +2535,8 @@ export default function RollenDNA() {
                       display: "flex",
                       alignItems: "center",
                       gap: 12,
-                      background: region === "EN" ? "rgba(52,199,89,0.08)" : "rgba(0,122,255,0.08)",
-                      border: `1px solid ${region === "EN" ? "rgba(52,199,89,0.25)" : "rgba(0,122,255,0.25)"}`,
+                      background: region === "FR" ? "rgba(52,199,89,0.08)" : region === "EN" ? "rgba(52,199,89,0.08)" : "rgba(0,122,255,0.08)",
+                      border: `1px solid ${region === "FR" ? "rgba(52,199,89,0.25)" : region === "EN" ? "rgba(52,199,89,0.25)" : "rgba(0,122,255,0.25)"}`,
                       borderRadius: 14,
                       padding: "12px 18px",
                       marginBottom: 16,
@@ -2563,7 +2563,7 @@ export default function RollenDNA() {
                         padding: "8px 16px",
                         borderRadius: 10,
                         border: "none",
-                        background: region === "EN" ? "#34C759" : "#007AFF",
+                        background: region === "FR" ? "#34C759" : region === "EN" ? "#34C759" : "#007AFF",
                         color: "#fff",
                         fontSize: 13,
                         fontWeight: 600,
@@ -2572,7 +2572,7 @@ export default function RollenDNA() {
                         flexShrink: 0,
                       }}
                     >
-                      {region === "EN" ? "Regenerate in English" : "Neu generieren auf Deutsch"}
+                      {region === "FR" ? "Régénérer en français" : region === "EN" ? "Regenerate in English" : "Neu generieren auf Deutsch"}
                     </button>
                   </div>
                 )}
@@ -2600,9 +2600,9 @@ export default function RollenDNA() {
                     data-testid="tabs-taetigkeiten"
                   >
                     {([
-                      { key: "haupt" as TaetigkeitKategorie, label: region === "EN" ? "Tasks" : "Tätigkeiten", count: hauptCount },
-                      { key: "neben" as TaetigkeitKategorie, label: region === "EN" ? "Human competences" : "Humankompetenzen", count: nebenCount },
-                      ...(fuehrung !== "Keine" ? [{ key: "fuehrung" as TaetigkeitKategorie, label: region === "EN" ? "Leadership competences" : "Führungskompetenzen", count: fuehrungCount }] : []),
+                      { key: "haupt" as TaetigkeitKategorie, label: region === "FR" ? "Tâches" : region === "EN" ? "Tasks" : "Tätigkeiten", count: hauptCount },
+                      { key: "neben" as TaetigkeitKategorie, label: region === "FR" ? "Compétences humaines" : region === "EN" ? "Human competences" : "Humankompetenzen", count: nebenCount },
+                      ...(fuehrung !== "Keine" ? [{ key: "fuehrung" as TaetigkeitKategorie, label: region === "FR" ? "Compétences de management" : region === "EN" ? "Leadership competences" : "Führungskompetenzen", count: fuehrungCount }] : []),
                     ]).map(tab => {
                       const isActive = activeTab === tab.key;
                       return (
@@ -2664,16 +2664,16 @@ export default function RollenDNA() {
                           margin: "0 auto 16px",
                         }} />
                         <p style={{ fontSize: 15, color: "#0071E3", fontWeight: 500 }}>
-                          {region === "EN" ? `AI is creating role profile for “${beruf}”` : `KI erstellt Stellenprofil für „${beruf}“`}
+                          {region === "FR" ? `L'IA crée le profil de poste pour « ${beruf} »` : region === "EN" ? `AI is creating role profile for “${beruf}”` : `KI erstellt Stellenprofil für „${beruf}“`}
                         </p>
                         <p style={{ fontSize: 13, color: "#6E6E73", marginTop: 4, marginBottom: 20 }}>
-                          {region === "EN" ? "This may take a few seconds." : "Das kann einige Sekunden dauern."}
+                          {region === "FR" ? "Cela peut prendre quelques secondes." : region === "EN" ? "This may take a few seconds." : "Das kann einige Sekunden dauern."}
                         </p>
                         <div style={{ display: "inline-flex", flexDirection: "column", gap: 10, textAlign: "left" }}>
                           {[
-                            { label: region === "EN" ? "Tasks are being created" : "Tätigkeiten werden erstellt", step: 0 },
-                            { label: region === "EN" ? "Human competences are being identified" : "Humankompetenzen werden ermittelt", step: 1 },
-                            { label: region === "EN" ? "Leadership competences are being analysed" : "Führungskompetenzen werden analysiert", step: 2 },
+                            { label: region === "FR" ? "Les tâches sont en cours de création" : region === "EN" ? "Tasks are being created" : "Tätigkeiten werden erstellt", step: 0 },
+                            { label: region === "FR" ? "Les compétences humaines sont en cours d'identification" : region === "EN" ? "Human competences are being identified" : "Humankompetenzen werden ermittelt", step: 1 },
+                            { label: region === "FR" ? "Les compétences de management sont en cours d'analyse" : region === "EN" ? "Leadership competences are being analysed" : "Führungskompetenzen werden analysiert", step: 2 },
                           ].map((item) => {
                             const done = generatingStep > item.step;
                             const active = generatingStep === item.step;
@@ -2733,7 +2733,7 @@ export default function RollenDNA() {
                     ) : filteredTaetigkeiten.length === 0 ? (
                       <div className="text-center py-12">
                         <p style={{ fontSize: 15, color: "#6E6E73" }}>
-                          {region === "EN" ? <>No {activeTab === "haupt" ? "tasks" : activeTab === "neben" ? "human competences" : "leadership competences"} added yet.</> : <>Noch keine {activeTab === "haupt" ? "Tätigkeiten" : activeTab === "neben" ? "Humankompetenzen" : "Führungskompetenzen"} hinzugefügt.</>}
+                          {region === "FR" ? <>Aucune {activeTab === "haupt" ? "tâche" : activeTab === "neben" ? "compétence humaine" : "compétence de management"} ajoutée pour l'instant.</> : region === "EN" ? <>No {activeTab === "haupt" ? "tasks" : activeTab === "neben" ? "human competences" : "leadership competences"} added yet.</> : <>Noch keine {activeTab === "haupt" ? "Tätigkeiten" : activeTab === "neben" ? "Humankompetenzen" : "Führungskompetenzen"} hinzugefügt.</>}
                         </p>
                       </div>
                     ) : (
@@ -2818,7 +2818,7 @@ export default function RollenDNA() {
                               </div>
 
                               <div style={{ marginTop: 14, display: "grid", gridTemplateColumns: "max-content auto", rowGap: 10, columnGap: 8, alignItems: "center" }}>
-                                  <span style={{ fontSize: 12, fontWeight: 500, color: "#48484A", textTransform: "uppercase", letterSpacing: "0.5px", whiteSpace: "nowrap" }}>{region === "EN" ? "Weighting" : "Gewichtung"}</span>
+                                  <span style={{ fontSize: 12, fontWeight: 500, color: "#48484A", textTransform: "uppercase", letterSpacing: "0.5px", whiteSpace: "nowrap" }}>{region === "FR" ? "Pondération" : region === "EN" ? "Weighting" : "Gewichtung"}</span>
                                   <div style={{ display: "flex", gap: 6 }}>
                                     {NIVEAU_OPTIONS.map(n => (
                                       <button
@@ -2844,12 +2844,12 @@ export default function RollenDNA() {
                                         data-testid={`niveau-${t.id}-${n.toLowerCase()}`}
                                       >
                                         {t.niveau === n && <Check style={{ width: 10, height: 10 }} />}
-                                        {region === "EN" ? { Niedrig: "Low", Mittel: "Medium", Hoch: "High" }[n] : n}
+                                        {region === "FR" ? { Niedrig: "Bas", Mittel: "Moyen", Hoch: "Élevé" }[n] ?? n : region === "EN" ? { Niedrig: "Low", Mittel: "Medium", Hoch: "High" }[n] : n}
                                       </button>
                                     ))}
                                   </div>
 
-                                  <span style={{ fontSize: 12, fontWeight: 500, color: "#48484A", textTransform: "uppercase", letterSpacing: "0.5px", whiteSpace: "nowrap" }}>{region === "EN" ? "Focus" : "Schwerpunkt"}</span>
+                                  <span style={{ fontSize: 12, fontWeight: 500, color: "#48484A", textTransform: "uppercase", letterSpacing: "0.5px", whiteSpace: "nowrap" }}>{region === "FR" ? "Priorité" : region === "EN" ? "Focus" : "Schwerpunkt"}</span>
                                   <div style={{ display: "flex", gap: 6 }}>
                                     {KOMPETENZ_OPTIONS.map(k => (
                                       <button
@@ -2873,7 +2873,7 @@ export default function RollenDNA() {
                                         }}
                                         data-testid={`kompetenz-${t.id}-${k.toLowerCase()}`}
                                       >
-                                        {region === "EN" ? { Impulsiv: "Impulsive", Intuitiv: "Intuitive", Analytisch: "Analytical" }[k] : k}
+                                        {region === "FR" ? { Impulsiv: "Rythme et Décision", Intuitiv: "Communication et Relations", Analytisch: "Structure et Rigueur" }[k] ?? k : region === "EN" ? { Impulsiv: "Impulsive", Intuitiv: "Intuitive", Analytisch: "Analytical" }[k] : k}
                                       </button>
                                     ))}
                                   </div>
@@ -2931,8 +2931,8 @@ export default function RollenDNA() {
                   {!isGenerating && (
                     <p style={{ fontSize: 12, color: "#AEAEB2", textAlign: "center", marginTop: 16 }}>
                       {currentTabCount >= currentTabMax
-                        ? region === "EN" ? `Maximum of ${currentTabMax} reached` : `Maximum von ${currentTabMax} erreicht`
-                        : region === "EN" ? `Max. ${currentTabMax} ${activeTab === "haupt" ? "tasks" : activeTab === "neben" ? "human competences" : "leadership competences"}` : `Maximal ${currentTabMax} ${activeTab === "haupt" ? "Tätigkeiten" : activeTab === "neben" ? "Humankompetenzen" : "Führungskompetenzen"}`
+                        ? region === "FR" ? `Maximum de ${currentTabMax} atteint` : region === "EN" ? `Maximum of ${currentTabMax} reached` : `Maximum von ${currentTabMax} erreicht`
+                        : region === "FR" ? `Max. ${currentTabMax} ${activeTab === "haupt" ? "tâches" : activeTab === "neben" ? "compétences humaines" : "compétences de management"}` : region === "EN" ? `Max. ${currentTabMax} ${activeTab === "haupt" ? "tasks" : activeTab === "neben" ? "human competences" : "leadership competences"}` : `Maximal ${currentTabMax} ${activeTab === "haupt" ? "Tätigkeiten" : activeTab === "neben" ? "Humankompetenzen" : "Führungskompetenzen"}`
                       }
                     </p>
                   )}
@@ -2992,7 +2992,7 @@ export default function RollenDNA() {
                           localStorage.setItem("rollenDnaCompleted", "true");
                         }}
                       >
-                        {region === "EN" ? "To role definition" : "zur Stellendefinition"}
+                        {region === "FR" ? "Vers la définition du poste" : region === "EN" ? "To role definition" : "zur Stellendefinition"}
                         <ChevronRight className="w-5 h-5" />
                       </Button>
                     );
@@ -3037,8 +3037,8 @@ export default function RollenDNA() {
                         <FileText style={{ width: 15, height: 15, color: "#FFF", strokeWidth: 2.2 }} />
                       </div>
                       <span style={{ color: "#1D1D1F", display: "flex", alignItems: "baseline", gap: 6 }}>
-                        <span style={{ fontSize: 18, fontWeight: 700, flexShrink: 0, color: "#34C759" }}>{region === "EN" ? "Job profile:" : "Kurzprofil der Stelle:"}</span>
-                        <span style={{ fontSize: 18, fontWeight: 700 }}>{beruf}{fuehrung && fuehrung !== "Keine" ? "" + (region === "EN" ? " with leadership responsibility" : " mit Führungsverantwortung") : ""}</span>
+                        <span style={{ fontSize: 18, fontWeight: 700, flexShrink: 0, color: "#34C759" }}>{region === "FR" ? "Profil du poste :" : region === "EN" ? "Job profile:" : "Kurzprofil der Stelle:"}</span>
+                        <span style={{ fontSize: 18, fontWeight: 700 }}>{beruf}{fuehrung && fuehrung !== "Keine" ? "" + (region === "FR" ? " avec responsabilité de management" : region === "EN" ? " with leadership responsibility" : " mit Führungsverantwortung") : ""}</span>
                       </span>
                     </div>
                     <ChevronDown style={{
@@ -3063,8 +3063,8 @@ export default function RollenDNA() {
                         background: "#FFFFFF",
                         border: "1px solid rgba(0,0,0,0.06)",
                       }} data-testid="card-grundprinzip">
-                        <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0", display: "flex", alignItems: "center", gap: 6 }}><Info style={{ width: 15, height: 15, color: "#1D1D1F", flexShrink: 0 }} />{region === "EN" ? analysisPrincipleText_EN.title : analysisPrincipleText.title}</h3>
-                        <p lang="de" style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: 0, ...reportTextStyle }}>{region === "EN" ? analysisPrincipleText_EN.body.join(" ") : localizeText(analysisPrincipleText.body.join(" "))}</p>
+                        <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0", display: "flex", alignItems: "center", gap: 6 }}><Info style={{ width: 15, height: 15, color: "#1D1D1F", flexShrink: 0 }} />{analysisPrincipleText.title}</h3>
+                        <p lang="de" style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: 0, ...reportTextStyle }}>{localizeText(analysisPrincipleText.body.join(" "))}</p>
                       </div>
 
                       <div style={{
@@ -3074,16 +3074,16 @@ export default function RollenDNA() {
                         background: "#FFFFFF",
                         border: "1px solid rgba(0,0,0,0.06)",
                       }} data-testid="card-anforderungsprofil">
-                        <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0", display: "flex", alignItems: "center", gap: 6 }}><ClipboardList style={{ width: 15, height: 15, color: "#1D1D1F", flexShrink: 0 }} />{region === "EN" ? "Requirements profile of the role" : "Anforderungsprofil der Stelle"}</h3>
+                        <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0", display: "flex", alignItems: "center", gap: 6 }}><ClipboardList style={{ width: 15, height: 15, color: "#1D1D1F", flexShrink: 0 }} />{region === "FR" ? "Profil d'exigences du poste" : region === "EN" ? "Requirements profile of the role" : "Anforderungsprofil der Stelle"}</h3>
                         <p lang="de" style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: "0 0 14px 0", ...reportTextStyle }}>
-                          {region === "EN" ? roleRequirementText_EN.intro.join(" ") : localizeText(roleRequirementText.intro.join(" "))}
+                          {localizeText(roleRequirementText.intro.join(" "))}
                         </p>
 
                         <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 10 }}>
                           {[
-                            { label: region === "EN" ? "Impulsive" : "Impulsiv", color: "#C41E3A", bg: "rgba(196,30,58,0.05)", border: "rgba(196,30,58,0.12)", desc: region === "EN" ? "Execution, decisions and accountability for results" : "Umsetzung, Entscheidung und Ergebnisverantwortung" },
-                            { label: region === "EN" ? "Intuitive" : "Intuitiv", color: "#F39200", bg: "rgba(243,146,0,0.05)", border: "rgba(243,146,0,0.12)", desc: region === "EN" ? "Collaboration and context-aware action" : "Zusammenarbeit und kontextbezogenes Handeln" },
-                            { label: region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", bg: "rgba(26,93,171,0.05)", border: "rgba(26,93,171,0.12)", desc: region === "EN" ? "Structure, planning and technical precision" : "Struktur, Planung und fachliche Präzision" },
+                            { label: region === "EN" ? "Impulsive" : "Impulsiv", color: "#C41E3A", bg: "rgba(196,30,58,0.05)", border: "rgba(196,30,58,0.12)", desc: region === "FR" ? "Exécution, décisions et responsabilité des résultats" : region === "EN" ? "Execution, decisions and accountability for results" : "Umsetzung, Entscheidung und Ergebnisverantwortung" },
+                            { label: region === "EN" ? "Intuitive" : "Intuitiv", color: "#F39200", bg: "rgba(243,146,0,0.05)", border: "rgba(243,146,0,0.12)", desc: region === "FR" ? "Collaboration et action adaptée au contexte" : region === "EN" ? "Collaboration and context-aware action" : "Zusammenarbeit und kontextbezogenes Handeln" },
+                            { label: region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", bg: "rgba(26,93,171,0.05)", border: "rgba(26,93,171,0.12)", desc: region === "FR" ? "Structure, planification et précision technique" : region === "EN" ? "Structure, planning and technical precision" : "Struktur, Planung und fachliche Präzision" },
                           ].map(d => (
                             <div key={d.label} style={{
                               background: d.bg,
@@ -3111,9 +3111,9 @@ export default function RollenDNA() {
                           background: "#FFFFFF",
                           border: "1px solid rgba(0,0,0,0.06)",
                         }} data-testid="box-biocheck-description">
-                          <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0", display: "flex", alignItems: "center", gap: 6 }}><Lightbulb style={{ width: 15, height: 15, color: "#1D1D1F", flexShrink: 0 }} />{region === "EN" ? "Result of the analysis" : "Ergebnis der Analyse"}</h3>
+                          <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0", display: "flex", alignItems: "center", gap: 6 }}><Lightbulb style={{ width: 15, height: 15, color: "#1D1D1F", flexShrink: 0 }} />{region === "FR" ? "Résultat de l'analyse" : region === "EN" ? "Result of the analysis" : "Ergebnis der Analyse"}</h3>
                           <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: 0, ...reportTextStyle }} data-testid="text-biocheck-body">
-                            {region === "EN" ? [...rt.body, ...(isLeadershipRole ? [rt.leadership] : [])].join(" ") : localizeText([...rt.body, ...(isLeadershipRole ? [rt.leadership] : [])].join(" "))}
+                            {localizeText([...rt.body, ...(isLeadershipRole ? [rt.leadership] : [])].join(" "))}
                           </p>
                         </div>
                       );
@@ -3121,10 +3121,10 @@ export default function RollenDNA() {
 
                     <div style={{ marginTop: 16, display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 10 : 16 }}>
                       {[
-                        { title: region === "EN" ? "Activities" : "Tätigkeiten", key: "haupttaetigkeiten", data: bioGramHaupt, icon: Briefcase },
-                        { title: region === "EN" ? "Human competences" : "Humankompetenzen", key: "humankompetenzen", data: bioGramNeben, icon: Heart },
-                        { title: region === "EN" ? "Role framework conditions" : "Rahmenbedingungen der Stelle", key: "rahmenbedingungen", data: bioGramRahmen, icon: Settings },
-                        ...(isLeadershipRole ? [{ title: region === "EN" ? "Leadership competences" : "Führungskompetenzen", key: "fuehrungskompetenzen", data: bioGramFuehrung, icon: Shield }] : []),
+                        { title: region === "FR" ? "Activités" : region === "EN" ? "Activities" : "Tätigkeiten", key: "haupttaetigkeiten", data: bioGramHaupt, icon: Briefcase },
+                        { title: region === "FR" ? "Compétences humaines" : region === "EN" ? "Human competences" : "Humankompetenzen", key: "humankompetenzen", data: bioGramNeben, icon: Heart },
+                        { title: region === "FR" ? "Conditions-cadres du poste" : region === "EN" ? "Role framework conditions" : "Rahmenbedingungen der Stelle", key: "rahmenbedingungen", data: bioGramRahmen, icon: Settings },
+                        ...(isLeadershipRole ? [{ title: region === "FR" ? "Compétences de management" : region === "EN" ? "Leadership competences" : "Führungskompetenzen", key: "fuehrungskompetenzen", data: bioGramFuehrung, icon: Shield }] : []),
                       ].map((section) => (
                         <div
                           key={section.key}
@@ -3143,9 +3143,9 @@ export default function RollenDNA() {
                             </p>
                           </div>
                           {[
-                            { label: region === "EN" ? "Impulsive" : "Impulsiv", color: "#C41E3A", value: section.data.imp },
-                            { label: region === "EN" ? "Intuitive" : "Intuitiv", color: "#F39200", value: section.data.int },
-                            { label: region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", value: section.data.ana },
+                            { label: region === "FR" ? "Rythme et Décision" : region === "FR" ? "Rythme et Décision" : region === "EN" ? "Impulsive" : "Impulsiv", color: "#C41E3A", value: section.data.imp },
+                            { label: region === "FR" ? "Communication et Relations" : region === "EN" ? "Intuitive" : "Intuitiv", color: "#F39200", value: section.data.int },
+                            { label: region === "FR" ? "Structure et Rigueur" : region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", value: section.data.ana },
                           ].map((bar) => (
                             <div
                               key={bar.label}
@@ -3229,9 +3229,9 @@ export default function RollenDNA() {
                       </div>
                       {(() => {
                         const bars = [
-                          { label: region === "EN" ? "Impulsive" : "Impulsiv", color: "#C41E3A", value: bioGramGesamt.imp },
-                          { label: region === "EN" ? "Intuitive" : "Intuitiv", color: "#F39200", value: bioGramGesamt.int },
-                          { label: region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", value: bioGramGesamt.ana },
+                          { label: region === "FR" ? "Rythme et Décision" : region === "EN" ? "Impulsive" : "Impulsiv", color: "#C41E3A", value: bioGramGesamt.imp },
+                          { label: region === "FR" ? "Communication et Relations" : region === "EN" ? "Intuitive" : "Intuitiv", color: "#F39200", value: bioGramGesamt.int },
+                          { label: region === "FR" ? "Structure et Rigueur" : region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", value: bioGramGesamt.ana },
                         ];
                         return (
                           <div style={{ background: "#F0F0F2", borderRadius: 16, padding: "16px 18px", display: "flex", flexDirection: "column", gap: 14 }}>
@@ -3267,7 +3267,7 @@ export default function RollenDNA() {
                 </div>
               </div>
             ) : (
-              <LockedStep step={3} title={region === "EN" ? "Tasks & competencies" : "Tätigkeiten & Kompetenzen"} />
+              <LockedStep step={3} title={region === "FR" ? "Tâches et compétences" : region === "EN" ? "Tasks & competencies" : "Tätigkeiten & Kompetenzen"} />
             )}
 
             {allCollapsed && (
@@ -3306,8 +3306,8 @@ export default function RollenDNA() {
                       <Briefcase style={{ width: 15, height: 15, color: "#FFF", strokeWidth: 2.2 }} />
                     </div>
                     <span style={{ color: "#1D1D1F", display: "flex", alignItems: "baseline", gap: 6 }}>
-                      <span style={{ fontSize: 18, fontWeight: 700, flexShrink: 0, color: "#34C759" }}>{region === "EN" ? "Role definition:" : "Stellendefinition:"}</span>
-                      <span style={{ fontSize: 18, fontWeight: 700 }}>{beruf}{fuehrung && fuehrung !== "Keine" ? (region === "EN" ? " with leadership responsibility" : " mit Führungsverantwortung") : ""}</span>
+                      <span style={{ fontSize: 18, fontWeight: 700, flexShrink: 0, color: "#34C759" }}>{region === "FR" ? "Définition du poste :" : region === "EN" ? "Role definition:" : "Stellendefinition:"}</span>
+                      <span style={{ fontSize: 18, fontWeight: 700 }}>{beruf}{fuehrung && fuehrung !== "Keine" ? (region === "FR" ? " avec responsabilité de management" : region === "EN" ? " with leadership responsibility" : " mit Führungsverantwortung") : ""}</span>
                     </span>
                   </div>
                   <div className="flex items-center gap-3">
@@ -3327,7 +3327,7 @@ export default function RollenDNA() {
                       data-testid="button-summary-edit"
                     >
                       <Pencil style={{ width: 14, height: 14 }} />
-                      {region === "EN" ? "Edit" : "Bearbeiten"}
+                      {region === "FR" ? "Modifier" : region === "EN" ? "Edit" : "Bearbeiten"}
                     </span>
                     <ChevronDown style={{
                       width: 18,
@@ -3344,11 +3344,11 @@ export default function RollenDNA() {
                 
                 <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 10 }} data-testid="dna-summary-grid">
                   {(() => { const _ro = getRegionOptions(region); return [
-                    { icon: Briefcase, label: region === "EN" ? "Role / title" : "Stelle / Bezeichnung", value: beruf },
-                    { icon: LayoutGrid, label: region === "EN" ? "Task structure" : "Aufgabenstruktur", value: _ro.aufgaben.find(o => o.value === aufgabencharakter)?.label || aufgabencharakter },
-                    { icon: Wrench, label: region === "EN" ? "Working style" : "Arbeitsweise", value: _ro.arbeit.find(o => o.value === arbeitslogik)?.label || arbeitslogik },
-                    { icon: Target, label: region === "EN" ? "Success focus" : "Erfolgsfokus", value: erfolgsfokusIndices.map(i => _ro.erfolg[i]?.label).filter(Boolean).join(", ") },
-                    { icon: UserCheck, label: region === "EN" ? "Leadership" : "Führung", value: _ro.fuehrung.find(o => o.value === fuehrung)?.label || fuehrung },
+                    { icon: Briefcase, label: region === "FR" ? "Poste / Titre" : region === "EN" ? "Role / title" : "Stelle / Bezeichnung", value: beruf },
+                    { icon: LayoutGrid, label: region === "FR" ? "Structure des tâches" : region === "EN" ? "Task structure" : "Aufgabenstruktur", value: _ro.aufgaben.find(o => o.value === aufgabencharakter)?.label || aufgabencharakter },
+                    { icon: Wrench, label: region === "FR" ? "Style de travail" : region === "EN" ? "Working style" : "Arbeitsweise", value: _ro.arbeit.find(o => o.value === arbeitslogik)?.label || arbeitslogik },
+                    { icon: Target, label: region === "FR" ? "Priorité de réussite" : region === "EN" ? "Success focus" : "Erfolgsfokus", value: erfolgsfokusIndices.map(i => _ro.erfolg[i]?.label).filter(Boolean).join(", ") },
+                    { icon: UserCheck, label: region === "FR" ? "Management" : region === "EN" ? "Leadership" : "Führung", value: _ro.fuehrung.find(o => o.value === fuehrung)?.label || fuehrung },
                   ]; })().map(card => (
                     <div
                       key={card.label}
@@ -3378,12 +3378,12 @@ export default function RollenDNA() {
                   >
                     <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 3 }}>
                       <Hash style={{ width: 14, height: 14, color: "#8E8E93", flexShrink: 0 }} />
-                      <span style={{ fontSize: 14, fontWeight: 650, color: "#1D1D1F" }}>{region === "EN" ? "Tasks / competency count" : "Tätigkeits-/Kompetenzanzahl"}</span>
+                      <span style={{ fontSize: 14, fontWeight: 650, color: "#1D1D1F" }}>{region === "FR" ? "Nombre de tâches et compétences" : region === "EN" ? "Tasks / competency count" : "Tätigkeits-/Kompetenzanzahl"}</span>
                     </div>
                     <div style={{ display: "flex", gap: 12, paddingLeft: 21, flexWrap: "wrap" }}>
-                      <span style={{ fontSize: 14, color: "#48484A" }}><strong style={{ color: "#1D1D1F" }}>{hauptCount}</strong> {region === "EN" ? "tasks" : "Tätigkeiten"}</span>
-                      <span style={{ fontSize: 14, color: "#48484A" }}><strong style={{ color: "#1D1D1F" }}>{nebenCount}</strong> {region === "EN" ? "human skills" : "Humankompetenzen"}</span>
-                      {fuehrung !== "Keine" && <span style={{ fontSize: 14, color: "#48484A" }}><strong style={{ color: "#1D1D1F" }}>{fuehrungCount}</strong> {region === "EN" ? "leadership" : "Führung"}</span>}
+                      <span style={{ fontSize: 14, color: "#48484A" }}><strong style={{ color: "#1D1D1F" }}>{hauptCount}</strong> {region === "FR" ? "tâches" : region === "EN" ? "tasks" : "Tätigkeiten"}</span>
+                      <span style={{ fontSize: 14, color: "#48484A" }}><strong style={{ color: "#1D1D1F" }}>{nebenCount}</strong> {region === "FR" ? "compétences humaines" : region === "EN" ? "human skills" : "Humankompetenzen"}</span>
+                      {fuehrung !== "Keine" && <span style={{ fontSize: 14, color: "#48484A" }}><strong style={{ color: "#1D1D1F" }}>{fuehrungCount}</strong> {region === "FR" ? "management" : region === "EN" ? "leadership" : "Führung"}</span>}
                     </div>
                   </div>
                 </div>
@@ -3423,7 +3423,7 @@ export default function RollenDNA() {
                     data-testid="button-rolle-bearbeiten"
                   >
                     <RefreshCw className="w-4 h-4" />
-                    {region === "EN" ? "Edit role profile" : "Stellenprofil ändern"}
+                    {region === "FR" ? "Modifier le profil du poste" : region === "EN" ? "Edit role profile" : "Stellenprofil ändern"}
                   </button>
                   <button
                     onClick={handleSave}
@@ -3455,7 +3455,7 @@ export default function RollenDNA() {
                     data-testid="button-profil-speichern"
                   >
                     <Save className="w-4 h-4" />
-                    {region === "EN" ? "Save role profile" : "Stellenprofil speichern"}
+                    {region === "FR" ? "Enregistrer le profil du poste" : region === "EN" ? "Save role profile" : "Stellenprofil speichern"}
                   </button>
                   <button
                     onClick={() => setLocation("/bericht")}
@@ -3490,7 +3490,7 @@ export default function RollenDNA() {
                     data-testid="button-entscheidungsbericht"
                   >
                     <FileText className="w-4 h-4" />
-                    {region === "EN" ? "Generate decision report" : "Entscheidungsbericht erstellen"}
+                    {region === "FR" ? "Générer le rapport de décision" : region === "EN" ? "Generate decision report" : "Entscheidungsbericht erstellen"}
                   </button>
                 </div>
                   </>
@@ -3535,8 +3535,8 @@ export default function RollenDNA() {
                       <Lightbulb style={{ width: 15, height: 15, color: "#FFF", strokeWidth: 2.2 }} />
                     </div>
                     <span style={{ color: "#1D1D1F", display: "flex", alignItems: "baseline", gap: 6 }}>
-                      <span style={{ fontSize: 18, fontWeight: 700, flexShrink: 0, color: "#34C759" }}>{region === "EN" ? "Job profile:" : "Kurzprofil der Stelle:"}</span>
-                      <span style={{ fontSize: 18, fontWeight: 700 }}>{beruf}{fuehrung && fuehrung !== "Keine" ? "" + (region === "EN" ? " with leadership responsibility" : " mit Führungsverantwortung") : ""}</span>
+                      <span style={{ fontSize: 18, fontWeight: 700, flexShrink: 0, color: "#34C759" }}>{region === "FR" ? "Profil du poste :" : region === "EN" ? "Job profile:" : "Kurzprofil der Stelle:"}</span>
+                      <span style={{ fontSize: 18, fontWeight: 700 }}>{beruf}{fuehrung && fuehrung !== "Keine" ? "" + (region === "FR" ? " avec responsabilité de management" : region === "EN" ? " with leadership responsibility" : " mit Führungsverantwortung") : ""}</span>
                     </span>
                   </div>
                   <ChevronDown style={{
@@ -3561,8 +3561,8 @@ export default function RollenDNA() {
                       background: "#FFFFFF",
                       border: "1px solid rgba(0,0,0,0.06)",
                     }} data-testid="card-grundprinzip-collapsed">
-                      <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0", display: "flex", alignItems: "center", gap: 6 }}><Info style={{ width: 15, height: 15, color: "#1D1D1F", flexShrink: 0 }} />{region === "EN" ? analysisPrincipleText_EN.title : analysisPrincipleText.title}</h3>
-                      <p lang="de" style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: 0, ...reportTextStyle }}>{region === "EN" ? analysisPrincipleText_EN.body.join(" ") : localizeText(analysisPrincipleText.body.join(" "))}</p>
+                      <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0", display: "flex", alignItems: "center", gap: 6 }}><Info style={{ width: 15, height: 15, color: "#1D1D1F", flexShrink: 0 }} />{analysisPrincipleText.title}</h3>
+                      <p lang="de" style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: 0, ...reportTextStyle }}>{localizeText(analysisPrincipleText.body.join(" "))}</p>
                     </div>
 
                     <div style={{
@@ -3572,16 +3572,16 @@ export default function RollenDNA() {
                       background: "#FFFFFF",
                       border: "1px solid rgba(0,0,0,0.06)",
                     }} data-testid="card-anforderungsprofil-collapsed">
-                      <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0", display: "flex", alignItems: "center", gap: 6 }}><ClipboardList style={{ width: 15, height: 15, color: "#1D1D1F", flexShrink: 0 }} />{region === "EN" ? "Requirements profile of the role" : "Anforderungsprofil der Stelle"}</h3>
+                      <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0", display: "flex", alignItems: "center", gap: 6 }}><ClipboardList style={{ width: 15, height: 15, color: "#1D1D1F", flexShrink: 0 }} />{region === "FR" ? "Profil d'exigences du poste" : region === "EN" ? "Requirements profile of the role" : "Anforderungsprofil der Stelle"}</h3>
                       <p lang="de" style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: "0 0 14px 0", ...reportTextStyle }}>
-                        {region === "EN" ? roleRequirementText_EN.intro.join(" ") : localizeText(roleRequirementText.intro.join(" "))}
+                        {localizeText(roleRequirementText.intro.join(" "))}
                       </p>
 
                       <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 10 }}>
                         {[
-                          { label: region === "EN" ? "Impulsive" : "Impulsiv", color: "#C41E3A", bg: "rgba(196,30,58,0.05)", border: "rgba(196,30,58,0.12)", desc: region === "EN" ? "Execution, decisions and accountability for results" : "Umsetzung, Entscheidung und Ergebnisverantwortung" },
-                          { label: region === "EN" ? "Intuitive" : "Intuitiv", color: "#F39200", bg: "rgba(243,146,0,0.05)", border: "rgba(243,146,0,0.12)", desc: region === "EN" ? "Collaboration and context-aware action" : "Zusammenarbeit und kontextbezogenes Handeln" },
-                          { label: region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", bg: "rgba(26,93,171,0.05)", border: "rgba(26,93,171,0.12)", desc: region === "EN" ? "Structure, planning and technical precision" : "Struktur, Planung und fachliche Präzision" },
+                          { label: region === "EN" ? "Impulsive" : "Impulsiv", color: "#C41E3A", bg: "rgba(196,30,58,0.05)", border: "rgba(196,30,58,0.12)", desc: region === "FR" ? "Exécution, décisions et responsabilité des résultats" : region === "EN" ? "Execution, decisions and accountability for results" : "Umsetzung, Entscheidung und Ergebnisverantwortung" },
+                          { label: region === "EN" ? "Intuitive" : "Intuitiv", color: "#F39200", bg: "rgba(243,146,0,0.05)", border: "rgba(243,146,0,0.12)", desc: region === "FR" ? "Collaboration et action adaptée au contexte" : region === "EN" ? "Collaboration and context-aware action" : "Zusammenarbeit und kontextbezogenes Handeln" },
+                          { label: region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", bg: "rgba(26,93,171,0.05)", border: "rgba(26,93,171,0.12)", desc: region === "FR" ? "Structure, planification et précision technique" : region === "EN" ? "Structure, planning and technical precision" : "Struktur, Planung und fachliche Präzision" },
                         ].map(d => (
                           <div key={d.label} style={{
                             background: d.bg,
@@ -3610,9 +3610,9 @@ export default function RollenDNA() {
                         background: "#FFFFFF",
                         border: "1px solid rgba(0,0,0,0.06)",
                       }} data-testid="box-biocheck-description-collapsed">
-                        <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0", display: "flex", alignItems: "center", gap: 6 }}><Lightbulb style={{ width: 15, height: 15, color: "#1D1D1F", flexShrink: 0 }} />{region === "EN" ? "Result of the analysis" : "Ergebnis der Analyse"}</h3>
+                        <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0", display: "flex", alignItems: "center", gap: 6 }}><Lightbulb style={{ width: 15, height: 15, color: "#1D1D1F", flexShrink: 0 }} />{region === "FR" ? "Résultat de l'analyse" : region === "EN" ? "Result of the analysis" : "Ergebnis der Analyse"}</h3>
                         <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: 0, ...reportTextStyle }} data-testid="text-biocheck-collapsed-body">
-                          {region === "EN" ? [...rt.body, ...(isLeadershipRole ? [rt.leadership] : [])].join(" ") : localizeText([...rt.body, ...(isLeadershipRole ? [rt.leadership] : [])].join(" "))}
+                          {localizeText([...rt.body, ...(isLeadershipRole ? [rt.leadership] : [])].join(" "))}
                         </p>
                       </div>
                     );
@@ -3621,10 +3621,10 @@ export default function RollenDNA() {
                   <div style={{ marginTop: 16 }}>
                     <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 10 : 16 }}>
                       {[
-                        { title: region === "EN" ? "Activities" : "Tätigkeiten", key: "haupttaetigkeiten", data: bioGramHaupt, icon: Briefcase },
-                        { title: region === "EN" ? "Human competences" : "Humankompetenzen", key: "humankompetenzen", data: bioGramNeben, icon: Heart },
-                        { title: region === "EN" ? "Role framework conditions" : "Rahmenbedingungen der Stelle", key: "rahmenbedingungen", data: bioGramRahmen, icon: Settings },
-                        ...(isLeadershipRole ? [{ title: region === "EN" ? "Leadership competences" : "Führungskompetenzen", key: "fuehrungskompetenzen", data: bioGramFuehrung, icon: Shield }] : []),
+                        { title: region === "FR" ? "Activités" : region === "EN" ? "Activities" : "Tätigkeiten", key: "haupttaetigkeiten", data: bioGramHaupt, icon: Briefcase },
+                        { title: region === "FR" ? "Compétences humaines" : region === "EN" ? "Human competences" : "Humankompetenzen", key: "humankompetenzen", data: bioGramNeben, icon: Heart },
+                        { title: region === "FR" ? "Conditions-cadres du poste" : region === "EN" ? "Role framework conditions" : "Rahmenbedingungen der Stelle", key: "rahmenbedingungen", data: bioGramRahmen, icon: Settings },
+                        ...(isLeadershipRole ? [{ title: region === "FR" ? "Compétences de management" : region === "EN" ? "Leadership competences" : "Führungskompetenzen", key: "fuehrungskompetenzen", data: bioGramFuehrung, icon: Shield }] : []),
                       ].map((section) => (
                         <div
                           key={section.key}
@@ -3643,9 +3643,9 @@ export default function RollenDNA() {
                             </p>
                           </div>
                           {[
-                            { label: region === "EN" ? "Impulsive" : "Impulsiv", color: "#C41E3A", value: section.data.imp },
-                            { label: region === "EN" ? "Intuitive" : "Intuitiv", color: "#F39200", value: section.data.int },
-                            { label: region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", value: section.data.ana },
+                            { label: region === "FR" ? "Rythme et Décision" : region === "FR" ? "Rythme et Décision" : region === "EN" ? "Impulsive" : "Impulsiv", color: "#C41E3A", value: section.data.imp },
+                            { label: region === "FR" ? "Communication et Relations" : region === "EN" ? "Intuitive" : "Intuitiv", color: "#F39200", value: section.data.int },
+                            { label: region === "FR" ? "Structure et Rigueur" : region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", value: section.data.ana },
                           ].map((bar) => (
                             <div
                               key={bar.label}
@@ -3729,9 +3729,9 @@ export default function RollenDNA() {
                       </div>
                       {(() => {
                         const bars = [
-                          { label: region === "EN" ? "Impulsive" : "Impulsiv", color: "#C41E3A", value: bioGramGesamt.imp },
-                          { label: region === "EN" ? "Intuitive" : "Intuitiv", color: "#F39200", value: bioGramGesamt.int },
-                          { label: region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", value: bioGramGesamt.ana },
+                          { label: region === "FR" ? "Rythme et Décision" : region === "EN" ? "Impulsive" : "Impulsiv", color: "#C41E3A", value: bioGramGesamt.imp },
+                          { label: region === "FR" ? "Communication et Relations" : region === "EN" ? "Intuitive" : "Intuitiv", color: "#F39200", value: bioGramGesamt.int },
+                          { label: region === "FR" ? "Structure et Rigueur" : region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", value: bioGramGesamt.ana },
                         ];
                         return (
                           <div style={{ background: "#F0F0F2", borderRadius: 16, padding: "16px 18px", display: "flex", flexDirection: "column", gap: 14 }}>

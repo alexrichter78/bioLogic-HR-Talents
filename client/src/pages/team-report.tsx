@@ -40,6 +40,12 @@ const COMP_LABELS_EN: Record<ComponentKey, string> = {
   analytisch: "Structure / Analysis",
 };
 
+const COMP_LABELS_FR: Record<ComponentKey, string> = {
+  impulsiv: "Rythme et Décision",
+  intuitiv: "Communication et Relations",
+  analytisch: "Structure et Rigueur",
+};
+
 const COMP_SHORT: Record<ComponentKey, string> = {
   impulsiv: "Umsetzung",
   intuitiv: "Zusammenarbeit",
@@ -94,6 +100,11 @@ function severityTone(s: Severity) {
 }
 
 function severityLabel(s: Severity, region?: string) {
+  if (region === "FR") {
+    if (s === "critical") return "critique";
+    if (s === "warning") return "conditionnel";
+    return "adapté";
+  }
   if (region === "EN") {
     if (s === "critical") return "critical";
     if (s === "warning") return "conditional";
@@ -821,7 +832,7 @@ export default function TeamReport() {
         candidateName: candidateName || "Person",
         teamGoal: teamGoal || null,
         roleType: roleTypeForCard === "fuehrung" ? "fuehrung" : "teammitglied",
-        lang: region === "EN" ? "en" : "de",
+        lang: region === "FR" ? "fr" : region === "EN" ? "en" : "de",
       });
     } catch { return null; }
   }, [roleName, candidateName, istTriad.impulsiv, istTriad.intuitiv, istTriad.analytisch, teamTriad.impulsiv, teamTriad.intuitiv, teamTriad.analytisch, teamGoal, roleTypeForCard, region]);
@@ -904,20 +915,20 @@ export default function TeamReport() {
   const tone = result ? passungTone(result.gesamtpassung) : passungTone("geeignet");
 
   const istProfileArr = [
-    { label: region === "EN" ? "Impulsive" : "Impulsiv", short: "Umsetzung", value: istProfile.impulsiv, color: BAR_CSS.impulsiv },
-    { label: region === "EN" ? "Intuitive" : "Intuitiv", short: "Zusammenarbeit", value: istProfile.intuitiv, color: BAR_CSS.intuitiv },
-    { label: region === "EN" ? "Analytical" : "Analytisch", short: "Struktur", value: istProfile.analytisch, color: BAR_CSS.analytisch },
+    { label: region === "FR" ? "Rythme et Décision" : region === "EN" ? "Impulsive" : "Impulsiv", short: "Umsetzung", value: istProfile.impulsiv, color: BAR_CSS.impulsiv },
+    { label: region === "FR" ? "Communication et Relations" : region === "EN" ? "Intuitive" : "Intuitiv", short: "Zusammenarbeit", value: istProfile.intuitiv, color: BAR_CSS.intuitiv },
+    { label: region === "FR" ? "Structure et Rigueur" : region === "EN" ? "Analytical" : "Analytisch", short: "Struktur", value: istProfile.analytisch, color: BAR_CSS.analytisch },
   ];
   const teamProfileArr = [
-    { label: region === "EN" ? "Impulsive" : "Impulsiv", short: "Umsetzung", value: teamProfileN.impulsiv, color: BAR_CSS.impulsiv },
-    { label: region === "EN" ? "Intuitive" : "Intuitiv", short: "Zusammenarbeit", value: teamProfileN.intuitiv, color: BAR_CSS.intuitiv },
-    { label: region === "EN" ? "Analytical" : "Analytisch", short: "Struktur", value: teamProfileN.analytisch, color: BAR_CSS.analytisch },
+    { label: region === "FR" ? "Rythme et Décision" : region === "EN" ? "Impulsive" : "Impulsiv", short: "Umsetzung", value: teamProfileN.impulsiv, color: BAR_CSS.impulsiv },
+    { label: region === "FR" ? "Communication et Relations" : region === "EN" ? "Intuitive" : "Intuitiv", short: "Zusammenarbeit", value: teamProfileN.intuitiv, color: BAR_CSS.intuitiv },
+    { label: region === "FR" ? "Structure et Rigueur" : region === "EN" ? "Analytical" : "Analytisch", short: "Struktur", value: teamProfileN.analytisch, color: BAR_CSS.analytisch },
   ];
 
   const deltas: { label: string; team: number; ist: number; delta: string; deltaTone: string }[] = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
     const d = Math.round(istProfile[k] - teamProfileN[k]);
     return {
-      label: (region === "EN" ? COMP_LABELS_EN : COMP_LABELS)[k],
+      label: (region === "FR" ? COMP_LABELS_FR : region === "EN" ? COMP_LABELS_EN : COMP_LABELS)[k],
       team: Math.round(teamProfileN[k]),
       ist: Math.round(istProfile[k]),
       delta: d >= 0 ? `+${d}` : `${d}`,
@@ -934,10 +945,10 @@ export default function TeamReport() {
           <div className="w-full mx-auto" style={{ maxWidth: 1100, padding: isMobile ? "0 12px" : "0 24px" }}>
             <div className="text-center">
               <h1 style={{ fontSize: 24, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 2px", color: "#34C759" }} data-testid="text-teamreport-title">
-                {region === "EN" ? "Analyse team structure" : "Teamstruktur analysieren"}
+                {region === "FR" ? "Analyser la structure d'équipe" : region === "EN" ? "Analyse team structure" : "Teamstruktur analysieren"}
               </h1>
               <p style={{ fontSize: 14, color: "#48484A", fontWeight: 450, margin: 0 }} data-testid="text-teamreport-subtitle">
-                {region === "EN" ? "Analyse the composition of the team and identify systemic effects, decision logics and potential tensions." : "Analysiere die Zusammensetzung des Teams und erkenne systemische Wirkungen, Entscheidungslogiken und mögliche Spannungsfelder."}
+                {region === "FR" ? "Analyse la composition de l'équipe et identifie les effets systémiques, les logiques de décision et les zones de tension potentielles." : region === "EN" ? "Analyse the composition of the team and identify systemic effects, decision logics and potential tensions." : "Analysiere die Zusammensetzung des Teams und erkenne systemische Wirkungen, Entscheidungslogiken und mögliche Spannungsfelder."}
               </p>
             </div>
           </div>
@@ -956,7 +967,7 @@ export default function TeamReport() {
             >
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                 <div style={{ width: 30, height: 30, borderRadius: 15, background: "linear-gradient(135deg, #34C759, #30B350)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><Settings style={{ width: 15, height: 15, color: "#fff", strokeWidth: 2.5 }} /></div>
-                <span style={{ fontSize: 18, fontWeight: 700, color: "#34C759" }}>{region === "EN" ? "Team context:" : "Team-Kontext:"}</span><span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F" }}>{region === "EN" ? " role vs. position vs. team goal" : " Stelle vs. Rolle vs. Teamziel"}</span>
+                <span style={{ fontSize: 18, fontWeight: 700, color: "#34C759" }}>{region === "FR" ? "Contexte d'équipe :" : region === "EN" ? "Team context:" : "Team-Kontext:"}</span><span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F" }}>{region === "FR" ? " rôle / poste / objectif d'équipe" : region === "EN" ? " role vs. position vs. team goal" : " Stelle vs. Rolle vs. Teamziel"}</span>
               </div>
               <ChevronDown style={{ width: 18, height: 18, color: "#8E8E93", strokeWidth: 2, transition: "transform 300ms ease", transform: kontextOpen ? "rotate(180deg)" : "rotate(0deg)" }} />
             </button>
@@ -966,14 +977,14 @@ export default function TeamReport() {
                 <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 12, alignItems: "center", marginBottom: 18 }}>
                   <div>
                     <label style={{ fontSize: 12, fontWeight: 600, color: "#3A3A3C", letterSpacing: "0.04em", textTransform: "uppercase" as const }}>
-                      {region === "EN" ? "Role / title" : "Stelle / Bezeichnung"}
+                      {region === "FR" ? "Poste / Titre" : region === "EN" ? "Role / title" : "Stelle / Bezeichnung"}
                     </label>
                     <div style={{ display: "flex", gap: 6, alignItems: "center", marginTop: 6 }}>
                       <input
                         type="text"
                         value={roleName}
                         onChange={e => setRoleName(e.target.value)}
-                        placeholder={region === "EN" ? "optional, e.g. Project lead" : "optional, z.B. Projektleiter"}
+                        placeholder={region === "FR" ? "optionnel, ex. Chef de projet" : region === "EN" ? "optional, e.g. Project lead" : "optional, z.B. Projektleiter"}
                         data-testid="input-role-name"
                         style={{
                           width: "100%", height: 34, padding: "0 12px", borderRadius: 8,
@@ -988,19 +999,19 @@ export default function TeamReport() {
                           onClick={() => setRoleName("")}
                           data-testid="button-clear-role-name"
                           style={{ background: "none", border: "none", cursor: "pointer", fontSize: 17, color: "#8E8E93", padding: "0 2px", lineHeight: 1 }}
-                          title={region === "EN" ? "Remove" : "Entfernen"}
+                          title={region === "FR" ? "Supprimer" : region === "EN" ? "Remove" : "Entfernen"}
                         >{"\u00D7"}</button>
                       )}
                     </div>
                   </div>
                   <div>
                     <label style={{ fontSize: 12, fontWeight: 600, color: "#3A3A3C", letterSpacing: "0.04em", textTransform: "uppercase" as const }}>
-                      {region === "EN" ? "Position" : "Rolle"}
+                      {region === "FR" ? "Position" : region === "EN" ? "Position" : "Rolle"}
                     </label>
                     <div style={{ display: "flex", gap: 8, marginTop: 6 }}>
                       {([
-                        { value: "teammitglied" as const, label: region === "EN" ? "Team member" : "Teammitglied" },
-                        { value: "fuehrung" as const, label: region === "EN" ? "Manager" : "F\u00FChrungskraft" },
+                        { value: "teammitglied" as const, label: region === "FR" ? "Membre d'équipe" : region === "EN" ? "Team member" : "Teammitglied" },
+                        { value: "fuehrung" as const, label: region === "FR" ? "Manager" : region === "EN" ? "Manager" : "F\u00FChrungskraft" },
                       ]).map(opt => {
                         const active = roleTypeForCard === opt.value;
                         return (
@@ -1032,17 +1043,17 @@ export default function TeamReport() {
 
                 <div style={{ borderTop: "1px solid rgba(0,0,0,0.06)", paddingTop: 14 }}>
                   <label style={{ fontSize: 12, fontWeight: 600, color: "#3A3A3C", letterSpacing: "0.04em", textTransform: "uppercase" as const }}>
-                    {region === "EN" ? "Team goal" : "Teamziel"} <span style={{ fontWeight: 400, textTransform: "none" as const, letterSpacing: 0 }}>(optional)</span>
+                    {region === "FR" ? "Objectif d'équipe" : region === "EN" ? "Team goal" : "Teamziel"} <span style={{ fontWeight: 400, textTransform: "none" as const, letterSpacing: 0 }}>(optional)</span>
                   </label>
                   <p style={{ fontSize: 12, color: "#3A3A3C", margin: "4px 0 0", lineHeight: 1.5 }}>
-                    {region === "EN" ? "What does the team need most right now?" : "Was braucht das Team aktuell am meisten?"}
+                    {region === "FR" ? "De quoi l'équipe a-t-elle le plus besoin en ce moment ?" : region === "EN" ? "What does the team need most right now?" : "Was braucht das Team aktuell am meisten?"}
                   </p>
                   <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
                     {([
-                      { value: "" as typeof teamGoal, label: region === "EN" ? "None" : "Keins", icon: null },
-                      { value: "umsetzung" as typeof teamGoal, label: region === "EN" ? "Delivery" : "Umsetzung", icon: Rocket },
-                      { value: "analyse" as typeof teamGoal, label: region === "EN" ? "Analysis" : "Analyse", icon: BarChart3 },
-                      { value: "zusammenarbeit" as typeof teamGoal, label: region === "EN" ? "Collaboration" : "Zusammenarbeit", icon: Handshake },
+                      { value: "" as typeof teamGoal, label: region === "FR" ? "Aucun" : region === "EN" ? "None" : "Keins", icon: null },
+                      { value: "umsetzung" as typeof teamGoal, label: region === "FR" ? "Exécution" : region === "EN" ? "Delivery" : "Umsetzung", icon: Rocket },
+                      { value: "analyse" as typeof teamGoal, label: region === "FR" ? "Analyse" : region === "EN" ? "Analysis" : "Analyse", icon: BarChart3 },
+                      { value: "zusammenarbeit" as typeof teamGoal, label: region === "FR" ? "Collaboration" : region === "EN" ? "Collaboration" : "Zusammenarbeit", icon: Handshake },
                     ]).map(opt => {
                       const active = teamGoal === opt.value;
                       const Icon = opt.icon;
@@ -1091,16 +1102,16 @@ export default function TeamReport() {
           >
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
               <div style={{ width: 30, height: 30, borderRadius: 15, background: "linear-gradient(135deg, #34C759, #30B350)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><Users style={{ width: 15, height: 15, color: "#fff", strokeWidth: 2.5 }} /></div>
-              <span data-testid="text-teamcheck-label"><span style={{ fontSize: 18, fontWeight: 700, color: "#34C759" }}>{region === "EN" ? "Profile comparison:" : "Profilvergleich:"}</span><span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F" }}>{region === "EN" ? " person vs. team" : " Person vs. Team"}</span></span>
+              <span data-testid="text-teamcheck-label"><span style={{ fontSize: 18, fontWeight: 700, color: "#34C759" }}>{region === "FR" ? "Comparaison de profils :" : region === "EN" ? "Profile comparison:" : "Profilvergleich:"}</span><span style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F" }}>{region === "FR" ? " personne vs. équipe" : region === "EN" ? " person vs. team" : " Person vs. Team"}</span></span>
             </div>
             <ChevronDown style={{ width: 18, height: 18, color: "#8E8E93", strokeWidth: 2, transition: "transform 300ms ease", transform: configOpen ? "rotate(180deg)" : "rotate(0deg)" }} />
           </button>
           {configOpen && (
             <div style={{ padding: isMobile ? "0 14px 14px" : "0 32px 28px" }}>
               <div className="grid gap-6 grid-cols-1 sm:grid-cols-2">
-                <SliderGroup title={<>{region === "EN" ? "Actual profile" : "Ist-Profil"} <span style={{ fontWeight: 400, color: "#8E8E93" }}>({region === "EN" ? "person" : "Person"})</span></>} triad={istTriad}
+                <SliderGroup title={<>{region === "FR" ? "Profil actuel" : region === "EN" ? "Actual profile" : "Ist-Profil"} <span style={{ fontWeight: 400, color: "#8E8E93" }}>({region === "FR" ? "personne" : region === "EN" ? "person" : "Person"})</span></>} triad={istTriad}
                   onTriadChange={updateIstTriad} testIdPrefix="ist" />
-                <SliderGroup title={<>{region === "EN" ? "Team profile" : "Teamprofil"} <span style={{ fontWeight: 400, color: "#8E8E93" }}>({region === "EN" ? "team" : "Team"})</span></>} triad={teamTriad}
+                <SliderGroup title={<>{region === "FR" ? "Profil d'équipe" : region === "EN" ? "Team profile" : "Teamprofil"} <span style={{ fontWeight: 400, color: "#8E8E93" }}>({region === "FR" ? "équipe" : region === "EN" ? "team" : "Team"})</span></>} triad={teamTriad}
                   onTriadChange={updateTeamTriad} testIdPrefix="team" />
               </div>
               <div className="mt-6 flex items-center justify-end">
@@ -1172,7 +1183,7 @@ export default function TeamReport() {
                   onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-1px)"; (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 6px 20px rgba(0,113,227,0.35)"; }}
                   onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = "translateY(0)"; (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 4px 16px rgba(0,113,227,0.3)"; }}
                   data-testid="button-generate-report">
-                    {region === "EN" ? "Generate report" : "Bericht erstellen"}
+                    {region === "FR" ? "Générer le rapport" : region === "EN" ? "Generate report" : "Bericht erstellen"}
                   </button>
                 </div>
             </div>
@@ -1322,17 +1333,17 @@ export default function TeamReport() {
 
                       const resultCards: ResultCard[] = isFK
                         ? [
-                            { title: region === "EN" ? "System impact" : "Systemwirkung", label: translateEngineValue(la.systemImpact.label, region), text: la.systemImpact.text!, colors: variantToColors(la.systemImpact.variant), testId: "v4-card-system-impact" },
-                            { title: region === "EN" ? "Integration effort" : "Integrationsaufwand", label: translateEngineValue(la.integrationEffort.label, region), text: la.integrationEffort.text!, colors: variantToColors(la.integrationEffort.variant), testId: "v4-card-integration-effort" },
+                            { title: region === "FR" ? "Impact systémique" : region === "EN" ? "System impact" : "Systemwirkung", label: translateEngineValue(la.systemImpact.label, region), text: la.systemImpact.text!, colors: variantToColors(la.systemImpact.variant), testId: "v4-card-system-impact" },
+                            { title: region === "FR" ? "Effort d'intégration" : region === "EN" ? "Integration effort" : "Integrationsaufwand", label: translateEngineValue(la.integrationEffort.label, region), text: la.integrationEffort.text!, colors: variantToColors(la.integrationEffort.variant), testId: "v4-card-integration-effort" },
                             ...(la.teamGoalImpact.selectedGoal && la.teamGoalImpact.label !== "Kein Ziel gewählt"
-                              ? [{ title: region === "EN" ? "Impact on team goal" : "Wirkung aufs Teamziel", label: translateEngineValue(la.teamGoalImpact.label, region), text: la.teamGoalImpact.reasons[0] || la.teamGoalImpact.text!, colors: variantToColors(la.teamGoalImpact.variant), testId: "v4-card-goal-impact" }]
+                              ? [{ title: region === "FR" ? "Impact sur l'objectif d'équipe" : region === "EN" ? "Impact on team goal" : "Wirkung aufs Teamziel", label: translateEngineValue(la.teamGoalImpact.label, region), text: la.teamGoalImpact.reasons[0] || la.teamGoalImpact.text!, colors: variantToColors(la.teamGoalImpact.variant), testId: "v4-card-goal-impact" }]
                               : []),
                           ]
                         : [
-                            { title: region === "EN" ? "Team fit" : "Teampassung", label: badgeLabels[teamFit], text: teamText, colors: tColors, testId: "v4-card-team" },
-                            { title: region === "EN" ? "Integration effort" : "Integrationsaufwand", label: bLabel, text: bDesc, colors: bBg, testId: "v4-card-integration" },
+                            { title: region === "FR" ? "Adéquation d'équipe" : region === "EN" ? "Team fit" : "Teampassung", label: badgeLabels[teamFit], text: teamText, colors: tColors, testId: "v4-card-team" },
+                            { title: region === "FR" ? "Effort d'intégration" : region === "EN" ? "Integration effort" : "Integrationsaufwand", label: bLabel, text: bDesc, colors: bBg, testId: "v4-card-integration" },
                             ...(fColors
-                              ? [{ title: region === "EN" ? "Fit to functional goal" : "Passung zum Funktionsziel", label: badgeLabels[funcFit], text: funcText, colors: fColors, testId: "v4-card-func" }]
+                              ? [{ title: region === "FR" ? "Adéquation à l'objectif fonctionnel" : region === "EN" ? "Fit to functional goal" : "Passung zum Funktionsziel", label: badgeLabels[funcFit], text: funcText, colors: fColors, testId: "v4-card-func" }]
                               : []),
                           ];
 

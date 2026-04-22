@@ -444,7 +444,7 @@ export function StatusFooter() {
   const pct = user.aiRequestLimit > 0 ? (user.aiRequestsUsed / user.aiRequestLimit) * 100 : 0;
   const color = pct >= 100 ? "#FF3B30" : pct >= 80 ? "#FF9500" : "#34C759";
   const nextReset = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1);
-  const dateLocale = region === "EN" ? "en-US" : "de-DE";
+  const dateLocale = region === "FR" ? "fr-FR" : region === "EN" ? "en-US" : "de-DE";
   const resetStr = nextReset.toLocaleDateString(dateLocale, { day: "2-digit", month: "2-digit", year: "numeric" });
 
   return (

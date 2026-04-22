@@ -1777,7 +1777,100 @@ export async function registerRoutes(
         }
       }
 
-      const prompt = region === "EN"
+      const prompt = region === "FR"
+        ? `Tu es expert en profils de poste et en analyse de compétences pour les organisations francophones.
+${getRegionInstruction(region)}${analyseKontext}
+## PROFIL DE POSTE — CONTEXTE GLOBAL
+
+**Rôle/Poste :** ${beruf}
+**Responsabilité managériale :** ${fuehrung || "Aucune"}
+**Axes de succès :** ${erfolgsfokus || "Non précisés"}
+**Caractère des tâches :** ${aufgabencharakter || "Non précisé"}
+**Logique de travail :** ${arbeitslogik || "Non précisée"}
+${zusatzInfo ? `**Contexte supplémentaire du poste :** ${zusatzInfo}\n\nTIENS COMPTE de ce contexte lors de la création des tâches et compétences. Les tâches doivent être spécifiquement adaptées à ce profil de poste.` : ""}
+
+## MÉTHODOLOGIE D'ÉVALUATION — LA SITUATION AVANT LE MOT ISOLÉ
+
+N'évalue JAMAIS des mots isolés d'une tâche. Analyse TOUJOURS la SITUATION GLOBALE :
+
+**Étape 1 — Saisir le sens global :** Que décrit la tâche DANS SON ENSEMBLE ? Quel est le RÉSULTAT de cette tâche ?
+**Étape 2 — Identifier la compétence clé :** Quelle CAPACITÉ PRIMAIRE faut-il pour réussir cette tâche ? Réflexion/Savoir ? Ressenti/Relation ? Action/Exécution ?
+**Étape 3 — Appliquer le contexte du poste :** COMMENT cette tâche est-elle exécutée dans le poste concret "${beruf}" avec un caractère de tâche "${aufgabencharakter || "mixte"}" et une logique de travail "${arbeitslogik || "non précisée"}" ?
+
+## TROIS DOMAINES DE COMPÉTENCES
+(RÈGLE DE SORTIE : dans le JSON, utilise TOUJOURS les termes allemands exacts "Analytisch", "Intuitiv", "Impulsiv" pour "kompetenz" et "Niedrig", "Mittel", "Hoch" pour "niveau". Ne les traduis PAS.)
+
+### "Analytisch" (= Compétence technique/méthodologique — PENSER & COMPRENDRE)
+Question clé : Cette tâche nécessite-t-elle principalement du TRAVAIL INTELLECTUEL — appliquer des connaissances, traiter des données, utiliser des systèmes, maîtriser des sujets complexes, évaluer professionnellement ?
+
+Situations typiques (Analytisch) :
+- Toute tâche nécessitant un TRAVAIL SYSTÉMATIQUE dans des systèmes (ERP, CRM, SAP, logiciels, bases de données)
+- Toute tâche nécessitant une ÉVALUATION PROFESSIONNELLE ou une PONDÉRATION FACTUELLE — même si le mot "conflit" ou "clarifier" apparaît
+- Toute tâche impliquant des DONNÉES, CHIFFRES, DÉLAIS, PROCESSUS
+- Toute tâche couvrant la DOCUMENTATION, le REPORTING, le MONITORING
+- Toute tâche nécessitant de TRANSMETTRE UNE EXPERTISE ou d'EXPLIQUER
+
+### "Intuitiv" (= Intelligence sociale/relationnelle — RESSENTIR & CONNECTER)
+Question clé : Cette tâche nécessite-t-elle principalement de l'INTELLIGENCE ÉMOTIONNELLE — lire les gens, façonner les relations, bâtir la confiance, percevoir les ambiances ?
+
+Situations typiques (Intuitiv) :
+- Toute tâche où la dimension INTERPERSONNELLE est centrale
+- Toute tâche nécessitant de l'EMPATHIE, de l'ÉCOUTE, de la COMPRÉHENSION DE LA PERSONNE
+- Toute tâche portant sur le COMMENT de la relation, pas sur le QUOI du contenu
+
+### "Impulsiv" (= Compétence d'action/exécution — AGIR & IMPOSER)
+Question clé : Cette tâche nécessite-t-elle principalement de la FORCE D'EXÉCUTION — décisions sous incertitude, résultats malgré des résistances, rythme et pragmatisme ?
+
+Situations typiques (Impulsiv) :
+- Toute tâche nécessitant des DÉCISIONS SOUS PRESSION ou INCERTITUDE
+- Toute tâche devant LIVRER DES RÉSULTATS MALGRÉ DES RÉSISTANCES
+- Toute tâche nécessitant de la PRISE DE RISQUE et de la RESPONSABILITÉ
+- PAS : tâches routinières, processus administratifs, flux de travail systématiques — même s'ils sont "opérationnels"
+
+## ÉVALUATION DE SITUATION — EXEMPLES
+
+Mêmes mots, situations différentes :
+- "Clarifier des conflits sur des décisions techniques" → Situation : ÉVALUATION PROFESSIONNELLE d'alternatives → **Analytisch**
+- "Modérer des conflits dans l'équipe" → Situation : Résoudre des tensions INTERPERSONNELLES → **Intuitiv**
+- "Escalader des conflits avec le client sur le délai" → Situation : IMPOSER sous pression → **Impulsiv**
+
+## PONDÉRATION DU CONTEXTE
+
+- Caractère des tâches "${aufgabencharakter || "Non précisé"}" : Influence la distribution, mais PAS l'évaluation de la situation. Une saisie ERP reste Analytisch même avec un caractère opérationnel.
+- Logique de travail "${arbeitslogik || "Non précisée"}" : Donne une tendance mais n'écrase JAMAIS l'analyse de situation.
+- Axes de succès "${erfolgsfokus || "Non précisés"}" : Influence l'évaluation du niveau (Hoch/Mittel/Niedrig).
+
+## MISSION
+
+Crée pour le poste "${beruf}" dans le contexte global décrit ci-dessus :
+
+1. **Tâches principales (haupt)** : Exactement 15 tâches principales typiques pour ce poste spécifique "${beruf}". Chacune formulée comme une phrase complète et spécifique au poste (80-120 caractères) décrivant l'action concrète ET son but/contexte. Évalue CHACUNE individuellement selon la méthodologie de situation. Les noms de tâches doivent être en français.
+
+2. **Compétences humaines (neben)** : Exactement 10 compétences humaines pertinentes (soft skills). Évalue CHACUNE dans le contexte de ce poste spécifique. Les noms de compétences doivent être en français.
+
+${hasFuehrung ? `3. **Compétences de direction (fuehrung)** : Exactement 10 compétences de direction pertinentes adaptées au niveau de direction "${fuehrung}". Évalue CHACUNE dans le contexte de ce poste. Les noms de compétences doivent être en français.` : ""}
+
+## RÈGLES DE NIVEAU
+- "Hoch" : Critique pour le succès du poste (max. 6 pour les tâches principales, max. 4 pour les autres)
+- "Mittel" : Important, mais pas le profil central
+- "Niedrig" : Requis, mais pas central
+
+## ÉVALUATION DE CONFIANCE
+
+Pour CHAQUE tâche/compétence : fournis une valeur "confidence" (0-100) indiquant la clarté de l'attribution au domaine de compétences choisi.
+- 80-100 : Très clair, clairement attribué à un domaine
+- 55-79 : Majoritairement clair, éléments mineurs d'autres domaines
+- 0-54 : Ambigu, la tâche a des éléments forts de plusieurs domaines
+
+CRITIQUE : Le champ JSON "kompetenz" doit toujours utiliser EXACTEMENT ces termes allemands : "Impulsiv", "Intuitiv" ou "Analytisch". Le champ "niveau" doit toujours utiliser EXACTEMENT : "Niedrig", "Mittel" ou "Hoch". Ne les traduis PAS en français dans la sortie JSON.
+
+Réponds exclusivement en JSON :
+{
+  "haupt": [{"name": "...", "kompetenz": "Impulsiv|Intuitiv|Analytisch", "niveau": "Niedrig|Mittel|Hoch", "confidence": 0-100}],
+  "neben": [{"name": "...", "kompetenz": "Impulsiv|Intuitiv|Analytisch", "niveau": "Niedrig|Mittel|Hoch", "confidence": 0-100}]${hasFuehrung ? `,
+  "fuehrung": [{"name": "...", "kompetenz": "Impulsiv|Intuitiv|Analytisch", "niveau": "Niedrig|Mittel|Hoch", "confidence": 0-100}]` : ""}
+}`
+        : region === "EN"
         ? `You are an expert in job profiles and competency analysis for English-speaking organisations.
 ${getRegionInstruction(region)}${analyseKontext}
 ## ROLE PROFILE — FULL CONTEXT
@@ -2084,6 +2177,7 @@ Beispiel für 3 Einträge:
       }
 
       const isEN = region === "EN";
+      const isFR = region === "FR";
 
       const hauptItems = (taetigkeiten || []).filter((t: any) => t.kategorie === "haupt");
       const nebenItems = (taetigkeiten || []).filter((t: any) => t.kategorie === "neben");
@@ -2098,7 +2192,11 @@ Beispiel für 3 Einträge:
         const mittel = items.filter((t: any) => t.niveau === "Mittel");
         const gering = items.filter((t: any) => t.niveau === "Gering");
         let out = "";
-        if (isEN) {
+        if (isFR) {
+          if (hoch.length > 0) out += `**Niveau ÉLEVÉ (critique pour la réussite du poste, évaluation individuelle requise) :**\n${hoch.map((t: any) => `- ${t.name} (${t.kompetenz})`).join("\n")}\n\n`;
+          if (mittel.length > 0) out += `**Niveau MOYEN (exigence standard, développable) :**\n${mittel.map((t: any) => `- ${t.name} (${t.kompetenz})`).join("\n")}\n\n`;
+          if (gering.length > 0) out += `**Niveau FAIBLE (exigence de base, peu différenciante) :**\n${gering.map((t: any) => `- ${t.name} (${t.kompetenz})`).join("\n")}\n`;
+        } else if (isEN) {
           if (hoch.length > 0) out += `**Level HIGH (critical for role success — individual assessment required):**\n${hoch.map((t: any) => `- ${t.name} (${t.kompetenz})`).join("\n")}\n\n`;
           if (mittel.length > 0) out += `**Level MEDIUM (standard requirement, can be developed):**\n${mittel.map((t: any) => `- ${t.name} (${t.kompetenz})`).join("\n")}\n\n`;
           if (gering.length > 0) out += `**Level LOW (basic requirement, not differentiating):**\n${gering.map((t: any) => `- ${t.name} (${t.kompetenz})`).join("\n")}\n`;
@@ -2110,7 +2208,7 @@ Beispiel für 3 Einträge:
         return out.trim();
       };
 
-      const erfolgsfokusText = (erfolgsfokusLabels || []).join(", ") || (isEN ? "Not specified" : "Nicht angegeben");
+      const erfolgsfokusText = (erfolgsfokusLabels || []).join(", ") || (isFR ? "Non précisé" : isEN ? "Not specified" : "Nicht angegeben");
 
       const describeGaps = (bg: any, label: string) => {
         if (!bg) return "";
@@ -2125,7 +2223,23 @@ Beispiel für 3 Einträge:
         const gapAll = Math.abs(first.value - third.value);
 
         let desc = `${label}: ${first.key} (${first.value}%) > ${second.key} (${second.value}%) > ${third.key} (${third.value}%)\n`;
-        if (isEN) {
+        if (isFR) {
+          if (gapAll <= 6) {
+            desc += `→ ÉQUILIBRE : Les trois compétences sont pratiquement égales (différence max. ${gapAll}%). Aucune ne domine.\n`;
+          } else if (first.value >= 55) {
+            desc += `→ FORTE DOMINANCE : ${first.key} est clairement supérieur à ${first.value}%. Écart au 2e rang : ${gap12} points.\n`;
+          } else if (gap12 >= 15) {
+            desc += `→ HAUTE DOMINANCE : ${first.key} est largement en tête (${gap12} pts devant ${second.key}). ${third.key} est clairement secondaire.\n`;
+          } else if (gap12 >= 8) {
+            desc += `→ DOMINANCE CLAIRE : ${first.key} est nettement en tête (${gap12} pts devant ${second.key}). Classement clair.\n`;
+          } else if (gap12 <= 5 && gap23 > 5) {
+            desc += `→ DOUBLE STRUCTURE : ${first.key} et ${second.key} forment un tandem (seulement ${gap12} pts d'écart). ${third.key} est clairement secondaire (${gap23} pts d'écart).\n`;
+          } else if (gap12 >= 5) {
+            desc += `→ LÉGÈRE TENDANCE : ${first.key} légèrement en tête (${gap12} pts d'avance). Pas de dominance prononcée.\n`;
+          } else {
+            desc += `→ ÉGALITÉ : Faibles différences entre les compétences.\n`;
+          }
+        } else if (isEN) {
           if (gapAll <= 6) {
             desc += `→ BALANCED: All three competencies nearly equal (max. difference ${gapAll}%). None dominates.\n`;
           } else if (first.value >= 55) {
@@ -2162,11 +2276,11 @@ Beispiel für 3 Einträge:
       };
 
       const gapAnalysis = [
-        describeGaps(gesamt, isEN ? "Overall profile" : "Gesamtprofil"),
-        describeGaps(haupt, isEN ? "Main tasks" : "Tätigkeiten"),
-        describeGaps(neben, isEN ? "Human competencies" : "Humankompetenzen"),
-        describeGaps(rahmen, isEN ? "Contextual factors" : "Rahmenbedingungen"),
-        isLeadership ? describeGaps(fuehrungBG, isEN ? "Leadership competencies" : "Führungskompetenzen") : null,
+        describeGaps(gesamt, isFR ? "Profil global" : isEN ? "Overall profile" : "Gesamtprofil"),
+        describeGaps(haupt, isFR ? "Tâches principales" : isEN ? "Main tasks" : "Tätigkeiten"),
+        describeGaps(neben, isFR ? "Compétences humaines" : isEN ? "Human competencies" : "Humankompetenzen"),
+        describeGaps(rahmen, isFR ? "Facteurs contextuels" : isEN ? "Contextual factors" : "Rahmenbedingungen"),
+        isLeadership ? describeGaps(fuehrungBG, isFR ? "Compétences de direction" : isEN ? "Leadership competencies" : "Führungskompetenzen") : null,
       ].filter(Boolean).join("\n");
 
       const PROFILE_TYPE_DESCRIPTIONS_DE: Record<string, string> = {
@@ -2201,11 +2315,174 @@ Beispiel für 3 Einträge:
         "hybrid_imp_int": "Pace-and-Decision / Communication-and-Relationships dual structure: action and relational competency are close together and form a tandem. The role demands both drive and empathy. Structure is clearly secondary.",
       };
 
-      const profileDescription = isEN
+      const PROFILE_TYPE_DESCRIPTIONS_FR: Record<string, string> = {
+        "balanced_all": "Profil équilibré : les trois domaines de compétences (Rythme et Décision, Communication et Relations, Structure et Rigueur) sont pratiquement égaux. Le poste demande de la polyvalence sans spécialisation claire. Décris le poste comme varié et équilibré.",
+        "strong_imp": "Fortement orienté Rythme et Décision : la compétence d'action et d'exécution domine largement. Le poste exige principalement de la détermination, des décisions rapides et une orientation résultats. Les dimensions relationnelle et structurelle sont clairement secondaires.",
+        "strong_ana": "Fortement orienté Structure et Rigueur : la compétence technique et méthodologique domine largement. Le poste exige principalement une pensée systématique, une expertise professionnelle et une approche structurée. Le rythme et la relation sont clairement secondaires.",
+        "strong_int": "Fortement orienté Communication et Relations : la compétence sociale et relationnelle domine largement. Le poste exige principalement de l'empathie, le développement de relations et une intelligence émotionnelle. Le rythme et la structure sont clairement secondaires.",
+        "dominant_imp": "Orienté Rythme et Décision : la compétence d'action est clairement en tête, mais sans excès. Le poste a principalement besoin de la force d'exécution, complétée par le deuxième domaine le plus fort.",
+        "dominant_ana": "Orienté Structure et Rigueur : la compétence technique est clairement en tête, mais sans excès. Le poste a principalement besoin d'une approche méthodique, complétée par le deuxième domaine le plus fort.",
+        "dominant_int": "Orienté Communication et Relations : la compétence relationnelle est clairement en tête. Le poste a principalement besoin de compétences sociales, complétées par le deuxième domaine le plus fort.",
+        "light_imp": "Légèrement orienté Rythme et Décision : la compétence d'action est légèrement en tête, sans dominance claire. Le poste tend vers l'exécution, mais requiert aussi de la largeur dans les autres domaines.",
+        "light_ana": "Légèrement orienté Structure et Rigueur : la compétence technique est légèrement en tête, sans dominance claire. Le poste tend vers le travail structuré, mais requiert aussi de la largeur dans les autres domaines.",
+        "light_int": "Légèrement orienté Communication et Relations : la compétence relationnelle est légèrement en tête, sans dominance claire. Le poste tend vers le travail relationnel, mais requiert aussi de la largeur dans les autres domaines.",
+        "hybrid_imp_ana": "Double structure Rythme et Décision / Structure et Rigueur : compétence d'action et compétence technique sont proches et forment un tandem. Le poste exige à la fois la force d'exécution et la pensée méthodique. La dimension relationnelle est clairement secondaire.",
+        "hybrid_ana_int": "Double structure Structure et Rigueur / Communication et Relations : compétence technique et compétence relationnelle sont proches et forment un tandem. Le poste exige à la fois la profondeur professionnelle et les aptitudes interpersonnelles. Le rythme est clairement secondaire.",
+        "hybrid_imp_int": "Double structure Rythme et Décision / Communication et Relations : compétence d'action et compétence relationnelle sont proches et forment un tandem. Le poste exige à la fois la détermination et l'empathie. La structure est clairement secondaire.",
+      };
+
+      const profileDescription = isFR
+        ? (PROFILE_TYPE_DESCRIPTIONS_FR[profileType || "balanced_all"] || PROFILE_TYPE_DESCRIPTIONS_FR["balanced_all"])
+        : isEN
         ? (PROFILE_TYPE_DESCRIPTIONS_EN[profileType || "balanced_all"] || PROFILE_TYPE_DESCRIPTIONS_EN["balanced_all"])
         : (PROFILE_TYPE_DESCRIPTIONS_DE[profileType || "balanced_all"] || PROFILE_TYPE_DESCRIPTIONS_DE["balanced_all"]);
 
-      const prompt = isEN
+      const prompt = isFR
+        ? `Tu es expert en analyse structurelle de postes et en décisions de recrutement pour les organisations francophones.
+Tu as un point de vue et tu l'exprimes. Pas de ton académique. Pas de jargon RH. Tu écris pour des personnes qui prennent des décisions rapides et concrètes.
+
+## TÂCHE
+
+Crée un rapport complet d'analyse structurelle du poste "${beruf}" dans le domaine "${bereich || "Non précisé"}".
+
+Le rapport s'adresse aux décideurs RH et aux dirigeants. Il décrit les exigences STRUCTURELLES du poste, indépendamment du CV, des connaissances sectorielles ou des chiffres de performance passés.
+
+## PROFIL DE POSTE — DONNÉES COMPLÈTES
+
+**Poste :** ${beruf}
+**Domaine :** ${bereich || "Non précisé"}
+**Responsabilité managériale :** ${fuehrungstyp || "Aucune"}
+**Caractère des tâches :** ${aufgabencharakter || "Non précisé"}
+**Logique de travail :** ${arbeitslogik || "Non précisée"}
+**Axes de succès :** ${erfolgsfokusText}
+
+## CLASSIFICATION DU PROFIL
+
+**Type de profil :** ${profileType || "balanced_all"}
+**Intensité :** ${intensity || "balanced"}
+**Signification :** ${profileDescription}
+
+## ANALYSE D'ÉCART (calculée exactement — NE PAS modifier)
+
+${gapAnalysis}
+
+## VALEURS DE PROFIL CALCULÉES (exactes — NE PAS modifier)
+
+Profil global : Rythme et Décision ${gesamt?.imp || 33}% / Communication et Relations ${gesamt?.int || 33}% / Structure et Rigueur ${gesamt?.ana || 34}%
+Facteurs contextuels : Rythme et Décision ${rahmen?.imp || 33}% / Communication et Relations ${rahmen?.int || 33}% / Structure et Rigueur ${rahmen?.ana || 34}%
+${isLeadership ? `Compétences de direction : Rythme et Décision ${fuehrungBG?.imp || 33}% / Communication et Relations ${fuehrungBG?.int || 33}% / Structure et Rigueur ${fuehrungBG?.ana || 34}%` : "Aucune responsabilité managériale"}
+Tâches principales : Rythme et Décision ${haupt?.imp || 33}% / Communication et Relations ${haupt?.int || 33}% / Structure et Rigueur ${haupt?.ana || 34}%
+Compétences humaines : Rythme et Décision ${neben?.imp || 33}% / Communication et Relations ${neben?.int || 33}% / Structure et Rigueur ${neben?.ana || 34}%
+
+## DOMAINES DE COMPÉTENCES (signification)
+
+- **Rythme et Décision** = Compétence d'action/exécution (faire, imposer, décider sous pression, orienter résultats)
+- **Communication et Relations** = Compétence sociale/relationnelle (ressentir, connecter, empathie, développer des relations)
+- **Structure et Rigueur** = Compétence technique/méthodologique (penser, structurer, analyser, expertise professionnelle)
+
+## DONNÉES DU PROFIL — CLASSÉES PAR NIVEAU
+
+### Tâches principales :
+${formatItemsByNiveau(hauptItems) || "Aucune fournie"}
+
+### Compétences humaines :
+${formatItemsByNiveau(nebenItems) || "Aucune fournie"}
+
+${fuehrungItems.length > 0 ? `### Compétences de direction :\n${formatItemsByNiveau(fuehrungItems)}` : ""}
+
+## RÈGLES DE NIVEAU (CRITIQUES pour la génération de texte)
+
+Le niveau décrit l'importance d'une tâche/compétence pour la réussite du poste :
+
+- **Niveau ÉLEVÉ** : C'est DÉCISIF pour la réussite du poste. Nécessite une évaluation individuelle. Dans le texte : mettre en avant, présenter comme défi central, lier aux risques de mauvais recrutement.
+- **Niveau MOYEN** : Exigence standard, développable. Dans le texte : mentionner comme compétence attendue, sans emphase particulière.
+- **Niveau FAIBLE** : Exigence de base, peu différenciante. Dans le texte : mentionner brièvement ou intégrer dans des formulations générales.
+
+Quand plusieurs éléments sont en Niveau ÉLEVÉ, décris leur COMBINAISON comme un défi particulier. Plus il y a d'éléments en Niveau ÉLEVÉ, plus le profil est exigeant.
+
+## STYLE ET TON
+
+- Direct, professionnel, sobre. Pas de marketing, pas de platitudes.
+- Utilise un vocabulaire spécifique au poste (ex. pour la vente : pipeline, forecast, taux de conclusion ; pour l'IT : architecture, code review, déploiement)
+- Listes à puces pour les domaines de responsabilité, les facteurs de succès, les leviers de direction, les compétences requises
+- Formule les tensions comme "X vs. Y"
+- Les scénarios de risque se terminent TOUJOURS par une phrase "En pratique, cela signifie..."
+- Conclusion avec "Ce poste nécessite quelqu'un qui :" + liste à puces
+
+## RÈGLES OBLIGATOIRES
+
+1. PAS de pourcentages dans les textes. Les valeurs sont affichées dans les graphiques. Décris les proportions qualitativement uniquement : "clairement dominant", "pratiquement à égalité", "nettement secondaire", "clairement en retrait".
+2. PAS de tirets cadratins (–) dans les textes. Formule des phrases complètes ou utilise des points/deux-points.
+3. Utilise l'ANALYSE D'ÉCART ci-dessus pour décrire les proportions CORRECTEMENT. Si elle dit "ÉQUILIBRE", ne décris pas de dominance. Si elle dit "FORTE DOMINANCE", souligne la supériorité claire.
+4. Si intensity="strong" : utilise "clairement dominé", "sans ambiguïté façonné par"
+5. Si intensity="light" : utilise "tendance perceptible vers", "légère orientation à"
+6. Si intensity="balanced" : décris la polyvalence et l'équilibre
+7. Si intensity="clear" : utilise "nettement façonné par", "clairement en tête"
+8. Pour les postes de direction : distingue clairement le management hiérarchique, fonctionnel et la coordination
+9. Sans direction : décris comment le poste agit SANS levier managérial (par l'expertise, la performance, la conviction)
+10. Tous les textes doivent être SPÉCIFIQUES au "${beruf}". Pas de formulations génériques.
+11. Les éléments de Niveau ÉLEVÉ doivent être soulignés comme particulièrement critiques. Les éléments de Niveau FAIBLE ne sont mentionnés que brièvement.
+
+## FORMAT DE SORTIE JSON
+
+Réponds uniquement en JSON avec exactement cette structure (les NOMS de champs restent tels quels — les valeurs en français) :
+
+{
+  "rollencharakter": "Une phrase descriptive capturant le caractère structurel du poste, ex. 'Orienté résultats avec ancrage analytique' ou 'Leadership relationnel avec forte orientation exécution'",
+  "dominanteKomponente": "Axe dominant plus secondaire, ex. 'Rythme et Décision avec soutien de Structure et Rigueur' ou 'Double structure : Structure et Rigueur avec Communication et Relations'",
+  "einleitung": "2-3 courts paragraphes séparés par \\n\\n. Chaque paragraphe max 2-3 phrases. Premier : qu'est-ce qui décide de ce poste ? Qu'est-ce qui détermine l'efficacité ? Deuxième : pourquoi les connaissances professionnelles seules ne suffisent-elles pas ? Dernier : 'Ce rapport décrit les exigences structurelles du poste, indépendamment de [référence spécifique au poste].'",
+  "gesamtprofil": "3-4 courts paragraphes séparés par \\n\\n. Chaque max 2-3 phrases. Premier : quel domaine domine et pourquoi ? Deuxième : qu'est-ce que cela signifie pour le poste au quotidien ? Troisième : quelle fonction jouent les domaines secondaires ? Dernière phrase : 'L'efficacité vient [principalement de / par] ...'",
+  "rahmenbedingungen": {
+    "beschreibung": "2-3 courts paragraphes séparés par \\n\\n, chacun 2-3 phrases. Décrire le caractère des tâches, expliquer la logique de travail, préciser ce que le poste exige concrètement",
+    "verantwortungsfelder": ["Domaine de responsabilité concret 1", "Domaine 2", "...au moins 5"],
+    "erfolgsmessung": ["Facteur de succès concret 1", "Facteur 2", "...au moins 4"],
+    "spannungsfelder_rahmen": ["Tension 1 vs. contre-courant 1", "Tension 2 vs. contre-courant 2", "...au moins 3"]
+  },
+  "fuehrungskontext": ${isLeadership ? `{
+    "beschreibung": "2-3 courts paragraphes séparés par \\n\\n, chacun 2-3 phrases. Quel type de direction ? Comment l'impact managérial se crée-t-il ?",
+    "wirkungshebel": ["Levier de direction concret 1", "Levier 2", "...au moins 4"],
+    "analytische_anforderungen": ["Exigence structurelle de direction 1", "...", "au moins 3"],
+    "schlusssatz": "Que se passe-t-il sans cet ancrage structurel ?"
+  }` : `{
+    "beschreibung": "2-3 courts paragraphes séparés par \\n\\n, chacun 2-3 phrases. Comment le poste agit-il SANS équipe à diriger ? Par quels mécanismes l'impact se crée-t-il ?",
+    "wirkungshebel": ["Levier d'impact indirect 1", "Levier 2", "...au moins 3"],
+    "schlusssatz": "Conséquence : sans levier managérial, l'impact se concentre sur..."
+  }`},
+  "kompetenzanalyse": {
+    "taetigkeiten_text": "2 courts paragraphes séparés par \\n\\n, chacun 2-3 phrases. Interprétation des valeurs du profil de tâches",
+    "taetigkeiten_anforderungen": ["Exigence structurelle 1", "Exigence 2", "...au moins 5"],
+    "taetigkeiten_schluss": "Phrase de conclusion : ce que ce poste exige fondamentalement",
+    "human_text": "2 courts paragraphes séparés par \\n\\n, chacun 2-3 phrases. Interprétation des valeurs du profil de compétences humaines",
+    "human_anforderungen": ["Compétence requise 1", "Compétence 2", "...au moins 5"],
+    "human_schluss": "Phrase de conclusion : quel rôle jouent les aptitudes interpersonnelles ici ?"
+  },
+  "spannungsfelder": ["Tension 1 vs. contre-courant 1", "Tension 2 vs. contre-courant 2", "au moins 4 entrées"],
+  "spannungsfelder_schluss": "La personne doit être capable de [gérer activement / réguler de manière autonome / modérer consciemment] ces tensions. L'objectif n'est pas de les éviter.",
+  "risikobewertung": [
+    {
+      "label": "Trop de structure appliquée",
+      "bullets": ["Conséquence 1", "Conséquence 2", "Conséquence 3", "au moins 4"],
+      "alltagssatz": "En pratique, cela signifie [description spécifique au poste]."
+    },
+    {
+      "label": "Trop de rythme imposé",
+      "bullets": ["Conséquence 1", "Conséquence 2", "Conséquence 3", "au moins 4"],
+      "alltagssatz": "En pratique, cela signifie [description spécifique au poste]."
+    },
+    {
+      "label": "Trop de relation prioritaire",
+      "bullets": ["Conséquence 1", "Conséquence 2", "Conséquence 3", "au moins 4"],
+      "alltagssatz": "En pratique, cela signifie [description spécifique au poste]."
+    }
+  ],
+  "fazit": {
+    "kernsatz": "1-2 phrases : résumé du caractère structurel du poste",
+    "persoenlichkeit": ["Caractéristique 1 que la personne doit apporter", "Caractéristique 2", "au moins 5 entrées"],
+    "fehlbesetzung": "1 phrase : que se passe-t-il si l'adéquation structurelle est mauvaise ?",
+    "schlusssatz": "1 phrase : ce pour quoi ce rapport constitue la base"
+  }
+}`
+        : isEN
         ? `You are an expert in structural role analysis and hiring decisions for English-speaking organisations.
 You have a point of view and you express it. No academic tone. No HR-handbook speak. Write for people who make fast, concrete decisions.
 
@@ -2525,7 +2802,57 @@ Antworte ausschließlich als JSON mit exakt dieser Struktur:
         `- ${t.name} (${t.kompetenz}, ${t.niveau})`
       ).join("\n");
 
-      const prompt = region === "EN"
+      const prompt = region === "FR"
+        ? `Tu es expert en analyse de postes et en profils de compétences. Analyse le profil de poste suivant dans son CONTEXTE GLOBAL et crée trois zones d'analyse.
+${getRegionInstruction(region)}
+
+## PROFIL DE POSTE — CONTEXTE GLOBAL
+
+**Poste :** ${beruf}
+**Responsabilité managériale :** ${fuehrung || "Aucune"}
+**Axes de succès :** ${erfolgsfokus || "Non précisés"}
+**Caractère des tâches :** ${aufgabencharakter || "Non précisé"}
+**Logique de travail :** ${arbeitslogik || "Non précisée"}
+
+## DOMAINES DE COMPÉTENCES (pour la classification)
+- "Analytisch" = Compétence technique/méthodologique (penser, comprendre, structurer, appliquer l'expertise)
+- "Intuitiv" = Intelligence sociale/relationnelle (ressentir, connecter, empathie, développer des relations)
+- "Impulsiv" = Compétence d'action/exécution (faire, imposer, décider, livrer des résultats)
+
+La classification dépend du contexte : "aptitude à la communication" peut être Analytisch (transmettre une expertise), Intuitiv (développer des relations) ou Impulsiv (conclure des deals) selon l'usage réel dans le poste.
+
+## DONNÉES DU PROFIL
+
+**Tâches principales :**
+${formatItems(haupt)}
+
+**Compétences humaines :**
+${formatItems(neben)}
+
+${fuehrungItems.length > 0 ? `**Compétences de direction :**\n${formatItems(fuehrungItems)}` : ""}
+
+## MISSION D'ANALYSE
+
+Crée une analyse contextuelle. Vérifie si les classifications des domaines de compétences sont cohérentes dans le contexte du poste. Signale les incohérences observées.
+
+Rédige chaque section en prose continue — pas de listes à puces. Sois direct et spécifique. Mentionne explicitement le poste "${beruf}" dans le texte.
+
+**Section 1 — Répartition des compétences et profil du poste :**
+Analyse la répartition des trois domaines de compétences. Lequel domine ? Cette répartition correspond-elle au caractère des tâches (${aufgabencharakter || "n.d."}) et à la logique de travail (${arbeitslogik || "n.d."}) ? Qu'est-ce que cela dit du type de poste ? Quel est le niveau d'exigence global ?
+
+**Section 2 — Analyse des tâches et profil d'exigences :**
+Quelles tâches/compétences exigent le niveau le plus élevé et pourquoi ? Où se trouvent les exigences critiques dans le contexte des axes de succès (${erfolgsfokus || "n.d."}) ? Quelles combinaisons de compétences sont particulièrement importantes pour ce poste spécifique ?
+
+**Section 3 — Recommandations de recrutement et pistes de développement :**
+Quelles compétences doivent être examinées spécifiquement lors du recrutement ? Où des lacunes pourraient-elles apparaître ? Recommandations concrètes pour le recrutement et parcours de développement réalistes.
+
+Réponds en JSON :
+{
+  "bereich1": "...(prose détaillée et continue, 4-6 phrases)...",
+  "bereich2": "...(prose détaillée et continue, 4-6 phrases)...",
+  "bereich3": "...(prose détaillée et continue, 4-6 phrases)..."
+}`
+        : region === "EN"
         ? `You are an expert in role analysis and competency profiles for English-speaking organisations.
 ${getRegionInstruction(region)}
 
@@ -2740,9 +3067,16 @@ Antworte als JSON:
       }
 
       const isEN = locale === "en";
+      const isFR = locale === "fr";
 
       // Klartext-Labels: keine Fachbegriffe wie "impulsiv/intuitiv/analytisch" im Bericht
-      const componentLabel: Record<string, string> = isEN
+      const componentLabel: Record<string, string> = isFR
+        ? {
+            imp: "Rythme et Décision",
+            int: "Communication et Relations",
+            ana: "Structure et Rigueur",
+          }
+        : isEN
         ? {
             imp: "Pace and Decision",
             int: "Communication and Relationships",
@@ -2753,7 +3087,13 @@ Antworte als JSON:
             int: "Kommunikation und Beziehung",
             ana: "Struktur und Sorgfalt",
           };
-      const componentLong: Record<string, string> = isEN
+      const componentLong: Record<string, string> = isFR
+        ? {
+            imp: "agir, décider rapidement, imprimer le rythme, livrer des résultats",
+            int: "aller vers les gens, coordonner, médiatiser, développer des relations",
+            ana: "organiser, vérifier, analyser, assurer soin et précision",
+          }
+        : isEN
         ? {
             imp: "taking action, deciding quickly, driving pace, getting things done",
             int: "engaging with people, aligning, mediating, building relationships",
@@ -2767,6 +3107,13 @@ Antworte als JSON:
 
       // Prozentwerte in qualitative Bänder übersetzen, damit Claude in Worten arbeitet
       const toBand = (v: number): string => {
+        if (isFR) {
+          if (v >= 45) return "clairement l'axe dominant";
+          if (v >= 38) return "structure nettement le poste";
+          if (v >= 30) return "nettement présent";
+          if (v >= 22) return "plutôt en soutien";
+          return "clairement en arrière-plan";
+        }
         if (isEN) {
           if (v >= 45) return "clearly the dominant focus";
           if (v >= 38) return "clearly shaping the role";
@@ -2785,6 +3132,12 @@ Antworte als JSON:
       const bandAna = toBand(triad.ana);
 
       const gapWord = (g: number): string => {
+        if (isFR) {
+          if (g <= 3) return "pratiquement à égalité avec";
+          if (g <= 7) return "légèrement devant";
+          if (g <= 14) return "nettement devant";
+          return "très nettement devant";
+        }
         if (isEN) {
           if (g <= 3) return "practically on par with";
           if (g <= 7) return "just ahead of";
@@ -2808,7 +3161,14 @@ Antworte als JSON:
 
       const focusLabel = successFocus ? componentLabel[successFocus] : null;
 
-      const profileClassExplanation: Record<string, string> = isEN
+      const profileClassExplanation: Record<string, string> = isFR
+        ? {
+            BAL_FULL: "Les trois axes sont à peu près égaux — pas d'axe dominant clairement identifiable.",
+            DUAL_TOP: "Deux axes portent le poste ensemble, le troisième l'accompagne.",
+            CLEAR_TOP: "Un axe porte le poste, les deux autres l'accompagnent.",
+            ORDER: "Classement clair : un premier axe devant un deuxième, lui-même devant un troisième.",
+          }
+        : isEN
         ? {
             BAL_FULL: "All three focus areas are roughly equal — no single dominant focus.",
             DUAL_TOP: "Two focus areas carry the role together, the third is more of a companion.",
@@ -2827,7 +3187,115 @@ Antworte als JSON:
       let systemPrompt: string;
       let userPrompt: string;
 
-      if (isEN) {
+      if (isFR) {
+        const taskLineFR = Array.isArray(tasks) && tasks.length > 0 ? tasks.join("; ") : "(aucune tâche principale indiquée)";
+
+        systemPrompt = `Tu es consultant interne. Tu rédiges un rapport d'analyse de poste pour des responsables RH et des managers qui doivent décider vite. Les lecteurs ne connaissent pas le modèle bioLogic. Rédige de façon à ce que quelqu'un sans connaissance préalable comprenne immédiatement le rapport. Tu as un point de vue et tu l'exprimes. Pas de ton académique, pas de jargon RH.
+
+RÈGLES DE STYLE (obligatoires) :
+
+1) Voix active. Pas de passif, pas de conditionnel sans raison.
+   Mauvais : "Il convient de s'assurer que la personne sait communiquer."
+   Bon : "Qui est assis ici mène chaque jour des entretiens où clarté et confiance sont requises en même temps."
+
+2) Concret et ancré dans le poste. Chaque phrase doit s'appliquer à CE poste, pas aux managers en général.
+   Mauvais : "Une bonne communication est importante dans ce rôle."
+   Bon : "Un chef d'équipe dans ce rôle embarque son équipe chaque jour, en conversation, pas par directive."
+
+3) AUCUN chiffre, aucun pourcentage, aucune note. Utilise des mots : "clairement au premier plan", "structure nettement le poste", "nettement présent", "en arrière-plan", "pratiquement à égalité", "légèrement devant", "nettement devant".
+
+4) AUCUN jargon technique du modèle : jamais "impulsif", "intuitif", "analytique", "composante", "triade", "classe de profil", "BAL_FULL", "DUAL_TOP", "CLEAR_TOP", "ORDER". Utilise toujours les libellés clairs : "Rythme et Décision", "Communication et Relations", "Structure et Rigueur".
+
+5) Aucune clause de style. Interdit : "dans une approche globale", "il convient de noter", "à la lumière des développements actuels", "valeur ajoutée significative", "approche holistique".
+
+6) Aucun tiret cadratin. N'utilise jamais "—" ou "–" dans le texte courant. Reformule ou divise la phrase.
+
+7) Chaque section se termine par une affirmation concrète. Qu'est-ce que cela signifie pour le recrutement ? Que doit savoir ou décider le lecteur ? Aucune section ne se termine dans le vague.
+
+8) Pas de ton manuel. Pas de définitions. Le lecteur connaît son métier.
+
+9) Tutoie toujours le lecteur (tu/toi/ton/ta). Pas de "vous".
+
+10) Réponds en ${languageName}.
+
+COMMENT NOMMER LES TROIS AXES (toujours en clair) :
+- "Rythme et Décision" = agir, décider rapidement, imprimer le rythme, livrer des résultats
+- "Communication et Relations" = aller vers les gens, coordonner, médiatiser, développer des relations
+- "Structure et Rigueur" = organiser, vérifier, analyser, assurer soin et précision
+
+AVANT (ce que ça ne doit PAS ressembler) :
+"Le profil de tâches correspond à la structure des axes. Le rôle de direction avec responsabilité de résultats exige des décisions rapides et une communication claire, deux éléments fortement ancrés dans le profil. Le travail structurel pourrait devenir un risque dans des tâches de planification plus complexes."
+
+APRÈS (ce que ça DOIT ressembler) :
+"Ce poste a besoin de quelqu'un qui décide vite et communique clairement. Ce ne sont pas des traits optionnels : c'est la condition de base pour un leadership efficace ici. Les tâches de planification exigeant soin et précision se situent hors du principal axe. Qui occupe ce poste aura besoin d'un soutien pour cela. Ce n'est pas une faiblesse : c'est un besoin organisationnel concret que les RH doivent clarifier avant le recrutement."
+
+Réponds uniquement avec du JSON valide correspondant au schéma demandé. Pas de prose autour du JSON.
+
+CHECKLIST avant la sortie : vérifier chaque bloc de texte.
+- Pas de passif ? - Pas de chiffres ni de pourcentages ? - Pas de jargon de modèle ? - Pas de clause de disclaimer ? - Pas de tirets cadratins ? - Chaque section se termine par une affirmation concrète ? - Ancré sur "${jobTitle}" et les tâches nommées ?`;
+
+        userPrompt = `POSTE : ${jobTitle}
+CATÉGORIE DU POSTE : ${roleCategoryEN.category}
+VOCABULAIRE PERTINENT (utilise ce qui convient au contexte du poste) : ${roleCategoryEN.vocab}
+TÂCHES PRINCIPALES : ${taskLineFR}
+
+AXES POUR CE POSTE (qualitatifs — N'UTILISE AUCUN chiffre dans le rapport) :
+- "${componentLabel.imp}" (${componentLong.imp}): ${bandImp}
+- "${componentLabel.int}" (${componentLong.int}): ${bandInt}
+- "${componentLabel.ana}" (${componentLong.ana}): ${bandAna}
+
+PROFIL SYNTHÉTIQUE : ${profileClassExplanation[meta.profileClass] || ""}
+- Axe principal : "${componentLabel[t1]}"
+- Deuxième axe : "${componentLabel[t2]}" (${gapWord(meta.gap1)} l'axe principal)
+- Troisième axe : "${componentLabel[t3]}" (${gapWord(meta.gap2)} le deuxième axe)
+
+AXE DE SUCCÈS DU POSTE : ${focusLabel ? `"${focusLabel}"` : "non renseigné"}
+
+CONTEXTE :
+- Caractère des tâches : ${environment.taskCharacter || "non indiqué"}
+- Logique de travail : ${environment.workLogic || "non indiquée"}
+- Type de direction : ${environment.leadershipType || "non indiqué"}
+
+MISSION :
+Génère le JSON ci-dessous. Respecte strictement les règles de style — surtout : AUCUN chiffre ni pourcentage dans le texte. AUCUN terme comme "impulsif", "intuitif", "analytique". Utilise toujours les libellés clairs ci-dessus. Tutoie toujours.
+
+{
+  "intro": "EXACTEMENT 2 paragraphes (séparés par \\n\\n). Premier paragraphe (2-3 phrases) : ce qui caractérise ce poste spécifique — nomme la tension ou le défi qui définit le poste, en utilisant le titre du poste et les tâches concrètes. Deuxième paragraphe (2-3 phrases) : ce que le profil des axes signifie en pratique et comment le lecteur peut utiliser ce rapport. Pas d'ouverture générique comme 'Ce rapport examine...'. Commence par une observation concrète sur le poste. Pas de paragraphe disclaimer.",
+  "shortDescription": "2-3 phrases. Quel type de personne ce poste nécessite réellement. Langage concret ancré dans les tâches.",
+  "structureProfile": "2-3 phrases. Ce que le profil des axes signifie pour le travail quotidien dans ce poste. Utilise des mots comme 'porte le poste', 'accompagne activement', 'joue un rôle secondaire'. Termine par une implication concrète pour le recrutement. Pas de chiffres.",
+  "componentMeaning": [
+    { "component": "${t1}", "title": "${componentLabel[t1]}", "text": "1-2 phrases : ce que cet axe représente concrètement dans le poste '${jobTitle}' — ancré sur une tâche nommée." },
+    { "component": "${t2}", "title": "${componentLabel[t2]}", "text": "1-2 phrases : ce que cet axe apporte et quand il importe le plus dans ce poste." },
+    { "component": "${t3}", "title": "${componentLabel[t3]}", "text": "1-2 phrases : quel rôle cela joue en arrière-plan et quand son absence devient visible." }
+  ],
+  "workLogic": "1-2 phrases. Comment ces axes doivent s'articuler pour que le poste fonctionne.",
+  "framework": "2-3 phrases. Comment le caractère des tâches, la logique de travail et le type de direction s'accordent avec le profil des axes.",
+  "successFocus": "1-2 phrases. Ce que l'axe de succès exige de la personne dans ce poste au quotidien.",
+  "behaviourDaily": "2 phrases. Comment ce poste se manifeste dans le travail quotidien ordinaire.",
+  "behaviourPressure": "2 phrases. Comment le poste réagit sous une pression de travail normale.",
+  "behaviourStress": "2 phrases. Comment le poste réagit quand la pression devient excessive.",
+  "teamImpact": "2 phrases. Quel effet ce poste a sur l'équipe qui l'entoure.",
+  "tensionFields": ["4 paires de tension dans le format 'X vs. Y' issus du contexte concret du poste. Langage du quotidien, pas de jargon de modèle."],
+  "miscastRisks": [
+    { "label": "Quand ${componentLabel[t1]} devient trop dominant", "bullets": ["3-4 risques concrets formulés comme des phrases courtes du quotidien. Le DERNIER bullet commence obligatoirement par 'En pratique cela donne ' et décrit un comportement observable."] },
+    { "label": "Quand ${componentLabel[t2]} prend le dessus", "bullets": ["3-4 risques concrets. Le DERNIER bullet commence obligatoirement par 'En pratique cela donne ' et décrit un comportement observable."] },
+    { "label": "Quand ${componentLabel[t3]} devient trop dominant", "bullets": ["3-4 risques concrets. Le DERNIER bullet commence obligatoirement par 'En pratique cela donne ' et décrit un comportement observable."] }
+  ],
+  "typicalPerson": "2-3 phrases. De quels postes, secteurs ou parcours les candidats appropriés viennent typiquement. Sois concret.",
+  "finalDecision": "2-3 phrases. Recommandation de recrutement directe. Termine par une question ou vérification concrète que le manager peut utiliser.",
+  "jobTitleEnglish": "Version anglaise naturelle et idiomatique du titre de poste '${jobTitle}'. Traduis de manière significative. Si le titre est déjà en anglais, garde-le tel quel. Juste le titre, sans guillemets ni mots supplémentaires.",
+  "tasksEnglish": ["Traduction anglaise naturelle de CHAQUE tâche principale, dans le MÊME ordre que TÂCHES PRINCIPALES. Une chaîne par tâche."]
+}
+
+IMPORTANT :
+- AUCUN chiffre, AUCUN pourcentage, AUCUNE note nulle part dans la sortie.
+- AUCUN terme "impulsif", "intuitif", "analytique", "composante", "triade", "classe de profil", "gap", "top1", "top2", "top3", "bioLogic".
+- AUCUN tiret cadratin ("–" ou "—") dans le texte courant.
+- Tutoie toujours le lecteur.
+- tensionFields = exactement 4 chaînes. miscastRisks.bullets : 3-4 chaînes, le DERNIER bullet commence par "En pratique cela donne ".
+- componentMeaning exactement dans cet ordre avec les clés ${t1}, ${t2}, ${t3}.
+- tasksEnglish doit contenir EXACTEMENT ${Array.isArray(tasks) ? tasks.length : 0} chaînes.`;
+      } else if (isEN) {
         const taskLineEN = Array.isArray(tasks) && tasks.length > 0 ? tasks.join("; ") : "(no main tasks specified)";
 
         systemPrompt = `You are an internal consultant writing job-analysis reports for HR managers and line managers who need to make fast decisions. Readers do not know the bioLogic model — write so anyone without prior knowledge understands the report immediately. You have a point of view and you express it. No academic tone. No textbook writing. No HR-handbook speak.
@@ -3090,11 +3558,75 @@ WICHTIG:
 
       const isLeading = context?.is_leading === true;
       const isEN = region === "EN";
+      const isFR = region === "FR";
       const personRole = isLeading
-        ? (isEN ? "new leader" : "Führungskraft")
-        : (isEN ? "new team member" : "Teammitglied");
+        ? (isFR ? "nouveau responsable" : isEN ? "new leader" : "Führungskraft")
+        : (isFR ? "nouveau membre d'équipe" : isEN ? "new team member" : "Teammitglied");
 
-      const systemPrompt = isEN
+      const systemPrompt = isFR
+        ? `Tu crées un rapport systémique d'équipe unifié (bioLogic) comme document de management.
+Les lecteurs ne connaissent pas le modèle. Tu décris la logique de travail et de décision au sein de l'équipe, pas la personnalité.
+Rédige de manière factuelle, précise, sans langage de coaching et sans diagnostics psychologiques.
+${getRegionInstruction(region)}
+
+IMPORTANT — Distinction de rôle :
+La nouvelle personne est un(e) ${personRole}. Cela change fondamentalement toute l'analyse.
+
+${isLeading ? `MODE RESPONSABLE :
+- La nouvelle personne prend la direction de l'équipe. Elle détermine la logique de décision, la priorisation et le style de management.
+- Analyse comment la logique de décision du nouveau responsable modifie la dynamique existante de l'équipe.
+- Décris le changement comme un "changement de direction" : comment la culture de décision, la priorisation et le rythme de travail évoluent-ils ?
+- Formule les risques du point de vue du leadership : perte d'acceptation, résistance, choc culturel, sur-pilotage.
+- Formule les opportunités du point de vue du leadership : professionnalisation, discipline de résultats, clarté stratégique.
+- Les leviers de leadership sont des actions que le nouveau responsable peut mettre en œuvre directement.
+- Dans le plan d'intégration : le nouveau responsable agit activement, l'équipe réagit.
+- Utilise systématiquement "le nouveau responsable" ou "la nouvelle direction", pas "la nouvelle personne".` :
+`MODE MEMBRE D'ÉQUIPE :
+- La nouvelle personne rejoint l'équipe existante, sans rôle de direction.
+- Analyse comment le nouveau membre d'équipe influence la dynamique existante de l'équipe (sans autorité de pilotage).
+- Décris le changement comme un "ajout à l'équipe" : comment la collaboration, le rythme de travail et l'équilibre d'équipe évoluent-ils ?
+- Risques : difficultés d'intégration, frictions avec l'équipe existante, isolation silencieuse, pression de conformité.
+- Opportunités : nouvelles perspectives, complémentarité de compétences, couverture élargie, dynamique nouvelle.
+- Les leviers de leadership sont des actions que le management existant devrait prendre pour piloter l'intégration.
+- Dans le plan d'intégration : l'équipe existante et le management pilotent l'intégration, le nouveau membre est embarqué.
+- Utilise systématiquement "le nouveau membre d'équipe" ou "la nouvelle personne", pas "le nouveau responsable".`}
+
+Principes obligatoires :
+- N'utilise jamais les termes du modèle sans traduction fonctionnelle (Impulsiv/Intuitiv/Analytisch uniquement comme description de logique de travail).
+- Utilise toujours les étiquettes en clair : "Rythme et Décision" (Impulsiv), "Communication et Relations" (Intuitiv), "Structure et Rigueur" (Analytisch).
+- Chaque risque inclut un impact concret (vitesse, qualité, KPI, dynamique d'équipe, effort de management).
+- Pas de clichés, pas de répétitions, pas de métaphores.
+- Points de liste : max 2 phrases chacun, observation + effet.
+- Référence les tâches et priorités KPI des données d'entrée.
+- Pas de tirets cadratins (— ou --). Découpe les phrases ou utilise un deux-points.
+- Pas de pourcentages ni de scores bruts dans le texte narratif. Décris qualitativement : "clairement au premier plan", "nettement présent", "très proches", "clairement secondaire".
+
+Les valeurs calculées (DG, DC, RG, TS, CI, intensité, type de glissement, besoin de pilotage) sont déjà calculées de manière déterministe et transmises en entrée. Utilise-les exactement, ne les recalcule PAS.
+
+Format de sortie :
+Rédige uniquement le rapport (pas d'explications, pas de JSON). Utilise exactement cette structure :
+
+1. Résumé exécutif systémique
+2. Vue d'ensemble des profils (Équipe / ${isLeading ? "Nouveau responsable" : "Nouveau membre"} / Cible optionnelle)
+3. Type de système et axe de glissement
+4. Impact systémique au quotidien (4 domaines : Décisions/Priorités, Qualité, Rythme, Collaboration)
+5. Impact tâches et KPI (dérivé des tâches et du kpi_focus)
+6. Prévision de conflits et de pression
+7. Maturité d'équipe (5 dimensions)
+8. Opportunités (max 6)
+9. Risques (max 6)
+10. Leviers de leadership (max 6, concrets)
+11. Plan d'intégration (30 jours, 3 phases)
+12. Points de mesure (3-5, objectifs)
+13. Évaluation globale (claire, 4-6 phrases)
+
+Valeurs numériques :
+- TS comme nombre 0-100 (arrondi), Intensité (Faible/Moyen/Élevé)
+- DG, DC, RG, CI optionnels comme valeurs secondaires dans le résumé (bref, 1 ligne)
+
+Termes interdits :
+personnalité, type, mindset, libérer le potentiel, bienveillant, holistique, authentique.`
+        : isEN
         ? `You are creating a unified Team System Report as a management document.
 Readers do not know the model. You describe work and decision logic within the team — not personality.
 Write factually, precisely, without coaching language and without psychological diagnoses.
@@ -3217,7 +3749,9 @@ Numerische Werte:
 Verbotene Begriffe:
 Persönlichkeit, Typ, Mindset, Potenzial entfalten, wertschätzend, ganzheitlich, authentisch, getragen.`;
 
-      const userContent = isEN
+      const userContent = isFR
+        ? `Crée le rapport systémique d'équipe sur la base des données suivantes :\n\n${JSON.stringify({ context, profiles, computed, levers }, null, 2)}`
+        : isEN
         ? `Create the Team System Report based on the following data:\n\n${JSON.stringify({ context, profiles, computed, levers }, null, 2)}`
         : `Erstelle den Team-Systemreport basierend auf folgenden Daten:\n\n${JSON.stringify({ context, profiles, computed, levers }, null, 2)}`;
 
@@ -4016,8 +4550,33 @@ Du befindest dich GERADE in einer aktiven Gesprächssimulation. WICHTIGE REGELN:
       };
 
       const isEN = region === "EN";
+      const isFR = region === "FR";
 
-      const systemPrompt = isEN
+      const systemPrompt = isFR
+        ? `Tu es spécialiste en psychologie organisationnelle et en diagnostic comportemental pour la plateforme bioLogic HR Analytics.
+Ton objectif : rédiger des textes narratifs concis et professionnels pour un rapport d'intégration d'équipe en FRANÇAIS.
+
+Règles de rédaction (à respecter impérativement) :
+- Rédige NATIVEMENT en français. Ne traduis pas de l'allemand.
+- Sois objectif et factuel. Pas de coaching, pas de platitudes, pas de diagnostics psychologiques.
+- Chaque section : 2-4 phrases courtes et actives. N'aborde que les implications concrètes en situation de travail.
+- N'utilise jamais de pourcentages ni de chiffres bruts pour décrire les profils. Utilise des termes qualitatifs : "clairement au premier plan", "nettement présent", "très proches", "légèrement devant", "clairement dominant", "globalement équilibré", "poids similaire".
+- N'utilise jamais le jargon du modèle. N'écris jamais "impulsif", "intuitif" ou "analytique". Utilise : "Rythme et Décision" pour la dimension action, "Communication et Relations" pour la dimension humaine, "Structure et Rigueur" pour la dimension processus.
+- N'utilise pas de tirets cadratins. Utilise des virgules, des deux-points ou des points.
+- Formule des phrases courtes et actives. Une idée par phrase.
+- Renvoie UNIQUEMENT du JSON valide. Pas de markdown, pas de blocs de code, pas de texte supplémentaire.
+
+Schéma JSON de sortie (tous les champs obligatoires, toutes les valeurs en français) :
+{
+  "fuehrungsprofil": "string — comment le schéma comportemental de la personne structure son style de travail quotidien et ses interactions avec l'équipe",
+  "teamdynamikAlltag": "string — quelles tensions ou synergies apparaissent entre le profil de la personne et celui de l'équipe au quotidien",
+  "systemwirkung": "string — impact systémique global de ce recrutement sur les processus et l'efficacité de l'équipe",
+  "kulturwirkung": "string — comment le schéma de la personne influence la culture d'équipe et les normes de travail communes",
+  "chancen": "string — 2-3 opportunités concrètes que cette personne apporte à l'équipe",
+  "risiken": "string — 2-3 risques concrets ou points de friction à surveiller par le management",
+  "systemfazit": "string — conclusion globale : qualité de l'adéquation et recommandation clé pour le management"
+}`
+        : isEN
         ? `You are a specialist in organizational psychology and behavioral diagnostics for the bioLogic HR analytics platform.
 Your task: write concise, professional narrative text sections for a team-fit report in ENGLISH.
 
@@ -4060,7 +4619,29 @@ Ausgabe-JSON-Schema (alle Felder pflicht, alle Werte deutsche Strings oder Strin
   "systemfazit": "string — Gesamtfazit: Qualität der Passung und zentrale Empfehlung für die Führung"
 }`;
 
-      const userMsg = isEN
+      const userMsg = isFR
+        ? `Génère le texte narratif du rapport d'intégration d'équipe pour les données suivantes :
+
+Poste : "${context.roleName}" | Personne : "${context.candidateName}"
+Rôle de management : ${context.isLeadership ? "Oui" : "Non"}
+${context.teamGoal ? `Objectif d'équipe : ${context.teamGoal}` : ""}
+${context.roleLevel ? `Niveau du poste : ${context.roleLevel}` : ""}
+${context.taskStructure ? `Structure des tâches : ${context.taskStructure}` : ""}
+${context.workStyle ? `Style de travail : ${context.workStyle}` : ""}
+
+Profil d'équipe : Rythme et Décision ${profiles.team.impulsiv} / Communication et Relations ${profiles.team.intuitiv} / Structure et Rigueur ${profiles.team.analytisch}
+Profil de la personne : Rythme et Décision ${profiles.person.impulsiv} / Communication et Relations ${profiles.person.intuitiv} / Structure et Rigueur ${profiles.person.analytisch}
+Constellation d'équipe : ${calculated.teamConstellationLabel}
+Constellation de la personne : ${calculated.istConstellationLabel}
+
+Adéquation globale : ${calculated.gesamtpassungLabel} (${calculated.gesamtpassung})
+Écart de profil : ${calculated.teamIstGap}
+Intensité de pilotage : ${calculated.controlIntensity}
+Niveau de développement : ${calculated.developmentLevel}/4
+${calculated.teamGoalLabel ? `Évaluation de l'objectif d'équipe : ${calculated.teamGoalLabel}` : ""}
+
+Renvoie uniquement l'objet JSON.`
+        : isEN
         ? `Generate the team-fit report narrative for the following data:
 
 Role: "${context.roleName}" | Person: "${context.candidateName}"
@@ -4147,8 +4728,53 @@ Gib nur das JSON-Objekt zurück.`;
       };
 
       const isEN = region === "EN";
+      const isFR = region === "FR";
 
-      const systemPrompt = isEN
+      const systemPrompt = isFR
+        ? `Tu es spécialiste en psychologie organisationnelle et en diagnostic comportemental pour la plateforme bioLogic HR Analytics.
+Ton objectif : rédiger des textes narratifs concis et professionnels pour un rapport d'adéquation personne-poste (MatchCheck) en FRANÇAIS.
+
+RÈGLES DE STYLE (obligatoires) :
+
+1) VOIX ACTIVE UNIQUEMENT. Pas de tournures passives.
+   Incorrect : "Il conviendrait de s'assurer que le candidat peut communiquer."
+   Correct : "Qui occupe ce poste communique clairement et agit sous pression."
+
+2) AUCUN chiffre, AUCUN pourcentage, AUCUN score dans le texte de sortie. Décris les rapports qualitativement.
+   Incorrect : "Fort alignement en dynamique d'action (40% vs. 45%)"
+   Correct : "Les deux profils sont très proches sur le rythme et la prise de décision."
+   Mots d'intensité qualitatifs : "clairement au premier plan", "clairement dominant", "nettement devant", "légèrement devant", "très proches", "pratiquement à égalité", "nettement présent", "en retrait", "clairement secondaire".
+
+3) AUCUN jargon du modèle bioLogic dans le texte. N'écris jamais : "impulsif", "intuitif", "analytique", "composante", "triade", "classe de profil", "BAL_FULL", "écart".
+   Utilise UNIQUEMENT des étiquettes en clair :
+   - dimension action → "Rythme et Décision"
+   - dimension humaine → "Communication et Relations"
+   - dimension processus → "Structure et Rigueur"
+
+4) PAS de tirets cadratins (– ou —) dans le texte. Découpe en deux phrases ou utilise un deux-points.
+
+5) PAS de langue de coaching, pas de platitudes, pas d'avertissements dans le rapport.
+   Interdit : "sans jugement de valeur", "ne remplace pas l'évaluation individuelle", "chaque personne est unique", "approche holistique".
+
+6) Chaque section : affirmation clé en premier → brève justification → une implication concrète pour le recrutement ou le management.
+
+7) "executiveBullets" et "actions" doivent être des tableaux de courtes chaînes en français (max 2 phrases chacune).
+
+8) Renvoie UNIQUEMENT du JSON valide. Pas de markdown, pas de blocs de code, pas de texte supplémentaire.
+
+LISTE DE VÉRIFICATION avant la sortie : Pas de pourcentages ? Pas d'"impulsif/intuitif/analytique" ? Pas de tirets cadratins ? Voix active tout au long ?
+
+Schéma JSON de sortie (tous les champs obligatoires) :
+{
+  "summaryText": "string — résumé exécutif en 3-4 phrases de l'adéquation personne-poste",
+  "executiveBullets": ["string", "string", "string"] — 3 raisons principales pour le résultat d'adéquation,
+  "constellationRisks": ["string", "string"] — 2 risques découlant de la différence de constellation,
+  "dominanceShiftText": "string — 2-3 phrases sur l'interaction des axes dominants",
+  "developmentText": "string — 2-3 phrases sur l'effort de développement et l'intensité de pilotage nécessaire",
+  "actions": ["string", "string", "string"] — 3 recommandations concrètes pour le management,
+  "finalText": "string — conclusion globale en 2-3 phrases et recommandation de recrutement"
+}`
+        : isEN
         ? `You are a specialist in organizational psychology and behavioural diagnostics for the bioLogic HR analytics platform.
 Your task: write concise, professional narrative text sections for a person-role fit report (MatchCheck) in ENGLISH.
 
@@ -4238,7 +4864,25 @@ Ausgabe-JSON-Schema (alle Felder pflicht):
   "finalText": "string — 2–3 Sätze Gesamtfazit und Besetzungsempfehlung"
 }`;
 
-      const userMsg = isEN
+      const userMsg = isFR
+        ? `Génère les textes narratifs pour le rapport MatchCheck suivant :
+
+Poste : "${context.roleName}" | Candidat : "${context.candidateName}"
+
+DONNÉES DE PROFIL (pour le contexte et la comparaison relative uniquement — NE PAS reproduire ces chiffres dans le texte de sortie) :
+Profil cible : Rythme et Décision ${profiles.role.impulsiv}% / Communication et Relations ${profiles.role.intuitiv}% / Structure et Rigueur ${profiles.role.analytisch}%
+Profil réel : Rythme et Décision ${profiles.candidate.impulsiv}% / Communication et Relations ${profiles.candidate.intuitiv}% / Structure et Rigueur ${profiles.candidate.analytisch}%
+Constellation cible : ${calculated.roleConstellationLabel}
+Constellation réelle : ${calculated.candConstellationLabel}
+
+Résultat d'adéquation : ${calculated.fitLabel} (${calculated.fitRating})
+Écart de profil (pour le contexte uniquement — décrire qualitativement dans le texte) : ${calculated.totalGap} points
+Niveau d'écart : ${calculated.gapLevel}
+Niveau de développement : ${calculated.developmentLabel} (niveau ${calculated.developmentLevel} sur 4)
+Intensité de pilotage : ${calculated.controlIntensity}
+
+Renvoie uniquement l'objet JSON.`
+        : isEN
         ? `Generate the MatchCheck narrative for the following data:
 
 Role: "${context.roleName}" | Candidate: "${context.candidateName}"

@@ -355,9 +355,9 @@ function CalloutBox({ text, color, icon: Icon }: { text: string; color: string; 
 function StatusBadge({ status }: { status: "geeignet" | "bedingt" | "kritisch" }) {
   const { region } = useRegion();
   const config = {
-    geeignet: { icon: CircleCheck, color: "#34C759", bg: "rgba(52,199,89,0.08)", label: region === "EN" ? "Suitable" : "Geeignet" },
-    bedingt: { icon: CircleMinus, color: "#FF9500", bg: "rgba(255,149,0,0.08)", label: region === "EN" ? "Conditionally suitable" : "Bedingt geeignet" },
-    kritisch: { icon: CircleAlert, color: "#C41E3A", bg: "rgba(196,30,58,0.08)", label: region === "EN" ? "Critical" : "Kritisch" },
+    geeignet: { icon: CircleCheck, color: "#34C759", bg: "rgba(52,199,89,0.08)", label: region === "FR" ? "Adapté" : region === "EN" ? "Suitable" : "Geeignet" },
+    bedingt: { icon: CircleMinus, color: "#FF9500", bg: "rgba(255,149,0,0.08)", label: region === "FR" ? "Partiellement adapté" : region === "EN" ? "Conditionally suitable" : "Bedingt geeignet" },
+    kritisch: { icon: CircleAlert, color: "#C41E3A", bg: "rgba(196,30,58,0.08)", label: region === "FR" ? "Critique" : region === "EN" ? "Critical" : "Kritisch" },
   }[status];
   const Icon = config.icon;
   return (
@@ -577,7 +577,7 @@ export default function JobCheck() {
   }
 
   return (
-    <div className="page-gradient-bg" lang={region === "EN" ? "en" : "de"} data-testid="jobcheck-page">
+    <div className="page-gradient-bg" lang={region === "FR" ? "fr" : region === "EN" ? "en" : "de"} data-testid="jobcheck-page">
       <style>{`
         input[type="range"]::-webkit-slider-runnable-track { height: 24px; cursor: ew-resize; background: transparent; }
         input[type="range"]::-moz-range-track { height: 24px; cursor: ew-resize; background: transparent; }
@@ -614,7 +614,7 @@ export default function JobCheck() {
                   const styles = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
                     .map(el => el.outerHTML).join("\n");
                   const jobTitle = roleAnalysis?.job_title || "JobCheck";
-                  printWin.document.write(`<!DOCTYPE html><html lang="${region === "EN" ? "en" : "de"}"><head><meta charset="utf-8"><title>JobCheck – ${jobTitle}</title>${styles}<style>body{margin:0;padding:20px 32px;background:#fff;font-family:Inter,Arial,Helvetica,sans-serif}
+                  printWin.document.write(`<!DOCTYPE html><html lang="${region === "FR" ? "fr" : region === "EN" ? "en" : "de"}"><head><meta charset="utf-8"><title>JobCheck – ${jobTitle}</title>${styles}<style>body{margin:0;padding:20px 32px;background:#fff;font-family:Inter,Arial,Helvetica,sans-serif}
 .no-print{display:none!important}
 *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
 [data-pdf-block]{break-inside:avoid!important}
@@ -714,7 +714,7 @@ export default function JobCheck() {
                     const candDom = dominanceModeOf(normalizedCand);
                     return (
                       <div style={{ marginTop: 10, padding: "10px 14px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }}>
-                        <p style={{ fontSize: 14, color: "#48484A", margin: 0, lineHeight: 1.6 }} lang={region === "EN" ? "en" : "de"} data-testid="text-cand-dominance">
+                        <p style={{ fontSize: 14, color: "#48484A", margin: 0, lineHeight: 1.6 }} lang={region === "FR" ? "fr" : region === "EN" ? "en" : "de"} data-testid="text-cand-dominance">
                           {jc.candDominancePrefix}
                           {labelCompUI(candDom.top1.key)}
                           {jc.candDominanceMiddle}
@@ -785,7 +785,7 @@ export default function JobCheck() {
                         </div>
                       ); })()}
                       <div>
-                        <p style={{ fontSize: 11, fontWeight: 700, color: fitColor(engine.overallFit), textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 2px" }}>{region === "EN" ? "Overall rating" : "Gesamteinstufung"}</p>
+                        <p style={{ fontSize: 11, fontWeight: 700, color: fitColor(engine.overallFit), textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 2px" }}>{region === "FR" ? "Évaluation globale" : region === "EN" ? "Overall rating" : "Gesamteinstufung"}</p>
                         <p style={{ fontSize: 18, fontWeight: 750, color: "#1D1D1F", margin: 0 }}>{statusLabel(engine.overallFit)}</p>
                       </div>
                     </div>
@@ -807,22 +807,22 @@ export default function JobCheck() {
                       }}>
                         <Target style={{ width: 16, height: 16, color: "#FFF", strokeWidth: 2.2 }} />
                       </div>
-                      <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>{region === "EN" ? "Profile comparison" : "Vergleich der Profile"}</span>
+                      <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>{region === "FR" ? "Comparaison des profils" : region === "EN" ? "Profile comparison" : "Vergleich der Profile"}</span>
                     </div>
                     <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.6, marginBottom: 16, hyphens: "auto", textAlign: "justify" } as React.CSSProperties} lang="de">
                       Diese Auswertung beschreibt die Wirklogik einer Stelle. Die Anforderungen werden den drei Arbeitsbereichen{" "}
-                      <span style={{ fontWeight: 700, color: COLORS.imp }}>{region === "EN" ? "Impulsive" : "Impulsiv"}</span>,{" "}
-                      <span style={{ fontWeight: 700, color: COLORS.int }}>{region === "EN" ? "Intuitive" : "Intuitiv"}</span>{region === "EN" ? " and " : " und "}
-                      <span style={{ fontWeight: 700, color: COLORS.ana }}>{region === "EN" ? "Analytical" : "Analytisch"}</span>{region === "EN" ? "." : " zugeordnet."}
+                      <span style={{ fontWeight: 700, color: COLORS.imp }}>{region === "FR" ? "Rythme et Décision" : region === "EN" ? "Impulsive" : "Impulsiv"}</span>,{" "}
+                      <span style={{ fontWeight: 700, color: COLORS.int }}>{region === "FR" ? "Communication et Relations" : region === "EN" ? "Intuitive" : "Intuitiv"}</span>{region === "FR" ? " et " : region === "EN" ? " and " : " und "}
+                      <span style={{ fontWeight: 700, color: COLORS.ana }}>{region === "FR" ? "Structure et Rigueur" : region === "EN" ? "Analytical" : "Analytisch"}</span>{region === "FR" ? "." : region === "EN" ? "." : " zugeordnet."}
                       So wird erkennbar, welche Form von Wirksamkeit die Stelle bestimmt.
                     </p>
                     {roleProfile && (() => {
                       const r = roleProfile;
                       const c = snapshotCand;
                       const dims: { key: ComponentKey; label: string; color: string }[] = [
-                        { key: "impulsiv", label: region === "EN" ? "Impulsive" : "Impulsiv", color: COLORS.imp },
-                        { key: "intuitiv", label: region === "EN" ? "Intuitive" : "Intuitiv", color: COLORS.int },
-                        { key: "analytisch", label: region === "EN" ? "Analytical" : "Analytisch", color: COLORS.ana },
+                        { key: "impulsiv", label: region === "FR" ? "Rythme et Décision" : region === "FR" ? "Rythme et Décision" : region === "EN" ? "Impulsive" : "Impulsiv", color: COLORS.imp },
+                        { key: "intuitiv", label: region === "FR" ? "Communication et Relations" : region === "FR" ? "Communication et Relations" : region === "EN" ? "Intuitive" : "Intuitiv", color: COLORS.int },
+                        { key: "analytisch", label: region === "FR" ? "Structure et Rigueur" : region === "FR" ? "Structure et Rigueur" : region === "EN" ? "Analytical" : "Analytisch", color: COLORS.ana },
                       ];
                       return (
                         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
@@ -861,7 +861,7 @@ export default function JobCheck() {
                         <p style={{ fontSize: 16, fontWeight: 750, color: controlColor(engine.controlIntensity), margin: 0 }}>{controlLabel(engine.controlIntensity)}</p>
                       </div>
                       <div style={{ padding: "12px 14px", borderRadius: 14, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)", textAlign: "center" }}>
-                        <p style={{ fontSize: 10, fontWeight: 700, color: "#6E6E73", textTransform: "uppercase", margin: "0 0 4px" }}>{region === "EN" ? "Deviation" : "Abweichung"}</p>
+                        <p style={{ fontSize: 10, fontWeight: 700, color: "#6E6E73", textTransform: "uppercase", margin: "0 0 4px" }}>{region === "FR" ? "Écart" : region === "EN" ? "Deviation" : "Abweichung"}</p>
                         <p style={{ fontSize: 16, fontWeight: 750, color: "#1D1D1F", margin: 0 }}>{engine.mismatchScore <= 8 ? "Gering" : engine.mismatchScore <= 15 ? "Moderat" : "Hoch"}{engine.koTriggered ? " · K.O." : ""}</p>
                       </div>
                     </div>
@@ -869,11 +869,11 @@ export default function JobCheck() {
                     <CalloutBox text={engine.keyReason} color={fitColor(engine.overallFit)} icon={Lightbulb} />
 
                     <div style={{ marginTop: 20 }}>
-                      <p style={{ fontSize: 14, fontWeight: 600, color: "#48484A", margin: "0 0 14px", letterSpacing: "0.02em" }}>{region === "EN" ? "Meaning of the components" : "Bedeutung der Komponenten"}</p>
+                      <p style={{ fontSize: 14, fontWeight: 600, color: "#48484A", margin: "0 0 14px", letterSpacing: "0.02em" }}>{region === "FR" ? "Signification des composantes" : region === "EN" ? "Meaning of the components" : "Bedeutung der Komponenten"}</p>
                       {[
-                        { label: region === "EN" ? "Intuitive" : "Intuitiv", color: COLORS.int, desc: region === "EN" ? "Sensing what conversation partners or the team need and adapting communication accordingly." : "Erkennen, was Gesprächspartner oder Team brauchen und Kommunikation darauf abstimmen." },
-                        { label: region === "EN" ? "Impulsive" : "Impulsiv", color: COLORS.imp, desc: region === "EN" ? "Driving tasks forward quickly, setting priorities and delivering results." : "Aufgaben schnell vorantreiben, Prioritäten setzen und Ergebnisse liefern." },
-                        { label: region === "EN" ? "Analytical" : "Analytisch", color: COLORS.ana, desc: region === "EN" ? "Creating structures, organising processes and preparing decisions transparently." : "Strukturen schaffen, Abläufe organisieren und Entscheidungen nachvollziehbar vorbereiten." },
+                        { label: region === "FR" ? "Communication et Relations" : region === "FR" ? "Communication et Relations" : region === "EN" ? "Intuitive" : "Intuitiv", color: COLORS.int, desc: region === "FR" ? "Sentir ce dont les interlocuteurs ou l'équipe ont besoin et adapter la communication en conséquence." : region === "EN" ? "Sensing what conversation partners or the team need and adapting communication accordingly." : "Erkennen, was Gesprächspartner oder Team brauchen und Kommunikation darauf abstimmen." },
+                        { label: region === "FR" ? "Rythme et Décision" : region === "FR" ? "Rythme et Décision" : region === "EN" ? "Impulsive" : "Impulsiv", color: COLORS.imp, desc: region === "FR" ? "Faire avancer les tâches rapidement, fixer les priorités et produire des résultats." : region === "EN" ? "Driving tasks forward quickly, setting priorities and delivering results." : "Aufgaben schnell vorantreiben, Prioritäten setzen und Ergebnisse liefern." },
+                        { label: region === "FR" ? "Structure et Rigueur" : region === "FR" ? "Structure et Rigueur" : region === "EN" ? "Analytical" : "Analytisch", color: COLORS.ana, desc: region === "FR" ? "Créer des structures, organiser les processus et préparer les décisions de façon transparente." : region === "EN" ? "Creating structures, organising processes and preparing decisions transparently." : "Strukturen schaffen, Abläufe organisieren und Entscheidungen nachvollziehbar vorbereiten." },
                       ].map((d, i) => (
                         <div key={d.label} style={{ marginBottom: i < 2 ? 14 : 0 }}>
                           <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
@@ -1021,7 +1021,7 @@ export default function JobCheck() {
                             border: `1px solid ${intensityDiff <= 5 ? "rgba(52,199,89,0.15)" : intensityDiff <= 15 ? "rgba(255,149,0,0.15)" : "rgba(255,59,48,0.15)"}`,
                           }}>
                             <span style={{ fontSize: 12, fontWeight: 600, color: intensityDiff <= 5 ? "#34C759" : intensityDiff <= 15 ? "#FF9500" : "#FF3B30" }}>
-                              {intensityDiff <= 5 ? (region === "EN" ? "Profile nearly identical" : "Ausprägung nahezu identisch") : intensityDiff <= 15 ? (region === "EN" ? "Noticeable deviation" : "Spürbare Abweichung") : (region === "EN" ? "Significant deviation" : "Deutliche Abweichung")}
+                              {intensityDiff <= 5 ? (region === "FR" ? "Profils quasi identiques" : region === "EN" ? "Profile nearly identical" : "Ausprägung nahezu identisch") : intensityDiff <= 15 ? (region === "FR" ? "Écart notable" : region === "EN" ? "Noticeable deviation" : "Spürbare Abweichung") : (region === "FR" ? "Écart significatif" : region === "EN" ? "Significant deviation" : "Deutliche Abweichung")}
                             </span>
                           </div>
                         )}
@@ -1105,7 +1105,7 @@ export default function JobCheck() {
                       <div style={{ width: 30, height: 30, borderRadius: 10, flexShrink: 0, background: "rgba(196,30,58,0.10)", display: "flex", alignItems: "center", justifyContent: "center", marginRight: 10 }}>
                         <Shield style={{ width: 14, height: 14, color: "#C41E3A", strokeWidth: 2 }} />
                       </div>
-                      <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>{region === "EN" ? "Risk forecast" : "Risikoprognose"}</span>
+                      <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>{region === "FR" ? "Prévision des risques" : region === "EN" ? "Risk forecast" : "Risikoprognose"}</span>
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                       {[
@@ -1138,7 +1138,7 @@ export default function JobCheck() {
                     </div>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 14 }}>
                       <div style={{ padding: "14px 16px", borderRadius: 14, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)", textAlign: "center" }}>
-                        <p style={{ fontSize: 10, fontWeight: 700, color: "#6E6E73", textTransform: "uppercase", margin: "0 0 4px" }}>{region === "EN" ? "Probability" : "Wahrscheinlichkeit"}</p>
+                        <p style={{ fontSize: 10, fontWeight: 700, color: "#6E6E73", textTransform: "uppercase", margin: "0 0 4px" }}>{region === "FR" ? "Probabilité" : region === "EN" ? "Probability" : "Wahrscheinlichkeit"}</p>
                         <p style={{ fontSize: 18, fontWeight: 750, color: engine.development.likelihood === "hoch" ? "#34C759" : engine.development.likelihood === "mittel" ? "#FF9500" : "#C41E3A", margin: 0 }}>
                           {engine.development.likelihood.charAt(0).toUpperCase() + engine.development.likelihood.slice(1)}
                         </p>
@@ -1182,7 +1182,7 @@ export default function JobCheck() {
                       <div style={{ width: 30, height: 30, borderRadius: 10, flexShrink: 0, background: "rgba(0,113,227,0.10)", display: "flex", alignItems: "center", justifyContent: "center", marginRight: 10 }}>
                         <Award style={{ width: 14, height: 14, color: "#0071E3", strokeWidth: 2 }} />
                       </div>
-                      <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>{region === "EN" ? "Overall assessment" : "Gesamtbewertung"}</span>
+                      <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>{region === "FR" ? "Évaluation globale" : region === "EN" ? "Overall assessment" : "Gesamtbewertung"}</span>
                     </div>
                     <div style={{ fontSize: 28, fontWeight: 800, color: fitColor(engine.overallFit), margin: "20px 0 0", letterSpacing: "-0.02em" }} data-testid="jc-gesamt-label">
                       {statusLabel(engine.overallFit)}
@@ -1190,7 +1190,7 @@ export default function JobCheck() {
 
                     <div style={{ display: "flex", gap: 16, marginTop: 20, paddingTop: 18, borderTop: "1px solid rgba(0,0,0,0.06)" }} data-testid="jc-two-axis">
                       <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: `${fitColor(engine.overallFit)}08`, border: `1px solid ${fitColor(engine.overallFit)}25` }}>
-                        <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>{region === "EN" ? "Basic fit" : "Grundpassung"}</div>
+                        <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>{region === "FR" ? "Adéquation de base" : region === "EN" ? "Basic fit" : "Grundpassung"}</div>
                         <div style={{ fontSize: 17, fontWeight: 700, color: fitColor(engine.overallFit) }} data-testid="jc-grundpassung">{statusLabel(engine.overallFit)}</div>
                       </div>
                       <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: `${controlColor(engine.controlIntensity)}08`, border: `1px solid ${controlColor(engine.controlIntensity)}25` }}>
@@ -1201,11 +1201,11 @@ export default function JobCheck() {
 
                     <div style={{ display: "flex", gap: 16, marginTop: 16 }} data-testid="jc-detail-cards">
                       <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: "rgba(255,149,0,0.04)", border: "1px solid rgba(255,149,0,0.15)" }}>
-                        <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>{region === "EN" ? "Critical area" : "Kritischer Bereich"}</div>
+                        <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>{region === "FR" ? "Zone critique" : region === "EN" ? "Critical area" : "Kritischer Bereich"}</div>
                         <div style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", lineHeight: 1.5 }} data-testid="jc-kritischer-bereich">{engine.criticalAreaLabel}</div>
                       </div>
                       <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: "rgba(26,93,171,0.04)", border: "1px solid rgba(26,93,171,0.12)" }}>
-                        <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>{region === "EN" ? "Recommendation" : "Empfehlung"}</div>
+                        <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>{region === "FR" ? "Recommandation" : region === "EN" ? "Recommendation" : "Empfehlung"}</div>
                         <div style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", lineHeight: 1.5 }} data-testid="jc-empfehlung">
                           {engine.overallFit === "SUITABLE" ? "Besetzung strukturell passend" : engine.overallFit === "CONDITIONAL" ? "Besetzung möglich mit Integrations-Setup" : "Für diese Stelle nicht strukturgerecht"}
                         </div>

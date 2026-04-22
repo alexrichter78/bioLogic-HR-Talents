@@ -13,7 +13,7 @@ export interface TeamCheckV4Input {
   candidateName?: string;
   teamGoal?: TeamGoal;
   roleType?: string;
-  lang?: "de" | "en";
+  lang?: "de" | "en" | "fr";
 }
 
 export interface V4Block {
@@ -110,7 +110,7 @@ export type GoalContribution = "hoch" | "mittel" | "gering" | "nicht bewertet";
 
 const EQ_TOL = 5;
 
-let _lang: "de" | "en" = "de";
+let _lang: "de" | "en" | "fr" = "de";
 function t(de: string, en: string): string { return _lang === "en" ? en : de; }
 
 const GOAL_LABELS: Record<string, string> = {

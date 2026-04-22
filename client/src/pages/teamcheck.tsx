@@ -371,7 +371,7 @@ export default function TeamCheck() {
   const tdResult = useMemo(() => localizeDeep(computeTeamDynamics(tdInput), region), [tdInput, region]);
   const tl = TL_COLORS[tdResult.trafficLight];
 
-  const rolleLabel = isLeading ? (region === "EN" ? "New leader" : "Neue Führungskraft") : (region === "EN" ? "New team member" : "Neues Teammitglied");
+  const rolleLabel = isLeading ? (region === "FR" ? "Nouveau manager" : region === "EN" ? "New leader" : "Neue Führungskraft") : (region === "FR" ? "Nouveau membre d'équipe" : region === "EN" ? "New team member" : "Neues Teammitglied");
   const sollDom = getDominanceLabel(soll, region);
   const kandDom = getDominanceLabel(kandidat, region);
   const teamDom = getDominanceLabel(team, region);
@@ -393,10 +393,10 @@ export default function TeamCheck() {
             fontSize: 12, fontWeight: 600, color: "#1D1D1F",
           }}>
             <ArrowLeft style={{ width: 14, height: 14, strokeWidth: 2.5 }} />
-            {region === "EN" ? "Back" : "Zurück"}
+            {region === "FR" ? "Retour" : region === "EN" ? "Back" : "Zurück"}
           </button>
           <span style={{ flex: 1, fontSize: 13, fontWeight: 700, color: "#1D1D1F", textAlign: "center" }}>
-            {reportView === "detail" ? (region === "EN" ? "TeamCheck Report (V4)" : "TeamCheck-Bericht (V4)") : "Executive Summary"}
+            {reportView === "detail" ? (region === "FR" ? "Rapport TeamCheck (V4)" : region === "EN" ? "TeamCheck Report (V4)" : "TeamCheck-Bericht (V4)") : "Executive Summary"}
           </span>
           <button onClick={() => window.print()} data-testid="btn-print-report" style={{
             display: "flex", alignItems: "center", gap: 6,
@@ -406,7 +406,7 @@ export default function TeamCheck() {
             boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
           }}>
             <FileDown style={{ width: 13, height: 13, strokeWidth: 2 }} />
-            {region === "EN" ? "Export as PDF" : "Als PDF exportieren"}
+            {region === "FR" ? "Exporter en PDF" : region === "EN" ? "Export as PDF" : "Als PDF exportieren"}
           </button>
         </div>
 
@@ -421,13 +421,13 @@ export default function TeamCheck() {
                   borderRadius: 20, padding: "5px 14px", marginBottom: 14,
                 }}>
                   <FileText style={{ width: 12, height: 12, color: "#0071E3" }} />
-                  <span style={{ fontSize: 10, fontWeight: 700, color: "#0071E3", textTransform: "uppercase", letterSpacing: "0.12em" }}>{region === "EN" ? "TeamCheck Report" : "TeamCheck-Bericht"}</span>
+                  <span style={{ fontSize: 10, fontWeight: 700, color: "#0071E3", textTransform: "uppercase", letterSpacing: "0.12em" }}>{region === "FR" ? "Rapport TeamCheck" : region === "EN" ? "TeamCheck Report" : "TeamCheck-Bericht"}</span>
                 </div>
                 <h1 style={{ fontSize: 28, fontWeight: 750, letterSpacing: "-0.03em", color: "#1D1D1F", lineHeight: 1.15, marginBottom: 6 }}>{beruf}</h1>
-                <p style={{ fontSize: 13, color: "#8E8E93", marginBottom: 16 }}>{bereich || (region === "EN" ? "Systemic placement analysis" : "Systemische Analyse zur Besetzung")}</p>
+                <p style={{ fontSize: 13, color: "#8E8E93", marginBottom: 16 }}>{bereich || (region === "FR" ? "Analyse systémique du recrutement" : region === "EN" ? "Systemic placement analysis" : "Systemische Analyse zur Besetzung")}</p>
                 <div style={{ display: "flex", justifyContent: "center", gap: 12, flexWrap: "wrap" }}>
                   <span style={{ fontSize: 12, fontWeight: 600, color: "#3A3A3C", background: "rgba(0,0,0,0.04)", padding: "6px 14px", borderRadius: 10 }}>
-                    {isLeading ? (region === "EN" ? "Leadership position" : "Führungsposition") : (region === "EN" ? "Team member" : "Teammitglied")}
+                    {isLeading ? (region === "FR" ? "Poste de manager" : region === "EN" ? "Leadership position" : "Führungsposition") : (region === "FR" ? "Membre d'équipe" : region === "EN" ? "Team member" : "Teammitglied")}
                   </span>
                   <span style={{ fontSize: 12, fontWeight: 700, color: bc, background: `${bc}10`, padding: "6px 14px", borderRadius: 10 }}>
                     {v4Result.gesamteinschaetzung}
@@ -437,9 +437,9 @@ export default function TeamCheck() {
 
               <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
                 {[
-                  { label: region === "EN" ? "Team fit" : "Passung zum Team", value: axisLabel(v4Result.passungZumTeam, region), color: axisColor(v4Result.passungZumTeam) },
-                  { label: region === "EN" ? "Task contribution" : "Beitrag zur Aufgabe", value: axisLabel(v4Result.beitragZurAufgabe, region), color: axisColor(v4Result.beitragZurAufgabe) },
-                  { label: region === "EN" ? "Coaching need" : "Begleitungsbedarf", value: axisLabel(v4Result.begleitungsbedarf, region), color: axisColor(v4Result.begleitungsbedarf === "gering" ? "hoch" : v4Result.begleitungsbedarf === "hoch" ? "gering" : "mittel") },
+                  { label: region === "FR" ? "Adéquation d'équipe" : region === "EN" ? "Team fit" : "Passung zum Team", value: axisLabel(v4Result.passungZumTeam, region), color: axisColor(v4Result.passungZumTeam) },
+                  { label: region === "FR" ? "Contribution aux tâches" : region === "EN" ? "Task contribution" : "Beitrag zur Aufgabe", value: axisLabel(v4Result.beitragZurAufgabe, region), color: axisColor(v4Result.beitragZurAufgabe) },
+                  { label: region === "FR" ? "Besoin d'accompagnement" : region === "EN" ? "Coaching need" : "Begleitungsbedarf", value: axisLabel(v4Result.begleitungsbedarf, region), color: axisColor(v4Result.begleitungsbedarf === "gering" ? "hoch" : v4Result.begleitungsbedarf === "hoch" ? "gering" : "mittel") },
                 ].map((kpi, i) => (
                   <div key={i} style={{
                     flex: 1, minWidth: 140, textAlign: "center",
@@ -466,16 +466,16 @@ export default function TeamCheck() {
 
               {/* S1: Gesamtbewertung */}
               <GlassCard data-testid="report-section-1">
-                <SectionHeader num={1} title={region === "EN" ? "Overall assessment" : "Gesamtbewertung"} icon={Target} />
+                <SectionHeader num={1} title={region === "FR" ? "Évaluation globale" : region === "EN" ? "Overall assessment" : "Gesamtbewertung"} icon={Target} />
                 <div style={{
                   display: "flex", gap: 12, marginBottom: 18, flexWrap: "wrap",
                 }}>
                   <div style={{ flex: 1, minWidth: 180, padding: "14px 18px", borderRadius: 16, background: "rgba(52,199,89,0.05)", border: "1px solid rgba(52,199,89,0.12)" }}>
-                    <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 4px" }}>{region === "EN" ? "Key strength" : "Hauptstärke"}</p>
+                    <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 4px" }}>{region === "FR" ? "Point fort principal" : region === "EN" ? "Key strength" : "Hauptstärke"}</p>
                     <p style={{ fontSize: 13, fontWeight: 600, color: "#34C759", margin: 0 }}>{v4Result.hauptstaerke}</p>
                   </div>
                   <div style={{ flex: 1, minWidth: 180, padding: "14px 18px", borderRadius: 16, background: "rgba(255,149,0,0.05)", border: "1px solid rgba(255,149,0,0.12)" }}>
-                    <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 4px" }}>{region === "EN" ? "Key deviation" : "Hauptabweichung"}</p>
+                    <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 4px" }}>{region === "FR" ? "Écart principal" : region === "EN" ? "Key deviation" : "Hauptabweichung"}</p>
                     <p style={{ fontSize: 13, fontWeight: 600, color: "#FF9500", margin: 0 }}>{v4Result.hauptabweichung}</p>
                   </div>
                 </div>
@@ -484,31 +484,31 @@ export default function TeamCheck() {
 
               {/* S2: Warum */}
               <GlassCard data-testid="report-section-2">
-                <SectionHeader num={2} title={region === "EN" ? "Why this assessment" : "Warum diese Bewertung"} icon={Lightbulb} />
+                <SectionHeader num={2} title={region === "FR" ? "Pourquoi cette évaluation" : region === "EN" ? "Why this assessment" : "Warum diese Bewertung"} icon={Lightbulb} />
                 <Paragraphs text={v4Result.warumText} />
               </GlassCard>
 
               {/* S3: Wirkung im Alltag */}
               <GlassCard data-testid="report-section-3">
-                <SectionHeader num={3} title={region === "EN" ? "Day-to-day impact" : "Wirkung im Alltag"} icon={Activity} />
+                <SectionHeader num={3} title={region === "FR" ? "Impact au quotidien" : region === "EN" ? "Day-to-day impact" : "Wirkung im Alltag"} icon={Activity} />
                 <Paragraphs text={v4Result.wirkungAlltagText} />
               </GlassCard>
 
               {/* S4: Chancen & Risiken */}
               <GlassCard data-testid="report-section-4">
-                <SectionHeader num={4} title={region === "EN" ? "Opportunities & risks" : "Chancen & Risiken"} icon={TrendingUp} />
+                <SectionHeader num={4} title={region === "FR" ? "Opportunités et risques" : region === "EN" ? "Opportunities & risks" : "Chancen & Risiken"} icon={TrendingUp} />
                 <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 16 }}>
                   <div style={{ flex: 1, minWidth: 220 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
                       <CheckCircle style={{ width: 15, height: 15, color: "#34C759", strokeWidth: 2.5 }} />
-                      <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>{region === "EN" ? "Opportunities" : "Chancen"}</span>
+                      <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>{region === "FR" ? "Opportunités" : region === "EN" ? "Opportunities" : "Chancen"}</span>
                     </div>
                     <V4BlockList items={v4Result.chancen} accentColor="#34C759" />
                   </div>
                   <div style={{ flex: 1, minWidth: 220 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
                       <AlertTriangle style={{ width: 15, height: 15, color: "#FF3B30", strokeWidth: 2.5 }} />
-                      <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>{region === "EN" ? "Risks" : "Risiken"}</span>
+                      <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>{region === "FR" ? "Risques" : region === "EN" ? "Risks" : "Risiken"}</span>
                     </div>
                     <V4BlockList items={v4Result.risiken} accentColor="#FF3B30" />
                   </div>
@@ -518,21 +518,21 @@ export default function TeamCheck() {
 
               {/* S5: Unter Druck */}
               <GlassCard data-testid="report-section-5">
-                <SectionHeader num={5} title={region === "EN" ? "Behaviour under pressure" : "Verhalten unter Druck"} icon={Flame} />
+                <SectionHeader num={5} title={region === "FR" ? "Comportement sous pression" : region === "EN" ? "Behaviour under pressure" : "Verhalten unter Druck"} icon={Flame} />
                 <Paragraphs text={v4Result.druckText} />
               </GlassCard>
 
               {/* S6: Führungshinweis (only for leaders) */}
               {v4Result.fuehrungshinweis && (
                 <GlassCard data-testid="report-section-6">
-                  <SectionHeader num={6} title={region === "EN" ? "Leadership note" : "Führungshinweis"} icon={Shield} />
+                  <SectionHeader num={6} title={region === "FR" ? "Note de management" : region === "EN" ? "Leadership note" : "Führungshinweis"} icon={Shield} />
                   <V4BlockList items={v4Result.fuehrungshinweis} accentColor="#5856D6" />
                 </GlassCard>
               )}
 
               {/* S7: Risikoprognose */}
               <GlassCard data-testid="report-section-7">
-                <SectionHeader num={v4Result.fuehrungshinweis ? 7 : 6} title={region === "EN" ? "Risk forecast" : "Risikoprognose"} icon={CalendarDays} />
+                <SectionHeader num={v4Result.fuehrungshinweis ? 7 : 6} title={region === "FR" ? "Prévision des risques" : region === "EN" ? "Risk forecast" : "Risikoprognose"} icon={CalendarDays} />
                 <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
                   {v4Result.risikoprognose.map((phase, i) => {
                     const phaseColors = ["#FF9500", "#0071E3", "#34C759"];
@@ -560,7 +560,7 @@ export default function TeamCheck() {
 
               {/* S8: Integrationsplan */}
               <GlassCard data-testid="report-section-8">
-                <SectionHeader num={v4Result.fuehrungshinweis ? 8 : 7} title={region === "EN" ? "Integration plan" : "Integrationsplan"} icon={CalendarDays} />
+                <SectionHeader num={v4Result.fuehrungshinweis ? 8 : 7} title={region === "FR" ? "Plan d'intégration" : region === "EN" ? "Integration plan" : "Integrationsplan"} icon={CalendarDays} />
                 <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
                   {v4Result.integrationsplan.map((phase, i) => {
                     const phaseColors = ["#34C759", "#0071E3", "#5856D6"];
@@ -579,29 +579,29 @@ export default function TeamCheck() {
                             <span style={{ fontSize: 11, color: "#8E8E93", marginLeft: 8 }}>{phase.period}</span>
                           </div>
                         </div>
-                        <p style={{ fontSize: 12, fontWeight: 600, color: pc, margin: "0 0 6px" }}>{region === "EN" ? "Goal" : "Ziel"}: {phase.ziel}</p>
+                        <p style={{ fontSize: 12, fontWeight: 600, color: pc, margin: "0 0 6px" }}>{region === "FR" ? "Objectif" : region === "EN" ? "Goal" : "Ziel"}: {phase.ziel}</p>
                         <Paragraphs text={phase.beschreibung} />
                         {phase.praxis.length > 0 && (
                           <div style={{ marginTop: 10 }}>
-                            <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", margin: "0 0 6px", textTransform: "uppercase" }}>{region === "EN" ? "Practice" : "Praxis"}</p>
+                            <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", margin: "0 0 6px", textTransform: "uppercase" }}>{region === "FR" ? "En pratique" : region === "EN" ? "Practice" : "Praxis"}</p>
                             <BulletList items={phase.praxis} color={pc} icon="check" />
                           </div>
                         )}
                         {phase.signale.length > 0 && (
                           <div style={{ marginTop: 10 }}>
-                            <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", margin: "0 0 6px", textTransform: "uppercase" }}>{region === "EN" ? "Positive signals" : "Positive Signale"}</p>
+                            <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", margin: "0 0 6px", textTransform: "uppercase" }}>{region === "FR" ? "Signaux positifs" : region === "EN" ? "Positive signals" : "Positive Signale"}</p>
                             <BulletList items={phase.signale} color="#34C759" icon="check" />
                           </div>
                         )}
                         {phase.fokus && (phase.fokus.intro || phase.fokus.bullets.length > 0) && (
                           <div style={{ marginTop: 10, padding: "10px 14px", borderRadius: 10, background: `${pc}06`, border: `1px solid ${pc}10` }}>
-                            <p style={{ fontSize: 11, fontWeight: 600, color: pc, margin: "0 0 4px", textTransform: "uppercase" }}>{region === "EN" ? "What matters" : "Worauf es ankommt"}</p>
+                            <p style={{ fontSize: 11, fontWeight: 600, color: pc, margin: "0 0 4px", textTransform: "uppercase" }}>{region === "FR" ? "Ce qui compte" : region === "EN" ? "What matters" : "Worauf es ankommt"}</p>
                             {phase.fokus.intro && <p style={{ fontSize: 12, color: "#3A3A3C", margin: "0 0 6px", lineHeight: 1.55 }}>{hyphenateText(phase.fokus.intro)}</p>}
                             {phase.fokus.bullets.length > 0 && <BulletList items={phase.fokus.bullets} color={pc} icon="dot" />}
                           </div>
                         )}
                         <div style={{ marginTop: 10, padding: "10px 14px", borderRadius: 10, background: `${pc}08`, border: `1px solid ${pc}12` }}>
-                          <p style={{ fontSize: 11, fontWeight: 600, color: pc, margin: "0 0 4px", textTransform: "uppercase" }}>{region === "EN" ? "Leadership tip" : "Führungstipp"}</p>
+                          <p style={{ fontSize: 11, fontWeight: 600, color: pc, margin: "0 0 4px", textTransform: "uppercase" }}>{region === "FR" ? "Conseil de management" : region === "EN" ? "Leadership tip" : "Führungstipp"}</p>
                           <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.55 }}>{hyphenateText(phase.fuehrungstipp)}</p>
                         </div>
                       </div>
@@ -610,19 +610,19 @@ export default function TeamCheck() {
                 </div>
                 {v4Result.intWarnsignale.length > 0 && (
                   <div style={{ marginTop: 20 }}>
-                    <p style={{ fontSize: 13, fontWeight: 700, color: "#FF9500", margin: "0 0 10px" }}>{region === "EN" ? "Warning signals" : "Warnsignale"}</p>
+                    <p style={{ fontSize: 13, fontWeight: 700, color: "#FF9500", margin: "0 0 10px" }}>{region === "FR" ? "Signaux d'alerte" : region === "EN" ? "Warning signals" : "Warnsignale"}</p>
                     <BulletList items={v4Result.intWarnsignale} color="#FF9500" icon="warning" />
                   </div>
                 )}
                 {v4Result.intLeitfragen.length > 0 && (
                   <div style={{ marginTop: 20 }}>
-                    <p style={{ fontSize: 13, fontWeight: 700, color: "#0071E3", margin: "0 0 10px" }}>{region === "EN" ? "Key questions" : "Leitfragen"}</p>
+                    <p style={{ fontSize: 13, fontWeight: 700, color: "#0071E3", margin: "0 0 10px" }}>{region === "FR" ? "Questions clés" : region === "EN" ? "Key questions" : "Leitfragen"}</p>
                     <BulletList items={v4Result.intLeitfragen} color="#0071E3" icon="dot" />
                   </div>
                 )}
                 {v4Result.intVerantwortung && (
                   <div style={{ marginTop: 16 }}>
-                    <p style={{ fontSize: 13, fontWeight: 700, color: "#3A3A3C", margin: "0 0 6px" }}>{region === "EN" ? "Responsibility" : "Verantwortung"}</p>
+                    <p style={{ fontSize: 13, fontWeight: 700, color: "#3A3A3C", margin: "0 0 6px" }}>{region === "FR" ? "Responsabilité" : region === "EN" ? "Responsibility" : "Verantwortung"}</p>
                     <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.65, margin: 0 }} lang="de">{hyphenateText(v4Result.intVerantwortung)}</p>
                   </div>
                 )}
@@ -630,19 +630,19 @@ export default function TeamCheck() {
 
               {/* S9: Empfehlungen */}
               <GlassCard data-testid="report-section-9">
-                <SectionHeader num={v4Result.fuehrungshinweis ? 9 : 8} title={region === "EN" ? "Recommendations" : "Empfehlungen"} icon={Target} />
+                <SectionHeader num={v4Result.fuehrungshinweis ? 9 : 8} title={region === "FR" ? "Recommandations" : region === "EN" ? "Recommendations" : "Empfehlungen"} icon={Target} />
                 <V4BlockList items={v4Result.empfehlungen} accentColor="#0071E3" />
               </GlassCard>
 
               {/* S10: Team ohne Person */}
               <GlassCard data-testid="report-section-10">
-                <SectionHeader num={v4Result.fuehrungshinweis ? 10 : 9} title={region === "EN" ? "Team without this placement" : "Team ohne diese Besetzung"} icon={Users} />
+                <SectionHeader num={v4Result.fuehrungshinweis ? 10 : 9} title={region === "FR" ? "Équipe sans ce recrutement" : region === "EN" ? "Team without this placement" : "Team ohne diese Besetzung"} icon={Users} />
                 <Paragraphs text={v4Result.teamOhnePersonText} />
               </GlassCard>
 
               {/* S11: Fazit */}
               <GlassCard data-testid="report-section-11">
-                <SectionHeader num={v4Result.fuehrungshinweis ? 11 : 10} title={region === "EN" ? "Final conclusion" : "Schlussfazit"} icon={Award} />
+                <SectionHeader num={v4Result.fuehrungshinweis ? 11 : 10} title={region === "FR" ? "Conclusion finale" : region === "EN" ? "Final conclusion" : "Schlussfazit"} icon={Award} />
                 <div style={{
                   padding: "20px 24px", borderRadius: 18,
                   background: `linear-gradient(135deg, ${bc}08, ${bc}03)`,
@@ -666,10 +666,10 @@ export default function TeamCheck() {
                   <span style={{ fontSize: 10, fontWeight: 700, color: "#34C759", textTransform: "uppercase", letterSpacing: "0.12em" }}>Executive Summary</span>
                 </div>
                 <h1 style={{ fontSize: 28, fontWeight: 750, letterSpacing: "-0.03em", color: "#1D1D1F", lineHeight: 1.15, marginBottom: 6 }}>{beruf}</h1>
-                <p style={{ fontSize: 13, color: "#8E8E93", marginBottom: 18 }}>{bereich || (region === "EN" ? "Systemic placement analysis" : "Systemische Analyse zur Besetzung")}</p>
+                <p style={{ fontSize: 13, color: "#8E8E93", marginBottom: 18 }}>{bereich || (region === "FR" ? "Analyse systémique du recrutement" : region === "EN" ? "Systemic placement analysis" : "Systemische Analyse zur Besetzung")}</p>
                 <div style={{ display: "flex", justifyContent: "center", gap: 12, flexWrap: "wrap", marginBottom: 18 }}>
                   <span style={{ fontSize: 12, fontWeight: 600, color: "#3A3A3C", background: "rgba(0,0,0,0.04)", padding: "6px 14px", borderRadius: 10 }}>
-                    {isLeading ? (region === "EN" ? "Leadership position" : "Führungsposition") : (region === "EN" ? "Team member" : "Teammitglied")}
+                    {isLeading ? (region === "FR" ? "Poste de manager" : region === "EN" ? "Leadership position" : "Führungsposition") : (region === "FR" ? "Membre d'équipe" : region === "EN" ? "Team member" : "Teammitglied")}
                   </span>
                   <span style={{ fontSize: 12, fontWeight: 700, color: bc, background: `${bc}10`, padding: "6px 14px", borderRadius: 10 }}>
                     {v4Result.gesamteinschaetzung}
@@ -681,15 +681,15 @@ export default function TeamCheck() {
                   background: `${tl.bg}`, border: `1px solid ${tl.fill}20`,
                 }}>
                   <TrafficLightAmpel tl={tdResult.trafficLight} />
-                  <span style={{ fontSize: 14, fontWeight: 700, color: tl.fill }}>{region === "EN" ? { GREEN: "Stable", YELLOW: "Manageable", RED: "Tension field" }[tdResult.trafficLight] : tl.label}</span>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: tl.fill }}>{region === "FR" ? { GREEN: "Stable", YELLOW: "Gérable", RED: "Zone de tension" }[tdResult.trafficLight] : region === "EN" ? { GREEN: "Stable", YELLOW: "Manageable", RED: "Tension field" }[tdResult.trafficLight] : tl.label}</span>
                 </div>
               </GlassCard>
 
               <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
                 {[
-                  { label: region === "EN" ? "Team fit" : "Passung zum Team", value: axisLabel(v4Result.passungZumTeam, region), color: axisColor(v4Result.passungZumTeam), icon: Users },
-                  { label: region === "EN" ? "Task contribution" : "Beitrag zur Aufgabe", value: axisLabel(v4Result.beitragZurAufgabe, region), color: axisColor(v4Result.beitragZurAufgabe), icon: Target },
-                  { label: region === "EN" ? "Coaching need" : "Begleitungsbedarf", value: axisLabel(v4Result.begleitungsbedarf, region), color: axisColor(v4Result.begleitungsbedarf === "gering" ? "hoch" : v4Result.begleitungsbedarf === "hoch" ? "gering" : "mittel"), icon: Shield },
+                  { label: region === "FR" ? "Adéquation d'équipe" : region === "EN" ? "Team fit" : "Passung zum Team", value: axisLabel(v4Result.passungZumTeam, region), color: axisColor(v4Result.passungZumTeam), icon: Users },
+                  { label: region === "FR" ? "Contribution aux tâches" : region === "EN" ? "Task contribution" : "Beitrag zur Aufgabe", value: axisLabel(v4Result.beitragZurAufgabe, region), color: axisColor(v4Result.beitragZurAufgabe), icon: Target },
+                  { label: region === "FR" ? "Besoin d'accompagnement" : region === "EN" ? "Coaching need" : "Begleitungsbedarf", value: axisLabel(v4Result.begleitungsbedarf, region), color: axisColor(v4Result.begleitungsbedarf === "gering" ? "hoch" : v4Result.begleitungsbedarf === "hoch" ? "gering" : "mittel"), icon: Shield },
                 ].map((kpi, i) => (
                   <div key={i} style={{
                     flex: 1, minWidth: 140,
@@ -716,15 +716,15 @@ export default function TeamCheck() {
                   <div style={{ width: 32, height: 32, borderRadius: 10, background: "linear-gradient(135deg, #0071E3, #0071E3CC)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <Target style={{ width: 15, height: 15, color: "#FFF", strokeWidth: 2.2 }} />
                   </div>
-                  <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{region === "EN" ? "Overall assessment" : "Gesamtbewertung"}</h3>
+                  <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{region === "FR" ? "Évaluation globale" : region === "EN" ? "Overall assessment" : "Gesamtbewertung"}</h3>
                 </div>
                 <div style={{ display: "flex", gap: 12, marginBottom: 14, flexWrap: "wrap" }}>
                   <div style={{ flex: 1, minWidth: 160, padding: "12px 16px", borderRadius: 14, background: "rgba(52,199,89,0.05)", border: "1px solid rgba(52,199,89,0.12)" }}>
-                    <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 3px" }}>{region === "EN" ? "Key strength" : "Hauptstärke"}</p>
+                    <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 3px" }}>{region === "FR" ? "Point fort principal" : region === "EN" ? "Key strength" : "Hauptstärke"}</p>
                     <p style={{ fontSize: 13, fontWeight: 600, color: "#34C759", margin: 0 }}>{v4Result.hauptstaerke}</p>
                   </div>
                   <div style={{ flex: 1, minWidth: 160, padding: "12px 16px", borderRadius: 14, background: "rgba(255,149,0,0.05)", border: "1px solid rgba(255,149,0,0.12)" }}>
-                    <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 3px" }}>{region === "EN" ? "Key deviation" : "Hauptabweichung"}</p>
+                    <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 3px" }}>{region === "FR" ? "Écart principal" : region === "EN" ? "Key deviation" : "Hauptabweichung"}</p>
                     <p style={{ fontSize: 13, fontWeight: 600, color: "#FF9500", margin: 0 }}>{v4Result.hauptabweichung}</p>
                   </div>
                 </div>
@@ -737,14 +737,14 @@ export default function TeamCheck() {
                 <GlassCard style={{ flex: 1, minWidth: 260 }} data-testid="exec-chancen">
                   <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
                     <CheckCircle style={{ width: 15, height: 15, color: "#34C759", strokeWidth: 2.5 }} />
-                    <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>{region === "EN" ? "Opportunities" : "Chancen"}</span>
+                    <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>{region === "FR" ? "Opportunités" : region === "EN" ? "Opportunities" : "Chancen"}</span>
                   </div>
                   <BulletList items={v4Result.chancen.map(c => c.title)} color="#34C759" icon="check" />
                 </GlassCard>
                 <GlassCard style={{ flex: 1, minWidth: 260 }} data-testid="exec-risiken">
                   <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
                     <AlertTriangle style={{ width: 15, height: 15, color: "#FF3B30", strokeWidth: 2.5 }} />
-                    <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>{region === "EN" ? "Risks" : "Risiken"}</span>
+                    <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>{region === "FR" ? "Risques" : region === "EN" ? "Risks" : "Risiken"}</span>
                   </div>
                   <BulletList items={v4Result.risiken.map(r => r.title)} color="#FF3B30" icon="warning" />
                 </GlassCard>
@@ -755,7 +755,7 @@ export default function TeamCheck() {
                   <div style={{ width: 32, height: 32, borderRadius: 10, background: "linear-gradient(135deg, #5856D6, #5856D6CC)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <CalendarDays style={{ width: 15, height: 15, color: "#FFF", strokeWidth: 2.2 }} />
                   </div>
-                  <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{region === "EN" ? "Risk forecast" : "Risikoprognose"}</h3>
+                  <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{region === "FR" ? "Prévision des risques" : region === "EN" ? "Risk forecast" : "Risikoprognose"}</h3>
                 </div>
                 <div style={{ position: "relative", paddingLeft: 20, marginBottom: 12 }}>
                   <div style={{ position: "absolute", left: -1, top: 0, bottom: 0, width: 3, borderRadius: 2, background: "linear-gradient(180deg, #FF9500, #0071E3, #34C759)" }} />
@@ -782,7 +782,7 @@ export default function TeamCheck() {
                   <div style={{ width: 32, height: 32, borderRadius: 10, background: "linear-gradient(135deg, #34C759, #34C759CC)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <Target style={{ width: 15, height: 15, color: "#FFF", strokeWidth: 2.2 }} />
                   </div>
-                  <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{region === "EN" ? "Recommendations" : "Empfehlungen"}</h3>
+                  <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{region === "FR" ? "Recommandations" : region === "EN" ? "Recommendations" : "Empfehlungen"}</h3>
                 </div>
                 <V4BlockList items={v4Result.empfehlungen} accentColor="#0071E3" />
               </GlassCard>
@@ -885,21 +885,21 @@ export default function TeamCheck() {
             }}
           >
             <FileDown style={{ width: 14, height: 14, strokeWidth: 2 }} />
-            {region === "EN" ? "Export as PDF" : "Als PDF exportieren"}
+            {region === "FR" ? "Exporter en PDF" : region === "EN" ? "Export as PDF" : "Als PDF exportieren"}
           </button>
           <h2 style={{ fontSize: 20, fontWeight: 800, color: "#1D1D1F", margin: "0 0 2px", letterSpacing: "-0.02em" }}>bioLogic-TeamCheck</h2>
-          <p style={{ fontSize: 12, color: "#8E8E93", margin: "0 0 18px", fontWeight: 500 }}>{region === "EN" ? "Recruiting decision basis – V4" : "Recruiting-Entscheidungsgrundlage – V4"}</p>
+          <p style={{ fontSize: 12, color: "#8E8E93", margin: "0 0 18px", fontWeight: 500 }}>{region === "FR" ? "Base de décision recrutement – V4" : region === "EN" ? "Recruiting decision basis – V4" : "Recruiting-Entscheidungsgrundlage – V4"}</p>
           <div style={{ display: "grid", gridTemplateColumns: "140px 1fr", rowGap: 6, columnGap: 16, fontSize: 13 }}>
-            <span style={{ color: "#8E8E93", fontWeight: 500 }}>{region === "EN" ? "Position:" : "Stelle:"}</span>
+            <span style={{ color: "#8E8E93", fontWeight: 500 }}>{region === "FR" ? "Poste :" : region === "EN" ? "Position:" : "Stelle:"}</span>
             <span style={{ color: "#3A3A3C", fontWeight: 600 }} data-testid="meta-position">{beruf}</span>
-            <span style={{ color: "#8E8E93", fontWeight: 500 }}>{region === "EN" ? "Area:" : "Bereich:"}</span>
+            <span style={{ color: "#8E8E93", fontWeight: 500 }}>{region === "FR" ? "Domaine :" : region === "EN" ? "Area:" : "Bereich:"}</span>
             <span style={{ color: "#3A3A3C", fontWeight: 600 }} data-testid="meta-bereich">{bereich || "–"}</span>
-            <span style={{ color: "#8E8E93", fontWeight: 500 }}>{region === "EN" ? "Focus:" : "Fokus:"}</span>
+            <span style={{ color: "#8E8E93", fontWeight: 500 }}>{region === "FR" ? "Priorité :" : region === "EN" ? "Focus:" : "Fokus:"}</span>
             <span style={{ color: "#3A3A3C", fontWeight: 600 }} data-testid="meta-fokus">{erfolgsfokusLabels.length > 0 ? erfolgsfokusLabels.join(", ") : "–"}</span>
-            <span style={{ color: "#8E8E93", fontWeight: 500 }}>{region === "EN" ? "Role character:" : "Rollencharakter:"}</span>
+            <span style={{ color: "#8E8E93", fontWeight: 500 }}>{region === "FR" ? "Caractère du rôle :" : region === "EN" ? "Role character:" : "Rollencharakter:"}</span>
             <span style={{ color: "#3A3A3C", fontWeight: 600 }} data-testid="meta-charakter">{aufgabencharakter || "–"}</span>
-            <span style={{ color: "#8E8E93", fontWeight: 500 }}>{region === "EN" ? "Date:" : "Datum:"}</span>
-            <span style={{ color: "#3A3A3C", fontWeight: 600 }} data-testid="meta-datum">{new Date().toLocaleDateString(region === "EN" ? "en-GB" : "de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })}</span>
+            <span style={{ color: "#8E8E93", fontWeight: 500 }}>{region === "FR" ? "Date :" : region === "EN" ? "Date:" : "Datum:"}</span>
+            <span style={{ color: "#3A3A3C", fontWeight: 600 }} data-testid="meta-datum">{new Date().toLocaleDateString(region === "FR" ? "fr-FR" : region === "EN" ? "en-GB" : "de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })}</span>
           </div>
         </div>
 
@@ -1065,7 +1065,7 @@ export default function TeamCheck() {
                     <div style={{ flex: 1, minWidth: 140 }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
                         <span style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }} data-testid="text-team-label">{beruf || "Projektteam"}</span>
-                        <span style={{ fontSize: 10, fontWeight: 700, padding: "3px 10px", borderRadius: 6, background: tl.bg, color: tl.fill }} data-testid="badge-status">{region === "EN" ? { GREEN: "Stable", YELLOW: "Manageable", RED: "Tension field" }[tlKey] ?? tl.label : tl.label}</span>
+                        <span style={{ fontSize: 10, fontWeight: 700, padding: "3px 10px", borderRadius: 6, background: tl.bg, color: tl.fill }} data-testid="badge-status">{region === "FR" ? ({ GREEN: "Stable", YELLOW: "Gérable", RED: "Zone de tension" }[tlKey] ?? tl.label) : region === "EN" ? { GREEN: "Stable", YELLOW: "Manageable", RED: "Tension field" }[tlKey] ?? tl.label : tl.label}</span>
                       </div>
                       <p style={{ fontSize: 12, color: "#8E8E93", margin: "4px 0 0", lineHeight: 1.5 }} data-testid="text-headline" lang="de">
                         {hyphenateText(tdResult.headline)}
@@ -1077,7 +1077,7 @@ export default function TeamCheck() {
                     <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }} data-testid="detail-title">{d.title}</p>
                     <p style={{ fontSize: 12, color: "#48484A", margin: "0 0 12px", lineHeight: 1.6 }} lang="de" data-testid="detail-desc">{hyphenateText(d.desc)}</p>
 
-                    <p style={{ fontSize: 11, fontWeight: 600, color: "#8E8E93", margin: "0 0 8px", textTransform: "uppercase", letterSpacing: "0.04em" }}>{region === "EN" ? "What does this mean in practice?" : "Was bedeutet das konkret?"}</p>
+                    <p style={{ fontSize: 11, fontWeight: 600, color: "#8E8E93", margin: "0 0 8px", textTransform: "uppercase", letterSpacing: "0.04em" }}>{region === "FR" ? "Qu'est-ce que cela signifie concrètement ?" : region === "EN" ? "What does this mean in practice?" : "Was bedeutet das konkret?"}</p>
                     <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 14 }}>
                       {d.bullets.map((b, i) => (
                         <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
@@ -1102,8 +1102,8 @@ export default function TeamCheck() {
                       <span style={{ fontSize: 13, fontWeight: 700, color: bc }}>{v4Result.gesamteinschaetzung}</span>
                     </div>
                     {[
-                      { label: region === "EN" ? "Team" : "Team", value: axisLabel(v4Result.passungZumTeam, region), color: axisColor(v4Result.passungZumTeam) },
-                      { label: region === "EN" ? "Task" : "Aufgabe", value: axisLabel(v4Result.beitragZurAufgabe, region), color: axisColor(v4Result.beitragZurAufgabe) },
+                      { label: region === "FR" ? "Équipe" : region === "EN" ? "Team" : "Team", value: axisLabel(v4Result.passungZumTeam, region), color: axisColor(v4Result.passungZumTeam) },
+                      { label: region === "FR" ? "Tâche" : region === "EN" ? "Task" : "Aufgabe", value: axisLabel(v4Result.beitragZurAufgabe, region), color: axisColor(v4Result.beitragZurAufgabe) },
                     ].map((ind, i) => (
                       <div key={i} style={{ padding: "8px 12px", borderRadius: 10, background: `${ind.color}08`, border: `1px solid ${ind.color}15` }}>
                         <span style={{ fontSize: 10, fontWeight: 600, color: "#8E8E93", marginRight: 6 }}>{ind.label}</span>
@@ -1120,12 +1120,12 @@ export default function TeamCheck() {
           <GlassCard data-testid="section-detail-tabs">
             <div style={{ display: "flex", gap: 3, background: "rgba(0,0,0,0.03)", borderRadius: 10, padding: 3, marginBottom: 26 }}>
               {([
-                ["bewertung", region === "EN" ? "Assessment" : "Bewertung", Target],
-                ["alltag", region === "EN" ? "Day-to-day" : "Alltag & Druck", Activity],
-                ["chancen", region === "EN" ? "Opp. / Risks" : "Chancen/Risiken", TrendingUp],
-                ["hebel", region === "EN" ? "Levers" : "Führungshebel", Flame],
-                ["prognose", region === "EN" ? "Forecast" : "Prognose", Clock],
-                ["empfehlung", region === "EN" ? "Recs." : "Empfehlungen", Shield],
+                ["bewertung", region === "FR" ? "Évaluation" : region === "EN" ? "Assessment" : "Bewertung", Target],
+                ["alltag", region === "FR" ? "Quotidien & pression" : region === "EN" ? "Day-to-day" : "Alltag & Druck", Activity],
+                ["chancen", region === "FR" ? "Opp. / Risques" : region === "EN" ? "Opp. / Risks" : "Chancen/Risiken", TrendingUp],
+                ["hebel", region === "FR" ? "Leviers de management" : region === "EN" ? "Levers" : "Führungshebel", Flame],
+                ["prognose", region === "FR" ? "Prévision" : region === "EN" ? "Forecast" : "Prognose", Clock],
+                ["empfehlung", region === "FR" ? "Recommandations" : region === "EN" ? "Recs." : "Empfehlungen", Shield],
               ] as const).map(([key, label, Icon]) => {
                 const active = detailTab === key;
                 return (
@@ -1151,15 +1151,15 @@ export default function TeamCheck() {
               {/* TAB: GESAMTBEWERTUNG */}
               {detailTab === "bewertung" && (
                 <div data-testid="content-bewertung">
-                  <SectionHeader num={1} title={region === "EN" ? "OVERALL ASSESSMENT" : "GESAMTBEWERTUNG"} icon={Target} />
+                  <SectionHeader num={1} title={region === "FR" ? "ÉVALUATION GLOBALE" : region === "EN" ? "OVERALL ASSESSMENT" : "GESAMTBEWERTUNG"} icon={Target} />
 
                   <div style={{ display: "flex", gap: 12, marginBottom: 18, flexWrap: "wrap" }}>
                     <div style={{ flex: 1, minWidth: 180, padding: "14px 18px", borderRadius: 16, background: "rgba(52,199,89,0.05)", border: "1px solid rgba(52,199,89,0.12)" }}>
-                      <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 4px" }}>{region === "EN" ? "Key strength" : "Hauptstärke"}</p>
+                      <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 4px" }}>{region === "FR" ? "Point fort principal" : region === "EN" ? "Key strength" : "Hauptstärke"}</p>
                       <p style={{ fontSize: 13, fontWeight: 600, color: "#34C759", margin: 0 }}>{v4Result.hauptstaerke}</p>
                     </div>
                     <div style={{ flex: 1, minWidth: 180, padding: "14px 18px", borderRadius: 16, background: "rgba(255,149,0,0.05)", border: "1px solid rgba(255,149,0,0.12)" }}>
-                      <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 4px" }}>{region === "EN" ? "Key deviation" : "Hauptabweichung"}</p>
+                      <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 4px" }}>{region === "FR" ? "Écart principal" : region === "EN" ? "Key deviation" : "Hauptabweichung"}</p>
                       <p style={{ fontSize: 13, fontWeight: 600, color: "#FF9500", margin: 0 }}>{v4Result.hauptabweichung}</p>
                     </div>
                   </div>
@@ -1170,7 +1170,7 @@ export default function TeamCheck() {
 
                   <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
                     <Lightbulb style={{ width: 16, height: 16, color: "#0071E3", strokeWidth: 2.5 }} />
-                    <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{region === "EN" ? "Why this assessment" : "Warum diese Bewertung"}</h3>
+                    <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{region === "FR" ? "Pourquoi cette évaluation" : region === "EN" ? "Why this assessment" : "Warum diese Bewertung"}</h3>
                   </div>
                   <Paragraphs text={v4Result.warumText} />
                 </div>
@@ -1179,14 +1179,14 @@ export default function TeamCheck() {
               {/* TAB: ALLTAG & DRUCK */}
               {detailTab === "alltag" && (
                 <div data-testid="content-alltag">
-                  <SectionHeader num={2} title={region === "EN" ? "DAY-TO-DAY IMPACT" : "WIRKUNG IM ALLTAG"} icon={Activity} />
+                  <SectionHeader num={2} title={region === "FR" ? "IMPACT AU QUOTIDIEN" : region === "EN" ? "DAY-TO-DAY IMPACT" : "WIRKUNG IM ALLTAG"} icon={Activity} />
                   <Paragraphs text={v4Result.wirkungAlltagText} highlight />
 
                   <div style={{ height: 1, background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.06), transparent)", margin: "24px 0" }} />
 
                   <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
                     <Flame style={{ width: 16, height: 16, color: "#FF3B30", strokeWidth: 2.5 }} />
-                    <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{region === "EN" ? "Behaviour under pressure" : "Verhalten unter Druck"}</h3>
+                    <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{region === "FR" ? "Comportement sous pression" : region === "EN" ? "Behaviour under pressure" : "Verhalten unter Druck"}</h3>
                   </div>
                   <div style={{
                     padding: "16px 20px", borderRadius: 16,
@@ -1200,7 +1200,7 @@ export default function TeamCheck() {
                       <div style={{ height: 1, background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.06), transparent)", margin: "24px 0" }} />
                       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
                         <Shield style={{ width: 16, height: 16, color: "#5856D6", strokeWidth: 2.5 }} />
-                        <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{region === "EN" ? "Leadership note" : "Führungshinweis"}</h3>
+                        <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{region === "FR" ? "Note de management" : region === "EN" ? "Leadership note" : "Führungshinweis"}</h3>
                       </div>
                       <V4BlockList items={v4Result.fuehrungshinweis} accentColor="#5856D6" />
                     </>
@@ -1211,7 +1211,7 @@ export default function TeamCheck() {
               {/* TAB: CHANCEN & RISIKEN */}
               {detailTab === "chancen" && (
                 <div data-testid="content-chancen">
-                  <SectionHeader num={3} title={region === "EN" ? "OPPORTUNITIES & RISKS" : "CHANCEN & RISIKEN"} icon={TrendingUp} />
+                  <SectionHeader num={3} title={region === "FR" ? "OPPORTUNITÉS ET RISQUES" : region === "EN" ? "OPPORTUNITIES & RISKS" : "CHANCEN & RISIKEN"} icon={TrendingUp} />
                   <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 20 }}>
                     <div style={{
                       flex: 1, minWidth: 220, padding: "18px 16px", borderRadius: 18,
@@ -1219,7 +1219,7 @@ export default function TeamCheck() {
                     }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
                         <CheckCircle style={{ width: 15, height: 15, color: "#34C759", strokeWidth: 2.5 }} />
-                        <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>{region === "EN" ? "Opportunities" : "Chancen"}</span>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>{region === "FR" ? "Opportunités" : region === "EN" ? "Opportunities" : "Chancen"}</span>
                       </div>
                       {v4Result.chancen.map((c, i) => (
                         <div key={i} style={{ marginBottom: i < v4Result.chancen.length - 1 ? 10 : 0 }}>
@@ -1234,7 +1234,7 @@ export default function TeamCheck() {
                     }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
                         <AlertTriangle style={{ width: 15, height: 15, color: "#FF3B30", strokeWidth: 2.5 }} />
-                        <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>{region === "EN" ? "Risks" : "Risiken"}</span>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>{region === "FR" ? "Risques" : region === "EN" ? "Risks" : "Risiken"}</span>
                       </div>
                       {v4Result.risiken.map((r, i) => (
                         <div key={i} style={{ marginBottom: i < v4Result.risiken.length - 1 ? 10 : 0 }}>
@@ -1251,8 +1251,8 @@ export default function TeamCheck() {
               {/* TAB: FÜHRUNGSHEBEL */}
               {detailTab === "hebel" && (
                 <div data-testid="content-hebel">
-                  <SectionHeader num={4} title={region === "EN" ? "LEADERSHIP LEVERS" : "FÜHRUNGSHEBEL"} icon={Flame} />
-                  <p style={{ fontSize: 12, color: "#8E8E93", margin: "0 0 18px", fontWeight: 500 }}>{region === "EN" ? "Concrete management levers for this leader–team combination" : t("Konkrete Steuerungsmassnahmen für diese Führungskraft-Team-Kombination")}</p>
+                  <SectionHeader num={4} title={region === "FR" ? "LEVIERS DE MANAGEMENT" : region === "EN" ? "LEADERSHIP LEVERS" : "FÜHRUNGSHEBEL"} icon={Flame} />
+                  <p style={{ fontSize: 12, color: "#8E8E93", margin: "0 0 18px", fontWeight: 500 }}>{region === "FR" ? "Leviers de pilotage concrets pour cette combinaison manager-équipe" : region === "EN" ? "Concrete management levers for this leader–team combination" : t("Konkrete Steuerungsmassnahmen für diese Führungskraft-Team-Kombination")}</p>
 
                   {isLeading && tdResult.leadershipContext && tdResult.leadershipContext.leadershipLevers.length > 0 ? (
                     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -1286,7 +1286,7 @@ export default function TeamCheck() {
                       padding: "24px 20px", borderRadius: 16, textAlign: "center",
                       background: "rgba(142,142,147,0.06)", border: "1px solid rgba(0,0,0,0.04)",
                     }}>
-                      <p style={{ fontSize: 13, color: "#8E8E93", margin: 0 }}>{region === "EN" ? 'Leadership levers are only shown in leadership mode. Please activate "Leadership" in the diagnosis area.' : 'Führungshebel werden nur im Führungsmodus angezeigt. Bitte „Führung" im Diagnose-Bereich aktivieren.'}</p>
+                      <p style={{ fontSize: 13, color: "#8E8E93", margin: 0 }}>{region === "FR" ? 'Les leviers de management sont affichés uniquement en mode management. Active « Management » dans la zone de diagnostic.' : region === "EN" ? 'Leadership levers are only shown in leadership mode. Please activate "Leadership" in the diagnosis area.' : 'Führungshebel werden nur im Führungsmodus angezeigt. Bitte „Führung" im Diagnose-Bereich aktivieren.'}</p>
                     </div>
                   )}
                 </div>
@@ -1295,7 +1295,7 @@ export default function TeamCheck() {
               {/* TAB: PROGNOSE */}
               {detailTab === "prognose" && (
                 <div data-testid="content-prognose">
-                  <SectionHeader num={5} title={region === "EN" ? "RISK FORECAST" : "RISIKOPROGNOSE"} icon={Clock} />
+                  <SectionHeader num={5} title={region === "FR" ? "PRÉVISION DES RISQUES" : region === "EN" ? "RISK FORECAST" : "RISIKOPROGNOSE"} icon={Clock} />
                   <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
                     {v4Result.risikoprognose.map((phase, i) => {
                       const phaseColors = ["#FF9500", "#0071E3", "#34C759"];
@@ -1330,14 +1330,14 @@ export default function TeamCheck() {
               {/* TAB: EMPFEHLUNGEN */}
               {detailTab === "empfehlung" && (
                 <div data-testid="content-empfehlung">
-                  <SectionHeader num={6} title={region === "EN" ? "RECOMMENDATIONS" : "EMPFEHLUNGEN"} icon={Shield} />
+                  <SectionHeader num={6} title={region === "FR" ? "RECOMMANDATIONS" : region === "EN" ? "RECOMMENDATIONS" : "EMPFEHLUNGEN"} icon={Shield} />
                   <V4BlockList items={v4Result.empfehlungen} accentColor="#0071E3" />
 
                   <div style={{ height: 1, background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.06), transparent)", margin: "24px 0" }} />
 
                   <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
                     <Award style={{ width: 16, height: 16, color: "#0071E3", strokeWidth: 2.5 }} />
-                    <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{region === "EN" ? "Final conclusion" : "Schlussfazit"}</h3>
+                    <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{region === "FR" ? "Conclusion finale" : region === "EN" ? "Final conclusion" : "Schlussfazit"}</h3>
                   </div>
                   <div style={{
                     padding: "16px 20px", borderRadius: 16,

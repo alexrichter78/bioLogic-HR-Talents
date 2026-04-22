@@ -9,7 +9,7 @@ import { useRegion, useLocalizedText } from "@/lib/region";
 import { BERUFE } from "@/data/berufe";
 import logoSrc from "@assets/LOGO_bio_1773853681939.png";
 import { generateJobCheckRoleReport, getForbiddenPhrases, type SuccessFocusKey, type ComponentKey, type JobCheckReportTexts } from "@/lib/entscheidungsbericht-engine";
-import { REPORT_INTRO_DISCLAIMER, REPORT_INTRO_DISCLAIMER_EN, REPORT_LABELS } from "@/lib/report-texts";
+import { REPORT_INTRO_DISCLAIMER, REPORT_INTRO_DISCLAIMER_EN, REPORT_INTRO_DISCLAIMER_FR, REPORT_LABELS } from "@/lib/report-texts";
 
 const COLORS = { imp: "#C41E3A", int: "#F39200", ana: "#1A5DAB" };
 
@@ -164,7 +164,7 @@ type ReportData = {
   erfolgsfokusIndices: number[];
 };
 
-function buildProfilkonflikt(data: ReportData, lang: "de" | "en" = "de"): string | null {
+function buildProfilkonflikt(data: ReportData, lang: "de" | "en" | "fr" = "de"): string | null {
   const hauptDom = dominant(data.haupt, lang === "en" ? "EN" : "DE");
   const { dom } = data;
   if (hauptDom.key === dom.key) return null;
@@ -242,7 +242,7 @@ export default function Rollenprofil() {
   const [, setLocation] = useLocation();
   const { region } = useRegion();
   const t = useLocalizedText();
-  const L = REPORT_LABELS[region === "EN" ? "en" : "de"];
+  const L = REPORT_LABELS[region === "FR" ? "fr" : region === "EN" ? "en" : "de"];
   const isMobile = useIsMobile();
   const [data, setData] = useState<ReportData | null>(null);
   const reportRef = useRef<HTMLDivElement>(null);
@@ -515,7 +515,7 @@ export default function Rollenprofil() {
       environment: preEngineInput.environment,
       meta: preEngineReport.meta,
       forbiddenPhrases: getForbiddenPhrases(preEngineReport.meta.profileClass),
-      locale: region === "EN" ? "en" : "de",
+      locale: region === "FR" ? "fr" : region === "EN" ? "en" : "de",
     };
   }, [preEngineInput, preEngineReport, region]);
 
@@ -598,7 +598,7 @@ export default function Rollenprofil() {
   const displayTopTaetigkeiten = tasksTranslated && tasksTranslated.length >= topTaetigkeiten.length
     ? tasksTranslated.slice(0, 3)
     : topTaetigkeiten;
-  const profilkonfliktRaw = buildProfilkonflikt(data, region === "EN" ? "en" : "de");
+  const profilkonfliktRaw = buildProfilkonflikt(data, region === "FR" ? "fr" : region === "EN" ? "en" : "de");
   const profilkonflikt = profilkonfliktRaw ? t(profilkonfliktRaw) : null;
 
   const engineInput = preEngineInput!;
@@ -742,7 +742,7 @@ export default function Rollenprofil() {
             ))}
             <div style={{ background: "linear-gradient(135deg, rgba(255,59,48,0.06) 0%, rgba(255,59,48,0.03) 100%)", borderRadius: 10, padding: "16px 20px", border: "1px solid rgba(255,59,48,0.2)" }}>
               <p style={{ fontSize: 13, fontWeight: 700, color: "#FF3B30", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto", MozHyphens: "auto", msHyphens: "auto", overflowWrap: "break-word", wordBreak: "break-word" } as any} lang="de">
-                {region === "EN" ? REPORT_INTRO_DISCLAIMER_EN : REPORT_INTRO_DISCLAIMER}
+                {region === "FR" ? REPORT_INTRO_DISCLAIMER_FR : region === "EN" ? REPORT_INTRO_DISCLAIMER_EN : REPORT_INTRO_DISCLAIMER}
               </p>
             </div>
           </div>

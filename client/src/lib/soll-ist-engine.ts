@@ -363,7 +363,7 @@ export function computeSollIst(
   candProfile: Triad,
   fuehrungsArt: FuehrungsArt = "keine",
   roleAnalysis?: RoleAnalysis,
-  lang: 'de' | 'en' = 'de'
+  lang: 'de' | 'en' | 'fr' = 'de'
 ): SollIstResult {
   resetVariants();
   const rt = normalizeTriad(roleProfile);

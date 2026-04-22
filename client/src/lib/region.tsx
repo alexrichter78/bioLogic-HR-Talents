@@ -89,13 +89,13 @@ function ssToSz(text: string): string {
 export function useLocalizedText() {
   const { region } = useRegion();
   return (text: string) => {
-    if (region === "CH" || region === "EN") return text;
+    if (region === "CH" || region === "EN" || region === "FR") return text;
     return ssToSz(text);
   };
 }
 
 export function localizeStr(text: string, region: Region): string {
-  if (region === "CH" || region === "EN") return text;
+  if (region === "CH" || region === "EN" || region === "FR") return text;
   return ssToSz(text);
 }
 
@@ -133,9 +133,45 @@ const ENGINE_VALUE_MAP_EN: Record<string, string> = {
   "Kein Ziel gewählt": "No goal selected",
 };
 
+const ENGINE_VALUE_MAP_FR: Record<string, string> = {
+  "Verstärkung": "Renforcement",
+  "Spannung": "Tension",
+  "Transformation": "Transformation",
+  "Ergänzung": "Complémentarité",
+  "Korrekturimpuls": "Impulsion correctrice",
+  "Spannungsreiche Ergänzung": "Complémentarité sous tension",
+  "Kritische Spannung": "Tension critique",
+  "Spannungsreiche Abweichung": "Écart sous tension",
+  "Stabile Passung": "Adéquation stable",
+  "Anpassungsleistung": "Capacité d'adaptation",
+  "Hoch": "Élevé",
+  "hoch": "élevé",
+  "Mittel": "Moyen",
+  "mittel": "moyen",
+  "Gering": "Faible",
+  "gering": "faible",
+  "Niedrig": "Bas",
+  "niedrig": "bas",
+  "Geeignet": "Adapté",
+  "Bedingt geeignet": "Partiellement adapté",
+  "Nicht geeignet": "Non adapté",
+  "Gesamtpassung": "Adéquation globale",
+  "Systemwirkung": "Impact systémique",
+  "Teamprofil": "Profil d'équipe",
+  "Personenprofil": "Profil personnel",
+  "Intensität": "Intensité",
+  "Steuerungsaufwand": "Effort de pilotage",
+  "Passend": "Adapté",
+  "Teilweise passend": "Partiellement adapté",
+  "Kritisch": "Critique",
+  "Kein Ziel gewählt": "Aucun objectif sélectionné",
+};
+
 export function translateEngineValue(value: string | null | undefined, region: Region): string {
-  if (!value || region !== "EN") return value ?? "";
-  return ENGINE_VALUE_MAP_EN[value] ?? value;
+  if (!value) return value ?? "";
+  if (region === "EN") return ENGINE_VALUE_MAP_EN[value] ?? value;
+  if (region === "FR") return ENGINE_VALUE_MAP_FR[value] ?? value;
+  return value;
 }
 
 export function localizeDeep<T>(obj: T, region: Region): T {

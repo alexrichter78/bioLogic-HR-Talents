@@ -10,12 +10,14 @@ const FLAG_OPTIONS: { value: Region; label: string; flag: JSX.Element }[] = [
   { value: "CH", label: "CH", flag: <svg viewBox="0 0 20 14" style={{ width: 20, height: 14, borderRadius: 2, overflow: "hidden", display: "block" }}><rect width="20" height="14" fill="#D52B1E"/><rect x="8" y="2.5" width="4" height="9" fill="#FFF"/><rect x="5.5" y="5" width="9" height="4" fill="#FFF"/></svg> },
   { value: "AT", label: "AT", flag: <svg viewBox="0 0 20 14" style={{ width: 20, height: 14, borderRadius: 2, overflow: "hidden", display: "block" }}><rect y="0" width="20" height="4.67" fill="#ED2939"/><rect y="4.67" width="20" height="4.67" fill="#FFF"/><rect y="9.33" width="20" height="4.67" fill="#ED2939"/></svg> },
   { value: "EN", label: "EN", flag: <svg viewBox="0 0 20 14" style={{ width: 20, height: 14, borderRadius: 2, overflow: "hidden", display: "block" }}><rect width="20" height="14" fill="#012169"/><polygon points="0,0 20,14 20,11.5 2.5,0" fill="#FFF"/><polygon points="20,0 0,14 0,11.5 17.5,0" fill="#FFF"/><polygon points="0,0 20,14 20,12.6 1.4,0" fill="#C8102E"/><polygon points="20,0 0,14 0,12.6 18.6,0" fill="#C8102E"/><polygon points="0,0 20,14 20,14 0,0" fill="none"/><rect x="8" y="0" width="4" height="14" fill="#FFF"/><rect x="0" y="5" width="20" height="4" fill="#FFF"/><rect x="9" y="0" width="2" height="14" fill="#C8102E"/><rect x="0" y="6" width="20" height="2" fill="#C8102E"/></svg> },
+  { value: "FR", label: "FR", flag: <svg viewBox="0 0 20 14" style={{ width: 20, height: 14, borderRadius: 2, overflow: "hidden", display: "block" }}><rect width="6.67" height="14" fill="#002395"/><rect x="6.67" width="6.67" height="14" fill="#FFF"/><rect x="13.33" width="6.67" height="14" fill="#ED2939"/></svg> },
 ];
 
 export default function Login() {
   const { login } = useAuth();
   const { region, setRegion } = useRegion();
   const en = region === "EN";
+  const fr = region === "FR";
   const [, setLocation] = useLocation();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -35,7 +37,7 @@ export default function Login() {
     const result = await login(username, password);
     setLoading(false);
     if (!result.ok) {
-      setError(result.error || (en ? "Login failed" : "Anmeldung fehlgeschlagen"));
+      setError(result.error || (fr ? "Connexion échouée" : en ? "Login failed" : "Anmeldung fehlgeschlagen"));
     } else {
       setLocation("/");
     }
@@ -55,10 +57,10 @@ export default function Login() {
         setResetSent(true);
       } else {
         const data = await res.json();
-        setResetError(data.error || (en ? "Request error" : "Fehler bei der Anfrage"));
+        setResetError(data.error || (fr ? "Erreur de demande" : en ? "Request error" : "Fehler bei der Anfrage"));
       }
     } catch {
-      setResetError((en ? "Connection error" : "Verbindungsfehler"));
+      setResetError((fr ? "Erreur de connexion" : en ? "Connection error" : "Verbindungsfehler"));
     }
     setResetLoading(false);
   };
@@ -78,7 +80,7 @@ export default function Login() {
             {resetSent ? (
               <div style={{ textAlign: "center" }}>
                 <CheckCircle style={{ width: 40, height: 40, color: "#34C759", margin: "0 auto 16px" }} />
-                <h2 style={{ fontSize: 18, fontWeight: 700, color: "#1F2937", margin: "0 0 8px" }}>{en ? "Request sent" : "Anfrage gesendet"}</h2>
+                <h2 style={{ fontSize: 18, fontWeight: 700, color: "#1F2937", margin: "0 0 8px" }}>{fr ? "Demande envoyée" : en ? "Request sent" : "Anfrage gesendet"}</h2>
                 <p style={{ fontSize: 14, color: "#6B7280", margin: "0 0 24px", lineHeight: 1.5 }}>
                   {en
                     ? "If an account with this email exists, you will receive a link to reset your password."
@@ -90,14 +92,14 @@ export default function Login() {
                   style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 14, fontWeight: 600, color: "#3B82F6", background: "none", border: "none", cursor: "pointer" }}
                 >
                   <ArrowLeft style={{ width: 16, height: 16 }} />
-                  {en ? "Back to sign in" : "Zurück zur Anmeldung"}
+                  {fr ? "Retour à la connexion" : en ? "Back to sign in" : "Zurück zur Anmeldung"}
                 </button>
               </div>
             ) : (
               <>
                 <div style={{ textAlign: "center", marginBottom: 24 }}>
-                  <h2 style={{ fontSize: 18, fontWeight: 700, color: "#1F2937", margin: "0 0 6px" }}>{en ? "Forgot password" : "Passwort vergessen"}</h2>
-                  <p style={{ fontSize: 13, color: "#6B7280", margin: 0 }}>{en ? "Enter your email address" : "Gib deine E-Mail-Adresse ein"}</p>
+                  <h2 style={{ fontSize: 18, fontWeight: 700, color: "#1F2937", margin: "0 0 6px" }}>{fr ? "Mot de passe oublié" : en ? "Forgot password" : "Passwort vergessen"}</h2>
+                  <p style={{ fontSize: 13, color: "#6B7280", margin: 0 }}>{fr ? "Saisis ton adresse e-mail" : en ? "Enter your email address" : "Gib deine E-Mail-Adresse ein"}</p>
                 </div>
 
                 {resetError && (
@@ -120,7 +122,7 @@ export default function Login() {
                         data-testid="input-reset-email"
                         style={{ width: "100%", padding: "12px 14px 12px 42px", borderRadius: 12, border: "1.5px solid #E5E7EB", fontSize: 14, outline: "none", boxSizing: "border-box", background: "#F9FAFB", transition: "border-color 0.2s, box-shadow 0.2s", color: "#1F2937" }}
                         placeholder="name@firma.de"
-                        onInvalid={e => { const el = e.target as HTMLInputElement; if (el.validity.valueMissing) { el.setCustomValidity(en ? "Please fill in this field." : "Füllen Sie dieses Feld aus."); } else if (el.validity.typeMismatch) { el.setCustomValidity(en ? "Please enter a valid email address." : "Geben Sie eine gültige E-Mail-Adresse ein."); } else { el.setCustomValidity(""); } }}
+                        onInvalid={e => { const el = e.target as HTMLInputElement; if (el.validity.valueMissing) { el.setCustomValidity(fr ? "Merci de remplir ce champ." : en ? "Please fill in this field." : "Füllen Sie dieses Feld aus."); } else if (el.validity.typeMismatch) { el.setCustomValidity(fr ? "Merci d'entrer une adresse e-mail valide." : en ? "Please enter a valid email address." : "Geben Sie eine gültige E-Mail-Adresse ein."); } else { el.setCustomValidity(""); } }}
                         onInput={e => (e.target as HTMLInputElement).setCustomValidity("")}
                         onFocus={(e) => { e.target.style.borderColor = "#3B82F6"; e.target.style.boxShadow = "0 0 0 3px rgba(59,130,246,0.1)"; }}
                         onBlur={(e) => { e.target.style.borderColor = "#E5E7EB"; e.target.style.boxShadow = "none"; }}
@@ -142,7 +144,7 @@ export default function Login() {
                       marginBottom: 16,
                     }}
                   >
-                    {resetLoading ? (en ? "Sending..." : "Senden...") : (en ? "Request link" : "Link anfordern")}
+                    {resetLoading ? (fr ? "Envoi..." : en ? "Sending..." : "Senden...") : (fr ? "Demander le lien" : en ? "Request link" : "Link anfordern")}
                   </button>
                 </form>
 
@@ -153,7 +155,7 @@ export default function Login() {
                     style={{ fontSize: 13, fontWeight: 600, color: "#3B82F6", background: "none", border: "none", cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 4 }}
                   >
                     <ArrowLeft style={{ width: 14, height: 14 }} />
-                    {en ? "Back to sign in" : "Zurück zur Anmeldung"}
+                    {fr ? "Retour à la connexion" : en ? "Back to sign in" : "Zurück zur Anmeldung"}
                   </button>
                 </div>
               </>
@@ -181,8 +183,8 @@ export default function Login() {
             ))}
           </div>
           <div style={{ display: "flex", justifyContent: "center", gap: 20, marginTop: 12 }}>
-            <a href="/impressum" data-testid="link-impressum-reset" className="footer-link">{en ? "Legal Notice" : "Impressum"}</a>
-            <a href="/datenschutz" data-testid="link-datenschutz-reset" className="footer-link">{en ? "Privacy Policy" : "Datenschutz"}</a>
+            <a href="/impressum" data-testid="link-impressum-reset" className="footer-link">{fr ? "Mentions légales" : en ? "Legal Notice" : "Impressum"}</a>
+            <a href="/datenschutz" data-testid="link-datenschutz-reset" className="footer-link">{fr ? "Politique de confidentialité" : en ? "Privacy Policy" : "Datenschutz"}</a>
             <a href="/disclaimer" data-testid="link-disclaimer-reset" className="footer-link">Disclaimer</a>
           </div>
         </div>
@@ -211,7 +213,7 @@ export default function Login() {
 
           <form onSubmit={handleSubmit}>
             <div style={{ marginBottom: 18 }}>
-              <label style={{ fontSize: 12, fontWeight: 600, color: "#6B7280", display: "block", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.04em" }}>{en ? "Username" : "Benutzername"}</label>
+              <label style={{ fontSize: 12, fontWeight: 600, color: "#6B7280", display: "block", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.04em" }}>{fr ? "Nom d'utilisateur" : en ? "Username" : "Benutzername"}</label>
               <div style={{ position: "relative" }}>
                 <User style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", width: 16, height: 16, color: "#9CA3AF" }} />
                 <input
@@ -221,8 +223,8 @@ export default function Login() {
                   required
                   data-testid="input-username"
                   style={{ width: "100%", padding: "12px 14px 12px 42px", borderRadius: 12, border: "1.5px solid #E5E7EB", fontSize: 14, outline: "none", boxSizing: "border-box", background: "#F9FAFB", transition: "border-color 0.2s, box-shadow 0.2s", color: "#1F2937" }}
-                  placeholder={en ? "Username" : "Benutzername"}
-                  onInvalid={e => { const el = e.target as HTMLInputElement; el.setCustomValidity(en ? "Please fill in this field." : "Füllen Sie dieses Feld aus."); }}
+                  placeholder={fr ? "Nom d'utilisateur" : en ? "Username" : "Benutzername"}
+                  onInvalid={e => { const el = e.target as HTMLInputElement; el.setCustomValidity(fr ? "Merci de remplir ce champ." : en ? "Please fill in this field." : "Füllen Sie dieses Feld aus."); }}
                   onInput={e => (e.target as HTMLInputElement).setCustomValidity("")}
                   onFocus={(e) => { e.target.style.borderColor = "#3B82F6"; e.target.style.boxShadow = "0 0 0 3px rgba(59,130,246,0.1)"; }}
                   onBlur={(e) => { e.target.style.borderColor = "#E5E7EB"; e.target.style.boxShadow = "none"; }}
@@ -231,7 +233,7 @@ export default function Login() {
             </div>
 
             <div style={{ marginBottom: 12 }}>
-              <label style={{ fontSize: 12, fontWeight: 600, color: "#6B7280", display: "block", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.04em" }}>{en ? "Password" : "Passwort"}</label>
+              <label style={{ fontSize: 12, fontWeight: 600, color: "#6B7280", display: "block", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.04em" }}>{fr ? "Mot de passe" : en ? "Password" : "Passwort"}</label>
               <div style={{ position: "relative" }}>
                 <Lock style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", width: 16, height: 16, color: "#9CA3AF" }} />
                 <input
@@ -241,8 +243,8 @@ export default function Login() {
                   required
                   data-testid="input-password"
                   style={{ width: "100%", padding: "12px 42px 12px 42px", borderRadius: 12, border: "1.5px solid #E5E7EB", fontSize: 14, outline: "none", boxSizing: "border-box", background: "#F9FAFB", transition: "border-color 0.2s, box-shadow 0.2s", color: "#1F2937" }}
-                  placeholder={en ? "Enter password" : "Passwort eingeben"}
-                  onInvalid={e => { const el = e.target as HTMLInputElement; el.setCustomValidity(en ? "Please fill in this field." : "Füllen Sie dieses Feld aus."); }}
+                  placeholder={fr ? "Saisir le mot de passe" : en ? "Enter password" : "Passwort eingeben"}
+                  onInvalid={e => { const el = e.target as HTMLInputElement; el.setCustomValidity(fr ? "Merci de remplir ce champ." : en ? "Please fill in this field." : "Füllen Sie dieses Feld aus."); }}
                   onInput={e => (e.target as HTMLInputElement).setCustomValidity("")}
                   onFocus={(e) => { e.target.style.borderColor = "#3B82F6"; e.target.style.boxShadow = "0 0 0 3px rgba(59,130,246,0.1)"; }}
                   onBlur={(e) => { e.target.style.borderColor = "#E5E7EB"; e.target.style.boxShadow = "none"; }}
@@ -265,7 +267,7 @@ export default function Login() {
                 data-testid="button-forgot-password"
                 style={{ fontSize: 13, fontWeight: 500, color: "#3B82F6", background: "none", border: "none", cursor: "pointer", padding: 0 }}
               >
-                {en ? "Forgot password?" : "Passwort vergessen?"}
+                {fr ? "Mot de passe oublié ?" : en ? "Forgot password?" : "Passwort vergessen?"}
               </button>
             </div>
 
@@ -292,7 +294,7 @@ export default function Login() {
               onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = loading ? "none" : "0 2px 8px rgba(0,113,227,0.3)"; }}
             >
               {loading && <div className="bio-spinner" style={{ width: 16, height: 16, borderWidth: 2 }} />}
-              {loading ? (en ? "Signing in..." : "Anmelden...") : (en ? "Sign in" : "Anmelden")}
+              {loading ? (fr ? "Connexion..." : en ? "Signing in..." : "Anmelden...") : (fr ? "Se connecter" : en ? "Sign in" : "Anmelden")}
             </button>
           </form>
         </div>
@@ -318,8 +320,8 @@ export default function Login() {
           ))}
         </div>
         <div style={{ display: "flex", justifyContent: "center", gap: 20, marginTop: 12 }}>
-          <a href="/impressum" data-testid="link-impressum" className="footer-link">{en ? "Legal Notice" : "Impressum"}</a>
-          <a href="/datenschutz" data-testid="link-datenschutz" className="footer-link">{en ? "Privacy Policy" : "Datenschutz"}</a>
+          <a href="/impressum" data-testid="link-impressum" className="footer-link">{fr ? "Mentions légales" : en ? "Legal Notice" : "Impressum"}</a>
+          <a href="/datenschutz" data-testid="link-datenschutz" className="footer-link">{fr ? "Politique de confidentialité" : en ? "Privacy Policy" : "Datenschutz"}</a>
           <a href="/disclaimer" data-testid="link-disclaimer" className="footer-link">Disclaimer</a>
         </div>
       </div>

@@ -8,11 +8,12 @@ type Message = { role: "assistant" | "user"; content: string };
 
 const WELCOME_DE = "Hallo! Ich bin der bioLogic Hilfe-Assistent. Wie kann ich dir weiterhelfen?\n\nIch kann dir bei Fragen zur Plattform helfen – z.B. zu JobCheck, MatchCheck, TeamCheck oder Louis (KI-Coach).";
 const WELCOME_EN = "Hello! I'm the bioLogic Help Assistant. How can I help you?\n\nI can assist with questions about the platform – e.g. JobCheck, MatchCheck, TeamCheck or Louis (AI Coach).";
+const WELCOME_FR = "Bonjour ! Je suis l'assistant d'aide bioLogic. Comment puis-je t'aider ?\n\nJe peux répondre à tes questions sur la plateforme, par exemple sur JobCheck, MatchCheck, TeamCheck ou Louis (coach IA).";
 
 export default function HelpBot() {
   const { user } = useAuth();
   const { region } = useRegion();
-  const welcome = region === "EN" ? WELCOME_EN : WELCOME_DE;
+  const welcome = region === "FR" ? WELCOME_FR : region === "EN" ? WELCOME_EN : WELCOME_DE;
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([{ role: "assistant", content: welcome }]);
   const [input, setInput] = useState("");
@@ -25,8 +26,8 @@ export default function HelpBot() {
 
   useEffect(() => {
     setMessages(prev => {
-      if (prev.length === 1 && (prev[0].content === WELCOME_DE || prev[0].content === WELCOME_EN)) {
-        return [{ role: "assistant", content: region === "EN" ? WELCOME_EN : WELCOME_DE }];
+      if (prev.length === 1 && (prev[0].content === WELCOME_DE || prev[0].content === WELCOME_EN || prev[0].content === WELCOME_FR)) {
+        return [{ role: "assistant", content: region === "FR" ? WELCOME_FR : region === "EN" ? WELCOME_EN : WELCOME_DE }];
       }
       return prev;
     });
@@ -69,7 +70,7 @@ export default function HelpBot() {
     } catch {
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: region === "EN" ? "An error occurred. Please try again." : "Es ist ein Fehler aufgetreten. Bitte versuche es erneut." },
+        { role: "assistant", content: region === "FR" ? "Une erreur est survenue. Merci de réessayer." : region === "EN" ? "An error occurred. Please try again." : "Es ist ein Fehler aufgetreten. Bitte versuche es erneut." },
       ]);
     } finally {
       setLoading(false);
@@ -81,7 +82,7 @@ export default function HelpBot() {
     try {
       const conversation = messages
         .filter((m) => m.content !== WELCOME_DE && m.content !== WELCOME_EN)
-        .map((m) => `${m.role === "user" ? (region === "EN" ? "Customer" : "Kunde") : "Bot"}: ${m.content}`)
+        .map((m) => `${m.role === "user" ? (region === "FR" ? "Client" : region === "EN" ? "Customer" : "Kunde") : "Bot"}: ${m.content}`)
         .join("\n\n");
 
       let supportEmail = "alexander.richter@foresmind.de";
@@ -113,7 +114,7 @@ export default function HelpBot() {
     } catch {
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: region === "EN" ? "The email could not be sent. Please try again later." : "Die E-Mail konnte leider nicht gesendet werden. Bitte versuche es später erneut." },
+        { role: "assistant", content: region === "FR" ? "L'e-mail n'a pas pu être envoyé. Merci de réessayer plus tard." : region === "EN" ? "The email could not be sent. Please try again later." : "Die E-Mail konnte leider nicht gesendet werden. Bitte versuche es später erneut." },
       ]);
     } finally {
       setEscalateLoading(false);
@@ -171,8 +172,8 @@ export default function HelpBot() {
             flexShrink: 0,
           }}>
             <div>
-              <p style={{ fontSize: 16, fontWeight: 700, color: "#FFF", margin: 0 }}>{region === "EN" ? "Help & Support" : "Hilfe & Support"}</p>
-              <p style={{ fontSize: 12, color: "rgba(255,255,255,0.8)", margin: "2px 0 0" }}>{region === "EN" ? "How can we help you?" : "Wie können wir dir helfen?"}</p>
+              <p style={{ fontSize: 16, fontWeight: 700, color: "#FFF", margin: 0 }}>{region === "FR" ? "Aide & Support" : region === "EN" ? "Help & Support" : "Hilfe & Support"}</p>
+              <p style={{ fontSize: 12, color: "rgba(255,255,255,0.8)", margin: "2px 0 0" }}>{region === "FR" ? "Comment pouvons-nous t'aider ?" : region === "EN" ? "How can we help you?" : "Wie können wir dir helfen?"}</p>
             </div>
             <button
               onClick={() => setOpen(false)}
@@ -218,14 +219,14 @@ export default function HelpBot() {
                   data-testid="button-help-escalate"
                 >
                   {escalateLoading ? <Loader2 style={{ width: 14, height: 14, animation: "spin 1s linear infinite" }} /> : <Mail style={{ width: 14, height: 14 }} />}
-                  {region === "EN" ? "Send request to support" : "Anfrage an Support senden"}
+                  {region === "FR" ? "Envoyer la demande au support" : region === "EN" ? "Send request to support" : "Anfrage an Support senden"}
                 </button>
               </div>
             )}
             {emailSent && (
               <div style={{ display: "flex", justifyContent: "center", marginBottom: 10 }}>
                 <span style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 12, color: "#34C759", fontWeight: 600 }}>
-                  <CheckCircle2 style={{ width: 14, height: 14 }} /> {region === "EN" ? "Email sent" : "E-Mail wurde gesendet"}
+                  <CheckCircle2 style={{ width: 14, height: 14 }} /> {region === "FR" ? "E-mail envoyé" : region === "EN" ? "Email sent" : "E-Mail wurde gesendet"}
                 </span>
               </div>
             )}
@@ -238,7 +239,7 @@ export default function HelpBot() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder={region === "EN" ? "Ask a question..." : "Frage eingeben..."}
+                placeholder={region === "FR" ? "Posez votre question..." : region === "EN" ? "Ask a question..." : "Frage eingeben..."}
                 rows={1}
                 style={{
                   flex: 1, resize: "none", border: "1.5px solid rgba(0,0,0,0.08)",

@@ -7,6 +7,9 @@ export const REPORT_INTRO_DISCLAIMER =
 export const REPORT_INTRO_DISCLAIMER_EN =
   "This report describes typical patterns of behaviour in everyday work — not a fixed personality profile and not a judgement of the person. It is meant to support the assessment, not replace it; the individual case always remains part of the decision.";
 
+export const REPORT_INTRO_DISCLAIMER_FR =
+  "Ce rapport décrit des schémas de comportement typiques dans le travail quotidien, il ne constitue pas un profil de personnalité figé ni un jugement de valeur sur la personne. Il est conçu pour soutenir l'évaluation, non la remplacer. Le cas individuel fait toujours partie de la décision.";
+
 // Statische Labels und Überschriften für den Stellenanalyse-Bericht (rollenprofil.tsx).
 // Einmalig hier hinterlegt, damit zukünftige Sprach-Anpassungen nur an EINER Stelle erfolgen.
 export const REPORT_LABELS = {
@@ -147,6 +150,75 @@ export const REPORT_LABELS = {
     // Footer
     footerLabel: "Job Analysis",
     footerCreatedOn: "Created on",
+  },
+  fr: {
+    pageLang: "fr",
+    dateLocale: "fr-FR",
+
+    // Header
+    kicker: "ANALYSE DE POSTE",
+    title: "Profil de poste",
+    printButton: "Imprimer",
+    printTooltip: "Qualité 1:1 — dans la boîte d'impression, choisir « Enregistrer en PDF »",
+
+    // Empty-State
+    noProfileTitle: "Aucun profil de poste disponible",
+    noProfileBody: "Merci de créer d'abord un profil de poste pour pouvoir générer le rapport.",
+    noProfileButton: "Créer un profil de poste",
+
+    // Loading
+    loadingTitle: "Analyse de poste en cours",
+    loadingBody: "Les textes sont générés sur la base de ton profil. Cela prend généralement 15 à 25 secondes.",
+
+    // Section 1
+    section1: "Profil de poste · Base de décision",
+    section1Headline: "Quelle personnalité ce poste requiert-il ?",
+    sub1ShortDescription: "Brève description du poste",
+    coreTasksIntro: "Les tâches centrales de ce poste :",
+    sub2StructureProfile: "Profil structurel du poste",
+    structureExplanation:
+      "Chaque personne possède les trois modes fondamentaux de pensée et d'action : Rythme et Décision, Communication et Relations, Structure et Rigueur. Les trois sont toujours présents. Ce qui diffère, c'est leur ordre et leur pondération.",
+    structureExplanation2:
+      "Cette structure façonne la façon dont les personnes décident, communiquent et agissent au quotidien. L'effet visible peut évoluer selon la situation : au quotidien, sous pression ou dans des moments détendus.",
+    componentMeaning: "Signification des composantes",
+    barLabelImp: "Rythme et Décision",
+    barLabelInt: "Communication et Relations",
+    barLabelAna: "Structure et Rigueur",
+    sub3WorkLogic: "Logique de travail du poste",
+    sub4Framework: "Conditions-cadres",
+    successFocusLabel: "Critères de succès",
+
+    // Section 2
+    section2: "Comportement · Quotidien et pression",
+    section2Headline: "Comportement au quotidien et sous pression",
+    section2Sub:
+      "La présentation suivante montre comment les exigences du poste s'expriment typiquement au quotidien, sous pression et lors d'un stress intense.",
+    behaviourDaily: "Comportement au quotidien",
+    behaviourPressure: "Comportement sous pression",
+    behaviourStress: "Comportement lors d'un stress intense",
+
+    // Section 3
+    section3: "Impact sur l'équipe & risques de mauvais recrutement",
+    section3Headline: "Impact, tensions et risques",
+    section3SubLeadership:
+      "Cette section décrit l'impact de ce poste sur l'équipe, les tensions typiques qui en découlent et les risques pouvant résulter d'un mauvais recrutement.",
+    section3SubNonLeadership:
+      "Cette section décrit l'impact de ce poste dans l'environnement de travail, les tensions typiques qui en découlent et les risques pouvant résulter d'un mauvais recrutement.",
+    sub1LeadershipImpact: "Impact managérial du poste",
+    sub1TeamImpact: "Impact sur l'équipe",
+    sub2Tensions: "Tensions du poste",
+    tensionsIntro: "Les tensions typiques de ce poste sont :",
+    sub3MiscastRisks: "Risques de mauvais recrutement",
+    sub4TypicalPerson: "Profil type pour ce poste",
+    candidateLoading: "Génération en cours...",
+    candidateError: "Le profil de la personne n'a pas pu être chargé.",
+
+    // Section 4
+    section4: "Conclusion de la décision",
+
+    // Footer
+    footerLabel: "Analyse de poste",
+    footerCreatedOn: "Créé le",
   },
 } as const;
 

@@ -45,7 +45,7 @@ Preferred communication style: Simple, everyday language.
 -   **Express 5**: Leverages native async error handling and other latest features.
 -   **Vite as Dev Middleware**: Provides a single port for both API and frontend during development.
 -   **Coach-only Role**: Restricts access for specific users to only the KI-Coach functionality.
--   **Region Switcher**: Supports DE, CH, AT, and EN for localization of UI, AI prompts, and deterministic text.
+-   **Region Switcher**: Supports DE, CH, AT, EN, and FR for localization of UI, AI prompts, and deterministic text. FR uses plain labels "Rythme et Décision" / "Communication et Relations" / "Structure et Rigueur", tutoie ("tu"), no em-dashes, no percentages in narrative output. FR support spans: login page (flag selector), all 7 Claude endpoints, all report pages (rollen-dna, soll-ist-bericht, teamcheck, team-report, jobcheck, rollenprofil, teamdynamik), engine types (soll-ist-engine, jobcheck-engine, teamcheck-v4-engine), ENGINE_VALUE_MAP_FR in region.tsx, REPORT_LABELS.fr in report-texts.ts, and help-bot.tsx.
 -   **AI Integration**: Utilizes a combination of OpenAI for reports and image generation, and Anthropic's Claude for the KI-Coach, with robust prompt engineering and knowledge base integration.
 -   **KI-Coach Features**: Includes conversation modes, feedback system, golden answers, topic tracking, self-reflection, and a RAG (Retrieval Augmented Generation) system with an editable system prompt and a comprehensive knowledge base.
 -   **Enterprise Features**: Implements organization management, usage tracking, and AI request limits for users and organizations, with subadmin roles and a dedicated Firmen-Dashboard.
