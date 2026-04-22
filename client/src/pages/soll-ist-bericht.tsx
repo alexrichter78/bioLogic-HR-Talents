@@ -289,6 +289,19 @@ export default function SollIstBericht() {
   const [profilvergleichOpen, setProfilvergleichOpen] = useState(true);
   const [systemwirkungOpen, setSystemwirkungOpen] = useState(true);
   const [fuehrungsArt, setFuehrungsArt] = useState<FuehrungsArt>("keine");
+
+  const currentInputHash = useMemo(() => JSON.stringify({
+    roleName, candidateName, fuehrungsArt, region,
+    role: roleTriad,
+    candidate: { impulsiv: candTriad.impulsiv, intuitiv: candTriad.intuitiv, analytisch: candTriad.analytisch },
+  }), [roleName, candidateName, fuehrungsArt, region, roleTriad, candTriad.impulsiv, candTriad.intuitiv, candTriad.analytisch]);
+
+  useEffect(() => {
+    if (lastInputHash && currentInputHash !== lastInputHash) {
+      setReportGenerated(false);
+      setLastInputHash(null);
+    }
+  }, [currentInputHash, lastInputHash]);
   const updateRoleTriad = useCallback((key: ComponentKey, newVal: number) => {
     setRoleTriad(prev => {
       if (!prev) return prev;
@@ -837,12 +850,7 @@ export default function SollIstBericht() {
               <button
                 onClick={async () => {
                   if (!roleTriad) return;
-                  const currentHash = JSON.stringify({
-                    roleName, candidateName, fuehrungsArt, region,
-                    role: { impulsiv: Math.round(roleTriad.impulsiv), intuitiv: Math.round(roleTriad.intuitiv), analytisch: Math.round(roleTriad.analytisch) },
-                    candidate: { impulsiv: Math.round(candidateProfile.impulsiv), intuitiv: Math.round(candidateProfile.intuitiv), analytisch: Math.round(candidateProfile.analytisch) },
-                  });
-                  if (aiNarrative && currentHash === lastInputHash) {
+                  if (aiNarrative && currentInputHash === lastInputHash) {
                     setReportGenerated(true);
                     return;
                   }
@@ -880,7 +888,7 @@ export default function SollIstBericht() {
                     }
                     const narrative = await resp.json();
                     setAiNarrative(narrative);
-                    setLastInputHash(currentHash);
+                    setLastInputHash(currentInputHash);
                     setReportGenerated(true);
                   } catch (err: any) {
                     setAiError(err.message || "Generation failed");

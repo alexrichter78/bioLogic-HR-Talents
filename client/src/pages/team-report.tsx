@@ -608,6 +608,19 @@ export default function TeamReport() {
   useEffect(() => { sessionStorage.setItem("tc_roleType", roleTypeForCard); }, [roleTypeForCard]);
   useEffect(() => { sessionStorage.setItem("tc_teamGoal", teamGoal); }, [teamGoal]);
 
+  const currentInputHash = useMemo(() => JSON.stringify({
+    roleName, candidateName, teamGoal, roleTypeForCard, region,
+    person: { impulsiv: istTriad.impulsiv, intuitiv: istTriad.intuitiv, analytisch: istTriad.analytisch },
+    team:   { impulsiv: teamTriad.impulsiv, intuitiv: teamTriad.intuitiv, analytisch: teamTriad.analytisch },
+  }), [roleName, candidateName, teamGoal, roleTypeForCard, region, istTriad.impulsiv, istTriad.intuitiv, istTriad.analytisch, teamTriad.impulsiv, teamTriad.intuitiv, teamTriad.analytisch]);
+
+  useEffect(() => {
+    if (lastInputHash && currentInputHash !== lastInputHash) {
+      setReportGenerated(false);
+      setLastInputHash(null);
+    }
+  }, [currentInputHash, lastInputHash]);
+
   const syncFromLocalStorage = useCallback((force = false) => {
     if (!force && sessionStorage.getItem("tc_istTriad")) return;
     const raw = localStorage.getItem("rollenDnaState");
@@ -815,12 +828,7 @@ export default function TeamReport() {
     : resultBase;
 
   const handleGenerateReport = async () => {
-    const currentHash = JSON.stringify({
-      roleName, candidateName, teamGoal, roleTypeForCard, region,
-      person: { impulsiv: Math.round(istProfile.impulsiv), intuitiv: Math.round(istProfile.intuitiv), analytisch: Math.round(istProfile.analytisch) },
-      team:   { impulsiv: Math.round(teamProfileN.impulsiv), intuitiv: Math.round(teamProfileN.intuitiv), analytisch: Math.round(teamProfileN.analytisch) },
-    });
-    if (aiNarrative && currentHash === lastInputHash) {
+    if (aiNarrative && currentInputHash === lastInputHash) {
       setReportGenerated(true);
       return;
     }
@@ -876,7 +884,7 @@ export default function TeamReport() {
       }
       const narrative = await resp.json();
       setAiNarrative(narrative);
-      setLastInputHash(currentHash);
+      setLastInputHash(currentInputHash);
       setReportGenerated(true);
     } catch (err: any) {
       setAiError(err.message || "Generation failed");
