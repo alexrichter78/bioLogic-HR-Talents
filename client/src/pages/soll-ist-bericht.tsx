@@ -560,7 +560,7 @@ export default function SollIstBericht() {
                     return (
                       <div key={k} style={{ display: "flex", alignItems: "center", gap: 12, height: 26 }} data-testid={`slider-row-role-${k}`}>
                         <span style={{ fontSize: 14, color: "#48484A", width: 72, flexShrink: 0, lineHeight: "26px" }}>
-                          {labelComponent(k)}
+                          {labelComponent(k, region)}
                         </span>
                         <div style={{ flex: 1, position: "relative", height: 26 }}>
                           <div style={{
@@ -656,7 +656,7 @@ export default function SollIstBericht() {
                     return (
                       <div key={k} style={{ display: "flex", alignItems: "center", gap: 12, height: 26 }} data-testid={`slider-row-${k}`}>
                         <span style={{ fontSize: 14, color: "#48484A", width: 72, flexShrink: 0, lineHeight: "26px" }}>
-                          {labelComponent(k)}
+                          {labelComponent(k, region)}
                         </span>
                         <div style={{ flex: 1, position: "relative", height: 26 }}>
                           <div style={{
@@ -1238,13 +1238,13 @@ export default function SollIstBericht() {
               <div style={{ padding: "36px 44px 48px" }}>
 
               <div data-pdf-block style={{ ...sep, borderBottom: "none" }} data-testid="section-comparison-bars">
-                <SectionHead num={2} title="Vergleich der Profile" />
+                <SectionHead num={2} title={region === "EN" ? "Profile comparison" : "Vergleich der Profile"} />
                 <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 20px", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang="de">
                   {biggestGapText(result.roleTriad, result.candTriad)}
                 </p>
                 <div className="grid gap-6 grid-cols-1 sm:grid-cols-2" style={{ marginBottom: 14 }}>
                   <div style={{ borderRadius: 16, border: "1px solid rgba(0,0,0,0.06)", background: "linear-gradient(135deg, #fafbfd, #f5f7fb)", padding: 24, boxShadow: "0 2px 8px rgba(0,0,0,0.02)" }}>
-                    <p style={{ fontSize: 15, fontWeight: 600, color: "#1D1D1F", margin: "0 0 20px" }}>Soll-Profil <span style={{ fontWeight: 400, color: "#8E8E93" }}>(Stelle)</span></p>
+                    <p style={{ fontSize: 15, fontWeight: 600, color: "#1D1D1F", margin: "0 0 20px" }}>{region === "EN" ? "Target profile" : "Soll-Profil"} <span style={{ fontWeight: 400, color: "#8E8E93" }}>({region === "EN" ? "role" : "Stelle"})</span></p>
                     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                       {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
                         const val = Math.round(roleTriad![k]);
@@ -1253,7 +1253,7 @@ export default function SollIstBericht() {
                         const isSmall = widthPct < 18;
                         return (
                           <div key={k} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                            <span style={{ fontSize: 14, color: "#48484A", width: 72, flexShrink: 0 }}>{labelComponent(k)}</span>
+                            <span style={{ fontSize: 14, color: "#48484A", width: 72, flexShrink: 0 }}>{labelComponent(k, region)}</span>
                             <div style={{ flex: 1, position: "relative", height: 28 }}>
                               <div style={{ position: "absolute", inset: 0, borderRadius: 14, background: "rgba(0,0,0,0.05)" }} />
                               <div className="bio-bar-animate" style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${Math.min(Math.max(widthPct, 4), 100)}%`, borderRadius: 14, background: `linear-gradient(90deg, ${hex}, ${hex}CC)`, display: "flex", alignItems: "center", paddingLeft: 10, minWidth: isSmall ? 8 : 50, boxShadow: `0 2px 8px ${hex}30`, transition: "width 800ms cubic-bezier(0.34, 1.56, 0.64, 1)" }}>
@@ -1269,7 +1269,7 @@ export default function SollIstBericht() {
                     </div>
                   </div>
                   <div style={{ borderRadius: 16, border: "1px solid rgba(0,0,0,0.06)", background: "linear-gradient(135deg, #fafbfd, #f5f7fb)", padding: 24, boxShadow: "0 2px 8px rgba(0,0,0,0.02)" }}>
-                    <p style={{ fontSize: 15, fontWeight: 600, color: "#1D1D1F", margin: "0 0 20px" }}>Ist-Profil <span style={{ fontWeight: 400, color: "#8E8E93" }}>(Person)</span></p>
+                    <p style={{ fontSize: 15, fontWeight: 600, color: "#1D1D1F", margin: "0 0 20px" }}>{region === "EN" ? "Actual profile" : "Ist-Profil"} <span style={{ fontWeight: 400, color: "#8E8E93" }}>({region === "EN" ? "person" : "Person"})</span></p>
                     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                       {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
                         const val = Math.round(candidateProfile[k]);
@@ -1278,7 +1278,7 @@ export default function SollIstBericht() {
                         const isSmall = widthPct < 18;
                         return (
                           <div key={k} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                            <span style={{ fontSize: 14, color: "#48484A", width: 72, flexShrink: 0 }}>{labelComponent(k)}</span>
+                            <span style={{ fontSize: 14, color: "#48484A", width: 72, flexShrink: 0 }}>{labelComponent(k, region)}</span>
                             <div style={{ flex: 1, position: "relative", height: 28 }}>
                               <div style={{ position: "absolute", inset: 0, borderRadius: 14, background: "rgba(0,0,0,0.05)" }} />
                               <div className="bio-bar-animate" style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${Math.min(Math.max(widthPct, 4), 100)}%`, borderRadius: 14, background: `linear-gradient(90deg, ${hex}, ${hex}CC)`, display: "flex", alignItems: "center", paddingLeft: 10, minWidth: isSmall ? 8 : 50, boxShadow: `0 2px 8px ${hex}30`, transition: "width 800ms cubic-bezier(0.34, 1.56, 0.64, 1)" }}>

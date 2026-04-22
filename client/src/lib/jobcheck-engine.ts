@@ -342,7 +342,12 @@ export function dominanceModeOf(tIn: Triad): DominanceResult {
   return { mode, top1, top2, top3, gap1, gap2 };
 }
 
-export function labelComponent(k: ComponentKey) {
+export function labelComponent(k: ComponentKey, lang?: string) {
+  if (lang === "EN") {
+    if (k === "impulsiv") return "Impulsive";
+    if (k === "intuitiv") return "Intuitive";
+    return "Analytical";
+  }
   if (k === "impulsiv") return "Impulsiv";
   if (k === "intuitiv") return "Intuitiv";
   return "Analytisch";
