@@ -232,9 +232,9 @@ const COMP_ADJ_FR: Record<ComponentKey, string> = {
 };
 
 const COMP_ADJ_IT: Record<ComponentKey, string> = {
-  impulsiv: "con piu' ritmo e decisione",
+  impulsiv: "con più ritmo e decisione",
   intuitiv: "attraverso lo scambio e la collaborazione",
-  analytisch: "in modo piu' strutturato e rigoroso",
+  analytisch: "in modo più strutturato e rigoroso",
 };
 
 function ca(k: ComponentKey): string {

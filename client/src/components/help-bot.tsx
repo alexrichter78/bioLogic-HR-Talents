@@ -9,11 +9,12 @@ type Message = { role: "assistant" | "user"; content: string };
 const WELCOME_DE = "Hallo! Ich bin der bioLogic Hilfe-Assistent. Wie kann ich dir weiterhelfen?\n\nIch kann dir bei Fragen zur Plattform helfen – z.B. zu JobCheck, MatchCheck, TeamCheck oder Louis (KI-Coach).";
 const WELCOME_EN = "Hello! I'm the bioLogic Help Assistant. How can I help you?\n\nI can assist with questions about the platform – e.g. JobCheck, MatchCheck, TeamCheck or Louis (AI Coach).";
 const WELCOME_FR = "Bonjour ! Je suis l'assistant d'aide bioLogic. Comment puis-je t'aider ?\n\nJe peux répondre à tes questions sur la plateforme, par exemple sur JobCheck, MatchCheck, TeamCheck ou Louis (coach IA).";
+const WELCOME_IT = "Ciao! Sono l'assistente di supporto bioLogic. Come posso aiutarti?\n\nPosso rispondere alle tue domande sulla piattaforma, ad esempio su JobCheck, MatchCheck, TeamCheck o Louis (coach IA).";
 
 export default function HelpBot() {
   const { user } = useAuth();
   const { region } = useRegion();
-  const welcome = region === "FR" ? WELCOME_FR : region === "EN" ? WELCOME_EN : WELCOME_DE;
+  const welcome = region === "IT" ? WELCOME_IT : region === "FR" ? WELCOME_FR : region === "EN" ? WELCOME_EN : WELCOME_DE;
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([{ role: "assistant", content: welcome }]);
   const [input, setInput] = useState("");
@@ -26,8 +27,8 @@ export default function HelpBot() {
 
   useEffect(() => {
     setMessages(prev => {
-      if (prev.length === 1 && (prev[0].content === WELCOME_DE || prev[0].content === WELCOME_EN || prev[0].content === WELCOME_FR)) {
-        return [{ role: "assistant", content: region === "FR" ? WELCOME_FR : region === "EN" ? WELCOME_EN : WELCOME_DE }];
+      if (prev.length === 1 && (prev[0].content === WELCOME_DE || prev[0].content === WELCOME_EN || prev[0].content === WELCOME_FR || prev[0].content === WELCOME_IT)) {
+        return [{ role: "assistant", content: region === "IT" ? WELCOME_IT : region === "FR" ? WELCOME_FR : region === "EN" ? WELCOME_EN : WELCOME_DE }];
       }
       return prev;
     });
@@ -60,7 +61,8 @@ export default function HelpBot() {
 
     try {
       const res = await apiRequest("POST", "/api/help-bot", {
-        messages: updated.filter((m) => m.content !== WELCOME_DE && m.content !== WELCOME_EN),
+        messages: updated.filter((m) => m.content !== WELCOME_DE && m.content !== WELCOME_EN && m.content !== WELCOME_FR && m.content !== WELCOME_IT),
+        region,
       });
       const data = await res.json();
       setMessages((prev) => [...prev, { role: "assistant", content: data.reply }]);
@@ -70,7 +72,7 @@ export default function HelpBot() {
     } catch {
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: region === "FR" ? "Une erreur est survenue. Merci de réessayer." : region === "EN" ? "An error occurred. Please try again." : "Es ist ein Fehler aufgetreten. Bitte versuche es erneut." },
+        { role: "assistant", content: region === "IT" ? "Si è verificato un errore. Riprova." : region === "FR" ? "Une erreur est survenue. Merci de réessayer." : region === "EN" ? "An error occurred. Please try again." : "Es ist ein Fehler aufgetreten. Bitte versuche es erneut." },
       ]);
     } finally {
       setLoading(false);
@@ -81,8 +83,8 @@ export default function HelpBot() {
     setEscalateLoading(true);
     try {
       const conversation = messages
-        .filter((m) => m.content !== WELCOME_DE && m.content !== WELCOME_EN)
-        .map((m) => `${m.role === "user" ? (region === "FR" ? "Client" : region === "EN" ? "Customer" : "Kunde") : "Bot"}: ${m.content}`)
+        .filter((m) => m.content !== WELCOME_DE && m.content !== WELCOME_EN && m.content !== WELCOME_FR && m.content !== WELCOME_IT)
+        .map((m) => `${m.role === "user" ? (region === "IT" ? "Cliente" : region === "FR" ? "Client" : region === "EN" ? "Customer" : "Kunde") : "Bot"}: ${m.content}`)
         .join("\n\n");
 
       let supportEmail = "alexander.richter@foresmind.de";
@@ -106,7 +108,11 @@ export default function HelpBot() {
         ...prev,
         {
           role: "assistant",
-          content: region === "EN"
+          content: region === "IT"
+            ? "La tua richiesta è stata inoltrata con successo. Il nostro team ti risponderà il prima possibile."
+            : region === "FR"
+            ? "Ta demande a été transmise avec succès. Notre équipe te répondra dans les meilleurs délais."
+            : region === "EN"
             ? "Your request has been forwarded successfully. Our team will get back to you as soon as possible."
             : "Deine Anfrage wurde erfolgreich weitergeleitet. Unser Team wird sich so schnell wie möglich bei dir melden.",
         },
@@ -114,7 +120,7 @@ export default function HelpBot() {
     } catch {
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: region === "FR" ? "L'e-mail n'a pas pu être envoyé. Merci de réessayer plus tard." : region === "EN" ? "The email could not be sent. Please try again later." : "Die E-Mail konnte leider nicht gesendet werden. Bitte versuche es später erneut." },
+        { role: "assistant", content: region === "IT" ? "L'e-mail non ha potuto essere inviata. Riprova più tardi." : region === "FR" ? "L'e-mail n'a pas pu être envoyé. Merci de réessayer plus tard." : region === "EN" ? "The email could not be sent. Please try again later." : "Die E-Mail konnte leider nicht gesendet werden. Bitte versuche es später erneut." },
       ]);
     } finally {
       setEscalateLoading(false);
@@ -172,8 +178,8 @@ export default function HelpBot() {
             flexShrink: 0,
           }}>
             <div>
-              <p style={{ fontSize: 16, fontWeight: 700, color: "#FFF", margin: 0 }}>{region === "FR" ? "Aide & Support" : region === "EN" ? "Help & Support" : "Hilfe & Support"}</p>
-              <p style={{ fontSize: 12, color: "rgba(255,255,255,0.8)", margin: "2px 0 0" }}>{region === "FR" ? "Comment pouvons-nous t'aider ?" : region === "EN" ? "How can we help you?" : "Wie können wir dir helfen?"}</p>
+              <p style={{ fontSize: 16, fontWeight: 700, color: "#FFF", margin: 0 }}>{region === "IT" ? "Aiuto & Supporto" : region === "FR" ? "Aide & Support" : region === "EN" ? "Help & Support" : "Hilfe & Support"}</p>
+              <p style={{ fontSize: 12, color: "rgba(255,255,255,0.8)", margin: "2px 0 0" }}>{region === "IT" ? "Come possiamo aiutarti?" : region === "FR" ? "Comment pouvons-nous t'aider ?" : region === "EN" ? "How can we help you?" : "Wie können wir dir helfen?"}</p>
             </div>
             <button
               onClick={() => setOpen(false)}
@@ -219,14 +225,14 @@ export default function HelpBot() {
                   data-testid="button-help-escalate"
                 >
                   {escalateLoading ? <Loader2 style={{ width: 14, height: 14, animation: "spin 1s linear infinite" }} /> : <Mail style={{ width: 14, height: 14 }} />}
-                  {region === "FR" ? "Envoyer la demande au support" : region === "EN" ? "Send request to support" : "Anfrage an Support senden"}
+                  {region === "IT" ? "Invia richiesta al supporto" : region === "FR" ? "Envoyer la demande au support" : region === "EN" ? "Send request to support" : "Anfrage an Support senden"}
                 </button>
               </div>
             )}
             {emailSent && (
               <div style={{ display: "flex", justifyContent: "center", marginBottom: 10 }}>
                 <span style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 12, color: "#34C759", fontWeight: 600 }}>
-                  <CheckCircle2 style={{ width: 14, height: 14 }} /> {region === "FR" ? "E-mail envoyé" : region === "EN" ? "Email sent" : "E-Mail wurde gesendet"}
+                  <CheckCircle2 style={{ width: 14, height: 14 }} /> {region === "IT" ? "E-mail inviata" : region === "FR" ? "E-mail envoyé" : region === "EN" ? "Email sent" : "E-Mail wurde gesendet"}
                 </span>
               </div>
             )}
@@ -239,7 +245,7 @@ export default function HelpBot() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder={region === "FR" ? "Posez votre question..." : region === "EN" ? "Ask a question..." : "Frage eingeben..."}
+                placeholder={region === "IT" ? "Poni una domanda..." : region === "FR" ? "Posez votre question..." : region === "EN" ? "Ask a question..." : "Frage eingeben..."}
                 rows={1}
                 style={{
                   flex: 1, resize: "none", border: "1.5px solid rgba(0,0,0,0.08)",
