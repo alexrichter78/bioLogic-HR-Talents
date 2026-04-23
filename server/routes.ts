@@ -454,7 +454,7 @@ Write ALL "name" field values in clear, professional British English.
 Écris TOUS les textes en français professionnel clair.
 - Tu tutois l'utilisateur (« tu »), sauf s'il te demande le vouvoiement.
 - Sois direct, chaleureux et concret — comme un expert RH expérimenté.
-- N'utilise jamais les termes de jargon du modèle (« impulsif », « intuitif », « analytique » comme étiquette de personnalité). À la place : « Rythme et Décision » pour la dimension action, « Communication et Relations » pour la dimension humaine, « Structure et Rigueur » pour la dimension processus.
+- N'utilise jamais les termes du modèle (« impulsif », « intuitif », « analytique » comme étiquette de personnalité). À la place : « Orienté action » pour la dimension action, « Relationnel » pour la dimension humaine, « Analytique » pour la dimension processus.
 - Évite les tirets cadratins. Utilise des virgules, deux-points ou points.\n`;
   }
   if (region === "IT") {
@@ -462,7 +462,7 @@ Write ALL "name" field values in clear, professional British English.
 Scrivi TUTTI i testi in italiano professionale chiaro.
 - Usa il "tu" informale con l'utente.
 - Sii diretto, caldo e concreto — come un esperto HR di lunga esperienza.
-- Non usare mai i termini del modello ("impulsivo", "intuitivo", "analitico" come etichette di personalità). Usa invece: "Ritmo e Decisione" per la dimensione azione, "Comunicazione e Relazioni" per la dimensione umana, "Struttura e Rigore" per la dimensione processo — ma solo nei testi narrativi, MAI nei campi JSON.
+- Non usare mai i termini del modello ("impulsivo", "intuitivo", "analitico" come etichette di personalità). Usa invece: "Orientato all'azione" per la dimensione azione, "Relazionale" per la dimensione umana, "Analitico" per la dimensione processo — ma solo nei testi narrativi, MAI nei campi JSON.
 - Evita i trattini em. Usa virgole, due punti o punti.
 - Non usare il simbolo percentuale (%) nei testi narrativi. Scrivi le percentuali in lettere (es. "un terzo" invece di "33%").\n`;
   }
@@ -4486,7 +4486,7 @@ GESCHLECHTSNEUTRALE SPRACHE (ZWINGEND):
 - Diese Regel gilt für JEDE Antwort, auch bei Rollenspielen, Beispielen und Stellenanzeigen.
 
 ${getRegionInstruction(region, { skipAddress: true })}${modePrompt}${knowledgeContext}
-${customPrompt}${promptEndsWithDeutsch ? "" : region === "FR" ? "\n\n- Français." : region === "EN" ? "" : "\n\n- Deutsch."}`;
+${customPrompt}${promptEndsWithDeutsch ? "" : region === "FR" ? "\n\n- Français." : region === "EN" ? "" : region === "IT" ? "\n\n- Italiano." : "\n\n- Deutsch."}`;
 
       let fullSystemPrompt = systemPrompt;
       if (stammdaten && typeof stammdaten === "object" && Object.keys(stammdaten).length > 0) {
