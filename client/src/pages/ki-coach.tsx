@@ -30,11 +30,16 @@ const WELCOME_MSG_FR: Message = {
   role: "assistant",
   content: "Bienvenue chez Louis – ton Coach bioLogic pour les décisions au bon moment.\n\nJe t'accompagne sur tes questions de leadership, de décisions RH, d'assessment, d'entretiens et de communication.\n\nComment puis-je t'aider ?",
 };
-const isWelcomeMsg = (m: Message) => m === WELCOME_MSG || m === WELCOME_MSG_EN || m === WELCOME_MSG_FR;
+const WELCOME_MSG_IT: Message = {
+  role: "assistant",
+  content: "Benvenuto da Louis – il tuo Coach bioLogic per le decisioni nel momento giusto.\n\nTi supporto nelle domande su leadership, decisioni HR, assessment, colloqui e comunicazione.\n\nCome posso aiutarti?",
+};
+const isWelcomeMsg = (m: Message) => m === WELCOME_MSG || m === WELCOME_MSG_EN || m === WELCOME_MSG_FR || m === WELCOME_MSG_IT;
 
 function getWelcomeMsg(lang: string): Message {
   if (lang === "FR") return WELCOME_MSG_FR;
   if (lang === "EN") return WELCOME_MSG_EN;
+  if (lang === "IT") return WELCOME_MSG_IT;
   return WELCOME_MSG;
 }
 
@@ -409,6 +414,127 @@ const EXAMPLE_PROMPTS_FR: PromptCategory[] = [
   },
 ];
 
+const EXAMPLE_PROMPTS_IT: PromptCategory[] = [
+  {
+    category: "Consulenza bioLogic",
+    prompts: [
+      "Un mio collaboratore ha una forte componente Ritmo e Decisione e interrompe continuamente gli altri in riunione. Come gestisco la situazione?",
+      "Ho una forte componente Comunicazione e Relazioni e devo dare un feedback critico a un collega dominato da Struttura e Rigore. Cosa devo tenere a mente?",
+      "Come riconosco se qualcuno è più orientato a Ritmo e Decisione, Comunicazione e Relazioni o Struttura e Rigore senza fare un test?",
+      "Il mio responsabile ha una forte componente Struttura e Rigore e non mi dà mai feedback personale. Come posso cambiare questa situazione?",
+      "Cosa significa per la collaborazione avere due persone dominate da Ritmo e Decisione nello stesso progetto?",
+    ],
+  },
+  {
+    category: "Formulazioni pronte",
+    prompts: [
+      "Dammi 3 formulazioni per fissare dei limiti a un collaboratore con forte Ritmo e Decisione senza provocarlo.",
+      "Come dico a un membro del team dominato da Comunicazione e Relazioni che la qualità non è accettabile, senza danneggiare il rapporto?",
+      "Ho bisogno di una formulazione per interrompere educatamente un collega dominato da Struttura e Rigore in una riunione.",
+      "Come formulo un rifiuto a un candidato interno con forte Ritmo e Decisione che gestisce male il diniego?",
+      "Dammi un'apertura per un colloquio annuale con un collaboratore introverso dominato da Struttura e Rigore.",
+    ],
+  },
+  {
+    category: "Simulazioni e pratica",
+    prompts: [
+      "Facciamo una simulazione di trattativa salariale. Il mio interlocutore ha una forte componente Ritmo e Decisione ed è molto esigente. Interpreta il suo ruolo e dammi feedback dopo ogni turno.",
+      "Il mio collaboratore dominato da Comunicazione e Relazioni arriva sempre in ritardo. Io ho una forte componente Ritmo e Decisione. Simuliamo il colloquio – sei tu il collaboratore.",
+      "Simula un colloquio di selezione con me. Sono io l'intervistatore, il candidato ha una forte componente Comunicazione e Relazioni. Rispondi come un vero candidato.",
+      "Esercitati con me in un colloquio di feedback. Devo dire a un collaboratore di lunga data dominato da Struttura e Rigore che deve cambiare. Tu lo interpreti.",
+      "Voglio chiedere al mio responsabile con forte Ritmo e Decisione un aumento. Facciamo una simulazione – tu sei il mio responsabile.",
+    ],
+  },
+  {
+    category: "Verificare e migliorare le formulazioni",
+    prompts: [
+      "Direi al mio collaboratore dominato da Comunicazione e Relazioni: 'Sei in ritardo da settimane, stai innervosendo tutto il team.' – Cosa c'è di sbagliato e come sarebbe meglio?",
+      "Controlla questa frase per un colloquio critico con una persona dominata da Struttura e Rigore: 'Ho la sensazione che tu non ti impegni abbastanza.' – Che effetto fa?",
+      "Come reagirebbe una persona con forte Ritmo e Decisione a questa frase: 'Potremmo forse parlare di se la scadenza è realistica?'",
+      "Voglio dire al mio team: 'Da ora in poi: chi arriva in ritardo deve spiegare il perché.' – Che effetto ha sui diversi tipi?",
+      "Scrivimi tre aperture diverse per un colloquio critico con una persona dominata da Comunicazione e Relazioni – poi scelgo la migliore.",
+    ],
+  },
+  {
+    category: "Consulenza sulle dinamiche di team",
+    prompts: [
+      "Il mio team è composto da 3 persone dominate da Struttura e Rigore, 1 da Ritmo e Decisione e 2 da Comunicazione e Relazioni. Quali sono le dinamiche tipiche?",
+      "Ho un team con una forte componente Comunicazione e Relazioni. Quali sono i rischi e cosa ci manca?",
+      "Siamo in 5: 2 ibridi Ritmo-Struttura, 2 persone dominate da Comunicazione e Relazioni e 1 Equilibrato. Come guido al meglio questo team?",
+      "Nel mio team ci sono solo componenti Ritmo e Decisione e Struttura e Rigore, senza un contrappeso Comunicazione e Relazioni. Cosa succede a lungo termine?",
+      "Sto costruendo un nuovo team di progetto. Quale combinazione di tipi sarebbe ideale per un progetto di innovazione?",
+    ],
+  },
+  {
+    category: "Preparazione ai colloqui",
+    prompts: [
+      "Domani devo condurre un colloquio di licenziamento con un collaboratore dominato da Comunicazione e Relazioni. Aiutami a prepararmi.",
+      "Ho un colloquio di conflitto con un collega dominato da Ritmo e Decisione che mina la mia autorità. Come mi preparo?",
+      "Preparami una trattativa. Il mio interlocutore ha forte Struttura e Rigore e vuole tutto per iscritto.",
+      "Devo comunicare al mio team una decisione impopolare. Il team ha una forte impronta Ritmo-Comunicazione. Come procedo?",
+      "Aiutami a preparare un colloquio di rientro dopo una lunga malattia. La collaboratrice ha una forte componente Struttura e Rigore.",
+    ],
+  },
+  {
+    category: "Supporto all'onboarding",
+    prompts: [
+      "Un nuovo collaboratore dominato da Ritmo e Decisione entra nel mio team prevalentemente orientato a Struttura e Rigore. Cosa devo considerare nei primi 90 giorni?",
+      "Abbiamo assunto un nuovo responsabile dominato da Comunicazione e Relazioni. Il team è prevalentemente orientato a Ritmo e Decisione. Come riusciamo nell'integrazione?",
+      "Un esperto dominato da Struttura e Rigore passa in un team creativo con profilo Comunicazione-Ritmo. Quali sono le insidie?",
+      "Comincio come nuovo responsabile in un team che non conosco ancora. Come riconosco rapidamente i tipi bioLogic?",
+      "Tre nuovi collaboratori entrano contemporaneamente. Come struttura l'inserimento quando sono tutti di tipo diverso?",
+    ],
+  },
+  {
+    category: "Riconoscere i pattern di conflitto",
+    prompts: [
+      "Due colleghi si scontrano continuamente: uno vuole decisioni rapide, l'altro ha bisogno di più dati. Cosa c'è dietro?",
+      "Nel mio team c'è una persona che prende tutto sul personale e un'altra che argomenta solo in modo razionale. Perché si intensifica regolarmente?",
+      "Il mio vice e io ci blocchiamo a vicenda. Io ho una forte Comunicazione e Relazioni, lui forte Ritmo e Decisione. Come rompo lo schema?",
+      "C'è un conflitto permanente tra il commerciale (prevalentemente Ritmo e Decisione) e il controllo qualità (prevalentemente Struttura e Rigore). Come lo risolvo strutturalmente?",
+      "Ogni volta che siamo sotto pressione di tempo, il mio team si divide in fazioni. Qual è lo schema bioLogic dietro questo?",
+    ],
+  },
+  {
+    category: "Annunci e marketing del recruiting",
+    prompts: [
+      "Cerco un responsabile commerciale con forte Ritmo e Decisione. Quale linguaggio verbale e visivo dovrebbe usare il mio annuncio per attirare esattamente questo tipo?",
+      "Il nostro annuncio per un HR Business Partner attira solo candidati orientati a Struttura e Rigore. Come lo riformulo per far sentire coinvolte anche le persone con forte Comunicazione e Relazioni?",
+      "Cerchiamo un quality manager con forte Struttura e Rigore. Dammi 5 formulazioni concrete per l'annuncio che attirino questo tipo.",
+      "Voglio scrivere un annuncio per una posizione di project lead che necessita di un profilo Ritmo-Comunicazione. Come combino i due target?",
+      "Quali errori tipici fanno le aziende negli annunci di lavoro, portando a candidature dei tipi bioLogic sbagliati?",
+    ],
+  },
+  {
+    category: "Contesto dati di base",
+    requiresAnalysis: true,
+    prompts: [
+      "Guarda la posizione analizzata e dimmi: quali tipi bioLogic sono più adatti a questo ruolo?",
+      "Basandoti sul DNA del ruolo: che tipo di candidato completa meglio il profilo dei requisiti?",
+      "Analizza il profilo del ruolo: quali punti di forza deve avere chi ricopre questa posizione e dove si trovano i rischi tipici?",
+      "Come si comporterebbe un candidato dominato da Ritmo e Decisione in questo ruolo? Cosa considerare nella selezione?",
+      "Quali errori di selezione tipici accadono per questo profilo di ruolo senza che nessuno se ne accorga?",
+    ],
+  },
+  {
+    category: "Generare guide ai colloqui",
+    requiresAnalysis: true,
+    prompts: [
+      "Crea una guida completa al colloquio per la posizione analizzata. Con apertura, domande chiave, punti di osservazione bioLogic specifici e criteri di valutazione.",
+      "Genera una guida strutturata per un primo colloquio con un candidato per questo ruolo. Tieni conto del DNA del ruolo.",
+      "Crea una guida al colloquio di onboarding per i primi 90 giorni basandoti sul profilo del ruolo.",
+      "Crea una guida al colloquio di feedback calibrata sul profilo bioLogic del ruolo.",
+      "Genera una guida per un colloquio di periodo di prova basandoti sul DNA del ruolo e sui requisiti.",
+    ],
+  },
+  {
+    category: "Riepiloghi",
+    prompts: [
+      "Riassumi i punti più importanti della nostra conversazione fino ad ora.",
+    ],
+  },
+];
+
 function formatMessage(text: string) {
   const lines = text.split("\n");
   const elements: React.ReactNode[] = [];
@@ -680,7 +806,7 @@ export default function KICoach() {
   const ui = region === "FR"
     ? { ...rawUI, coach: FR_COACH_UI as unknown as typeof rawUI.coach }
     : rawUI;
-  const EXAMPLE_PROMPTS = region === "FR" ? EXAMPLE_PROMPTS_FR : region === "EN" ? EXAMPLE_PROMPTS_EN : EXAMPLE_PROMPTS_DE;
+  const EXAMPLE_PROMPTS = region === "FR" ? EXAMPLE_PROMPTS_FR : region === "EN" ? EXAMPLE_PROMPTS_EN : region === "IT" ? EXAMPLE_PROMPTS_IT : EXAMPLE_PROMPTS_DE;
   const { user } = useAuth();
   const isAdmin = user?.role === "admin";
   const isMobile = useIsMobile();

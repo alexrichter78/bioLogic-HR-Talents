@@ -49,21 +49,33 @@ const BEW_COLOR: Record<string, string> = {
   "Friction élevée, valeur ajoutée limitée": "#FF3B30",
   "Friction notable avec passerelle quotidienne": "#FF9500",
   "Critique": "#FF3B30",
+  "Molto adatto": "#34C759",
+  "Ben adatto": "#34C759",
+  "Compatibile culturalmente, portata funzionale limitata": "#FF9500",
+  "Funzionalmente prezioso, integrazione più impegnativa": "#FF9500",
+  "Parzialmente adatto": "#FF9500",
+  "Integrabile, senza leva funzionale chiara": "#FF9500",
+  "Interessante funzionalmente, culturalmente rischioso": "#FF3B30",
+  "Alta tensione, valore aggiunto limitato": "#FF3B30",
+  "Alta tensione con ponte quotidiano": "#FF9500",
+  "Critico": "#FF3B30",
 };
 const bewCol = (b: string) => BEW_COLOR[b] || "#FF9500";
 const axisColor = (v: string) => v === "hoch" ? "#34C759" : v === "mittel" ? "#FF9500" : v === "gering" ? "#FF3B30" : "#8E8E93";
 const axisLabel = (v: string, r?: string) => {
   if (r === "EN") return v === "hoch" ? "High" : v === "mittel" ? "Medium" : v === "gering" ? "Low" : "–";
+  if (r === "FR") return v === "hoch" ? "Élevé" : v === "mittel" ? "Moyen" : v === "gering" ? "Faible" : "–";
+  if (r === "IT") return v === "hoch" ? "Alto" : v === "mittel" ? "Medio" : v === "gering" ? "Basso" : "–";
   return v === "hoch" ? "Hoch" : v === "mittel" ? "Mittel" : v === "gering" ? "Gering" : "–";
 };
 
 function getDominanceLabel(t: Triad, r?: string): string {
   const sorted = [
-    { k: r === "EN" ? "Impulsive" : "Impulsiv", v: t.impulsiv },
-    { k: r === "EN" ? "Intuitive" : "Intuitiv", v: t.intuitiv },
-    { k: r === "EN" ? "Analytical" : "Analytisch", v: t.analytisch },
+    { k: r === "EN" ? "Impulsive" : r === "FR" ? "Rythme et Décision" : r === "IT" ? "Ritmo e Decisione" : "Impulsiv", v: t.impulsiv },
+    { k: r === "EN" ? "Intuitive" : r === "FR" ? "Communication et Relations" : r === "IT" ? "Comunicazione e Relazioni" : "Intuitiv", v: t.intuitiv },
+    { k: r === "EN" ? "Analytical" : r === "FR" ? "Structure et Rigueur" : r === "IT" ? "Struttura e Rigore" : "Analytisch", v: t.analytisch },
   ].sort((a, b) => b.v - a.v);
-  if (sorted[0].v - sorted[1].v <= 5) return r === "EN" ? "Balanced" : "Ausgeglichen";
+  if (sorted[0].v - sorted[1].v <= 5) return r === "EN" ? "Balanced" : r === "FR" ? "Équilibré" : r === "IT" ? "Equilibrato" : "Ausgeglichen";
   return sorted[0].k;
 }
 
@@ -362,7 +374,7 @@ export default function TeamCheck() {
       candidateName: "Person",
       teamGoal: teamGoal || undefined,
       roleType: isLeading ? "fuehrung" : "teammitglied",
-      lang: region === "FR" ? "fr" : region === "EN" ? "en" : "de",
+      lang: region === "FR" ? "fr" : region === "EN" ? "en" : region === "IT" ? "it" : "de",
     };
     return localizeDeep(computeTeamCheckV4(input), region);
   }, [beruf, isLeading, aufgabencharakter, erfolgsfokusLabels, team, kandidat, teamGoal, region]);
@@ -382,7 +394,7 @@ export default function TeamCheck() {
   const tdResult = useMemo(() => localizeDeep(computeTeamDynamics(tdInput), region), [tdInput, region]);
   const tl = TL_COLORS[tdResult.trafficLight];
 
-  const rolleLabel = isLeading ? (region === "FR" ? "Nouveau manager" : region === "EN" ? "New leader" : "Neue Führungskraft") : (region === "FR" ? "Nouveau membre d'équipe" : region === "EN" ? "New team member" : "Neues Teammitglied");
+  const rolleLabel = isLeading ? (region === "FR" ? "Nouveau manager" : region === "EN" ? "New leader" : region === "IT" ? "Nuovo responsabile" : "Neue Führungskraft") : (region === "FR" ? "Nouveau membre d'équipe" : region === "EN" ? "New team member" : region === "IT" ? "Nuovo membro del team" : "Neues Teammitglied");
   const sollDom = getDominanceLabel(soll, region);
   const kandDom = getDominanceLabel(kandidat, region);
   const teamDom = getDominanceLabel(team, region);
@@ -404,10 +416,10 @@ export default function TeamCheck() {
             fontSize: 12, fontWeight: 600, color: "#1D1D1F",
           }}>
             <ArrowLeft style={{ width: 14, height: 14, strokeWidth: 2.5 }} />
-            {region === "FR" ? "Retour" : region === "EN" ? "Back" : "Zurück"}
+            {region === "FR" ? "Retour" : region === "EN" ? "Back" : region === "IT" ? "Indietro" : "Zurück"}
           </button>
           <span style={{ flex: 1, fontSize: 13, fontWeight: 700, color: "#1D1D1F", textAlign: "center" }}>
-            {reportView === "detail" ? (region === "FR" ? "Rapport TeamCheck (V4)" : region === "EN" ? "TeamCheck Report (V4)" : "TeamCheck-Bericht (V4)") : "Executive Summary"}
+            {reportView === "detail" ? (region === "FR" ? "Rapport TeamCheck (V4)" : region === "EN" ? "TeamCheck Report (V4)" : region === "IT" ? "Report TeamCheck (V4)" : "TeamCheck-Bericht (V4)") : "Executive Summary"}
           </span>
           <button onClick={() => window.print()} data-testid="btn-print-report" style={{
             display: "flex", alignItems: "center", gap: 6,
@@ -417,7 +429,7 @@ export default function TeamCheck() {
             boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
           }}>
             <FileDown style={{ width: 13, height: 13, strokeWidth: 2 }} />
-            {region === "FR" ? "Exporter en PDF" : region === "EN" ? "Export as PDF" : "Als PDF exportieren"}
+            {region === "FR" ? "Exporter en PDF" : region === "EN" ? "Export as PDF" : region === "IT" ? "Esporta in PDF" : "Als PDF exportieren"}
           </button>
         </div>
 
@@ -432,13 +444,13 @@ export default function TeamCheck() {
                   borderRadius: 20, padding: "5px 14px", marginBottom: 14,
                 }}>
                   <FileText style={{ width: 12, height: 12, color: "#0071E3" }} />
-                  <span style={{ fontSize: 10, fontWeight: 700, color: "#0071E3", textTransform: "uppercase", letterSpacing: "0.12em" }}>{region === "FR" ? "Rapport TeamCheck" : region === "EN" ? "TeamCheck Report" : "TeamCheck-Bericht"}</span>
+                  <span style={{ fontSize: 10, fontWeight: 700, color: "#0071E3", textTransform: "uppercase", letterSpacing: "0.12em" }}>{region === "FR" ? "Rapport TeamCheck" : region === "EN" ? "TeamCheck Report" : region === "IT" ? "Report TeamCheck" : "TeamCheck-Bericht"}</span>
                 </div>
                 <h1 style={{ fontSize: 28, fontWeight: 750, letterSpacing: "-0.03em", color: "#1D1D1F", lineHeight: 1.15, marginBottom: 6 }}>{beruf}</h1>
-                <p style={{ fontSize: 13, color: "#8E8E93", marginBottom: 16 }}>{bereich || (region === "FR" ? "Analyse systémique du recrutement" : region === "EN" ? "Systemic placement analysis" : "Systemische Analyse zur Besetzung")}</p>
+                <p style={{ fontSize: 13, color: "#8E8E93", marginBottom: 16 }}>{bereich || (region === "FR" ? "Analyse systémique du recrutement" : region === "EN" ? "Systemic placement analysis" : region === "IT" ? "Analisi sistemica del posizionamento" : "Systemische Analyse zur Besetzung")}</p>
                 <div style={{ display: "flex", justifyContent: "center", gap: 12, flexWrap: "wrap" }}>
                   <span style={{ fontSize: 12, fontWeight: 600, color: "#3A3A3C", background: "rgba(0,0,0,0.04)", padding: "6px 14px", borderRadius: 10 }}>
-                    {isLeading ? (region === "FR" ? "Poste de manager" : region === "EN" ? "Leadership position" : "Führungsposition") : (region === "FR" ? "Membre d'équipe" : region === "EN" ? "Team member" : "Teammitglied")}
+                    {isLeading ? (region === "FR" ? "Poste de manager" : region === "EN" ? "Leadership position" : region === "IT" ? "Posizione di responsabilità" : "Führungsposition") : (region === "FR" ? "Membre d'équipe" : region === "EN" ? "Team member" : region === "IT" ? "Membro del team" : "Teammitglied")}
                   </span>
                   <span style={{ fontSize: 12, fontWeight: 700, color: bc, background: `${bc}10`, padding: "6px 14px", borderRadius: 10 }}>
                     {v4Result.gesamteinschaetzung}
@@ -448,9 +460,9 @@ export default function TeamCheck() {
 
               <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
                 {[
-                  { label: region === "FR" ? "Adéquation d'équipe" : region === "EN" ? "Team fit" : "Passung zum Team", value: axisLabel(v4Result.passungZumTeam, region), color: axisColor(v4Result.passungZumTeam) },
-                  { label: region === "FR" ? "Contribution aux tâches" : region === "EN" ? "Task contribution" : "Beitrag zur Aufgabe", value: axisLabel(v4Result.beitragZurAufgabe, region), color: axisColor(v4Result.beitragZurAufgabe) },
-                  { label: region === "FR" ? "Besoin d'accompagnement" : region === "EN" ? "Coaching need" : "Begleitungsbedarf", value: axisLabel(v4Result.begleitungsbedarf, region), color: axisColor(v4Result.begleitungsbedarf === "gering" ? "hoch" : v4Result.begleitungsbedarf === "hoch" ? "gering" : "mittel") },
+                  { label: region === "FR" ? "Adéquation d'équipe" : region === "EN" ? "Team fit" : region === "IT" ? "Compatibilità" : "Passung zum Team", value: axisLabel(v4Result.passungZumTeam, region), color: axisColor(v4Result.passungZumTeam) },
+                  { label: region === "FR" ? "Contribution aux tâches" : region === "EN" ? "Task contribution" : region === "IT" ? "Contributo" : "Beitrag zur Aufgabe", value: axisLabel(v4Result.beitragZurAufgabe, region), color: axisColor(v4Result.beitragZurAufgabe) },
+                  { label: region === "FR" ? "Besoin d'accompagnement" : region === "EN" ? "Coaching need" : region === "IT" ? "Supporto" : "Begleitungsbedarf", value: axisLabel(v4Result.begleitungsbedarf, region), color: axisColor(v4Result.begleitungsbedarf === "gering" ? "hoch" : v4Result.begleitungsbedarf === "hoch" ? "gering" : "mittel") },
                 ].map((kpi, i) => (
                   <div key={i} style={{
                     flex: 1, minWidth: 140, textAlign: "center",
@@ -477,16 +489,16 @@ export default function TeamCheck() {
 
               {/* S1: Gesamtbewertung */}
               <GlassCard data-testid="report-section-1">
-                <SectionHeader num={1} title={region === "FR" ? "Évaluation globale" : region === "EN" ? "Overall assessment" : "Gesamtbewertung"} icon={Target} />
+                <SectionHeader num={1} title={region === "FR" ? "Évaluation globale" : region === "EN" ? "Overall assessment" : region === "IT" ? "Valutazione complessiva" : "Gesamtbewertung"} icon={Target} />
                 <div style={{
                   display: "flex", gap: 12, marginBottom: 18, flexWrap: "wrap",
                 }}>
                   <div style={{ flex: 1, minWidth: 180, padding: "14px 18px", borderRadius: 16, background: "rgba(52,199,89,0.05)", border: "1px solid rgba(52,199,89,0.12)" }}>
-                    <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 4px" }}>{region === "FR" ? "Point fort principal" : region === "EN" ? "Key strength" : "Hauptstärke"}</p>
+                    <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 4px" }}>{region === "FR" ? "Point fort principal" : region === "EN" ? "Key strength" : region === "IT" ? "Punto di forza" : "Hauptstärke"}</p>
                     <p style={{ fontSize: 13, fontWeight: 600, color: "#34C759", margin: 0 }}>{v4Result.hauptstaerke}</p>
                   </div>
                   <div style={{ flex: 1, minWidth: 180, padding: "14px 18px", borderRadius: 16, background: "rgba(255,149,0,0.05)", border: "1px solid rgba(255,149,0,0.12)" }}>
-                    <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 4px" }}>{region === "FR" ? "Écart principal" : region === "EN" ? "Key deviation" : "Hauptabweichung"}</p>
+                    <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 4px" }}>{region === "FR" ? "Écart principal" : region === "EN" ? "Key deviation" : region === "IT" ? "Deviazione principale" : "Hauptabweichung"}</p>
                     <p style={{ fontSize: 13, fontWeight: 600, color: "#FF9500", margin: 0 }}>{v4Result.hauptabweichung}</p>
                   </div>
                 </div>
@@ -512,14 +524,14 @@ export default function TeamCheck() {
                   <div style={{ flex: 1, minWidth: 220 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
                       <CheckCircle style={{ width: 15, height: 15, color: "#34C759", strokeWidth: 2.5 }} />
-                      <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>{region === "FR" ? "Opportunités" : region === "EN" ? "Opportunities" : "Chancen"}</span>
+                      <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>{region === "FR" ? "Opportunités" : region === "EN" ? "Opportunities" : region === "IT" ? "Opportunità" : "Chancen"}</span>
                     </div>
                     <V4BlockList items={v4Result.chancen} accentColor="#34C759" />
                   </div>
                   <div style={{ flex: 1, minWidth: 220 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
                       <AlertTriangle style={{ width: 15, height: 15, color: "#FF3B30", strokeWidth: 2.5 }} />
-                      <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>{region === "FR" ? "Risques" : region === "EN" ? "Risks" : "Risiken"}</span>
+                      <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>{region === "FR" ? "Risques" : region === "EN" ? "Risks" : region === "IT" ? "Rischi" : "Risiken"}</span>
                     </div>
                     <V4BlockList items={v4Result.risiken} accentColor="#FF3B30" />
                   </div>
@@ -543,7 +555,7 @@ export default function TeamCheck() {
 
               {/* S7: Risikoprognose */}
               <GlassCard data-testid="report-section-7">
-                <SectionHeader num={v4Result.fuehrungshinweis ? 7 : 6} title={region === "FR" ? "Prévision des risques" : region === "EN" ? "Risk forecast" : "Risikoprognose"} icon={CalendarDays} />
+                <SectionHeader num={v4Result.fuehrungshinweis ? 7 : 6} title={region === "FR" ? "Prévision des risques" : region === "EN" ? "Risk forecast" : region === "IT" ? "Previsione dei rischi" : "Risikoprognose"} icon={CalendarDays} />
                 <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
                   {v4Result.risikoprognose.map((phase, i) => {
                     const phaseColors = ["#FF9500", "#0071E3", "#34C759"];
@@ -641,7 +653,7 @@ export default function TeamCheck() {
 
               {/* S9: Empfehlungen */}
               <GlassCard data-testid="report-section-9">
-                <SectionHeader num={v4Result.fuehrungshinweis ? 9 : 8} title={region === "FR" ? "Recommandations" : region === "EN" ? "Recommendations" : "Empfehlungen"} icon={Target} />
+                <SectionHeader num={v4Result.fuehrungshinweis ? 9 : 8} title={region === "FR" ? "Recommandations" : region === "EN" ? "Recommendations" : region === "IT" ? "Raccomandazioni" : "Empfehlungen"} icon={Target} />
                 <V4BlockList items={v4Result.empfehlungen} accentColor="#0071E3" />
               </GlassCard>
 
@@ -653,7 +665,7 @@ export default function TeamCheck() {
 
               {/* S11: Fazit */}
               <GlassCard data-testid="report-section-11">
-                <SectionHeader num={v4Result.fuehrungshinweis ? 11 : 10} title={region === "FR" ? "Conclusion finale" : region === "EN" ? "Final conclusion" : "Schlussfazit"} icon={Award} />
+                <SectionHeader num={v4Result.fuehrungshinweis ? 11 : 10} title={region === "FR" ? "Conclusion finale" : region === "EN" ? "Final conclusion" : region === "IT" ? "Conclusione finale" : "Schlussfazit"} icon={Award} />
                 <div style={{
                   padding: "20px 24px", borderRadius: 18,
                   background: `linear-gradient(135deg, ${bc}08, ${bc}03)`,
@@ -677,10 +689,10 @@ export default function TeamCheck() {
                   <span style={{ fontSize: 10, fontWeight: 700, color: "#34C759", textTransform: "uppercase", letterSpacing: "0.12em" }}>Executive Summary</span>
                 </div>
                 <h1 style={{ fontSize: 28, fontWeight: 750, letterSpacing: "-0.03em", color: "#1D1D1F", lineHeight: 1.15, marginBottom: 6 }}>{beruf}</h1>
-                <p style={{ fontSize: 13, color: "#8E8E93", marginBottom: 18 }}>{bereich || (region === "FR" ? "Analyse systémique du recrutement" : region === "EN" ? "Systemic placement analysis" : "Systemische Analyse zur Besetzung")}</p>
+                <p style={{ fontSize: 13, color: "#8E8E93", marginBottom: 18 }}>{bereich || (region === "FR" ? "Analyse systémique du recrutement" : region === "EN" ? "Systemic placement analysis" : region === "IT" ? "Analisi sistemica del posizionamento" : "Systemische Analyse zur Besetzung")}</p>
                 <div style={{ display: "flex", justifyContent: "center", gap: 12, flexWrap: "wrap", marginBottom: 18 }}>
                   <span style={{ fontSize: 12, fontWeight: 600, color: "#3A3A3C", background: "rgba(0,0,0,0.04)", padding: "6px 14px", borderRadius: 10 }}>
-                    {isLeading ? (region === "FR" ? "Poste de manager" : region === "EN" ? "Leadership position" : "Führungsposition") : (region === "FR" ? "Membre d'équipe" : region === "EN" ? "Team member" : "Teammitglied")}
+                    {isLeading ? (region === "FR" ? "Poste de manager" : region === "EN" ? "Leadership position" : region === "IT" ? "Posizione di responsabilità" : "Führungsposition") : (region === "FR" ? "Membre d'équipe" : region === "EN" ? "Team member" : region === "IT" ? "Membro del team" : "Teammitglied")}
                   </span>
                   <span style={{ fontSize: 12, fontWeight: 700, color: bc, background: `${bc}10`, padding: "6px 14px", borderRadius: 10 }}>
                     {v4Result.gesamteinschaetzung}
@@ -692,15 +704,15 @@ export default function TeamCheck() {
                   background: `${tl.bg}`, border: `1px solid ${tl.fill}20`,
                 }}>
                   <TrafficLightAmpel tl={tdResult.trafficLight} />
-                  <span style={{ fontSize: 14, fontWeight: 700, color: tl.fill }}>{region === "FR" ? { GREEN: "Stable", YELLOW: "Gérable", RED: "Zone de tension" }[tdResult.trafficLight] : region === "EN" ? { GREEN: "Stable", YELLOW: "Manageable", RED: "Tension field" }[tdResult.trafficLight] : tl.label}</span>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: tl.fill }}>{region === "FR" ? { GREEN: "Stable", YELLOW: "Gérable", RED: "Zone de tension" }[tdResult.trafficLight] : region === "EN" ? { GREEN: "Stable", YELLOW: "Manageable", RED: "Tension field" }[tdResult.trafficLight] : region === "IT" ? { GREEN: "Stabile", YELLOW: "Gestibile", RED: "Area di tensione" }[tdResult.trafficLight] : tl.label}</span>
                 </div>
               </GlassCard>
 
               <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
                 {[
-                  { label: region === "FR" ? "Adéquation d'équipe" : region === "EN" ? "Team fit" : "Passung zum Team", value: axisLabel(v4Result.passungZumTeam, region), color: axisColor(v4Result.passungZumTeam), icon: Users },
-                  { label: region === "FR" ? "Contribution aux tâches" : region === "EN" ? "Task contribution" : "Beitrag zur Aufgabe", value: axisLabel(v4Result.beitragZurAufgabe, region), color: axisColor(v4Result.beitragZurAufgabe), icon: Target },
-                  { label: region === "FR" ? "Besoin d'accompagnement" : region === "EN" ? "Coaching need" : "Begleitungsbedarf", value: axisLabel(v4Result.begleitungsbedarf, region), color: axisColor(v4Result.begleitungsbedarf === "gering" ? "hoch" : v4Result.begleitungsbedarf === "hoch" ? "gering" : "mittel"), icon: Shield },
+                  { label: region === "FR" ? "Adéquation d'équipe" : region === "EN" ? "Team fit" : region === "IT" ? "Compatibilità con il team" : "Passung zum Team", value: axisLabel(v4Result.passungZumTeam, region), color: axisColor(v4Result.passungZumTeam), icon: Users },
+                  { label: region === "FR" ? "Contribution aux tâches" : region === "EN" ? "Task contribution" : region === "IT" ? "Contributo al ruolo" : "Beitrag zur Aufgabe", value: axisLabel(v4Result.beitragZurAufgabe, region), color: axisColor(v4Result.beitragZurAufgabe), icon: Target },
+                  { label: region === "FR" ? "Besoin d'accompagnement" : region === "EN" ? "Coaching need" : region === "IT" ? "Necessità di supporto" : "Begleitungsbedarf", value: axisLabel(v4Result.begleitungsbedarf, region), color: axisColor(v4Result.begleitungsbedarf === "gering" ? "hoch" : v4Result.begleitungsbedarf === "hoch" ? "gering" : "mittel"), icon: Shield },
                 ].map((kpi, i) => (
                   <div key={i} style={{
                     flex: 1, minWidth: 140,
@@ -727,15 +739,15 @@ export default function TeamCheck() {
                   <div style={{ width: 32, height: 32, borderRadius: 10, background: "linear-gradient(135deg, #0071E3, #0071E3CC)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <Target style={{ width: 15, height: 15, color: "#FFF", strokeWidth: 2.2 }} />
                   </div>
-                  <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{region === "FR" ? "Évaluation globale" : region === "EN" ? "Overall assessment" : "Gesamtbewertung"}</h3>
+                  <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{region === "FR" ? "Évaluation globale" : region === "EN" ? "Overall assessment" : region === "IT" ? "Valutazione complessiva" : "Gesamtbewertung"}</h3>
                 </div>
                 <div style={{ display: "flex", gap: 12, marginBottom: 14, flexWrap: "wrap" }}>
                   <div style={{ flex: 1, minWidth: 160, padding: "12px 16px", borderRadius: 14, background: "rgba(52,199,89,0.05)", border: "1px solid rgba(52,199,89,0.12)" }}>
-                    <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 3px" }}>{region === "FR" ? "Point fort principal" : region === "EN" ? "Key strength" : "Hauptstärke"}</p>
+                    <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 3px" }}>{region === "FR" ? "Point fort principal" : region === "EN" ? "Key strength" : region === "IT" ? "Punto di forza" : "Hauptstärke"}</p>
                     <p style={{ fontSize: 13, fontWeight: 600, color: "#34C759", margin: 0 }}>{v4Result.hauptstaerke}</p>
                   </div>
                   <div style={{ flex: 1, minWidth: 160, padding: "12px 16px", borderRadius: 14, background: "rgba(255,149,0,0.05)", border: "1px solid rgba(255,149,0,0.12)" }}>
-                    <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 3px" }}>{region === "FR" ? "Écart principal" : region === "EN" ? "Key deviation" : "Hauptabweichung"}</p>
+                    <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 3px" }}>{region === "FR" ? "Écart principal" : region === "EN" ? "Key deviation" : region === "IT" ? "Deviazione principale" : "Hauptabweichung"}</p>
                     <p style={{ fontSize: 13, fontWeight: 600, color: "#FF9500", margin: 0 }}>{v4Result.hauptabweichung}</p>
                   </div>
                 </div>
@@ -748,14 +760,14 @@ export default function TeamCheck() {
                 <GlassCard style={{ flex: 1, minWidth: 260 }} data-testid="exec-chancen">
                   <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
                     <CheckCircle style={{ width: 15, height: 15, color: "#34C759", strokeWidth: 2.5 }} />
-                    <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>{region === "FR" ? "Opportunités" : region === "EN" ? "Opportunities" : "Chancen"}</span>
+                    <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>{region === "FR" ? "Opportunités" : region === "EN" ? "Opportunities" : region === "IT" ? "Opportunità" : "Chancen"}</span>
                   </div>
                   <BulletList items={v4Result.chancen.map(c => c.title)} color="#34C759" icon="check" />
                 </GlassCard>
                 <GlassCard style={{ flex: 1, minWidth: 260 }} data-testid="exec-risiken">
                   <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
                     <AlertTriangle style={{ width: 15, height: 15, color: "#FF3B30", strokeWidth: 2.5 }} />
-                    <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>{region === "FR" ? "Risques" : region === "EN" ? "Risks" : "Risiken"}</span>
+                    <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>{region === "FR" ? "Risques" : region === "EN" ? "Risks" : region === "IT" ? "Rischi" : "Risiken"}</span>
                   </div>
                   <BulletList items={v4Result.risiken.map(r => r.title)} color="#FF3B30" icon="warning" />
                 </GlassCard>
@@ -766,7 +778,7 @@ export default function TeamCheck() {
                   <div style={{ width: 32, height: 32, borderRadius: 10, background: "linear-gradient(135deg, #5856D6, #5856D6CC)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <CalendarDays style={{ width: 15, height: 15, color: "#FFF", strokeWidth: 2.2 }} />
                   </div>
-                  <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{region === "FR" ? "Prévision des risques" : region === "EN" ? "Risk forecast" : "Risikoprognose"}</h3>
+                  <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{region === "FR" ? "Prévision des risques" : region === "EN" ? "Risk forecast" : region === "IT" ? "Previsione dei rischi" : "Risikoprognose"}</h3>
                 </div>
                 <div style={{ position: "relative", paddingLeft: 20, marginBottom: 12 }}>
                   <div style={{ position: "absolute", left: -1, top: 0, bottom: 0, width: 3, borderRadius: 2, background: "linear-gradient(180deg, #FF9500, #0071E3, #34C759)" }} />
@@ -793,7 +805,7 @@ export default function TeamCheck() {
                   <div style={{ width: 32, height: 32, borderRadius: 10, background: "linear-gradient(135deg, #34C759, #34C759CC)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <Target style={{ width: 15, height: 15, color: "#FFF", strokeWidth: 2.2 }} />
                   </div>
-                  <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{region === "FR" ? "Recommandations" : region === "EN" ? "Recommendations" : "Empfehlungen"}</h3>
+                  <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{region === "FR" ? "Recommandations" : region === "EN" ? "Recommendations" : region === "IT" ? "Raccomandazioni" : "Empfehlungen"}</h3>
                 </div>
                 <V4BlockList items={v4Result.empfehlungen} accentColor="#0071E3" />
               </GlassCard>
@@ -829,10 +841,10 @@ export default function TeamCheck() {
           <div className="w-full mx-auto" style={{ maxWidth: 1100, padding: isMobile ? "0 12px" : "0 24px" }}>
             <div className="text-center">
               <h1 style={{ fontSize: 24, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 2px", color: "#34C759" }} data-testid="text-teamcheck-title">
-                Teamstruktur analysieren
+                {region === "FR" ? "Analyser la structure d'équipe" : region === "EN" ? "Analyse team structure" : region === "IT" ? "Analisi struttura del team" : "Teamstruktur analysieren"}
               </h1>
               <p style={{ fontSize: 14, color: "#48484A", fontWeight: 450, margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }} data-testid="text-teamcheck-subtitle">
-                Analysiere die strukturelle Passung zwischen Kandidat und bestehendem Team.
+                {region === "FR" ? "Analysez l'adéquation entre le candidat et l'équipe existante." : region === "EN" ? "Analyse the structural fit between candidate and existing team." : region === "IT" ? "Analizza la compatibilità strutturale tra il candidato e il team esistente." : "Analysiere die strukturelle Passung zwischen Kandidat und bestehendem Team."}
               </p>
             </div>
           </div>
@@ -857,7 +869,7 @@ export default function TeamCheck() {
           }}
         >
           <FileText style={{ width: 13, height: 13, strokeWidth: 2.5 }} />
-          Detailbericht
+          {region === "FR" ? "Rapport détaillé" : region === "EN" ? "Detail report" : region === "IT" ? "Rapporto dettagliato" : "Detailbericht"}
         </button>
         <button
           data-testid="btn-exec-report"
@@ -896,21 +908,21 @@ export default function TeamCheck() {
             }}
           >
             <FileDown style={{ width: 14, height: 14, strokeWidth: 2 }} />
-            {region === "FR" ? "Exporter en PDF" : region === "EN" ? "Export as PDF" : "Als PDF exportieren"}
+            {region === "FR" ? "Exporter en PDF" : region === "EN" ? "Export as PDF" : region === "IT" ? "Esporta in PDF" : "Als PDF exportieren"}
           </button>
           <h2 style={{ fontSize: 20, fontWeight: 800, color: "#1D1D1F", margin: "0 0 2px", letterSpacing: "-0.02em" }}>bioLogic-TeamCheck</h2>
-          <p style={{ fontSize: 12, color: "#8E8E93", margin: "0 0 18px", fontWeight: 500 }}>{region === "FR" ? "Base de décision recrutement – V4" : region === "EN" ? "Recruiting decision basis – V4" : "Recruiting-Entscheidungsgrundlage – V4"}</p>
+          <p style={{ fontSize: 12, color: "#8E8E93", margin: "0 0 18px", fontWeight: 500 }}>{region === "FR" ? "Base de décision recrutement – V4" : region === "EN" ? "Recruiting decision basis – V4" : region === "IT" ? "Decisione di recruiting – V4" : "Recruiting-Entscheidungsgrundlage – V4"}</p>
           <div style={{ display: "grid", gridTemplateColumns: "140px 1fr", rowGap: 6, columnGap: 16, fontSize: 13 }}>
-            <span style={{ color: "#8E8E93", fontWeight: 500 }}>{region === "FR" ? "Poste :" : region === "EN" ? "Position:" : "Stelle:"}</span>
+            <span style={{ color: "#8E8E93", fontWeight: 500 }}>{region === "FR" ? "Poste :" : region === "EN" ? "Position:" : region === "IT" ? "Ruolo:" : "Stelle:"}</span>
             <span style={{ color: "#3A3A3C", fontWeight: 600 }} data-testid="meta-position">{beruf}</span>
-            <span style={{ color: "#8E8E93", fontWeight: 500 }}>{region === "FR" ? "Domaine :" : region === "EN" ? "Area:" : "Bereich:"}</span>
+            <span style={{ color: "#8E8E93", fontWeight: 500 }}>{region === "FR" ? "Domaine :" : region === "EN" ? "Area:" : region === "IT" ? "Area:" : "Bereich:"}</span>
             <span style={{ color: "#3A3A3C", fontWeight: 600 }} data-testid="meta-bereich">{bereich || "–"}</span>
-            <span style={{ color: "#8E8E93", fontWeight: 500 }}>{region === "FR" ? "Priorité :" : region === "EN" ? "Focus:" : "Fokus:"}</span>
+            <span style={{ color: "#8E8E93", fontWeight: 500 }}>{region === "FR" ? "Priorité :" : region === "EN" ? "Focus:" : region === "IT" ? "Focus:" : "Fokus:"}</span>
             <span style={{ color: "#3A3A3C", fontWeight: 600 }} data-testid="meta-fokus">{erfolgsfokusLabels.length > 0 ? erfolgsfokusLabels.join(", ") : "–"}</span>
-            <span style={{ color: "#8E8E93", fontWeight: 500 }}>{region === "FR" ? "Caractère du rôle :" : region === "EN" ? "Role character:" : "Rollencharakter:"}</span>
+            <span style={{ color: "#8E8E93", fontWeight: 500 }}>{region === "FR" ? "Caractère du rôle :" : region === "EN" ? "Role character:" : region === "IT" ? "Carattere del ruolo:" : "Rollencharakter:"}</span>
             <span style={{ color: "#3A3A3C", fontWeight: 600 }} data-testid="meta-charakter">{aufgabencharakter || "–"}</span>
-            <span style={{ color: "#8E8E93", fontWeight: 500 }}>{region === "FR" ? "Date :" : region === "EN" ? "Date:" : "Datum:"}</span>
-            <span style={{ color: "#3A3A3C", fontWeight: 600 }} data-testid="meta-datum">{new Date().toLocaleDateString(region === "FR" ? "fr-FR" : region === "EN" ? "en-GB" : "de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })}</span>
+            <span style={{ color: "#8E8E93", fontWeight: 500 }}>{region === "FR" ? "Date :" : region === "EN" ? "Date:" : region === "IT" ? "Data:" : "Datum:"}</span>
+            <span style={{ color: "#3A3A3C", fontWeight: 600 }} data-testid="meta-datum">{new Date().toLocaleDateString(region === "FR" ? "fr-FR" : region === "EN" ? "en-GB" : region === "IT" ? "it-IT" : "de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })}</span>
           </div>
         </div>
 
@@ -933,11 +945,11 @@ export default function TeamCheck() {
 
           {/* SECTION 1: DIAGNOSE */}
           <GlassCard data-testid="section-diagnose">
-            <SectionHeader num={1} title="DIAGNOSE" icon={BarChart3} />
+            <SectionHeader num={1} title={region === "FR" ? "DIAGNOSTIC" : region === "EN" ? "DIAGNOSIS" : region === "IT" ? "DIAGNOSI" : "DIAGNOSE"} icon={BarChart3} />
 
             <div style={{ display: "flex", gap: 24, flexWrap: "wrap", marginBottom: 20 }}>
               <div style={{ flex: 1, minWidth: 200 }}>
-                <p style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F", margin: "0 0 10px" }}>Rolle der neuen Person</p>
+                <p style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F", margin: "0 0 10px" }}>{region === "FR" ? "Rôle de la nouvelle personne" : region === "EN" ? "Role of the new person" : region === "IT" ? "Ruolo della nuova persona" : "Rolle der neuen Person"}</p>
                 <div style={{ display: "flex", gap: 4, background: "rgba(0,0,0,0.03)", borderRadius: 10, padding: 3 }}>
                   {[true, false].map(val => (
                     <button key={String(val)}
@@ -951,7 +963,7 @@ export default function TeamCheck() {
                         color: isLeading === val ? "#0071E3" : "#8E8E93",
                         transition: "all 200ms ease",
                       }}
-                    >{val ? (region === "FR" ? "Management" : region === "EN" ? "Leadership" : "Führung") : (region === "FR" ? "Membre d'équipe" : region === "EN" ? "Team member" : "Teammitglied")}</button>
+                    >{val ? (region === "FR" ? "Management" : region === "EN" ? "Leadership" : region === "IT" ? "Responsabilità" : "Führung") : (region === "FR" ? "Membre d'équipe" : region === "EN" ? "Team member" : region === "IT" ? "Membro del team" : "Teammitglied")}</button>
                   ))}
                 </div>
               </div>
@@ -960,7 +972,7 @@ export default function TeamCheck() {
                 <p style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F", margin: "0 0 10px" }}>{t("Teamgrösse")}</p>
                 <div style={{ display: "flex", gap: 4, background: "rgba(0,0,0,0.03)", borderRadius: 10, padding: 3, marginBottom: 6 }}>
                   {(["KLEIN", "MITTEL", "GROSS"] as TeamSize[]).map(size => {
-                    const labels: Record<TeamSize, string> = { KLEIN: "Klein (2–5)", MITTEL: "Mittel (6–12)", GROSS: t("Gross (13+)") };
+                    const labels: Record<TeamSize, string> = region === "FR" ? { KLEIN: "Petit (2–5)", MITTEL: "Moyen (6–12)", GROSS: "Grand (13+)" } : region === "EN" ? { KLEIN: "Small (2–5)", MITTEL: "Medium (6–12)", GROSS: "Large (13+)" } : region === "IT" ? { KLEIN: "Piccolo (2–5)", MITTEL: "Medio (6–12)", GROSS: "Grande (13+)" } : { KLEIN: "Klein (2–5)", MITTEL: "Mittel (6–12)", GROSS: t("Gross (13+)") };
                     const active = teamSize === size;
                     return (
                       <button key={size} onClick={() => setTeamSize(size)} data-testid={`toggle-size-${size.toLowerCase()}`} style={{
@@ -975,20 +987,20 @@ export default function TeamCheck() {
                   })}
                 </div>
                 <p style={{ fontSize: 12, color: "#8E8E93", margin: 0 }}>
-                  {teamSize === "KLEIN" ? "Kleine Teams: Jede Person hat hohen Einfluss auf die Dynamik." : teamSize === "GROSS" ? t("Grosse Teams: Einzelpersonen verändern die Gesamtdynamik weniger stark.") : "Mittlere Teams: Spürbarer, aber begrenzter Einfluss pro Person."}
+                  {region === "IT" ? (teamSize === "KLEIN" ? "Team piccolo: ogni persona ha un alto influsso sulla dinamica." : teamSize === "GROSS" ? "Team grande: le singole persone cambiano meno la dinamica complessiva." : "Team medio: influsso percepibile ma limitato per persona.") : region === "EN" ? (teamSize === "KLEIN" ? "Small teams: every person has a high impact on team dynamics." : teamSize === "GROSS" ? "Large teams: individuals have less effect on overall dynamics." : "Medium teams: noticeable but limited impact per person.") : region === "FR" ? (teamSize === "KLEIN" ? "Petites équipes : chaque personne a une grande influence sur la dynamique." : teamSize === "GROSS" ? "Grandes équipes : les individus changent moins la dynamique globale." : "Équipes moyennes : influence perceptible mais limitée par personne.") : (teamSize === "KLEIN" ? "Kleine Teams: Jede Person hat hohen Einfluss auf die Dynamik." : teamSize === "GROSS" ? t("Grosse Teams: Einzelpersonen verändern die Gesamtdynamik weniger stark.") : "Mittlere Teams: Spürbarer, aber begrenzter Einfluss pro Person.")}
                 </p>
               </div>
             </div>
 
             {/* Funktionsziel */}
             <div style={{ marginBottom: 20 }}>
-              <p style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F", margin: "0 0 10px" }}>{region === "FR" ? "Objectif fonctionnel du domaine" : region === "EN" ? "Functional goal of the area" : "Funktionsziel des Bereichs"}</p>
+              <p style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F", margin: "0 0 10px" }}>{region === "FR" ? "Objectif fonctionnel du domaine" : region === "EN" ? "Functional goal of the area" : region === "IT" ? "Obiettivo funzionale dell'area" : "Funktionsziel des Bereichs"}</p>
               <div style={{ display: "flex", gap: 4, background: "rgba(0,0,0,0.03)", borderRadius: 10, padding: 3 }}>
                 {([
-                  { value: "" as typeof teamGoal, label: region === "FR" ? "Aucun" : region === "EN" ? "None" : "Keins", icon: null },
-                  { value: "umsetzung" as typeof teamGoal, label: region === "FR" ? "Rythme et Décision" : region === "EN" ? "Execution" : "Umsetzung", icon: Rocket },
-                  { value: "analyse" as typeof teamGoal, label: region === "FR" ? "Structure et Rigueur" : region === "EN" ? "Analysis" : "Analyse", icon: BarChart3 },
-                  { value: "zusammenarbeit" as typeof teamGoal, label: region === "FR" ? "Communication et Relations" : region === "EN" ? "Collaboration" : "Zusammenarbeit", icon: Handshake },
+                  { value: "" as typeof teamGoal, label: region === "FR" ? "Aucun" : region === "EN" ? "None" : region === "IT" ? "Nessuno" : "Keins", icon: null },
+                  { value: "umsetzung" as typeof teamGoal, label: region === "FR" ? "Rythme et Décision" : region === "EN" ? "Execution" : region === "IT" ? "Ritmo e Decisione" : "Umsetzung", icon: Rocket },
+                  { value: "analyse" as typeof teamGoal, label: region === "FR" ? "Structure et Rigueur" : region === "EN" ? "Analysis" : region === "IT" ? "Struttura e Rigore" : "Analyse", icon: BarChart3 },
+                  { value: "zusammenarbeit" as typeof teamGoal, label: region === "FR" ? "Communication et Relations" : region === "EN" ? "Collaboration" : region === "IT" ? "Comunicazione e Relazioni" : "Zusammenarbeit", icon: Handshake },
                 ]).map(opt => {
                   const active = teamGoal === opt.value;
                   const OptIcon = opt.icon;
@@ -1011,9 +1023,9 @@ export default function TeamCheck() {
             </div>
 
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 16 }}>
-              <ProfileCard title={`Rollen-DNA (Soll) · ${sollDom}`} num={1} triad={soll} color="#0071E3" />
-              <ProfileCard title={`Personenprofil (Ist) · ${kandDom}`} num={2} triad={kandidat} color="#F39200" onChange={setKandidat} testIdPrefix="slider-kand" />
-              <ProfileCard title={`Teamprofil (Ist) · ${teamDom}`} num={3} triad={team} color="#34C759" onChange={setTeam} testIdPrefix="slider-team" />
+              <ProfileCard title={`${region === "FR" ? "Rôle-DNA (Cible)" : region === "EN" ? "Role-DNA (Target)" : region === "IT" ? "Ruolo-DNA (Obiettivo)" : "Rollen-DNA (Soll)"} · ${sollDom}`} num={1} triad={soll} color="#0071E3" />
+              <ProfileCard title={`${region === "FR" ? "Profil personne (Réel)" : region === "EN" ? "Person profile (Actual)" : region === "IT" ? "Profilo persona (Reale)" : "Personenprofil (Ist)"} · ${kandDom}`} num={2} triad={kandidat} color="#F39200" onChange={setKandidat} testIdPrefix="slider-kand" />
+              <ProfileCard title={`${region === "FR" ? "Profil équipe (Réel)" : region === "EN" ? "Team profile (Actual)" : region === "IT" ? "Profilo team (Reale)" : "Teamprofil (Ist)"} · ${teamDom}`} num={3} triad={team} color="#34C759" onChange={setTeam} testIdPrefix="slider-team" />
             </div>
 
             <div data-testid="diagnose-summary" style={{
@@ -1028,7 +1040,109 @@ export default function TeamCheck() {
             {/* Executive Header – Ampel + Bewertung */}
             {(() => {
               const tlKey = tdResult.trafficLight;
-              const detail: Record<TrafficLight, { title: string; desc: string; bullets: string[]; recLabel: string; rec: string }> = {
+              const detail: Record<TrafficLight, { title: string; desc: string; bullets: string[]; recLabel: string; rec: string }> = region === "IT" ? {
+                RED: {
+                  title: "Tensioni evidenti – necessaria gestione attiva",
+                  desc: "Le logiche di lavoro differiscono notevolmente. Senza una guida attiva emergono rischi di prestazione e conflitto.",
+                  bullets: [
+                    "Le priorità vengono interpretate in modo diverso.",
+                    "Il ritmo o la qualità vengono messi sotto pressione.",
+                    "Resistenza, ritiro o formazione di gruppi sono possibili.",
+                  ],
+                  recLabel: "Cosa fare?",
+                  rec: "Standard chiari, regole decisionali fisse e revisioni regolari sono indispensabili.",
+                },
+                YELLOW: {
+                  title: "Stili di lavoro diversi – gestire attivamente",
+                  desc: "Le differenze sono percepibili. Con regole chiare il sistema rimane stabile e gestibile.",
+                  bullets: [
+                    "Le decisioni richiedono talvolta più tempo.",
+                    "Le priorità devono essere spiegate più frequentemente.",
+                    "Il lavoro di coordinamento aumenta nel quotidiano.",
+                  ],
+                  recLabel: "Cosa fare?",
+                  rec: "I percorsi decisionali, i tempi e le responsabilità devono essere definiti chiaramente.",
+                },
+                GREEN: {
+                  title: "Stabile – buona compatibilità",
+                  desc: "Gli stili di lavoro sono compatibili. Non sono necessarie misure particolari.",
+                  bullets: [
+                    "Le decisioni vengono capite e accettate rapidamente.",
+                    "Il coordinamento avviene senza problemi.",
+                    "Ritmo e qualità rimangono stabili.",
+                  ],
+                  recLabel: "Cosa fare?",
+                  rec: "La gestione normale e il coordinamento regolare sono sufficienti.",
+                },
+              } : region === "EN" ? {
+                RED: {
+                  title: "Clear tensions – active management required",
+                  desc: "Working logic differs significantly. Without active management, performance and conflict risks arise.",
+                  bullets: [
+                    "Priorities are interpreted differently.",
+                    "Pace or quality come under pressure.",
+                    "Resistance, withdrawal or group formation is possible.",
+                  ],
+                  recLabel: "What to do?",
+                  rec: "Clear standards, fixed decision rules and regular reviews are essential.",
+                },
+                YELLOW: {
+                  title: "Different working styles – manage actively",
+                  desc: "Differences are noticeable. With clear rules the system remains stable and manageable.",
+                  bullets: [
+                    "Decisions sometimes take longer.",
+                    "Priorities need to be explained more frequently.",
+                    "Coordination effort increases day-to-day.",
+                  ],
+                  recLabel: "What to do?",
+                  rec: "Decision paths, timelines and responsibilities must be clearly defined.",
+                },
+                GREEN: {
+                  title: "Stable – good compatibility",
+                  desc: "Working styles are compatible. No special measures needed.",
+                  bullets: [
+                    "Decisions are quickly understood and accepted.",
+                    "Coordination runs smoothly.",
+                    "Pace and quality remain stable.",
+                  ],
+                  recLabel: "What to do?",
+                  rec: "Normal management and regular coordination are sufficient.",
+                },
+              } : region === "FR" ? {
+                RED: {
+                  title: "Tensions claires – management actif nécessaire",
+                  desc: "Les logiques de travail diffèrent fortement. Sans pilotage actif, des risques de performance et de conflit apparaissent.",
+                  bullets: [
+                    "Les priorités sont interprétées différemment.",
+                    "Le rythme ou la qualité subissent une pression.",
+                    "Résistance, retrait ou formation de clans sont possibles.",
+                  ],
+                  recLabel: "Que faire ?",
+                  rec: "Des standards clairs, des règles de décision fixes et des révisions régulières sont impératifs.",
+                },
+                YELLOW: {
+                  title: "Modes de travail différents – piloter activement",
+                  desc: "Les différences sont perceptibles. Avec des règles claires, le système reste stable et pilotable.",
+                  bullets: [
+                    "Les décisions prennent parfois plus de temps.",
+                    "Les priorités doivent être expliquées plus souvent.",
+                    "L'effort de coordination augmente au quotidien.",
+                  ],
+                  recLabel: "Que faire ?",
+                  rec: "Les circuits de décision, les délais et les responsabilités doivent être clairement définis.",
+                },
+                GREEN: {
+                  title: "Stable – bonne compatibilité",
+                  desc: "Les modes de travail sont compatibles. Aucune mesure particulière n'est nécessaire.",
+                  bullets: [
+                    "Les décisions sont rapidement comprises et acceptées.",
+                    "Les concertations se déroulent sans friction.",
+                    "Le rythme et la qualité restent stables.",
+                  ],
+                  recLabel: "Que faire ?",
+                  rec: "Un management normal et une concertation régulière suffisent.",
+                },
+              } : {
                 RED: {
                   title: "Deutliche Spannungen – klare Führung notwendig",
                   desc: "Arbeitslogiken unterscheiden sich stark. Ohne aktive Steuerung entstehen Leistungs- und Konfliktrisiken.",
@@ -1076,7 +1190,7 @@ export default function TeamCheck() {
                     <div style={{ flex: 1, minWidth: 140 }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
                         <span style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em" }} data-testid="text-team-label">{beruf || "Projektteam"}</span>
-                        <span style={{ fontSize: 10, fontWeight: 700, padding: "3px 10px", borderRadius: 6, background: tl.bg, color: tl.fill }} data-testid="badge-status">{region === "FR" ? ({ GREEN: "Stable", YELLOW: "Gérable", RED: "Zone de tension" }[tlKey] ?? tl.label) : region === "EN" ? { GREEN: "Stable", YELLOW: "Manageable", RED: "Tension field" }[tlKey] ?? tl.label : tl.label}</span>
+                        <span style={{ fontSize: 10, fontWeight: 700, padding: "3px 10px", borderRadius: 6, background: tl.bg, color: tl.fill }} data-testid="badge-status">{region === "FR" ? ({ GREEN: "Stable", YELLOW: "Gérable", RED: "Zone de tension" }[tlKey] ?? tl.label) : region === "EN" ? ({ GREEN: "Stable", YELLOW: "Manageable", RED: "Tension field" }[tlKey] ?? tl.label) : region === "IT" ? ({ GREEN: "Stabile", YELLOW: "Gestibile", RED: "Area di tensione" }[tlKey] ?? tl.label) : tl.label}</span>
                       </div>
                       <p style={{ fontSize: 12, color: "#8E8E93", margin: "4px 0 0", lineHeight: 1.5 }} data-testid="text-headline" lang="de">
                         {hyphenateText(tdResult.headline)}
@@ -1088,7 +1202,7 @@ export default function TeamCheck() {
                     <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }} data-testid="detail-title">{d.title}</p>
                     <p style={{ fontSize: 12, color: "#48484A", margin: "0 0 12px", lineHeight: 1.6 }} lang="de" data-testid="detail-desc">{hyphenateText(d.desc)}</p>
 
-                    <p style={{ fontSize: 11, fontWeight: 600, color: "#8E8E93", margin: "0 0 8px", textTransform: "uppercase", letterSpacing: "0.04em" }}>{region === "FR" ? "Qu'est-ce que cela signifie concrètement ?" : region === "EN" ? "What does this mean in practice?" : "Was bedeutet das konkret?"}</p>
+                    <p style={{ fontSize: 11, fontWeight: 600, color: "#8E8E93", margin: "0 0 8px", textTransform: "uppercase", letterSpacing: "0.04em" }}>{region === "FR" ? "Qu'est-ce que cela signifie concrètement ?" : region === "EN" ? "What does this mean in practice?" : region === "IT" ? "Cosa significa concretamente?" : "Was bedeutet das konkret?"}</p>
                     <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 14 }}>
                       {d.bullets.map((b, i) => (
                         <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
@@ -1113,8 +1227,8 @@ export default function TeamCheck() {
                       <span style={{ fontSize: 13, fontWeight: 700, color: bc }}>{v4Result.gesamteinschaetzung}</span>
                     </div>
                     {[
-                      { label: region === "FR" ? "Équipe" : region === "EN" ? "Team" : "Team", value: axisLabel(v4Result.passungZumTeam, region), color: axisColor(v4Result.passungZumTeam) },
-                      { label: region === "FR" ? "Tâche" : region === "EN" ? "Task" : "Aufgabe", value: axisLabel(v4Result.beitragZurAufgabe, region), color: axisColor(v4Result.beitragZurAufgabe) },
+                      { label: region === "FR" ? "Équipe" : region === "EN" ? "Team" : region === "IT" ? "Team" : "Team", value: axisLabel(v4Result.passungZumTeam, region), color: axisColor(v4Result.passungZumTeam) },
+                      { label: region === "FR" ? "Tâche" : region === "EN" ? "Task" : region === "IT" ? "Compito" : "Aufgabe", value: axisLabel(v4Result.beitragZurAufgabe, region), color: axisColor(v4Result.beitragZurAufgabe) },
                     ].map((ind, i) => (
                       <div key={i} style={{ padding: "8px 12px", borderRadius: 10, background: `${ind.color}08`, border: `1px solid ${ind.color}15` }}>
                         <span style={{ fontSize: 10, fontWeight: 600, color: "#8E8E93", marginRight: 6 }}>{ind.label}</span>
@@ -1131,12 +1245,12 @@ export default function TeamCheck() {
           <GlassCard data-testid="section-detail-tabs">
             <div style={{ display: "flex", gap: 3, background: "rgba(0,0,0,0.03)", borderRadius: 10, padding: 3, marginBottom: 26 }}>
               {([
-                ["bewertung", region === "FR" ? "Évaluation" : region === "EN" ? "Assessment" : "Bewertung", Target],
-                ["alltag", region === "FR" ? "Quotidien & pression" : region === "EN" ? "Day-to-day" : "Alltag & Druck", Activity],
-                ["chancen", region === "FR" ? "Opp. / Risques" : region === "EN" ? "Opp. / Risks" : "Chancen/Risiken", TrendingUp],
-                ["hebel", region === "FR" ? "Leviers de management" : region === "EN" ? "Levers" : "Führungshebel", Flame],
-                ["prognose", region === "FR" ? "Prévision" : region === "EN" ? "Forecast" : "Prognose", Clock],
-                ["empfehlung", region === "FR" ? "Recommandations" : region === "EN" ? "Recs." : "Empfehlungen", Shield],
+                ["bewertung", region === "FR" ? "Évaluation" : region === "EN" ? "Assessment" : region === "IT" ? "Valutazione" : "Bewertung", Target],
+                ["alltag", region === "FR" ? "Quotidien & pression" : region === "EN" ? "Day-to-day" : region === "IT" ? "Quotidiano" : "Alltag & Druck", Activity],
+                ["chancen", region === "FR" ? "Opp. / Risques" : region === "EN" ? "Opp. / Risks" : region === "IT" ? "Opp. / Rischi" : "Chancen/Risiken", TrendingUp],
+                ["hebel", region === "FR" ? "Leviers de management" : region === "EN" ? "Levers" : region === "IT" ? "Leve" : "Führungshebel", Flame],
+                ["prognose", region === "FR" ? "Prévision" : region === "EN" ? "Forecast" : region === "IT" ? "Previsione" : "Prognose", Clock],
+                ["empfehlung", region === "FR" ? "Recommandations" : region === "EN" ? "Recs." : region === "IT" ? "Racs." : "Empfehlungen", Shield],
               ] as const).map(([key, label, Icon]) => {
                 const active = detailTab === key;
                 return (
@@ -1162,15 +1276,15 @@ export default function TeamCheck() {
               {/* TAB: GESAMTBEWERTUNG */}
               {detailTab === "bewertung" && (
                 <div data-testid="content-bewertung">
-                  <SectionHeader num={1} title={region === "FR" ? "ÉVALUATION GLOBALE" : region === "EN" ? "OVERALL ASSESSMENT" : "GESAMTBEWERTUNG"} icon={Target} />
+                  <SectionHeader num={1} title={region === "FR" ? "ÉVALUATION GLOBALE" : region === "EN" ? "OVERALL ASSESSMENT" : region === "IT" ? "VALUTAZIONE COMPLESSIVA" : "GESAMTBEWERTUNG"} icon={Target} />
 
                   <div style={{ display: "flex", gap: 12, marginBottom: 18, flexWrap: "wrap" }}>
                     <div style={{ flex: 1, minWidth: 180, padding: "14px 18px", borderRadius: 16, background: "rgba(52,199,89,0.05)", border: "1px solid rgba(52,199,89,0.12)" }}>
-                      <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 4px" }}>{region === "FR" ? "Point fort principal" : region === "EN" ? "Key strength" : "Hauptstärke"}</p>
+                      <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 4px" }}>{region === "FR" ? "Point fort principal" : region === "EN" ? "Key strength" : region === "IT" ? "Punto di forza" : "Hauptstärke"}</p>
                       <p style={{ fontSize: 13, fontWeight: 600, color: "#34C759", margin: 0 }}>{v4Result.hauptstaerke}</p>
                     </div>
                     <div style={{ flex: 1, minWidth: 180, padding: "14px 18px", borderRadius: 16, background: "rgba(255,149,0,0.05)", border: "1px solid rgba(255,149,0,0.12)" }}>
-                      <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 4px" }}>{region === "FR" ? "Écart principal" : region === "EN" ? "Key deviation" : "Hauptabweichung"}</p>
+                      <p style={{ fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", margin: "0 0 4px" }}>{region === "FR" ? "Écart principal" : region === "EN" ? "Key deviation" : region === "IT" ? "Deviazione principale" : "Hauptabweichung"}</p>
                       <p style={{ fontSize: 13, fontWeight: 600, color: "#FF9500", margin: 0 }}>{v4Result.hauptabweichung}</p>
                     </div>
                   </div>
@@ -1181,7 +1295,7 @@ export default function TeamCheck() {
 
                   <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
                     <Lightbulb style={{ width: 16, height: 16, color: "#0071E3", strokeWidth: 2.5 }} />
-                    <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{region === "FR" ? "Pourquoi cette évaluation" : region === "EN" ? "Why this assessment" : "Warum diese Bewertung"}</h3>
+                    <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{region === "FR" ? "Pourquoi cette évaluation" : region === "EN" ? "Why this assessment" : region === "IT" ? "Perché questa valutazione" : "Warum diese Bewertung"}</h3>
                   </div>
                   <Paragraphs text={v4Result.warumText} />
                 </div>
@@ -1190,14 +1304,14 @@ export default function TeamCheck() {
               {/* TAB: ALLTAG & DRUCK */}
               {detailTab === "alltag" && (
                 <div data-testid="content-alltag">
-                  <SectionHeader num={2} title={region === "FR" ? "IMPACT AU QUOTIDIEN" : region === "EN" ? "DAY-TO-DAY IMPACT" : "WIRKUNG IM ALLTAG"} icon={Activity} />
+                  <SectionHeader num={2} title={region === "FR" ? "IMPACT AU QUOTIDIEN" : region === "EN" ? "DAY-TO-DAY IMPACT" : region === "IT" ? "IMPATTO NEL QUOTIDIANO" : "WIRKUNG IM ALLTAG"} icon={Activity} />
                   <Paragraphs text={v4Result.wirkungAlltagText} highlight />
 
                   <div style={{ height: 1, background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.06), transparent)", margin: "24px 0" }} />
 
                   <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
                     <Flame style={{ width: 16, height: 16, color: "#FF3B30", strokeWidth: 2.5 }} />
-                    <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{region === "FR" ? "Comportement sous pression" : region === "EN" ? "Behaviour under pressure" : "Verhalten unter Druck"}</h3>
+                    <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{region === "FR" ? "Comportement sous pression" : region === "EN" ? "Behaviour under pressure" : region === "IT" ? "Comportamento sotto pressione" : "Verhalten unter Druck"}</h3>
                   </div>
                   <div style={{
                     padding: "16px 20px", borderRadius: 16,
@@ -1211,7 +1325,7 @@ export default function TeamCheck() {
                       <div style={{ height: 1, background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.06), transparent)", margin: "24px 0" }} />
                       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
                         <Shield style={{ width: 16, height: 16, color: "#5856D6", strokeWidth: 2.5 }} />
-                        <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{region === "FR" ? "Note de management" : region === "EN" ? "Leadership note" : "Führungshinweis"}</h3>
+                        <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{region === "FR" ? "Note de management" : region === "EN" ? "Leadership note" : region === "IT" ? "Nota per il responsabile" : "Führungshinweis"}</h3>
                       </div>
                       <V4BlockList items={v4Result.fuehrungshinweis} accentColor="#5856D6" />
                     </>
@@ -1222,7 +1336,7 @@ export default function TeamCheck() {
               {/* TAB: CHANCEN & RISIKEN */}
               {detailTab === "chancen" && (
                 <div data-testid="content-chancen">
-                  <SectionHeader num={3} title={region === "FR" ? "OPPORTUNITÉS ET RISQUES" : region === "EN" ? "OPPORTUNITIES & RISKS" : "CHANCEN & RISIKEN"} icon={TrendingUp} />
+                  <SectionHeader num={3} title={region === "FR" ? "OPPORTUNITÉS ET RISQUES" : region === "EN" ? "OPPORTUNITIES & RISKS" : region === "IT" ? "OPPORTUNITÀ E RISCHI" : "CHANCEN & RISIKEN"} icon={TrendingUp} />
                   <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 20 }}>
                     <div style={{
                       flex: 1, minWidth: 220, padding: "18px 16px", borderRadius: 18,
@@ -1230,7 +1344,7 @@ export default function TeamCheck() {
                     }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
                         <CheckCircle style={{ width: 15, height: 15, color: "#34C759", strokeWidth: 2.5 }} />
-                        <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>{region === "FR" ? "Opportunités" : region === "EN" ? "Opportunities" : "Chancen"}</span>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>{region === "FR" ? "Opportunités" : region === "EN" ? "Opportunities" : region === "IT" ? "Opportunità" : "Chancen"}</span>
                       </div>
                       {v4Result.chancen.map((c, i) => (
                         <div key={i} style={{ marginBottom: i < v4Result.chancen.length - 1 ? 10 : 0 }}>
@@ -1245,7 +1359,7 @@ export default function TeamCheck() {
                     }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
                         <AlertTriangle style={{ width: 15, height: 15, color: "#FF3B30", strokeWidth: 2.5 }} />
-                        <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>{region === "FR" ? "Risques" : region === "EN" ? "Risks" : "Risiken"}</span>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F" }}>{region === "FR" ? "Risques" : region === "EN" ? "Risks" : region === "IT" ? "Rischi" : "Risiken"}</span>
                       </div>
                       {v4Result.risiken.map((r, i) => (
                         <div key={i} style={{ marginBottom: i < v4Result.risiken.length - 1 ? 10 : 0 }}>
@@ -1262,8 +1376,8 @@ export default function TeamCheck() {
               {/* TAB: FÜHRUNGSHEBEL */}
               {detailTab === "hebel" && (
                 <div data-testid="content-hebel">
-                  <SectionHeader num={4} title={region === "FR" ? "LEVIERS DE MANAGEMENT" : region === "EN" ? "LEADERSHIP LEVERS" : "FÜHRUNGSHEBEL"} icon={Flame} />
-                  <p style={{ fontSize: 12, color: "#8E8E93", margin: "0 0 18px", fontWeight: 500 }}>{region === "FR" ? "Leviers de pilotage concrets pour cette combinaison manager-équipe" : region === "EN" ? "Concrete management levers for this leader–team combination" : t("Konkrete Steuerungsmassnahmen für diese Führungskraft-Team-Kombination")}</p>
+                  <SectionHeader num={4} title={region === "FR" ? "LEVIERS DE MANAGEMENT" : region === "EN" ? "LEADERSHIP LEVERS" : region === "IT" ? "LEVE DI GESTIONE" : "FÜHRUNGSHEBEL"} icon={Flame} />
+                  <p style={{ fontSize: 12, color: "#8E8E93", margin: "0 0 18px", fontWeight: 500 }}>{region === "FR" ? "Leviers de pilotage concrets pour cette combinaison manager-équipe" : region === "EN" ? "Concrete management levers for this leader–team combination" : region === "IT" ? "Leve di gestione concrete per questa combinazione responsabile-team" : t("Konkrete Steuerungsmassnahmen für diese Führungskraft-Team-Kombination")}</p>
 
                   {isLeading && tdResult.leadershipContext && tdResult.leadershipContext.leadershipLevers.length > 0 ? (
                     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -1297,7 +1411,7 @@ export default function TeamCheck() {
                       padding: "24px 20px", borderRadius: 16, textAlign: "center",
                       background: "rgba(142,142,147,0.06)", border: "1px solid rgba(0,0,0,0.04)",
                     }}>
-                      <p style={{ fontSize: 13, color: "#8E8E93", margin: 0 }}>{region === "FR" ? 'Les leviers de management sont affichés uniquement en mode management. Active « Management » dans la zone de diagnostic.' : region === "EN" ? 'Leadership levers are only shown in leadership mode. Please activate "Leadership" in the diagnosis area.' : 'Führungshebel werden nur im Führungsmodus angezeigt. Bitte „Führung" im Diagnose-Bereich aktivieren.'}</p>
+                      <p style={{ fontSize: 13, color: "#8E8E93", margin: 0 }}>{region === "FR" ? 'Les leviers de management sont affichés uniquement en mode management. Active « Management » dans la zone de diagnostic.' : region === "EN" ? 'Leadership levers are only shown in leadership mode. Please activate "Leadership" in the diagnosis area.' : region === "IT" ? 'Le leve di gestione vengono visualizzate solo in modalità responsabile. Attiva «Responsabilità» nell\'area diagnosi.' : 'Führungshebel werden nur im Führungsmodus angezeigt. Bitte „Führung" im Diagnose-Bereich aktivieren.'}</p>
                     </div>
                   )}
                 </div>
@@ -1306,7 +1420,7 @@ export default function TeamCheck() {
               {/* TAB: PROGNOSE */}
               {detailTab === "prognose" && (
                 <div data-testid="content-prognose">
-                  <SectionHeader num={5} title={region === "FR" ? "PRÉVISION DES RISQUES" : region === "EN" ? "RISK FORECAST" : "RISIKOPROGNOSE"} icon={Clock} />
+                  <SectionHeader num={5} title={region === "FR" ? "PRÉVISION DES RISQUES" : region === "EN" ? "RISK FORECAST" : region === "IT" ? "PREVISIONE DEI RISCHI" : "RISIKOPROGNOSE"} icon={Clock} />
                   <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
                     {v4Result.risikoprognose.map((phase, i) => {
                       const phaseColors = ["#FF9500", "#0071E3", "#34C759"];
@@ -1341,14 +1455,14 @@ export default function TeamCheck() {
               {/* TAB: EMPFEHLUNGEN */}
               {detailTab === "empfehlung" && (
                 <div data-testid="content-empfehlung">
-                  <SectionHeader num={6} title={region === "FR" ? "RECOMMANDATIONS" : region === "EN" ? "RECOMMENDATIONS" : "EMPFEHLUNGEN"} icon={Shield} />
+                  <SectionHeader num={6} title={region === "FR" ? "RECOMMANDATIONS" : region === "EN" ? "RECOMMENDATIONS" : region === "IT" ? "RACCOMANDAZIONI" : "EMPFEHLUNGEN"} icon={Shield} />
                   <V4BlockList items={v4Result.empfehlungen} accentColor="#0071E3" />
 
                   <div style={{ height: 1, background: "linear-gradient(90deg, transparent, rgba(0,0,0,0.06), transparent)", margin: "24px 0" }} />
 
                   <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
                     <Award style={{ width: 16, height: 16, color: "#0071E3", strokeWidth: 2.5 }} />
-                    <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{region === "FR" ? "Conclusion finale" : region === "EN" ? "Final conclusion" : "Schlussfazit"}</h3>
+                    <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{region === "FR" ? "Conclusion finale" : region === "EN" ? "Final conclusion" : region === "IT" ? "Conclusione finale" : "Schlussfazit"}</h3>
                   </div>
                   <div style={{
                     padding: "16px 20px", borderRadius: 16,

@@ -475,6 +475,20 @@ function gesamtLabel(teamFit: string, taskFit: string, matchCase: MatchCase): st
     if (matchCase === "TOP2_ONLY") return "Friction notable avec passerelle quotidienne";
     return "Critique";
   }
+  if (_lang === "it") {
+    if (teamFit === "hoch" && taskFit === "hoch") return "Molto adatto";
+    if (teamFit === "hoch" && taskFit === "mittel") return "Ben adatto";
+    if (teamFit === "hoch" && taskFit === "gering") return "Compatibile culturalmente, portata funzionale limitata";
+    if (teamFit === "hoch" && taskFit === "nicht bewertet") return "Ben adatto";
+    if (teamFit === "mittel" && taskFit === "hoch") return "Funzionalmente prezioso, integrazione più impegnativa";
+    if (teamFit === "mittel" && taskFit === "mittel") return "Parzialmente adatto";
+    if (teamFit === "mittel" && taskFit === "gering") return "Integrabile, senza leva funzionale chiara";
+    if (teamFit === "mittel" && taskFit === "nicht bewertet") return "Parzialmente adatto";
+    if (teamFit === "gering" && taskFit === "hoch") return "Interessante funzionalmente, culturalmente rischioso";
+    if (teamFit === "gering" && taskFit === "mittel") return "Alta tensione, valore aggiunto limitato";
+    if (matchCase === "TOP2_ONLY") return "Alta tensione con ponte quotidiano";
+    return "Critico";
+  }
   if (teamFit === "hoch" && taskFit === "hoch") return "Sehr passend";
   if (teamFit === "hoch" && taskFit === "mittel") return "Gut passend";
   if (teamFit === "hoch" && taskFit === "gering") return "Kulturell passend, fachlich begrenzt";
