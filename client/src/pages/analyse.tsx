@@ -171,7 +171,7 @@ export default function Analyse() {
           <div className="flex flex-col gap-6">
             <div style={cardStyle}>
               <label style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", marginBottom: 8, display: "block" }} data-testid="label-bereich1">
-                {en ? "Impulsive data" : "Impulsive Daten"}
+                {en ? "Action-oriented data" : "Impulsive Daten"}
               </label>
               <textarea
                 value={bereich1}
@@ -186,7 +186,7 @@ export default function Analyse() {
 
             <div style={cardStyle}>
               <label style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", marginBottom: 8, display: "block" }} data-testid="label-bereich2">
-                {en ? "Intuitive data" : "Intuitive Daten"}
+                {en ? "Relational data" : "Intuitive Daten"}
               </label>
               <textarea
                 value={bereich2}

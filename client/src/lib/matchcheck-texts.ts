@@ -135,9 +135,9 @@ const COMP_SHORT: Record<TriadKey, string> = {
   A: 'Struktur / Analyse',
 };
 const COMP_SHORT_EN: Record<TriadKey, string> = {
-  I: 'Action / Pace',
-  N: 'Collaboration / Communication',
-  A: 'Structure / Analysis',
+  I: 'Action-oriented',
+  N: 'Relational',
+  A: 'Analytical',
 };
 
 const COMP_NOUN: Record<TriadKey, string> = {
@@ -163,9 +163,9 @@ const COMP_ADJ_EN: Record<TriadKey, string> = {
 };
 
 const COMP_SHORT_FR: Record<TriadKey, string> = {
-  I: 'Rythme / Décision',
-  N: 'Communication / Relations',
-  A: 'Structure / Rigueur',
+  I: 'Orienté action',
+  N: 'Relationnel',
+  A: 'Analytique',
 };
 const COMP_NOUN_FR: Record<TriadKey, string> = {
   I: 'le rythme et la décision',
@@ -179,9 +179,9 @@ const COMP_ADJ_FR: Record<TriadKey, string> = {
 };
 
 const COMP_SHORT_IT: Record<TriadKey, string> = {
-  I: 'Ritmo e Decisione',
-  N: 'Comunicazione e Relazioni',
-  A: 'Struttura e Rigore',
+  I: "Orientato all'azione",
+  N: 'Relazionale',
+  A: 'Analitico',
 };
 const COMP_NOUN_IT: Record<TriadKey, string> = {
   I: 'il ritmo e la decisione',
