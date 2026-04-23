@@ -55,6 +55,7 @@ export const ALL_TRANSLATIONS: TranslationEntry[] = [
   { section: "Login", key: "login.loginFailed", de: "Anmeldung fehlgeschlagen", en: "Login failed", fr: "Connexion échouée", it: "Accesso non riuscito" },
   { section: "Login", key: "login.imprint", de: "Impressum", en: "Legal Notice", fr: "Mentions légales", it: "Note legali" },
   { section: "Login", key: "login.privacy", de: "Datenschutz", en: "Privacy Policy", fr: "Politique de confidentialité", it: "Informativa sulla privacy" },
+  { section: "Login", key: "login.disclaimer", de: "Disclaimer", en: "Disclaimer", fr: "Avertissement", it: "Disclaimer" },
   { section: "Login", key: "login.resetTitle", de: "Passwort vergessen", en: "Forgot password", fr: "Mot de passe oublié", it: "Password dimenticata" },
   { section: "Login", key: "login.resetEmailHint", de: "Gib deine E-Mail-Adresse ein", en: "Enter your email address", fr: "Saisis ton adresse e-mail", it: "Inserisci il tuo indirizzo e-mail" },
   { section: "Login", key: "login.resetSentTitle", de: "Anfrage gesendet", en: "Request sent", fr: "Demande envoyée", it: "Richiesta inviata" },

@@ -189,7 +189,7 @@ export default function Login() {
           <div style={{ display: "flex", justifyContent: "center", gap: 20, marginTop: 12 }}>
             <a href="/impressum" data-testid="link-impressum-reset" className="footer-link">{it ? "Note legali" : fr ? "Mentions légales" : en ? "Legal Notice" : "Impressum"}</a>
             <a href="/datenschutz" data-testid="link-datenschutz-reset" className="footer-link">{it ? "Privacy" : fr ? "Politique de confidentialité" : en ? "Privacy Policy" : "Datenschutz"}</a>
-            <a href="/disclaimer" data-testid="link-disclaimer-reset" className="footer-link">Disclaimer</a>
+            <a href="/disclaimer" data-testid="link-disclaimer-reset" className="footer-link">{fr ? "Avertissement" : it ? "Disclaimer" : en ? "Disclaimer" : "Disclaimer"}</a>
           </div>
         </div>
       </div>
@@ -326,7 +326,7 @@ export default function Login() {
         <div style={{ display: "flex", justifyContent: "center", gap: 20, marginTop: 12 }}>
           <a href="/impressum" data-testid="link-impressum" className="footer-link">{it ? "Note legali" : fr ? "Mentions légales" : en ? "Legal Notice" : "Impressum"}</a>
           <a href="/datenschutz" data-testid="link-datenschutz" className="footer-link">{it ? "Privacy" : fr ? "Politique de confidentialité" : en ? "Privacy Policy" : "Datenschutz"}</a>
-          <a href="/disclaimer" data-testid="link-disclaimer" className="footer-link">Disclaimer</a>
+          <a href="/disclaimer" data-testid="link-disclaimer" className="footer-link">{fr ? "Avertissement" : "Disclaimer"}</a>
         </div>
       </div>
       </div>

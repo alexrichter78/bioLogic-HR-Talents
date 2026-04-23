@@ -6,6 +6,9 @@ export default function Disclaimer() {
   const t = useLocalizedText();
   const { region } = useRegion();
   const en = region === "EN";
+  const fr = region === "FR";
+  const it = region === "IT";
+  const isIntl = en || fr || it;
 
   const header = (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 32 }}>
@@ -25,16 +28,18 @@ export default function Disclaimer() {
             style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 14, fontWeight: 600, color: "#3B82F6", background: "none", border: "none", cursor: "pointer", padding: 0 }}
           >
             <ArrowLeft style={{ width: 16, height: 16 }} />
-            {en ? "Back" : t("Zurück")}
+            {en ? "Back" : fr ? "Retour" : it ? "Indietro" : t("Zurück")}
           </button>
         </div>
 
         <div style={{ background: "#fff", borderRadius: 20, padding: "48px 36px", boxShadow: "0 4px 24px rgba(0,0,0,0.06), 0 12px 48px rgba(0,0,0,0.04)", border: "1px solid rgba(0,0,0,0.04)" }}>
           {header}
 
-          {en ? (
+          {isIntl ? (
             <>
-              <h1 style={{ fontSize: 24, fontWeight: 700, color: "#1D1D1F", margin: "0 0 24px", textAlign: "center" }} data-testid="text-disclaimer-title">Disclaimer / Legal Notice</h1>
+              <h1 style={{ fontSize: 24, fontWeight: 700, color: "#1D1D1F", margin: "0 0 24px", textAlign: "center" }} data-testid="text-disclaimer-title">
+                {fr ? "Avertissement / Mentions légales" : it ? "Disclaimer / Note legali" : "Disclaimer / Legal Notice"}
+              </h1>
 
               <div style={{ fontSize: 15, color: "#1D1D1F", lineHeight: 1.8 }}>
 
@@ -79,7 +84,8 @@ export default function Disclaimer() {
                 </p>
 
                 <p style={{ margin: "24px 0 0", fontSize: 13, color: "#8E8E93" }}>
-                  © {new Date().getFullYear()} foresMind® GmbH. All rights reserved.
+                  © {new Date().getFullYear()} foresMind® GmbH.{" "}
+                  {fr ? "Tous droits réservés." : it ? "Tutti i diritti riservati." : "All rights reserved."}
                 </p>
               </div>
             </>
