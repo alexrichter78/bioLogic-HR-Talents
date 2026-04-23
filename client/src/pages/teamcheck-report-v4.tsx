@@ -10,17 +10,18 @@ import type { ComponentKey } from "@/lib/bio-types";
 import logoPath from "@assets/LOGO_bio_1773853681939.png";
 
 const bewColor = (b: string) => {
-  if (b === "Sehr passend" || b === "Gut passend" || b === "Strong fit" || b === "Good fit") return BIO_COLORS.geeignet;
-  if (b === "Kritisch" || b === "Critical" || b === "Functionally interesting, culturally risky" || b === "Inhaltlich interessant, kulturell riskant" || b === "High friction, limited added value" || b === "Spannungsreich bei begrenztem Zusatznutzen") return BIO_COLORS.nichtGeeignet;
+  if (b === "Sehr passend" || b === "Gut passend" || b === "Strong fit" || b === "Good fit" || b === "Très adapté" || b === "Bien adapté") return BIO_COLORS.geeignet;
+  if (b === "Kritisch" || b === "Critical" || b === "Critique" || b === "Functionally interesting, culturally risky" || b === "Inhaltlich interessant, kulturell riskant" || b === "Intéressant fonctionnellement, risqué culturellement" || b === "High friction, limited added value" || b === "Spannungsreich bei begrenztem Zusatznutzen" || b === "Friction élevée, valeur ajoutée limitée" || b === "Friction notable avec passerelle quotidienne") return BIO_COLORS.nichtGeeignet;
   return BIO_COLORS.bedingt;
 };
 const axisColor = (v: string) => v === "hoch" ? BIO_COLORS.geeignet : v === "mittel" ? BIO_COLORS.bedingt : v === "gering" ? BIO_COLORS.nichtGeeignet : "#94a3b8";
 const makeAxisLabel = (region: string) => (v: string) => {
   const isEN = region === "EN";
-  if (v === "hoch") return isEN ? "High" : "Hoch";
-  if (v === "mittel") return isEN ? "Moderate" : "Mittel";
-  if (v === "gering") return isEN ? "Low" : "Gering";
-  return isEN ? "Not assessed" : "Nicht bewertbar";
+  const isFR = region === "FR";
+  if (v === "hoch") return isFR ? "Élevé" : isEN ? "High" : "Hoch";
+  if (v === "mittel") return isFR ? "Modéré" : isEN ? "Moderate" : "Mittel";
+  if (v === "gering") return isFR ? "Faible" : isEN ? "Low" : "Gering";
+  return isFR ? "Non évalué" : isEN ? "Not assessed" : "Nicht bewertbar";
 };
 
 function SectionHead({ num, title, id }: { num: number; title: string; id: string }) {
@@ -45,6 +46,7 @@ function SubHead({ num, title, color }: { num: number; title: string; color?: st
 const HIGHLIGHT_PREFIXES = [
   "Die Kernaussage", "Konkret bedeutet das", "Für die Praxis bedeutet das",
   "The key point", "In practice", "What this means",
+  "La conclusion est", "Concrètement", "Pour la pratique", "Ce qui est décisif",
 ];
 
 function TextBlock({ text }: { text: string }) {
@@ -354,7 +356,7 @@ export default function TeamCheckReportV4() {
   }
 
   const bCol = bewColor(result.gesamteinschaetzung);
-  const today = new Date().toLocaleDateString("de-DE", { day: "2-digit", month: "long", year: "numeric" });
+  const today = new Date().toLocaleDateString(isFR ? "fr-FR" : isEN ? "en-GB" : "de-DE", { day: "2-digit", month: "long", year: "numeric" });
 
   return (
     <div style={{ minHeight: "100vh", background: "#f5f7fb", fontFamily: "Inter, Arial, Helvetica, sans-serif", color: "#1D1D1F", lineHeight: 1.6 }} className="v4-report-page">
@@ -363,7 +365,7 @@ export default function TeamCheckReportV4() {
       <div style={{ maxWidth: 820, margin: "0 auto", padding: isMobile ? "64px 12px 80px" : "80px 20px 48px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }} className="no-print">
           <button onClick={() => navigate("/team-report")} style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "none", border: "none", cursor: "pointer", color: "#1A5DAB", fontWeight: 600, fontSize: 14, padding: 0 }} data-testid="button-back-v4">
-            <ArrowLeft size={16} /> Zurück zum TeamCheck
+            <ArrowLeft size={16} /> {isFR ? "Retour au TeamCheck" : isEN ? "Back to TeamCheck" : "Zurück zum TeamCheck"}
           </button>
         </div>
 
@@ -372,9 +374,9 @@ export default function TeamCheckReportV4() {
 
             <div data-pdf-block className="report-header report-header--auto" data-testid="v4-header">
               <img src={logoPath} alt="bioLogic" className="report-logo" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-              <div className="report-kicker">TEAMANALYSE</div>
-              <h1 className="report-title report-title--flow">Integrationsanalyse</h1>
-              <div className="report-subtitle report-subtitle--flow">{result.roleTitle || "Teamsimulation"}</div>
+              <div className="report-kicker">{isFR ? "ANALYSE D'ÉQUIPE" : isEN ? "TEAM ANALYSIS" : "TEAMANALYSE"}</div>
+              <h1 className="report-title report-title--flow">{isFR ? "Analyse d'intégration" : isEN ? "Integration Analysis" : "Integrationsanalyse"}</h1>
+              <div className="report-subtitle report-subtitle--flow">{result.roleTitle || (isFR ? "Simulation d'équipe" : isEN ? "Team simulation" : "Teamsimulation")}</div>
               <div className="report-rings" />
               <div style={{ position: "absolute", top: 18, right: 18, display: "flex", gap: 8 }}>
                 <button
@@ -385,7 +387,7 @@ export default function TeamCheckReportV4() {
                     if (!reportEl) return;
                     const styles = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
                       .map(el => el.outerHTML).join("\n");
-                    printWin.document.write(`<!DOCTYPE html><html lang="${isEN ? "en" : "de"}"><head><meta charset="utf-8"><title>TeamCheck \u2013 ${result.roleTitle || (isEN ? "Report" : "Bericht")}</title>${styles}<style>body{margin:0;padding:20px 0;background:#fff}
+                    printWin.document.write(`<!DOCTYPE html><html lang="${isFR ? "fr" : isEN ? "en" : "de"}"><head><meta charset="utf-8"><title>TeamCheck \u2013 ${result.roleTitle || (isFR ? "Rapport" : isEN ? "Report" : "Bericht")}</title>${styles}<style>body{margin:0;padding:20px 0;background:#fff}
 .report-header-btn,.no-print,nav{display:none!important}
 *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
 [data-pdf-block]{break-inside:avoid!important}
