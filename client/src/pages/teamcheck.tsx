@@ -507,19 +507,19 @@ export default function TeamCheck() {
 
               {/* S2: Warum */}
               <GlassCard data-testid="report-section-2">
-                <SectionHeader num={2} title={region === "FR" ? "Pourquoi cette évaluation" : region === "EN" ? "Why this assessment" : "Warum diese Bewertung"} icon={Lightbulb} />
+                <SectionHeader num={2} title={region === "FR" ? "Pourquoi cette évaluation" : region === "EN" ? "Why this assessment" : region === "IT" ? "Perché questa valutazione" : "Warum diese Bewertung"} icon={Lightbulb} />
                 <Paragraphs text={v4Result.warumText} />
               </GlassCard>
 
               {/* S3: Wirkung im Alltag */}
               <GlassCard data-testid="report-section-3">
-                <SectionHeader num={3} title={region === "FR" ? "Impact au quotidien" : region === "EN" ? "Day-to-day impact" : "Wirkung im Alltag"} icon={Activity} />
+                <SectionHeader num={3} title={region === "FR" ? "Impact au quotidien" : region === "EN" ? "Day-to-day impact" : region === "IT" ? "Impatto nel quotidiano" : "Wirkung im Alltag"} icon={Activity} />
                 <Paragraphs text={v4Result.wirkungAlltagText} />
               </GlassCard>
 
               {/* S4: Chancen & Risiken */}
               <GlassCard data-testid="report-section-4">
-                <SectionHeader num={4} title={region === "FR" ? "Opportunités et risques" : region === "EN" ? "Opportunities & risks" : "Chancen & Risiken"} icon={TrendingUp} />
+                <SectionHeader num={4} title={region === "FR" ? "Opportunités et risques" : region === "EN" ? "Opportunities & risks" : region === "IT" ? "Opportunità e rischi" : "Chancen & Risiken"} icon={TrendingUp} />
                 <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 16 }}>
                   <div style={{ flex: 1, minWidth: 220 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
@@ -541,14 +541,14 @@ export default function TeamCheck() {
 
               {/* S5: Unter Druck */}
               <GlassCard data-testid="report-section-5">
-                <SectionHeader num={5} title={region === "FR" ? "Comportement sous pression" : region === "EN" ? "Behaviour under pressure" : "Verhalten unter Druck"} icon={Flame} />
+                <SectionHeader num={5} title={region === "FR" ? "Comportement sous pression" : region === "EN" ? "Behaviour under pressure" : region === "IT" ? "Comportamento sotto pressione" : "Verhalten unter Druck"} icon={Flame} />
                 <Paragraphs text={v4Result.druckText} />
               </GlassCard>
 
               {/* S6: Führungshinweis (only for leaders) */}
               {v4Result.fuehrungshinweis && (
                 <GlassCard data-testid="report-section-6">
-                  <SectionHeader num={6} title={region === "FR" ? "Note de management" : region === "EN" ? "Leadership note" : "Führungshinweis"} icon={Shield} />
+                  <SectionHeader num={6} title={region === "FR" ? "Note de management" : region === "EN" ? "Leadership note" : region === "IT" ? "Nota per il responsabile" : "Führungshinweis"} icon={Shield} />
                   <V4BlockList items={v4Result.fuehrungshinweis} accentColor="#5856D6" />
                 </GlassCard>
               )}
@@ -574,7 +574,7 @@ export default function TeamCheck() {
                             <span style={{ fontSize: 11, color: "#8E8E93", marginLeft: 8 }}>{phase.period}</span>
                           </div>
                         </div>
-                        <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.65, margin: 0 }} lang="de">{hyphenateText(phase.text)}</p>
+                        <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.65, margin: 0 }} lang={region === "IT" ? "it" : region === "FR" ? "fr" : region === "EN" ? "en" : "de"}>{hyphenateText(phase.text)}</p>
                       </div>
                     );
                   })}
@@ -583,7 +583,7 @@ export default function TeamCheck() {
 
               {/* S8: Integrationsplan */}
               <GlassCard data-testid="report-section-8">
-                <SectionHeader num={v4Result.fuehrungshinweis ? 8 : 7} title={region === "FR" ? "Plan d'intégration" : region === "EN" ? "Integration plan" : "Integrationsplan"} icon={CalendarDays} />
+                <SectionHeader num={v4Result.fuehrungshinweis ? 8 : 7} title={region === "FR" ? "Plan d'intégration" : region === "EN" ? "Integration plan" : region === "IT" ? "Piano di integrazione" : "Integrationsplan"} icon={CalendarDays} />
                 <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
                   {v4Result.integrationsplan.map((phase, i) => {
                     const phaseColors = ["#34C759", "#0071E3", "#5856D6"];
@@ -602,29 +602,29 @@ export default function TeamCheck() {
                             <span style={{ fontSize: 11, color: "#8E8E93", marginLeft: 8 }}>{phase.period}</span>
                           </div>
                         </div>
-                        <p style={{ fontSize: 12, fontWeight: 600, color: pc, margin: "0 0 6px" }}>{region === "FR" ? "Objectif" : region === "EN" ? "Goal" : "Ziel"}: {phase.ziel}</p>
+                        <p style={{ fontSize: 12, fontWeight: 600, color: pc, margin: "0 0 6px" }}>{region === "FR" ? "Objectif" : region === "EN" ? "Goal" : region === "IT" ? "Obiettivo" : "Ziel"}: {phase.ziel}</p>
                         <Paragraphs text={phase.beschreibung} />
                         {phase.praxis.length > 0 && (
                           <div style={{ marginTop: 10 }}>
-                            <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", margin: "0 0 6px", textTransform: "uppercase" }}>{region === "FR" ? "En pratique" : region === "EN" ? "Practice" : "Praxis"}</p>
+                            <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", margin: "0 0 6px", textTransform: "uppercase" }}>{region === "FR" ? "En pratique" : region === "EN" ? "Practice" : region === "IT" ? "In pratica" : "Praxis"}</p>
                             <BulletList items={phase.praxis} color={pc} icon="check" />
                           </div>
                         )}
                         {phase.signale.length > 0 && (
                           <div style={{ marginTop: 10 }}>
-                            <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", margin: "0 0 6px", textTransform: "uppercase" }}>{region === "FR" ? "Signaux positifs" : region === "EN" ? "Positive signals" : "Positive Signale"}</p>
+                            <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", margin: "0 0 6px", textTransform: "uppercase" }}>{region === "FR" ? "Signaux positifs" : region === "EN" ? "Positive signals" : region === "IT" ? "Segnali positivi" : "Positive Signale"}</p>
                             <BulletList items={phase.signale} color="#34C759" icon="check" />
                           </div>
                         )}
                         {phase.fokus && (phase.fokus.intro || phase.fokus.bullets.length > 0) && (
                           <div style={{ marginTop: 10, padding: "10px 14px", borderRadius: 10, background: `${pc}06`, border: `1px solid ${pc}10` }}>
-                            <p style={{ fontSize: 11, fontWeight: 600, color: pc, margin: "0 0 4px", textTransform: "uppercase" }}>{region === "FR" ? "Ce qui compte" : region === "EN" ? "What matters" : "Worauf es ankommt"}</p>
+                            <p style={{ fontSize: 11, fontWeight: 600, color: pc, margin: "0 0 4px", textTransform: "uppercase" }}>{region === "FR" ? "Ce qui compte" : region === "EN" ? "What matters" : region === "IT" ? "Cosa conta" : "Worauf es ankommt"}</p>
                             {phase.fokus.intro && <p style={{ fontSize: 12, color: "#3A3A3C", margin: "0 0 6px", lineHeight: 1.55 }}>{hyphenateText(phase.fokus.intro)}</p>}
                             {phase.fokus.bullets.length > 0 && <BulletList items={phase.fokus.bullets} color={pc} icon="dot" />}
                           </div>
                         )}
                         <div style={{ marginTop: 10, padding: "10px 14px", borderRadius: 10, background: `${pc}08`, border: `1px solid ${pc}12` }}>
-                          <p style={{ fontSize: 11, fontWeight: 600, color: pc, margin: "0 0 4px", textTransform: "uppercase" }}>{region === "FR" ? "Conseil de management" : region === "EN" ? "Leadership tip" : "Führungstipp"}</p>
+                          <p style={{ fontSize: 11, fontWeight: 600, color: pc, margin: "0 0 4px", textTransform: "uppercase" }}>{region === "FR" ? "Conseil de management" : region === "EN" ? "Leadership tip" : region === "IT" ? "Consiglio per il management" : "Führungstipp"}</p>
                           <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.55 }}>{hyphenateText(phase.fuehrungstipp)}</p>
                         </div>
                       </div>
@@ -633,20 +633,20 @@ export default function TeamCheck() {
                 </div>
                 {v4Result.intWarnsignale.length > 0 && (
                   <div style={{ marginTop: 20 }}>
-                    <p style={{ fontSize: 13, fontWeight: 700, color: "#FF9500", margin: "0 0 10px" }}>{region === "FR" ? "Signaux d'alerte" : region === "EN" ? "Warning signals" : "Warnsignale"}</p>
+                    <p style={{ fontSize: 13, fontWeight: 700, color: "#FF9500", margin: "0 0 10px" }}>{region === "FR" ? "Signaux d'alerte" : region === "EN" ? "Warning signals" : region === "IT" ? "Segnali d'allarme" : "Warnsignale"}</p>
                     <BulletList items={v4Result.intWarnsignale} color="#FF9500" icon="warning" />
                   </div>
                 )}
                 {v4Result.intLeitfragen.length > 0 && (
                   <div style={{ marginTop: 20 }}>
-                    <p style={{ fontSize: 13, fontWeight: 700, color: "#0071E3", margin: "0 0 10px" }}>{region === "FR" ? "Questions clés" : region === "EN" ? "Key questions" : "Leitfragen"}</p>
+                    <p style={{ fontSize: 13, fontWeight: 700, color: "#0071E3", margin: "0 0 10px" }}>{region === "FR" ? "Questions clés" : region === "EN" ? "Key questions" : region === "IT" ? "Domande guida" : "Leitfragen"}</p>
                     <BulletList items={v4Result.intLeitfragen} color="#0071E3" icon="dot" />
                   </div>
                 )}
                 {v4Result.intVerantwortung && (
                   <div style={{ marginTop: 16 }}>
-                    <p style={{ fontSize: 13, fontWeight: 700, color: "#3A3A3C", margin: "0 0 6px" }}>{region === "FR" ? "Responsabilité" : region === "EN" ? "Responsibility" : "Verantwortung"}</p>
-                    <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.65, margin: 0 }} lang="de">{hyphenateText(v4Result.intVerantwortung)}</p>
+                    <p style={{ fontSize: 13, fontWeight: 700, color: "#3A3A3C", margin: "0 0 6px" }}>{region === "FR" ? "Responsabilité" : region === "EN" ? "Responsibility" : region === "IT" ? "Responsabilità" : "Verantwortung"}</p>
+                    <p style={{ fontSize: 13, color: "#48484A", lineHeight: 1.65, margin: 0 }} lang={region === "IT" ? "it" : region === "FR" ? "fr" : region === "EN" ? "en" : "de"}>{hyphenateText(v4Result.intVerantwortung)}</p>
                   </div>
                 )}
               </GlassCard>
@@ -659,7 +659,7 @@ export default function TeamCheck() {
 
               {/* S10: Team ohne Person */}
               <GlassCard data-testid="report-section-10">
-                <SectionHeader num={v4Result.fuehrungshinweis ? 10 : 9} title={region === "FR" ? "Équipe sans ce recrutement" : region === "EN" ? "Team without this placement" : "Team ohne diese Besetzung"} icon={Users} />
+                <SectionHeader num={v4Result.fuehrungshinweis ? 10 : 9} title={region === "FR" ? "Équipe sans ce recrutement" : region === "EN" ? "Team without this placement" : region === "IT" ? "Team senza questa scelta" : "Team ohne diese Besetzung"} icon={Users} />
                 <Paragraphs text={v4Result.teamOhnePersonText} />
               </GlassCard>
 
@@ -671,7 +671,7 @@ export default function TeamCheck() {
                   background: `linear-gradient(135deg, ${bc}08, ${bc}03)`,
                   border: `1px solid ${bc}15`,
                 }}>
-                  <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.75, margin: 0, fontWeight: 550 }} lang="de">{hyphenateText(v4Result.schlussfazit)}</p>
+                  <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.75, margin: 0, fontWeight: 550 }} lang={region === "IT" ? "it" : region === "FR" ? "fr" : region === "EN" ? "en" : "de"}>{hyphenateText(v4Result.schlussfazit)}</p>
                 </div>
               </GlassCard>
             </>
@@ -815,14 +815,14 @@ export default function TeamCheck() {
                   <div style={{ width: 32, height: 32, borderRadius: 10, background: "linear-gradient(135deg, #0071E3, #0071E3CC)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <Award style={{ width: 15, height: 15, color: "#FFF", strokeWidth: 2.2 }} />
                   </div>
-                  <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Fazit</h3>
+                  <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{region === "FR" ? "Conclusion finale" : region === "EN" ? "Final conclusion" : region === "IT" ? "Conclusione finale" : "Schlussfazit"}</h3>
                 </div>
                 <div style={{
                   padding: "16px 20px", borderRadius: 18,
                   background: `linear-gradient(135deg, ${bc}08, ${bc}03)`,
                   border: `1px solid ${bc}15`,
                 }}>
-                  <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.75, margin: 0, fontWeight: 600 }} lang="de">{hyphenateText(v4Result.schlussfazit)}</p>
+                  <p style={{ fontSize: 14, color: "#1D1D1F", lineHeight: 1.75, margin: 0, fontWeight: 600 }} lang={region === "IT" ? "it" : region === "FR" ? "fr" : region === "EN" ? "en" : "de"}>{hyphenateText(v4Result.schlussfazit)}</p>
                 </div>
               </GlassCard>
             </>
