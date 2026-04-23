@@ -686,7 +686,7 @@ export default function SollIstBericht() {
                     const isSmall = widthPct < 18;
                     return (
                       <div key={k} style={{ display: "flex", alignItems: "center", gap: 12, minHeight: 26 }} data-testid={`slider-row-role-${k}`}>
-                        <span style={{ fontSize: region === "FR" || region === "IT" ? 11 : 14, color: "#48484A", width: region === "FR" || region === "IT" ? 115 : 72, flexShrink: 0, lineHeight: "1.35" }}>
+                        <span style={{ fontSize: 14, color: "#48484A", width: region === "FR" || region === "IT" ? 115 : 72, flexShrink: 0, lineHeight: "1.35" }}>
                           {labelComponent(k, region)}
                         </span>
                         <div style={{ flex: 1, position: "relative", height: 26 }}>
@@ -782,7 +782,7 @@ export default function SollIstBericht() {
                     const isSmall = widthPct < 18;
                     return (
                       <div key={k} style={{ display: "flex", alignItems: "center", gap: 12, minHeight: 26 }} data-testid={`slider-row-${k}`}>
-                        <span style={{ fontSize: region === "FR" || region === "IT" ? 11 : 14, color: "#48484A", width: region === "FR" || region === "IT" ? 115 : 72, flexShrink: 0, lineHeight: "1.35" }}>
+                        <span style={{ fontSize: 14, color: "#48484A", width: region === "FR" || region === "IT" ? 115 : 72, flexShrink: 0, lineHeight: "1.35" }}>
                           {labelComponent(k, region)}
                         </span>
                         <div style={{ flex: 1, position: "relative", height: 26 }}>
@@ -1533,7 +1533,7 @@ export default function SollIstBericht() {
                         const isSmall = widthPct < 18;
                         return (
                           <div key={k} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                            <span style={{ fontSize: region === "FR" || region === "IT" ? 11 : 14, color: "#48484A", width: region === "FR" || region === "IT" ? 115 : 72, flexShrink: 0, lineHeight: "1.35" }}>{labelComponent(k, region)}</span>
+                            <span style={{ fontSize: 14, color: "#48484A", width: region === "FR" || region === "IT" ? 115 : 72, flexShrink: 0, lineHeight: "1.35" }}>{labelComponent(k, region)}</span>
                             <div style={{ flex: 1, position: "relative", height: 28 }}>
                               <div style={{ position: "absolute", inset: 0, borderRadius: 14, background: "rgba(0,0,0,0.05)" }} />
                               <div className="bio-bar-animate" style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${Math.min(Math.max(widthPct, 4), 100)}%`, borderRadius: 14, background: `linear-gradient(90deg, ${hex}, ${hex}CC)`, display: "flex", alignItems: "center", paddingLeft: 10, minWidth: isSmall ? 8 : 50, boxShadow: `0 2px 8px ${hex}30`, transition: "width 800ms cubic-bezier(0.34, 1.56, 0.64, 1)" }}>
@@ -1558,7 +1558,7 @@ export default function SollIstBericht() {
                         const isSmall = widthPct < 18;
                         return (
                           <div key={k} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                            <span style={{ fontSize: region === "FR" || region === "IT" ? 11 : 14, color: "#48484A", width: region === "FR" || region === "IT" ? 115 : 72, flexShrink: 0, lineHeight: "1.35" }}>{labelComponent(k, region)}</span>
+                            <span style={{ fontSize: 14, color: "#48484A", width: region === "FR" || region === "IT" ? 115 : 72, flexShrink: 0, lineHeight: "1.35" }}>{labelComponent(k, region)}</span>
                             <div style={{ flex: 1, position: "relative", height: 28 }}>
                               <div style={{ position: "absolute", inset: 0, borderRadius: 14, background: "rgba(0,0,0,0.05)" }} />
                               <div className="bio-bar-animate" style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${Math.min(Math.max(widthPct, 4), 100)}%`, borderRadius: 14, background: `linear-gradient(90deg, ${hex}, ${hex}CC)`, display: "flex", alignItems: "center", paddingLeft: 10, minWidth: isSmall ? 8 : 50, boxShadow: `0 2px 8px ${hex}30`, transition: "width 800ms cubic-bezier(0.34, 1.56, 0.64, 1)" }}>
