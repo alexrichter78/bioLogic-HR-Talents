@@ -2062,6 +2062,9 @@ export default function RollenDNA() {
         if (data.zusatzInfo !== undefined) setZusatzInfo(data.zusatzInfo);
         if (data.taetigkeiten !== undefined) setTaetigkeiten(data.taetigkeiten);
         if (data.nextId !== undefined) setNextId(data.nextId);
+        if (data.taetigkeiten && data.taetigkeiten.length > 0) {
+          setGeneratedRegion(data.generatedRegion || "DE");
+        }
         setCurrentStep(3);
         setAllCollapsed(true);
         const loadedBeruf = data.beruf ?? beruf;
@@ -2084,6 +2087,7 @@ export default function RollenDNA() {
             .map((i: number) => ERFOLGSFOKUS_LABELS[i]?.replace(/\n/g, " "))
             .filter(Boolean)
             .join(", ");
+          const fileRegion = data.generatedRegion || "DE";
           const cacheKey = JSON.stringify({
             beruf: loadedBeruf,
             fuehrung: loadedFuehrung,
@@ -2091,8 +2095,9 @@ export default function RollenDNA() {
             aufgabencharakter: loadedAufgaben,
             arbeitslogik: loadedArbeits,
             zusatzInfo: loadedZusatz,
+            region: fileRegion,
           });
-          localStorage.setItem("kompetenzenCache", JSON.stringify({ key: cacheKey, taetigkeiten: loadedTaetigkeiten }));
+          localStorage.setItem("kompetenzenCache", JSON.stringify({ key: cacheKey, taetigkeiten: loadedTaetigkeiten, generatedRegion: fileRegion }));
         }
 
         if (data.matchCheck) {
@@ -3112,14 +3117,22 @@ export default function RollenDNA() {
                     <span style={{ fontSize: 20 }}>🌐</span>
                     <div style={{ flex: 1 }}>
                       <div style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", marginBottom: 2 }} className="dark:text-foreground">
-                        {region === "EN"
-                          ? "Tasks were generated in German"
-                          : "Tätigkeiten wurden auf Englisch generiert"}
+                        {region === "IT"
+                          ? "I compiti sono stati generati in un'altra lingua"
+                          : region === "FR"
+                          ? "Les tâches ont été générées dans une autre langue"
+                          : region === "EN"
+                          ? "Tasks were generated in a different language"
+                          : "Tätigkeiten wurden in einer anderen Sprache generiert"}
                       </div>
                       <div style={{ fontSize: 13, color: "#48484A" }} className="dark:text-muted-foreground">
-                        {region === "EN"
+                        {region === "IT"
+                          ? "Rigenera tramite IA per ottenere denominazioni italiane semanticamente corrette, non una semplice traduzione."
+                          : region === "FR"
+                          ? "Régénérer via l'IA pour obtenir des intitulés en français sémantiquement corrects — pas une simple traduction."
+                          : region === "EN"
                           ? "Regenerate via AI to get semantically correct English task names — not just a translation."
-                          : "Über KI neu generieren für inhaltlich korrekte deutsche Bezeichnungen — keine reine Übersetzung."}
+                          : "Über KI neu generieren für inhaltlich korrekte Bezeichnungen — keine reine Übersetzung."}
                       </div>
                     </div>
                     <button
