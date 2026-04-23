@@ -185,6 +185,10 @@ export const UI = {
       createReportButton: "Bericht erstellen",
       reportEmptyHint: "Bitte zuerst das Ist-Profil eingeben und „Bericht erstellen\" klicken.",
     },
+    teamcheckReport: {
+      loadingTitle: "TeamCheck wird erstellt",
+      loadingBody: "Die Texte werden gerade auf Basis des Profils generiert. Das dauert in der Regel 15–25 Sekunden.",
+    },
   },
   en: {
     nav: {
@@ -367,6 +371,10 @@ export const UI = {
       candDominanceMiddle: ": ",
       createReportButton: "Create report",
       reportEmptyHint: "Please enter the actual profile first and click \"Create report\".",
+    },
+    teamcheckReport: {
+      loadingTitle: "Generating team analysis",
+      loadingBody: "We're writing the report based on the profile. This usually takes 15–25 seconds.",
     },
   },
   fr: {
@@ -551,6 +559,10 @@ export const UI = {
       createReportButton: "Créer le rapport",
       reportEmptyHint: "Veuillez d'abord saisir le profil réel et cliquer sur « Créer le rapport ».",
     },
+    teamcheckReport: {
+      loadingTitle: "Génération de l'analyse d'équipe",
+      loadingBody: "Les textes sont générés sur la base du profil. Cela prend généralement 15 à 25 secondes.",
+    },
   },
   it: {
     nav: {
@@ -733,6 +745,10 @@ export const UI = {
       candDominanceMiddle: ": ",
       createReportButton: "Crea rapporto",
       reportEmptyHint: "Inserisci prima il profilo reale e clicca su \"Crea rapporto\".",
+    },
+    teamcheckReport: {
+      loadingTitle: "Creazione dell'analisi del team",
+      loadingBody: "I testi vengono generati sulla base del profilo. Di solito ci vogliono 15-25 secondi.",
     },
   },
 } as const;
