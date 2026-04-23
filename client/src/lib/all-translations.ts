@@ -165,6 +165,7 @@ export const ALL_TRANSLATIONS: TranslationEntry[] = [
   { section: "Rollen-DNA", key: "rollendna.leadershipFunctional", de: "Fachliche Führung", en: "Functional leadership", fr: "Encadrement fonctionnel", it: "Leadership funzionale" },
   { section: "Rollen-DNA", key: "rollendna.leadershipDisciplinary", de: "Disziplinarische Führung mit Ergebnisverantwortung", en: "Leadership with people responsibility", fr: "Management avec responsabilité de résultats", it: "Leadership disciplinare con responsabilità sui risultati" },
   { section: "Rollen-DNA", key: "rollendna.balancedProfile", de: "Ausgeglichenes Profil", en: "Balanced profile", fr: "Profil équilibré", it: "Profilo equilibrato" },
+  { section: "Rollen-DNA", key: "rollendna.gesamtprofilStelle", de: "Gesamtprofil der Stellenanforderung", en: "Overall role requirements profile", fr: "Profil global des exigences du poste", it: "Profilo complessivo dei requisiti del ruolo" },
 
   // ─── ROLLENPROFIL / STELLENPROFIL BERICHT ────────────────────────────────
   { section: "Rollenprofil", key: "rollenprofil.pdfExportFail", de: "PDF-Export fehlgeschlagen. Bitte versuche es erneut.", en: "PDF export failed. Please try again.", fr: "L'export PDF a échoué. Veuillez réessayer.", it: "Esportazione PDF non riuscita. Riprova." },

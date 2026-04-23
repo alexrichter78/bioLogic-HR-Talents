@@ -3790,7 +3790,7 @@ export default function RollenDNA() {
                       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
                         <BarChart3 style={{ width: 16, height: 16, color: "#6E6E73", strokeWidth: 1.8 }} />
                         <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>
-                          Gesamtprofil der Stellenanforderung
+                          {region === "IT" ? "Profilo complessivo dei requisiti del ruolo" : region === "FR" ? "Profil global des exigences du poste" : region === "EN" ? "Overall role requirements profile" : "Gesamtprofil der Stellenanforderung"}
                         </p>
                       </div>
                       {(() => {
@@ -4290,7 +4290,7 @@ export default function RollenDNA() {
                       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
                         <BarChart3 style={{ width: 16, height: 16, color: "#6E6E73", strokeWidth: 1.8 }} />
                         <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>
-                          Gesamtprofil der Stellenanforderung
+                          {region === "IT" ? "Profilo complessivo dei requisiti del ruolo" : region === "FR" ? "Profil global des exigences du poste" : region === "EN" ? "Overall role requirements profile" : "Gesamtprofil der Stellenanforderung"}
                         </p>
                       </div>
                       {(() => {
