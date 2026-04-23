@@ -23,6 +23,7 @@ import TeamCheckReportV4 from "@/pages/teamcheck-report-v4";
 import FirmaDashboard from "@/pages/firma-dashboard";
 import Kurs from "@/pages/kurs";
 import ResetPassword from "@/pages/reset-password";
+import Ubersetzung from "@/pages/ubersetzung";
 import Impressum from "@/pages/impressum";
 import Datenschutz from "@/pages/datenschutz";
 import Disclaimer from "@/pages/disclaimer";
@@ -90,6 +91,7 @@ function AppRoutes() {
         <Route path="/teamcheck-report-v3" component={TeamCheckReportV3} />
         <Route path="/teamcheck-report-v4" component={TeamCheckReportV4} />
         <Route path="/firma-dashboard" component={FirmaDashboard} />
+        <Route path="/ubersetzung" component={Ubersetzung} />
         <Route path="/impressum" component={Impressum} />
         <Route path="/datenschutz" component={Datenschutz} />
         <Route path="/disclaimer" component={Disclaimer} />

@@ -3,7 +3,7 @@ import { useAuth } from "@/lib/auth";
 import { useLocation } from "wouter";
 import GlobalNav from "@/components/global-nav";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Plus, Trash2, Pencil, X, Save, Users, CalendarDays, Shield, Building2, Search, ChevronUp, ChevronDown, Database, KeyRound, Copy, Check, ThumbsUp, ThumbsDown, BookOpen, FileText, MessageSquare, RotateCcw } from "lucide-react";
+import { Plus, Trash2, Pencil, X, Save, Users, CalendarDays, Shield, Building2, Search, ChevronUp, ChevronDown, Database, KeyRound, Copy, Check, ThumbsUp, ThumbsDown, BookOpen, FileText, MessageSquare, RotateCcw, Languages } from "lucide-react";
 
 interface UserWithSub {
   id: number;
@@ -717,6 +717,10 @@ export default function Admin() {
             <button onClick={() => setLocation("/analyse")} data-testid="button-stammdaten" title="Stammdaten" style={{ display: "flex", alignItems: "center", gap: 6, padding: "10px 18px", borderRadius: 10, border: "1px solid rgba(0,0,0,0.1)", background: "#fff", color: "#1D1D1F", fontSize: 14, fontWeight: 600, cursor: "pointer", transition: "all 200ms ease" }}>
               <Database style={{ width: 16, height: 16 }} />
               Stammdaten
+            </button>
+            <button onClick={() => setLocation("/ubersetzung")} data-testid="button-ubersetzung" title="Übersetzungen anzeigen" style={{ display: "flex", alignItems: "center", gap: 6, padding: "10px 18px", borderRadius: 10, border: "1px solid rgba(0,0,0,0.1)", background: "#fff", color: "#1D1D1F", fontSize: 14, fontWeight: 600, cursor: "pointer", transition: "all 200ms ease" }}>
+              <Languages style={{ width: 16, height: 16 }} />
+              Übersetzung
             </button>
             <button onClick={startCreate} data-testid="button-create-user" style={{ display: "flex", alignItems: "center", gap: 6, padding: "10px 18px", borderRadius: 10, border: "none", background: "#1D1D1F", color: "#fff", fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
               <Plus style={{ width: 16, height: 16 }} />
