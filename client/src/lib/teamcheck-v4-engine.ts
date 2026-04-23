@@ -2550,6 +2550,16 @@ export function computeTeamCheckV4(input: TeamCheckV4Input): TeamCheckV4Result {
               : sameDominance
                 ? `L'équipe et la personne opèrent toutes deux avec ${cs(teamPrimary)} comme logique de travail principale. La logique fondamentale est structurellement proche, ce qui facilite la collaboration en principe. Dans le travail quotidien, des différences de rythme et d'approche sont à prévoir, car l'équipe s'appuie davantage sur ${cs(teamSecondary)} tandis que la personne tend vers ${cs(personSecondary)}.`
                 : `L'équipe travaille avec un accent clair sur ${cs(teamPrimary)} et s'est alignée sur cette logique. La personne, en revanche, s'oriente davantage vers ${cs(personPrimary)} et aborde les choses différemment. Des attentes claires dès le début sont nécessaires.`)
+    : _lang === "it"
+      ? (teamClass === "BALANCED" && personClass === "BALANCED"
+          ? "Il team e la persona mostrano entrambi un profilo equilibrato senza dominanza chiara in nessuno dei tre schemi comportamentali. Entrambe le parti sono flessibili e non vincolate a una particolare logica di lavoro. Questo non genera né un forte allineamento né una forte frizione strutturale dai profili."
+          : teamClass === "BALANCED"
+            ? `Il team è posizionato in modo equilibrato e non mostra uno schema di lavoro dominante. La persona, al contrario, si orienta più chiaramente verso ${cs(personPrimary)} e porta una direzione più definita alla collaborazione. Questo può dare al team un orientamento, ma richiede attenzione per preservare la versatilità del team.`
+            : personClass === "BALANCED"
+              ? `Il team lavora con un chiaro accento su ${cs(teamPrimary)} e si aspetta un orientamento simile dai nuovi membri. La persona è posizionata in modo più ampio senza uno schema dominante. Può adattarsi con flessibilità, ma deve comprendere attivamente e adottare la logica del team.`
+              : sameDominance
+                ? `Team e persona operano entrambi con ${cs(teamPrimary)} come logica di lavoro principale. La logica fondamentale è strutturalmente vicina, il che facilita la collaborazione in linea di principio. Nel quotidiano sono da prevedere differenze di ritmo e approccio, poiché il team si affida maggiormente a ${cs(teamSecondary)} mentre la persona tende verso ${cs(personSecondary)}.`
+                : `Il team lavora con un chiaro accento su ${cs(teamPrimary)} e si è allineato a questa logica. La persona, al contrario, si orienta maggiormente verso ${cs(personPrimary)} e affronta le cose in modo diverso. Aspettative chiare fin dall'inizio sono necessarie.`)
       : (teamClass === "BALANCED" && personClass === "BALANCED"
           ? "Sowohl Team als auch Person zeigen ein ausgeglichenes Profil ohne klare Dominanz in einem der drei bioLogic-Grundmuster. Beide Seiten sind situativ flexibel und nicht auf eine bestimmte Arbeitslogik festgelegt. Dadurch entsteht weder eine starke Übereinstimmung noch eine starke Reibung aus der Profilstruktur heraus."
           : teamClass === "BALANCED"
