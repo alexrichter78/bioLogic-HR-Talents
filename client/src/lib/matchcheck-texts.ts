@@ -433,10 +433,87 @@ function buildSummary(input: MatchTextInput): SummaryBlock {
   const seed = input.roleName + ':' + input.candName;
 
   const tv = vars();
-  const summary = pickVariant(tv.overall[level], seed + ':overall');
-  const managementSummary = familyText + ' ' + pickVariant(tv.management[level], seed + ':mgmt');
+  let summary = pickVariant(tv.overall[level], seed + ':overall');
+  let managementSummary = familyText + ' ' + pickVariant(tv.management[level], seed + ':mgmt');
 
-  let whyResult = pickVariantSet(tv.why[level], seed + ':why');
+  if (_lang === 'fr') {
+    const frOverall: Record<string, string[]> = {
+      PERFECT: [
+        'La personne correspond bien au poste. Mode de travail et exigences s\'articulent de façon cohérente.',
+        'Le poste présente une adéquation claire. La personne apporte la logique de travail requise de façon solide.',
+        'La composition paraît globalement cohérente. La personne travaille selon la logique que le poste requiert.',
+        'L\'adéquation est élevée. Le poste pourra vraisemblablement être occupé sans effort de pilotage accru.',
+      ],
+      EXACT_YELLOW: [
+        'La personne correspond en substance au poste. Dans la pondération de certains domaines, elle travaille toutefois différemment de ce que le poste requiert.',
+        'L\'orientation de base est juste. Au quotidien, la personne met cependant d\'autres accents que ce que le poste prescrit.',
+        'L\'adéquation est présente, mais pas tout à fait nette. La logique de travail est correcte dans les grandes lignes, mais la pondération s\'écarte.',
+        'La personne apporte la bonne direction. En même temps, certains axes de priorité divergent de ce qui est prévu dans le poste.',
+      ],
+      SOFT_YELLOW: [
+        'La personne est compatible dans ses aspects essentiels, mais ne couvre pas le poste de façon stable et continue.',
+        'Il existe une base reconnaissable pour le poste. En même temps, des écarts apparaissent sur un point important.',
+        'La personne correspond en partie au poste, mais ne travaille pas en permanence dans la forme requise.',
+        'L\'adéquation est possible, mais pas stable d\'elle-même. Au quotidien, un management actif est nécessaire.',
+      ],
+      MISMATCH: [
+        'La personne travaille différemment de ce que le poste requiert.',
+        'Le poste exige une autre façon de travailler que celle que la personne apporte.',
+        'Les différences sont trop importantes pour parler d\'une adéquation solide.',
+        'Au quotidien, le poste serait vraisemblablement exercé différemment de ce qui est prévu.',
+      ],
+    };
+    const frManagement: Record<string, string[]> = {
+      PERFECT: [
+        'Le management sert ici avant tout à prioriser, non à compenser des différences structurelles.',
+        'La personne a besoin avant tout d\'orientation et d\'ajustement fin, pas de correction permanente.',
+        'Au quotidien, le management porte davantage sur le pilotage dans le détail que sur la compensation d\'écarts.',
+      ],
+      EXACT_YELLOW: [
+        'Le management devrait ici avant tout veiller à la pondération et à la priorisation.',
+        'La personne travaille dans la bonne direction, mais met d\'autres accents. C\'est précisément là que le management doit intervenir.',
+        'Ce qui est déterminant ici n\'est pas l\'orientation de base, mais l\'alignement constant sur le poste.',
+      ],
+      SOFT_YELLOW: [
+        'Sans un management clair, le poste risque d\'être exercé progressivement différemment.',
+        'La personne a besoin d\'un cadre clair pour que l\'écart ne se consolide pas au quotidien.',
+        'Le management doit ici non seulement piloter, mais aussi maintenir la direction.',
+      ],
+      MISMATCH: [
+        'Le management devrait compenser en permanence plutôt que piloter de façon ciblée.',
+        'L\'effort de management consisterait ici avant tout en corrections.',
+        'Le poste devrait être constamment recadré au quotidien pour ne pas dériver dans une autre direction.',
+      ],
+    };
+    summary = pickVariant(frOverall[level], seed + ':overall');
+    managementSummary = familyText + ' ' + pickVariant(frManagement[level], seed + ':mgmt');
+  }
+
+  const frWhy: Record<string, string[][]> = {
+    PERFECT: [
+      ['Structure et pondération concordent. Les différences se situent dans la marge de tolérance normale.', 'Au quotidien, cela génère un comportement de travail cohérent, bien adapté au poste.'],
+      ['La personne apporte la logique requise de façon stable. Aucune déviation majeure n\'est perceptible.', 'Le mode de travail correspond au poste tant dans l\'ordre que dans la pondération.'],
+      ['La logique de travail correspond à l\'exigence du poste en structure et en pondération.', 'Les différences dans les domaines individuels sont faibles et s\'inscrivent dans un cadre stable.'],
+    ],
+    EXACT_YELLOW: [
+      ['La structure est correcte, mais la pondération de certains domaines s\'écarte.', 'La direction reste la même, mais la mise en œuvre au quotidien peut sensiblement se déplacer.'],
+      ['La personne travaille selon la même logique de base, mais met d\'autres accents.', 'La direction et la structure concordent, mais l\'intensité de certains axes ne correspond pas tout à fait au niveau du poste.'],
+      ['La logique de travail fondamentale correspond à la structure du poste.', 'Les écarts les plus importants se situent dans la pondération de certains domaines.'],
+    ],
+    SOFT_YELLOW: [
+      ['Un point de structure central bascule par rapport au poste.', 'Des priorités et des logiques de décision différentes en résultent au quotidien.'],
+      ['La personne ne couvre pas entièrement la logique du poste sur un point de comparaison important.', 'L\'écart ne porte pas seulement sur l\'intensité, mais sur l\'ordre des priorités.'],
+      ['La logique de travail correspond en partie à l\'exigence du poste, mais s\'en écarte sur un point de structure central.', 'Cet écart se répercute directement sur la façon d\'accomplir les tâches.'],
+    ],
+    MISMATCH: [
+      ['Structure et logique de priorisation s\'écartent notablement du poste.', 'Les différences ne portent pas uniquement sur des nuances, mais sur la direction de base de l\'exercice du poste.'],
+      ['La personne établit d\'autres priorités et suit un autre ordre de travail.', 'Au quotidien, cela génèrerait un comportement de travail et de décision différent de ce qui est prévu.'],
+      ['La logique de travail diffère de l\'exigence du poste sur des points centraux.', 'Structure et pondération s\'écartent notablement l\'une de l\'autre.'],
+    ],
+  };
+  let whyResult = _lang === 'fr'
+    ? pickVariantSet(frWhy[level], seed + ':why')
+    : pickVariantSet(tv.why[level], seed + ':why');
   if (level === 'SOFT_YELLOW' || level === 'MISMATCH') {
     whyResult = _lang === 'fr'
       ? [whyResult[0], `L'écart individuel le plus important se situe dans le domaine de ${cs(leadKey)}.`, whyResult[1]]
@@ -445,7 +522,60 @@ function buildSummary(input: MatchTextInput): SummaryBlock {
       : [whyResult[0], `Die größte Einzelabweichung liegt im Bereich ${cs(leadKey)}.`, whyResult[1]];
   }
 
-  const risks = pickVariantSet(tv.risks[level], seed + ':risks');
+  let risks = pickVariantSet(tv.risks[level], seed + ':risks');
+  if (_lang === 'fr') {
+    const frRisks: Record<string, string[][]> = {
+      PERFECT: [
+        [
+          'Les risques résident davantage dans la surcharge ou la dispersion opérationnelle que dans l\'adéquation de base.',
+          'La collaboration devrait être stable. Les risques proviennent davantage du contexte que de l\'adéquation personne-poste.',
+          'Sans priorisation claire, des situations de surcharge ou de dispersion inutile peuvent ponctuellement apparaître.',
+        ],
+        [
+          'Au quotidien, les pertes par friction sont faibles, mode de travail et poste s\'accordant bien.',
+          'Les tensions possibles concernent davantage le rythme et les ressources que l\'adéquation elle-même.',
+          'Les risques se situent avant tout dans la mise en œuvre opérationnelle, non dans l\'adéquation fondamentale.',
+        ],
+      ],
+      EXACT_YELLOW: [
+        [
+          'Au quotidien, les priorités peuvent légèrement se déplacer.',
+          'Les tâches tendent à être pondérées différemment de ce que le poste prévoit.',
+          'Sans orientation claire, ce déplacement se consolide avec le temps.',
+        ],
+        [
+          'La personne met au quotidien d\'autres priorités que ce que le poste prescrit.',
+          'La pondération des tâches peut ainsi se déplacer progressivement.',
+          'Sans orientation claire, ce déplacement se consolide avec le temps.',
+        ],
+      ],
+      SOFT_YELLOW: [
+        [
+          'Les décisions peuvent varier selon les situations.',
+          'Le poste n\'opère pas toujours dans la même direction au quotidien.',
+          'Des contraintes de coordination et des frictions en équipe en résultent.',
+        ],
+        [
+          'Dans certaines situations, des priorités divergentes apparaissent entre la personne et le poste.',
+          'Les décisions et les approches peuvent ainsi devenir incohérentes.',
+          'Ces écarts génèrent au quotidien des frictions et des efforts de coordination.',
+        ],
+      ],
+      MISMATCH: [
+        [
+          'Les attentes et les comportements réels s\'éloignent durablement.',
+          'Les décisions, la communication et le mode de travail s\'écarteraient notablement du poste.',
+          'Des conflits récurrents et des boucles de correction en résulteraient.',
+        ],
+        [
+          'Le poste serait vraisemblablement exercé au quotidien autrement que prévu.',
+          'Les attentes et les comportements réels s\'éloignent durablement.',
+          'Des conflits récurrents, des boucles de correction et un effort de management accru en résulteraient.',
+        ],
+      ],
+    };
+    risks = pickVariantSet(frRisks[level], seed + ':risks');
+  }
 
   let profileCompareIntro = '';
   if (_lang === 'fr') {

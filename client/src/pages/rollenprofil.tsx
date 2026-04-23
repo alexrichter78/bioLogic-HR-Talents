@@ -465,7 +465,7 @@ export default function Rollenprofil() {
       doc.save(`Stellenprofil_${safeName}.pdf`);
     } catch (e) {
       console.error("PDF error:", e);
-      alert("PDF-Export fehlgeschlagen. Bitte versuche es erneut.");
+      alert(region === "FR" ? "L'export PDF a échoué. Veuillez réessayer." : region === "EN" ? "PDF export failed. Please try again." : "PDF-Export fehlgeschlagen. Bitte versuche es erneut.");
     } finally {
       if (clone && clone.parentNode) clone.parentNode.removeChild(clone);
       if (pdfBtn) pdfBtn.style.display = "";

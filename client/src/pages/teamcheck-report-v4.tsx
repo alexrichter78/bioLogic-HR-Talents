@@ -322,7 +322,7 @@ export default function TeamCheckReportV4() {
       doc.save(`TeamCheck_${safeName}.pdf`);
     } catch (e) {
       console.error("PDF error:", e);
-      alert("PDF-Export fehlgeschlagen. Bitte versuche es erneut.");
+      alert(isFR ? "L'export PDF a échoué. Veuillez réessayer." : isEN ? "PDF export failed. Please try again." : "PDF-Export fehlgeschlagen. Bitte versuche es erneut.");
     } finally {
       if (clone && clone.parentNode) clone.parentNode.removeChild(clone);
       if (pdfBtn) pdfBtn.style.display = "";
