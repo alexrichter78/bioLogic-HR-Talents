@@ -526,7 +526,7 @@ export default function Teamdynamik() {
             </div>
 
             <div style={{ flex: 1, minWidth: 200 }}>
-              <p style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F", margin: "0 0 10px" }}>{t("Teamgrösse")}</p>
+              <p style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F", margin: "0 0 10px" }}>{it ? "Dimensione del team" : fr ? "Taille de l'équipe" : en ? "Team size" : "Teamgrösse"}</p>
               <div style={{ display: "flex", gap: 4, background: "rgba(0,0,0,0.03)", borderRadius: 10, padding: 3 }}>
                 {(["KLEIN", "MITTEL", "GROSS"] as TeamSize[]).map(size => {
                   const labels: Record<TeamSize, string> = region === "IT"
@@ -535,7 +535,7 @@ export default function Teamdynamik() {
                     ? { KLEIN: "Petit (2–5)", MITTEL: "Moyen (6–12)", GROSS: "Grand (13+)" }
                     : region === "EN"
                     ? { KLEIN: "Small (2–5)", MITTEL: "Medium (6–12)", GROSS: "Large (13+)" }
-                    : { KLEIN: "Klein (2–5)", MITTEL: "Mittel (6–12)", GROSS: t("Gross (13+)") };
+                    : { KLEIN: "Klein (2–5)", MITTEL: "Mittel (6–12)", GROSS: "Gross (13+)" };
                   const active = teamSize === size;
                   return (
                     <button key={size} onClick={() => setTeamSize(size)} data-testid={`toggle-size-${size.toLowerCase()}`} style={{
@@ -550,7 +550,11 @@ export default function Teamdynamik() {
                 })}
               </div>
               <p style={{ fontSize: 11, color: "#8E8E93", marginTop: 6 }}>
-                {teamSize === "KLEIN" ? "Kleine Teams: Jede Person hat hohen Einfluss auf die Dynamik." : teamSize === "GROSS" ? t("Grosse Teams: Einzelpersonen verändern die Gesamtdynamik weniger stark.") : "Mittlere Teams: Spürbarer, aber begrenzter Einfluss pro Person."}
+                {teamSize === "KLEIN"
+                  ? (it ? "Team piccoli: ogni persona ha un forte influsso sulla dinamica." : fr ? "Petites équipes: chaque personne influence fortement la dynamique." : en ? "Small teams: each person has high influence on the dynamics." : "Kleine Teams: Jede Person hat hohen Einfluss auf die Dynamik.")
+                  : teamSize === "GROSS"
+                  ? (it ? "Team grandi: i singoli individui modificano meno la dinamica complessiva." : fr ? "Grandes équipes: les individus modifient moins la dynamique globale." : en ? "Large teams: individuals change overall dynamics less." : "Grosse Teams: Einzelpersonen verändern die Gesamtdynamik weniger stark.")
+                  : (it ? "Team medi: influsso per persona percepibile ma limitato." : fr ? "Équipes moyennes: influence par personne perceptible mais limitée." : en ? "Medium teams: noticeable but limited influence per person." : "Mittlere Teams: Spürbarer, aber begrenzter Einfluss pro Person.")}
               </p>
             </div>
           </div>
@@ -627,40 +631,76 @@ export default function Teamdynamik() {
               const tlKey = result.trafficLight;
               const detailTeammitglied: Record<TrafficLight, { title: string; desc: string; label: string; bullets: string[]; recLabel: string; rec: string }> = {
                 RED: {
-                  title: "Deutliche Spannungen – klare Führung notwendig",
-                  desc: "Arbeitslogiken unterscheiden sich stark. Ohne Führung entstehen Leistungs- und Konfliktrisiken.",
-                  label: "Was bedeutet das konkret?",
-                  bullets: [
+                  title: it ? "Tensioni marcate – leadership decisa necessaria" : fr ? "Tensions marquées – direction ferme nécessaire" : en ? "Significant tensions – clear leadership required" : "Deutliche Spannungen – klare Führung notwendig",
+                  desc: it ? "Le logiche di lavoro differiscono notevolmente. Senza guida emergono rischi di prestazione e conflitti." : fr ? "Les logiques de travail diffèrent fortement. Sans pilotage, des risques de performance et de conflit émergent." : en ? "Work logics differ significantly. Without leadership, performance and conflict risks arise." : "Arbeitslogiken unterscheiden sich stark. Ohne Führung entstehen Leistungs- und Konfliktrisiken.",
+                  label: it ? "Cosa significa concretamente?" : fr ? "Qu'est-ce que cela signifie concrètement ?" : en ? "What does this mean concretely?" : "Was bedeutet das konkret?",
+                  bullets: it ? [
+                    "Le priorità vengono interpretate in modo diverso.",
+                    "Il ritmo o la qualità vengono messi sotto pressione.",
+                    "Resistenza, ritiro o formazione di schieramenti sono possibili.",
+                  ] : fr ? [
+                    "Les priorités sont interprétées différemment.",
+                    "Le rythme ou la qualité sont mis sous pression.",
+                    "Résistance, retrait ou formation de clans sont possibles.",
+                  ] : en ? [
+                    "Priorities are interpreted differently.",
+                    "Pace or quality come under pressure.",
+                    "Resistance, withdrawal or factionalism are possible.",
+                  ] : [
                     "Prioritäten werden unterschiedlich interpretiert.",
                     "Tempo oder Qualität geraten unter Druck.",
                     "Widerstand, Rückzug oder Lagerbildung sind möglich.",
                   ],
-                  recLabel: "Was ist zu tun?",
-                  rec: t("Klare Standards, feste Entscheidungsregeln und regelmässige Reviews sind zwingend."),
+                  recLabel: it ? "Cosa fare?" : fr ? "Que faire ?" : en ? "What to do?" : "Was ist zu tun?",
+                  rec: it ? "Standard chiari, regole decisionali fisse e revisioni periodiche sono indispensabili." : fr ? "Des standards clairs, des règles de décision fixes et des revues régulières sont indispensables." : en ? "Clear standards, fixed decision rules and regular reviews are mandatory." : t("Klare Standards, feste Entscheidungsregeln und regelmässige Reviews sind zwingend."),
                 },
                 YELLOW: {
-                  title: "Unterschiedliche Arbeitsweisen – aktiv steuern",
-                  desc: "Unterschiede sind spürbar. Mit klaren Regeln bleibt das System stabil steuerbar.",
-                  label: "Was bedeutet das konkret?",
-                  bullets: [
+                  title: it ? "Modalità di lavoro diverse – gestire attivamente" : fr ? "Modes de travail différents – piloter activement" : en ? "Different work styles – manage actively" : "Unterschiedliche Arbeitsweisen – aktiv steuern",
+                  desc: it ? "Le differenze sono percepibili. Con regole chiare il sistema rimane gestibile in modo stabile." : fr ? "Les différences sont perceptibles. Avec des règles claires, le système reste stable et pilotable." : en ? "Differences are noticeable. With clear rules the system remains stably manageable." : "Unterschiede sind spürbar. Mit klaren Regeln bleibt das System stabil steuerbar.",
+                  label: it ? "Cosa significa concretamente?" : fr ? "Qu'est-ce que cela signifie concrètement ?" : en ? "What does this mean concretely?" : "Was bedeutet das konkret?",
+                  bullets: it ? [
+                    "Le decisioni richiedono talvolta più tempo.",
+                    "Le priorità devono essere spiegate più frequentemente.",
+                    "Il lavoro di coordinamento aumenta nel quotidiano.",
+                  ] : fr ? [
+                    "Les décisions prennent parfois plus de temps.",
+                    "Les priorités doivent être expliquées plus souvent.",
+                    "Le travail de coordination augmente au quotidien.",
+                  ] : en ? [
+                    "Decisions sometimes take longer.",
+                    "Priorities need to be explained more frequently.",
+                    "Coordination effort increases in daily work.",
+                  ] : [
                     "Entscheidungen dauern teilweise länger.",
                     "Prioritäten müssen häufiger erklärt werden.",
                     "Abstimmungsaufwand steigt im Alltag.",
                   ],
-                  recLabel: "Was ist zu tun?",
-                  rec: "Entscheidungswege, Zeitfenster und Verantwortlichkeiten müssen klar gesetzt werden.",
+                  recLabel: it ? "Cosa fare?" : fr ? "Que faire ?" : en ? "What to do?" : "Was ist zu tun?",
+                  rec: it ? "I percorsi decisionali, le finestre temporali e le responsabilità devono essere definiti con chiarezza." : fr ? "Les voies de décision, les délais et les responsabilités doivent être clairement définis." : en ? "Decision paths, time windows and responsibilities must be clearly defined." : "Entscheidungswege, Zeitfenster und Verantwortlichkeiten müssen klar gesetzt werden.",
                 },
                 GREEN: {
-                  title: "Stabil – passt gut zusammen",
-                  desc: t("Arbeitsweisen sind kompatibel. Keine besonderen Massnahmen notwendig."),
-                  label: "Was bedeutet das konkret?",
-                  bullets: [
+                  title: it ? "Stabile – buona compatibilità" : fr ? "Stable – bonne compatibilité" : en ? "Stable – good compatibility" : "Stabil – passt gut zusammen",
+                  desc: it ? "Le modalità di lavoro sono compatibili. Non sono necessarie misure particolari." : fr ? "Les modes de travail sont compatibles. Aucune mesure particulière n'est nécessaire." : en ? "Work styles are compatible. No special measures required." : t("Arbeitsweisen sind kompatibel. Keine besonderen Massnahmen notwendig."),
+                  label: it ? "Cosa significa concretamente?" : fr ? "Qu'est-ce que cela signifie concrètement ?" : en ? "What does this mean concretely?" : "Was bedeutet das konkret?",
+                  bullets: it ? [
+                    "Le decisioni vengono comprese e accettate rapidamente.",
+                    "Il coordinamento si svolge senza problemi.",
+                    "Ritmo e qualità rimangono stabili.",
+                  ] : fr ? [
+                    "Les décisions sont rapidement comprises et acceptées.",
+                    "Les coordinations se déroulent sans accroc.",
+                    "Le rythme et la qualité restent stables.",
+                  ] : en ? [
+                    "Decisions are quickly understood and accepted.",
+                    "Coordination runs smoothly.",
+                    "Pace and quality remain stable.",
+                  ] : [
                     "Entscheidungen werden schnell verstanden und akzeptiert.",
                     "Abstimmungen laufen reibungslos.",
                     "Tempo und Qualität bleiben stabil.",
                   ],
-                  recLabel: "Was ist zu tun?",
-                  rec: t("Normale Führung und regelmässige Abstimmung reichen aus."),
+                  recLabel: it ? "Cosa fare?" : fr ? "Que faire ?" : en ? "What to do?" : "Was ist zu tun?",
+                  rec: it ? "Una guida normale e un coordinamento regolare sono sufficienti." : fr ? "Un pilotage normal et une coordination régulière suffisent." : en ? "Normal leadership and regular coordination are sufficient." : t("Normale Führung und regelmässige Abstimmung reichen aus."),
                 },
               };
 
@@ -672,9 +712,10 @@ export default function Teamdynamik() {
                 const sc = m.stressComparison;
 
                 const ratingColor: Record<string, string> = {
-                  "Passend": "#34C759",
-                  "Bedingt passend": "#FF9500",
-                  "Nicht passend": "#FF3B30",
+                  "Passend": "#34C759", "Adatto": "#34C759", "Suitable": "#34C759", "Adapté": "#34C759",
+                  "Bedingt passend": "#FF9500", "Parzialmente adatto": "#FF9500", "Conditionally suitable": "#FF9500", "Partiellement adapté": "#FF9500",
+                  "Kritisch": "#FF3B30", "Critico": "#FF3B30", "Critical": "#FF3B30", "Critique": "#FF3B30",
+                  "Nicht passend": "#FF3B30", "Non adatto": "#FF3B30", "Not suitable": "#FF3B30", "Non adapté": "#FF3B30",
                 };
 
                 const normalBullets = nr.componentBreakdown.split("\n");
@@ -690,12 +731,12 @@ export default function Teamdynamik() {
                   <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 12 }} data-testid="detail-block">
                     <SectionCard barColor={ratingColor[nr.rating] || "#8E8E93"} testId="section-normal">
                       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-                        <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Normalzustand</p>
+                        <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{it ? "Situazione normale" : fr ? "Situation normale" : en ? "Normal state" : "Normalzustand"}</p>
                         <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 5, background: `${ratingColor[nr.rating] || "#8E8E93"}15`, color: ratingColor[nr.rating] || "#8E8E93" }} data-testid="badge-normal-rating">{nr.rating}</span>
                       </div>
                       <p style={{ fontSize: 12, color: "#3A3A3C", margin: "0 0 12px", lineHeight: 1.5 }}>{nr.ratingHeadline}</p>
 
-                      <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }}>Komponentenanalyse</p>
+                      <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }}>{it ? "Analisi dei componenti" : fr ? "Analyse des composantes" : en ? "Component analysis" : "Komponentenanalyse"}</p>
                       <div style={{ display: "flex", flexDirection: "column", gap: 5, marginBottom: 14 }}>
                         {normalBullets.map((b, i) => (
                           <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
@@ -707,7 +748,7 @@ export default function Teamdynamik() {
 
                       {m.normal.evaluation.flags.leadershipRules.length > 0 && (
                         <div style={{ marginBottom: 10 }}>
-                          <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>Führungsregeln</p>
+                          <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>{it ? "Regole di leadership" : fr ? "Règles de leadership" : en ? "Leadership rules" : "Führungsregeln"}</p>
                           {m.normal.evaluation.flags.leadershipRules.map((rule, ri) => (
                             <div key={ri} style={{ display: "flex", alignItems: "flex-start", gap: 8, marginBottom: 6 }}>
                               <span style={{ fontSize: 10, color: rule.minRating === "Nicht passend" ? "#FF3B30" : "#FF9500", marginTop: 2, flexShrink: 0, fontWeight: 700 }}>{rule.code}</span>
@@ -721,18 +762,18 @@ export default function Teamdynamik() {
 
                       {m.normal.evaluation.flags.leaderSecondaryCompetition?.active && (
                         <p style={{ fontSize: 11, color: "#FF9500", margin: "0 0 10px", lineHeight: 1.5 }}>
-                          ⚠ Sekundär-Konkurrenz: 2. und 3. Komponente der Führung sind nahezu gleich stark – unter Stress konkurrieren sie.
+                          {it ? "⚠ Concorrenza secondaria: il 2° e il 3° componente della leadership sono quasi ugualmente forti – sotto stress entrano in competizione." : fr ? "⚠ Concurrence secondaire: les 2e et 3e composantes du leadership sont presque aussi fortes – sous stress elles se concurrencent." : en ? "⚠ Secondary competition: the 2nd and 3rd leadership components are nearly equal – under stress they compete." : "⚠ Sekundär-Konkurrenz: 2. und 3. Komponente der Führung sind nahezu gleich stark – unter Stress konkurrieren sie."}
                         </p>
                       )}
 
                       <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0 }}>
-                        <span style={{ fontWeight: 700 }}>Team-Fit-Score: </span>
+                        <span style={{ fontWeight: 700 }}>{it ? "Punteggio di compatibilità: " : fr ? "Score de compatibilité : " : en ? "Team fit score: " : "Team-Fit-Score: "}</span>
                         {(() => {
                           const tfs = Math.round(m.normal.evaluation.indices.TFS * 100);
                           const tfsBefore = m.normal.evaluation.indices.TFS_beforeLeadershipRules !== undefined
                             ? Math.round(m.normal.evaluation.indices.TFS_beforeLeadershipRules * 100) : null;
                           if (tfsBefore !== null && tfsBefore !== tfs) {
-                            return <>{tfsBefore} % <span style={{ color: "#8E8E93" }}>→</span> {tfs} % <span style={{ fontSize: 10, color: "#8E8E93" }}>(nach Führungsregeln)</span></>;
+                            return <>{tfsBefore} % <span style={{ color: "#8E8E93" }}>→</span> {tfs} % <span style={{ fontSize: 10, color: "#8E8E93" }}>({it ? "dopo regole di leadership" : fr ? "après règles de leadership" : en ? "after leadership rules" : "nach Führungsregeln"})</span></>;
                           }
                           return <>{tfs} %</>;
                         })()}
@@ -741,27 +782,27 @@ export default function Teamdynamik() {
 
                     <SectionCard barColor={ratingColor[cr.rating] || "#8E8E93"} testId="section-controlled">
                       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-                        <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Kontrollierter Stress</p>
+                        <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{it ? "Stress controllato" : fr ? "Stress contrôlé" : en ? "Controlled stress" : "Kontrollierter Stress"}</p>
                         <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 5, background: `${ratingColor[cr.rating] || "#8E8E93"}15`, color: ratingColor[cr.rating] || "#8E8E93" }} data-testid="badge-controlled-rating">{cr.rating}</span>
                       </div>
-                      <p style={{ fontSize: 11, color: "#6E6E73", margin: "0 0 4px", lineHeight: 1.5, fontStyle: "italic" }}>Die stärkste Komponente wird dominanter – mehr Klarheit, aber auch Tunnelblick-Risiko.</p>
+                      <p style={{ fontSize: 11, color: "#6E6E73", margin: "0 0 4px", lineHeight: 1.5, fontStyle: "italic" }}>{it ? "Il componente più forte diventa più dominante – maggiore chiarezza, ma anche rischio di visione a tunnel." : fr ? "La composante la plus forte devient plus dominante – plus de clarté, mais aussi risque d'effet tunnel." : en ? "The strongest component becomes more dominant – more clarity, but also tunnel-vision risk." : "Die stärkste Komponente wird dominanter – mehr Klarheit, aber auch Tunnelblick-Risiko."}</p>
                       <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.5 }}>{cr.ratingHeadline}</p>
                     </SectionCard>
 
                     <SectionCard barColor={ratingColor[ur.rating] || "#8E8E93"} testId="section-uncontrolled">
                       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-                        <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Unkontrollierter Stress</p>
+                        <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{it ? "Stress incontrollato" : fr ? "Stress incontrôlé" : en ? "Uncontrolled stress" : "Unkontrollierter Stress"}</p>
                         <span style={{ fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 5, background: `${ratingColor[ur.rating] || "#8E8E93"}15`, color: ratingColor[ur.rating] || "#8E8E93" }} data-testid="badge-uncontrolled-rating">{ur.rating}</span>
                       </div>
                       <p style={{ fontSize: 11, color: "#6E6E73", margin: "0 0 4px", lineHeight: 1.5, fontStyle: "italic" }}>
                         {m.uncontrolledStress.evaluation.flags.leaderSecondaryCompetition?.active
-                          ? "Top2 und Top3 konkurrieren – Verhalten wirkt wechselhafter."
-                          : "Die zweitstärkste Komponente wird sichtbarer und kann die Führungslinie verschieben."}
+                          ? (it ? "Top2 e Top3 sono in competizione – il comportamento appare più variabile." : fr ? "Top2 et Top3 se concurrencent – le comportement paraît plus variable." : en ? "Top2 and Top3 compete – behaviour appears more variable." : "Top2 und Top3 konkurrieren – Verhalten wirkt wechselhafter.")
+                          : (it ? "Il secondo componente più forte diventa più visibile e può spostare la linea di leadership." : fr ? "La deuxième composante la plus forte devient plus visible et peut faire évoluer la ligne de leadership." : en ? "The second strongest component becomes more visible and can shift the leadership line." : "Die zweitstärkste Komponente wird sichtbarer und kann die Führungslinie verschieben.")}
                       </p>
                       <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.5 }}>{ur.ratingHeadline}</p>
                       {m.uncontrolledStress.evaluation.flags.leadershipRules.some(r => r.code === "F6") && (
                         <p style={{ fontSize: 11, color: "#FF9500", margin: "6px 0 0", lineHeight: 1.5 }}>
-                          ⚠ Sekundär-Konkurrenz unter Stress: Führungsstil wird inkonsistenter.
+                          {it ? "⚠ Concorrenza secondaria sotto stress: lo stile di leadership diventa più inconsistente." : fr ? "⚠ Concurrence secondaire sous stress : le style de leadership devient plus incohérent." : en ? "⚠ Secondary competition under stress: leadership style becomes more inconsistent." : "⚠ Sekundär-Konkurrenz unter Stress: Führungsstil wird inkonsistenter."}
                         </p>
                       )}
                     </SectionCard>
@@ -772,7 +813,7 @@ export default function Teamdynamik() {
               }
 
               const detail = detailTeammitglied[tlKey];
-              const variant = getSystemVariant(teamProfile, personProfile, result.dominanceTeam, result.dominancePerson);
+              const variant = getSystemVariant(teamProfile, personProfile, result.dominanceTeam, result.dominancePerson, _r);
               return (
                 <div style={{ display: "flex", borderRadius: 14, overflow: "hidden", background: "#fff", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 4px rgba(0,0,0,0.04)", marginTop: 12 }} data-testid="detail-block">
                   <div style={{ width: 4, flexShrink: 0, background: tl.fill }} />
@@ -820,8 +861,8 @@ export default function Teamdynamik() {
                   <Activity style={{ width: 14, height: 14, color: "#0071E3" }} />
                 </div>
                 <div>
-                  <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0, letterSpacing: "-0.01em" }}>Spannungsmatrix</p>
-                  <p style={{ fontSize: 11, color: "#8E8E93", margin: "2px 0 0" }}>{isLeading ? "Person (Zeile) × Team (Spalte)" : "Team (Zeile) × Person (Spalte)"}</p>
+                  <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0, letterSpacing: "-0.01em" }}>{it ? "Matrice delle tensioni" : fr ? "Matrice des tensions" : en ? "Tension matrix" : "Spannungsmatrix"}</p>
+                  <p style={{ fontSize: 11, color: "#8E8E93", margin: "2px 0 0" }}>{isLeading ? (it ? "Persona (riga) × Team (colonna)" : fr ? "Personne (ligne) × Équipe (colonne)" : en ? "Person (row) × Team (column)" : "Person (Zeile) × Team (Spalte)") : (it ? "Team (riga) × Persona (colonna)" : fr ? "Équipe (ligne) × Personne (colonne)" : en ? "Team (row) × Person (column)" : "Team (Zeile) × Person (Spalte)")}</p>
                 </div>
               </div>
 
@@ -875,24 +916,45 @@ export default function Teamdynamik() {
                     <span style={{ fontSize: 10, fontWeight: 600, padding: "2px 8px", borderRadius: 5, background: "rgba(0,113,227,0.08)", color: "#0071E3" }}>{result.activeMatrixCell.id}</span>
                   </div>
                   <p style={{ fontSize: 12, color: "#3A3A3C", margin: "0 0 10px", lineHeight: 1.6, fontWeight: 500 }}>{result.activeMatrixCell.systemlage}</p>
-                  <p style={{ fontSize: 11, fontWeight: 700, color: "#1D1D1F", margin: "0 0 4px" }}>Alltagswirkung</p>
+                  <p style={{ fontSize: 11, fontWeight: 700, color: "#1D1D1F", margin: "0 0 4px" }}>{it ? "Effetto quotidiano" : fr ? "Effet au quotidien" : en ? "Day-to-day impact" : "Alltagswirkung"}</p>
                   <p style={{ fontSize: 12, color: "#48484A", margin: "0 0 10px", lineHeight: 1.6 }}>{result.activeMatrixCell.alltag}</p>
-                  <p style={{ fontSize: 11, fontWeight: 700, color: "#1D1D1F", margin: "0 0 4px" }}>{t("Massnahmen")}</p>
+                  <p style={{ fontSize: 11, fontWeight: 700, color: "#1D1D1F", margin: "0 0 4px" }}>{it ? "Misure" : fr ? "Mesures" : en ? "Measures" : "Massnahmen"}</p>
                   <p style={{ fontSize: 12, color: "#48484A", margin: 0, lineHeight: 1.6 }}>{result.activeMatrixCell.tun}</p>
                 </div>
               </div>
 
               {vc.showInsights && vc.insightSections.length > 0 && (
                 <div style={{ marginTop: 14, display: "flex", flexDirection: "column", gap: 8 }} data-testid="insights-panel">
-                  {vc.insightSections.map((s, i) => (
-                    <div key={i} style={{ display: "flex", borderRadius: 12, overflow: "hidden", background: "#fff", border: "1px solid rgba(0,0,0,0.05)" }}>
-                      <div style={{ width: 3, flexShrink: 0, background: "#0071E3" }} />
-                      <div style={{ flex: 1, padding: "10px 14px" }}>
-                        <p style={{ fontSize: 11, fontWeight: 700, color: "#1D1D1F", margin: "0 0 4px" }}>{s.title}</p>
-                        <p style={{ fontSize: 12, color: "#48484A", margin: 0, lineHeight: 1.5 }}>{s.text}</p>
+                  {(() => {
+                    const titleMap: Record<string, string> = it ? {
+                      "Systemwirkung": "Impatto sistemico", "Führungsverhalten": "Comportamento di leadership",
+                      "Spannungsfeld": "Campo di tensione", "Alltagswirkung": "Effetto quotidiano",
+                      "Konkrete Massnahmen": "Misure concrete", "Blinder Fleck": "Punto cieco",
+                      "Kurzfazit": "Sintesi breve", "Routinen & Steuerung": "Routine e gestione",
+                      "Kultur & Integration": "Cultura e integrazione",
+                    } : fr ? {
+                      "Systemwirkung": "Impact systémique", "Führungsverhalten": "Comportement de leadership",
+                      "Spannungsfeld": "Champ de tension", "Alltagswirkung": "Effet au quotidien",
+                      "Konkrete Massnahmen": "Mesures concrètes", "Blinder Fleck": "Angle mort",
+                      "Kurzfazit": "Synthèse brève", "Routinen & Steuerung": "Routines & pilotage",
+                      "Kultur & Integration": "Culture & intégration",
+                    } : en ? {
+                      "Systemwirkung": "System impact", "Führungsverhalten": "Leadership behaviour",
+                      "Spannungsfeld": "Tension field", "Alltagswirkung": "Day-to-day impact",
+                      "Konkrete Massnahmen": "Concrete measures", "Blinder Fleck": "Blind spot",
+                      "Kurzfazit": "Short summary", "Routinen & Steuerung": "Routines & steering",
+                      "Kultur & Integration": "Culture & integration",
+                    } : {};
+                    return vc.insightSections.map((s, i) => (
+                      <div key={i} style={{ display: "flex", borderRadius: 12, overflow: "hidden", background: "#fff", border: "1px solid rgba(0,0,0,0.05)" }}>
+                        <div style={{ width: 3, flexShrink: 0, background: "#0071E3" }} />
+                        <div style={{ flex: 1, padding: "10px 14px" }}>
+                          <p style={{ fontSize: 11, fontWeight: 700, color: "#1D1D1F", margin: "0 0 4px" }}>{titleMap[s.title] || s.title}</p>
+                          <p style={{ fontSize: 12, color: "#48484A", margin: 0, lineHeight: 1.5 }}>{s.text}</p>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ));
+                  })()}
                 </div>
               )}
             </GlassCard>
@@ -906,16 +968,16 @@ export default function Teamdynamik() {
               <Lightbulb style={{ width: 14, height: 14, color: "#0071E3" }} />
             </div>
             <div>
-              <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Chancen, Risiken & Integrationsplan</p>
-              <p style={{ fontSize: 11, color: "#8E8E93", margin: "2px 0 0" }}>Abgeleitet aus der aktuellen Dynamik-Analyse</p>
+              <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{it ? "Opportunità, rischi e piano d'integrazione" : fr ? "Opportunités, risques & plan d'intégration" : en ? "Opportunities, risks & integration plan" : "Chancen, Risiken & Integrationsplan"}</p>
+              <p style={{ fontSize: 11, color: "#8E8E93", margin: "2px 0 0" }}>{it ? "Derivato dall'analisi dinamica attuale" : fr ? "Dérivé de l'analyse dynamique actuelle" : en ? "Derived from the current dynamics analysis" : "Abgeleitet aus der aktuellen Dynamik-Analyse"}</p>
             </div>
           </div>
 
           <div style={{ display: "flex", gap: 4, background: "rgba(0,0,0,0.03)", borderRadius: 10, padding: 3, marginBottom: 16 }}>
             {([
-              { key: "chancen" as const, label: "Chancen", icon: TrendingUp },
-              { key: "risiken" as const, label: "Risiken", icon: AlertTriangle },
-              { key: "integration" as const, label: "Integrationsplan", icon: CalendarDays },
+              { key: "chancen" as const, label: it ? "Opportunità" : fr ? "Opportunités" : en ? "Opportunities" : "Chancen", icon: TrendingUp },
+              { key: "risiken" as const, label: it ? "Rischi" : fr ? "Risques" : en ? "Risks" : "Risiken", icon: AlertTriangle },
+              { key: "integration" as const, label: it ? "Piano d'integrazione" : fr ? "Plan d'intégration" : en ? "Integration plan" : "Integrationsplan", icon: CalendarDays },
             ]).map(tab => {
               const active = activeTab === tab.key;
               const TIcon = tab.icon;
@@ -998,14 +1060,14 @@ export default function Teamdynamik() {
                 <div style={{ height: 1, background: "rgba(0,0,0,0.06)", margin: "18px 0" }} />
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
                   <Shield style={{ width: 14, height: 14, color: "#5856D6" }} />
-                  <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Führungshebel</p>
+                  <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{it ? "Leve di gestione" : fr ? "Leviers de pilotage" : en ? "Management levers" : "Führungshebel"}</p>
                   {result.leverEffects.enabledCount > 0 && (
                     <span style={{ fontSize: 10, fontWeight: 600, padding: "2px 8px", borderRadius: 5, background: "rgba(52,199,89,0.08)", color: "#34C759" }}>
-                      {result.leverEffects.enabledCount} aktiv → -{result.leverEffects.reductionLevels} Stufe{result.leverEffects.reductionLevels !== 1 ? "n" : ""}
+                      {result.leverEffects.enabledCount} {it ? "attivi" : fr ? "actifs" : en ? "active" : "aktiv"} → -{result.leverEffects.reductionLevels} {it ? "livello" : fr ? "niveau" : en ? "level" : "Stufe"}{result.leverEffects.reductionLevels !== 1 ? (it ? "" : fr ? "x" : en ? "s" : "n") : ""}
                     </span>
                   )}
                 </div>
-                <p style={{ fontSize: 11, color: "#8E8E93", margin: "-6px 0 12px", lineHeight: 1.4 }}>Aktive Hebel reduzieren den Steuerungsbedarf (2+ = -1 Stufe, 4+ = -2 Stufen)</p>
+                <p style={{ fontSize: 11, color: "#8E8E93", margin: "-6px 0 12px", lineHeight: 1.4 }}>{it ? "Le leve attive riducono il fabbisogno di gestione (2+ = -1 livello, 4+ = -2 livelli)" : fr ? "Les leviers actifs réduisent le besoin de pilotage (2+ = -1 niveau, 4+ = -2 niveaux)" : en ? "Active levers reduce the steering need (2+ = -1 level, 4+ = -2 levels)" : "Aktive Hebel reduzieren den Steuerungsbedarf (2+ = -1 Stufe, 4+ = -2 Stufen)"}</p>
                 <div style={{ display: "flex", flexDirection: "column", gap: 6 }} data-testid="levers-checklist">
                   {levers.map((lever, i) => (
                     <label key={lever.id} style={{
@@ -1037,8 +1099,8 @@ export default function Teamdynamik() {
                 <Target style={{ width: 14, height: 14, color: "#0071E3" }} />
               </div>
               <div>
-                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0, letterSpacing: "-0.01em" }}>Führungskontext</p>
-                <p style={{ fontSize: 11, color: "#8E8E93", margin: "2px 0 0" }}>Kann diese Person das Team wirksam führen?</p>
+                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0, letterSpacing: "-0.01em" }}>{it ? "Contesto di leadership" : fr ? "Contexte de leadership" : en ? "Leadership context" : "Führungskontext"}</p>
+                <p style={{ fontSize: 11, color: "#8E8E93", margin: "2px 0 0" }}>{it ? "Questa persona può guidare il team in modo efficace?" : fr ? "Cette personne peut-elle diriger l'équipe efficacement ?" : en ? "Can this person lead the team effectively?" : "Kann diese Person das Team wirksam führen?"}</p>
               </div>
             </div>
 
@@ -1050,7 +1112,7 @@ export default function Teamdynamik() {
                   <div style={{ flex: 1, minWidth: 200, display: "flex", borderRadius: 14, overflow: "hidden", background: "#fff", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
                     <div style={{ width: 4, flexShrink: 0, background: personDomColor }} />
                     <div style={{ flex: 1, padding: "12px 14px" }}>
-                      <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", margin: "0 0 4px", textTransform: "uppercase", letterSpacing: "0.04em" }}>Führungskraft</p>
+                      <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", margin: "0 0 4px", textTransform: "uppercase", letterSpacing: "0.04em" }}>{it ? "Manager" : fr ? "Manager" : en ? "Leader" : "Führungskraft"}</p>
                       <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>{result.leadershipContext.personLabel}</p>
                       <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.5 }}>{result.leadershipContext.personStrengths}</p>
                     </div>
@@ -1070,7 +1132,7 @@ export default function Teamdynamik() {
             <div style={{ display: "flex", borderRadius: 14, overflow: "hidden", background: "#fff", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 4px rgba(0,0,0,0.04)", marginBottom: 12 }}>
               <div style={{ width: 4, flexShrink: 0, background: tl.fill }} />
               <div style={{ flex: 1, padding: "14px 16px" }}>
-                <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>Passung</p>
+                <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>{it ? "Compatibilità" : fr ? "Compatibilité" : en ? "Compatibility" : "Passung"}</p>
                 <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.6 }}>{result.leadershipContext.fitSummary}</p>
               </div>
             </div>
@@ -1079,14 +1141,14 @@ export default function Teamdynamik() {
               <div style={{ flex: 1, minWidth: 200, display: "flex", borderRadius: 14, overflow: "hidden", background: "#fff", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
                 <div style={{ width: 4, flexShrink: 0, background: "#FF9500" }} />
                 <div style={{ flex: 1, padding: "12px 14px" }}>
-                  <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>Kernrisiko</p>
+                  <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>{it ? "Rischio principale" : fr ? "Risque principal" : en ? "Core risk" : "Kernrisiko"}</p>
                   <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.5 }}>{result.leadershipContext.coreChallenge}</p>
                 </div>
               </div>
               <div style={{ flex: 1, minWidth: 200, display: "flex", borderRadius: 14, overflow: "hidden", background: "#fff", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
                 <div style={{ width: 4, flexShrink: 0, background: "#34C759" }} />
                 <div style={{ flex: 1, padding: "12px 14px" }}>
-                  <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>Kernchance</p>
+                  <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>{it ? "Opportunità principale" : fr ? "Opportunité principale" : en ? "Core opportunity" : "Kernchance"}</p>
                   <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.5 }}>{result.leadershipContext.coreChance}</p>
                 </div>
               </div>
@@ -1097,7 +1159,7 @@ export default function Teamdynamik() {
                 <div style={{ height: 1, background: "rgba(0,0,0,0.06)", margin: "16px 0" }} />
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
                   <Briefcase style={{ width: 14, height: 14, color: "#0071E3" }} />
-                  <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Rollenkontext: {result.leadershipContext.roleContext.beruf}</p>
+                  <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{it ? "Contesto del ruolo" : fr ? "Contexte du rôle" : en ? "Role context" : "Rollenkontext"}: {result.leadershipContext.roleContext.beruf}</p>
                   {result.leadershipContext.roleContext.bereich && (
                     <span style={{ fontSize: 10, fontWeight: 600, padding: "2px 8px", borderRadius: 5, background: "rgba(0,113,227,0.08)", color: "#0071E3" }}>{result.leadershipContext.roleContext.bereich}</span>
                   )}
@@ -1106,7 +1168,7 @@ export default function Teamdynamik() {
                 <div style={{ display: "flex", borderRadius: 14, overflow: "hidden", background: "#fff", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 4px rgba(0,0,0,0.04)", marginBottom: 10 }} data-testid="role-fit-card">
                   <div style={{ width: 4, flexShrink: 0, background: "#0071E3" }} />
                   <div style={{ flex: 1, padding: "12px 14px" }}>
-                    <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>Rollenpassung</p>
+                    <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>{it ? "Compatibilità con il ruolo" : fr ? "Adéquation au rôle" : en ? "Role fit" : "Rollenpassung"}</p>
                     <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.6 }}>{result.leadershipContext.roleContext.roleFitStatement}</p>
                   </div>
                 </div>
@@ -1114,7 +1176,7 @@ export default function Teamdynamik() {
                 <div style={{ display: "flex", borderRadius: 14, overflow: "hidden", background: "#fff", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 4px rgba(0,0,0,0.04)", marginBottom: 10 }} data-testid="role-risk-card">
                   <div style={{ width: 4, flexShrink: 0, background: "#FF9500" }} />
                   <div style={{ flex: 1, padding: "12px 14px" }}>
-                    <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>Rollenspezifisches Risiko</p>
+                    <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>{it ? "Rischio specifico del ruolo" : fr ? "Risque spécifique au rôle" : en ? "Role-specific risk" : "Rollenspezifisches Risiko"}</p>
                     <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.5 }}>{result.leadershipContext.roleContext.roleRisk}</p>
                   </div>
                 </div>
@@ -1123,7 +1185,7 @@ export default function Teamdynamik() {
                   <div style={{ display: "flex", borderRadius: 14, overflow: "hidden", background: "#fff", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 4px rgba(0,0,0,0.04)", marginBottom: 10 }} data-testid="role-tasks-card">
                     <div style={{ width: 4, flexShrink: 0, background: "#8E8E93" }} />
                     <div style={{ flex: 1, padding: "12px 14px" }}>
-                      <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }}>Kerntätigkeiten der Rolle</p>
+                      <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }}>{it ? "Attività chiave del ruolo" : fr ? "Activités clés du rôle" : en ? "Key role activities" : "Kerntätigkeiten der Rolle"}</p>
                       <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                         {result.leadershipContext.roleContext.keyTasks.map((t, i) => (
                           <span key={i} style={{ fontSize: 11, padding: "4px 10px", borderRadius: 8, background: "rgba(0,0,0,0.04)", color: "#3A3A3C", whiteSpace: "nowrap" }}>{t}</span>
@@ -1137,7 +1199,7 @@ export default function Teamdynamik() {
                   <>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, margin: "16px 0 10px" }}>
                       <Target style={{ width: 14, height: 14, color: "#FF9500" }} />
-                      <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Erfolgsfokus</p>
+                      <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{it ? "Focus sul successo" : fr ? "Focus sur le succès" : en ? "Success focus" : "Erfolgsfokus"}</p>
                       <div style={{ display: "flex", gap: 4 }}>
                         {result.leadershipContext.roleContext.erfolgsfokusContext.labels.map((l, i) => (
                           <span key={i} style={{ fontSize: 10, fontWeight: 600, padding: "2px 8px", borderRadius: 5, background: "rgba(255,149,0,0.1)", color: "#FF9500" }}>{l}</span>
@@ -1148,7 +1210,7 @@ export default function Teamdynamik() {
                     <div style={{ display: "flex", borderRadius: 14, overflow: "hidden", background: "#fff", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 4px rgba(0,0,0,0.04)", marginBottom: 10 }} data-testid="erfolgsfokus-fit-card">
                       <div style={{ width: 4, flexShrink: 0, background: "#FF9500" }} />
                       <div style={{ flex: 1, padding: "12px 14px" }}>
-                        <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>Führungskraft & Erfolgsfokus</p>
+                        <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>{it ? "Manager e focus sul successo" : fr ? "Manager et focus sur le succès" : en ? "Leader & success focus" : "Führungskraft & Erfolgsfokus"}</p>
                         <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.6 }}>{result.leadershipContext.roleContext.erfolgsfokusContext.fitStatement}</p>
                       </div>
                     </div>
@@ -1156,7 +1218,7 @@ export default function Teamdynamik() {
                     <div style={{ display: "flex", borderRadius: 14, overflow: "hidden", background: "#fff", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 4px rgba(0,0,0,0.04)", marginBottom: 10 }} data-testid="erfolgsfokus-team-card">
                       <div style={{ width: 4, flexShrink: 0, background: "#5856D6" }} />
                       <div style={{ flex: 1, padding: "12px 14px" }}>
-                        <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>Team & Erfolgsfokus</p>
+                        <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>{it ? "Team e focus sul successo" : fr ? "Équipe et focus sur le succès" : en ? "Team & success focus" : "Team & Erfolgsfokus"}</p>
                         <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.6 }}>{result.leadershipContext.roleContext.erfolgsfokusContext.teamAlignment}</p>
                       </div>
                     </div>
@@ -1164,7 +1226,7 @@ export default function Teamdynamik() {
                     <div style={{ display: "flex", borderRadius: 14, overflow: "hidden", background: "#fff", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 4px rgba(0,0,0,0.04)", marginBottom: 10 }} data-testid="erfolgsfokus-steering-card">
                       <div style={{ width: 4, flexShrink: 0, background: "#0071E3" }} />
                       <div style={{ flex: 1, padding: "12px 14px" }}>
-                        <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>Steuerungshinweis</p>
+                        <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>{it ? "Indicazione di gestione" : fr ? "Conseil de pilotage" : en ? "Steering hint" : "Steuerungshinweis"}</p>
                         <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.6 }}>{result.leadershipContext.roleContext.erfolgsfokusContext.steeringHint}</p>
                       </div>
                     </div>
@@ -1176,7 +1238,7 @@ export default function Teamdynamik() {
             <div style={{ display: "flex", borderRadius: 14, overflow: "hidden", background: "#fff", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 4px rgba(0,0,0,0.04)", marginTop: result.leadershipContext.roleContext ? 2 : 0 }}>
               <div style={{ width: 4, flexShrink: 0, background: "#0071E3" }} />
               <div style={{ flex: 1, padding: "14px 16px" }}>
-                <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>Handlungsfokus</p>
+                <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: "0 0 6px" }}>{it ? "Focus sull'azione" : fr ? "Focus sur l'action" : en ? "Action focus" : "Handlungsfokus"}</p>
                 <p style={{ fontSize: 12, color: "#3A3A3C", margin: 0, lineHeight: 1.6 }}>{result.leadershipContext.actionFocus}</p>
               </div>
             </div>
@@ -1185,9 +1247,9 @@ export default function Teamdynamik() {
             <div style={{ height: 1, background: "rgba(0,0,0,0.06)", margin: "18px 0" }} />
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
               <BarChart3 style={{ width: 14, height: 14, color: "#5856D6" }} />
-              <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Komponentenstruktur: Chancen & Risiken</p>
+              <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{it ? "Struttura dei componenti: opportunità e rischi" : fr ? "Structure des composantes : opportunités et risques" : en ? "Component structure: opportunities & risks" : "Komponentenstruktur: Chancen & Risiken"}</p>
             </div>
-            <p style={{ fontSize: 11, color: "#8E8E93", margin: "-8px 0 12px", lineHeight: 1.4 }}>Vergleich der drei Profilkomponenten zwischen Führungskraft und Team</p>
+            <p style={{ fontSize: 11, color: "#8E8E93", margin: "-8px 0 12px", lineHeight: 1.4 }}>{it ? "Confronto delle tre componenti del profilo tra manager e team" : fr ? "Comparaison des trois composantes de profil entre manager et équipe" : en ? "Comparison of the three profile components between leader and team" : "Vergleich der drei Profilkomponenten zwischen Führungskraft und Team"}</p>
 
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }} data-testid="component-chances-risks">
               {result.leadershipContext.componentChancesRisks.map((cr, i) => {
@@ -1200,18 +1262,18 @@ export default function Teamdynamik() {
                       <div style={{ width: 8, height: 8, borderRadius: 4, background: barColor, flexShrink: 0 }} />
                       <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: 0, flex: 1 }}>{cr.component}</p>
                       <div style={{ display: "flex", gap: 8, fontSize: 11 }}>
-                        <span style={{ color: "#8E8E93" }}>FK: <strong style={{ color: "#1D1D1F" }}>{cr.personValue}</strong></span>
+                        <span style={{ color: "#8E8E93" }}>{it ? "Mg:" : fr ? "Mg:" : en ? "Ldr:" : "FK:"} <strong style={{ color: "#1D1D1F" }}>{cr.personValue}</strong></span>
                         <span style={{ color: "#8E8E93" }}>Team: <strong style={{ color: "#1D1D1F" }}>{cr.teamValue}</strong></span>
                         <span style={{ fontWeight: 700, color: absDelta >= 15 ? "#FF3B30" : absDelta >= 10 ? "#FF9500" : "#34C759" }}>Δ{absDelta}</span>
                       </div>
                     </div>
                     <div style={{ display: "flex" }}>
                       <div style={{ flex: 1, padding: "10px 14px", borderRight: "1px solid rgba(0,0,0,0.04)" }}>
-                        <p style={{ fontSize: 10, fontWeight: 700, color: "#34C759", margin: "0 0 4px", textTransform: "uppercase", letterSpacing: "0.05em" }}>Chance</p>
+                        <p style={{ fontSize: 10, fontWeight: 700, color: "#34C759", margin: "0 0 4px", textTransform: "uppercase", letterSpacing: "0.05em" }}>{it ? "Opportunità" : fr ? "Opportunité" : en ? "Opportunity" : "Chance"}</p>
                         <p style={{ fontSize: 11, color: "#3A3A3C", margin: 0, lineHeight: 1.5 }}>{cr.chance}</p>
                       </div>
                       <div style={{ flex: 1, padding: "10px 14px" }}>
-                        <p style={{ fontSize: 10, fontWeight: 700, color: "#FF3B30", margin: "0 0 4px", textTransform: "uppercase", letterSpacing: "0.05em" }}>Risiko</p>
+                        <p style={{ fontSize: 10, fontWeight: 700, color: "#FF3B30", margin: "0 0 4px", textTransform: "uppercase", letterSpacing: "0.05em" }}>{it ? "Rischio" : fr ? "Risque" : en ? "Risk" : "Risiko"}</p>
                         <p style={{ fontSize: 11, color: "#3A3A3C", margin: 0, lineHeight: 1.5 }}>{cr.risk}</p>
                       </div>
                     </div>
@@ -1224,35 +1286,79 @@ export default function Teamdynamik() {
             <div style={{ height: 1, background: "rgba(0,0,0,0.06)", margin: "18px 0" }} />
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
               <Zap style={{ width: 14, height: 14, color: "#FF9500" }} />
-              <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>Führungshebel</p>
+              <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{it ? "Leve di leadership" : fr ? "Leviers de leadership" : en ? "Leadership levers" : "Führungshebel"}</p>
             </div>
-            <p style={{ fontSize: 11, color: "#8E8E93", margin: "-8px 0 12px", lineHeight: 1.4 }}>{t("Konkrete Steuerungsmassnahmen für diese Führungskraft-Team-Kombination")}</p>
+            <p style={{ fontSize: 11, color: "#8E8E93", margin: "-8px 0 12px", lineHeight: 1.4 }}>{it ? "Misure di gestione concrete per questa combinazione manager-team" : fr ? "Mesures de pilotage concrètes pour cette combinaison manager-équipe" : en ? "Concrete steering measures for this leader-team combination" : "Konkrete Steuerungsmassnahmen für diese Führungskraft-Team-Kombination"}</p>
 
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }} data-testid="leadership-levers-section">
-              {result.leadershipContext.leadershipLevers.map((lever, i) => {
-                const prioColor = lever.priority === "hoch" ? "#FF3B30" : lever.priority === "mittel" ? "#FF9500" : "#34C759";
-                return (
-                  <div key={i} style={{ display: "flex", borderRadius: 14, overflow: "hidden", background: "#fff", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }} data-testid={`lever-${i}`}>
-                    <div style={{ width: 4, flexShrink: 0, background: prioColor }} />
-                    <div style={{ flex: 1, padding: "12px 14px" }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                        <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{lever.title}</p>
-                        <span style={{ fontSize: 9, fontWeight: 700, padding: "2px 6px", borderRadius: 4, background: `${prioColor}15`, color: prioColor, textTransform: "uppercase", letterSpacing: "0.05em" }}>{lever.priority}</span>
+              {(() => {
+                const leverTitleMap: Record<string, string> = it ? {
+                  "timebox": "Finestra decisionale definita", "8020": "Standard qualità 80/20 fissato",
+                  "weekly_review": "Revisione settimanale delle priorità", "role_boundaries": "Confini di decisione e responsabilità",
+                  "comm_rules": "Livello oggettivo/relazionale, regole di feedback", "pulse_check": "Verifica della temperatura del team",
+                } : fr ? {
+                  "timebox": "Fenêtre décisionnelle définie", "8020": "Standard qualité 80/20 fixé",
+                  "weekly_review": "Revue hebdomadaire des priorités", "role_boundaries": "Limites de décision et responsabilités",
+                  "comm_rules": "Niveau factuel/relation, règles de feedback", "pulse_check": "Vérification de la température de l'équipe",
+                } : en ? {
+                  "timebox": "Decision timeframe defined", "8020": "80/20 quality standard set",
+                  "weekly_review": "Weekly prioritisation review", "role_boundaries": "Decision and responsibility boundaries",
+                  "comm_rules": "Factual/relational level, feedback rules", "pulse_check": "Team temperature check",
+                } : {};
+                const leverDescMap: Record<string, string> = it ? {
+                  "timebox": "Scadenze chiare per le decisioni evitano loop infiniti e il ritardo del consenso.",
+                  "8020": "Uno standard di qualità definito evita l'iperperfezionismo e mantiene il ritmo.",
+                  "weekly_review": "Una revisione regolare crea certezza di gestione e previene scostamenti silenziosi.",
+                  "role_boundaries": "Ruoli e confini decisionali chiari riducono conflitti e doppie attività.",
+                  "comm_rules": "Regole di comunicazione fisse separano le questioni di merito dalle dinamiche relazionali.",
+                  "pulse_check": "Un controllo regolare del polso rende misurabili clima e carico di lavoro.",
+                } : fr ? {
+                  "timebox": "Des délais clairs pour les décisions évitent les boucles infinies et les reports de consensus.",
+                  "8020": "Un standard qualité défini évite le sur-perfectionnisme et maintient le tempo.",
+                  "weekly_review": "Une révision régulière crée de la sécurité de pilotage et prévient les écarts silencieux.",
+                  "role_boundaries": "Des rôles et des limites décisionnelles clairs réduisent les conflits et les doublons.",
+                  "comm_rules": "Des règles de communication fixes séparent les questions de fond de la dynamique relationnelle.",
+                  "pulse_check": "Un pulse-check régulier rend mesurables l'ambiance et la charge.",
+                } : en ? {
+                  "timebox": "Clear deadlines for decisions prevent endless loops and consensus delays.",
+                  "8020": "A defined quality standard prevents over-perfecting and maintains pace.",
+                  "weekly_review": "Regular review creates steering reliability and prevents silent deviations.",
+                  "role_boundaries": "Clear role and decision boundaries reduce conflicts and duplicate work.",
+                  "comm_rules": "Fixed communication rules separate factual issues from relationship dynamics.",
+                  "pulse_check": "A regular pulse check makes mood and workload measurable.",
+                } : {};
+                const prioLabelMap: Record<string, string> = it ? { hoch: "alta", mittel: "media", niedrig: "bassa" }
+                  : fr ? { hoch: "haute", mittel: "moyenne", niedrig: "basse" }
+                  : en ? { hoch: "high", mittel: "medium", niedrig: "low" }
+                  : {};
+                return result.leadershipContext.leadershipLevers.map((lever, i) => {
+                  const prioColor = lever.priority === "hoch" ? "#FF3B30" : lever.priority === "mittel" ? "#FF9500" : "#34C759";
+                  const displayTitle = leverTitleMap[lever.id] || lever.title;
+                  const displayDesc = leverDescMap[lever.id] || lever.description;
+                  const displayPrio = prioLabelMap[lever.priority] || lever.priority;
+                  return (
+                    <div key={i} style={{ display: "flex", borderRadius: 14, overflow: "hidden", background: "#fff", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }} data-testid={`lever-${i}`}>
+                      <div style={{ width: 4, flexShrink: 0, background: prioColor }} />
+                      <div style={{ flex: 1, padding: "12px 14px" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                          <p style={{ fontSize: 12, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{displayTitle}</p>
+                          <span style={{ fontSize: 9, fontWeight: 700, padding: "2px 6px", borderRadius: 4, background: `${prioColor}15`, color: prioColor, textTransform: "uppercase", letterSpacing: "0.05em" }}>{displayPrio}</span>
+                        </div>
+                        <p style={{ fontSize: 11, color: "#3A3A3C", margin: 0, lineHeight: 1.5 }}>{displayDesc}</p>
                       </div>
-                      <p style={{ fontSize: 11, color: "#3A3A3C", margin: 0, lineHeight: 1.5 }}>{lever.description}</p>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                });
+              })()}
             </div>
 
             {/* ── 30-Tage-Integrationsplan ── */}
             <div style={{ height: 1, background: "rgba(0,0,0,0.06)", margin: "18px 0" }} />
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
               <CalendarDays style={{ width: 14, height: 14, color: "#0071E3" }} />
-              <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>30-Tage-Integrationsplan</p>
+              <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{it ? "Piano d'integrazione a 30 giorni" : fr ? "Plan d'intégration à 30 jours" : en ? "30-day integration plan" : "30-Tage-Integrationsplan"}</p>
             </div>
-            <p style={{ fontSize: 11, color: "#8E8E93", margin: "-8px 0 12px", lineHeight: 1.4 }}>Strukturierte Einarbeitung der Führungskraft in das bestehende Team</p>
+            <p style={{ fontSize: 11, color: "#8E8E93", margin: "-8px 0 12px", lineHeight: 1.4 }}>{it ? "Inserimento strutturato del manager nel team esistente" : fr ? "Intégration structurée du manager dans l'équipe existante" : en ? "Structured onboarding of the leader into the existing team" : "Strukturierte Einarbeitung der Führungskraft in das bestehende Team"}</p>
 
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }} data-testid="integration-plan-30">
               {result.leadershipContext.integrationPlan30.map((phase, i) => {
@@ -1294,15 +1400,15 @@ export default function Teamdynamik() {
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1L12.5 4V10L7 13L1.5 10V4L7 1Z" stroke="#0071E3" strokeWidth="1.3" strokeLinejoin="round"/><path d="M7 5V9M5 7H9" stroke="#0071E3" strokeWidth="1.3" strokeLinecap="round"/></svg>
               </div>
               <div>
-                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0, letterSpacing: "-0.01em" }}>Abteilungs-Fit: {result.departmentFit.department.label}</p>
+                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0, letterSpacing: "-0.01em" }}>{it ? "Compatibilità reparto" : fr ? "Compatibilité département" : en ? "Department fit" : "Abteilungs-Fit"}: {result.departmentFit.department.label}</p>
                 <p style={{ fontSize: 11, color: "#8E8E93", margin: "2px 0 0" }}>{result.departmentFit.department.focus}</p>
               </div>
             </div>
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 14 }}>
               {[
-                { label: "Team-Fit", score: result.departmentFit.teamFitScore },
-                { label: isLeading ? "Führungskraft-Fit" : "Person-Fit", score: result.departmentFit.personFitScore },
+                { label: it ? "Compatibilità team" : fr ? "Fit équipe" : en ? "Team fit" : "Team-Fit", score: result.departmentFit.teamFitScore },
+                { label: isLeading ? (it ? "Compatibilità manager" : fr ? "Fit manager" : en ? "Manager fit" : "Führungskraft-Fit") : (it ? "Compatibilità persona" : fr ? "Fit personne" : en ? "Person fit" : "Person-Fit"), score: result.departmentFit.personFitScore },
               ].map((item, idx) => (
                 <div key={idx} style={{ background: "rgba(0,0,0,0.02)", borderRadius: 12, padding: "12px 14px", border: "1px solid rgba(0,0,0,0.04)" }} data-testid={`dept-fit-${idx === 0 ? "team" : "person"}`}>
                   <p style={{ fontSize: 11, color: "#8E8E93", margin: "0 0 6px", fontWeight: 600 }}>{item.label}</p>
@@ -1319,7 +1425,7 @@ export default function Teamdynamik() {
 
             {result.departmentFit.warnings.length > 0 && (
               <div style={{ background: "rgba(255,149,0,0.06)", border: "1px solid rgba(255,149,0,0.15)", borderRadius: 12, padding: "12px 14px", marginBottom: 14 }} data-testid="dept-warnings">
-                <p style={{ fontSize: 12, fontWeight: 700, color: "#CC7700", margin: "0 0 8px" }}>⚠ Hinweise</p>
+                <p style={{ fontSize: 12, fontWeight: 700, color: "#CC7700", margin: "0 0 8px" }}>⚠ {it ? "Note" : fr ? "Notes" : en ? "Notes" : "Hinweise"}</p>
                 {result.departmentFit.warnings.map((w, i) => (
                   <p key={i} style={{ fontSize: 12, color: "#3A3A3C", margin: "0 0 4px", lineHeight: 1.5 }}>• {w}</p>
                 ))}
@@ -1356,7 +1462,7 @@ export default function Teamdynamik() {
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
               <div>
                 <p style={{ fontSize: 11, fontWeight: 600, color: "#0071E3", letterSpacing: "0.06em", textTransform: "uppercase", margin: "0 0 4px" }}>bioLogic TeamCheck</p>
-                <h2 style={{ fontSize: 22, fontWeight: 700, color: "#1D1D1F", margin: 0, letterSpacing: "-0.02em" }}>Team-Systemreport</h2>
+                <h2 style={{ fontSize: 22, fontWeight: 700, color: "#1D1D1F", margin: 0, letterSpacing: "-0.02em" }}>{it ? "Report sistema team" : fr ? "Rapport système équipe" : en ? "Team system report" : "Team-Systemreport"}</h2>
               </div>
               <div style={{ display: "flex", gap: 6 }}>
                 <button onClick={copyReport} data-testid="button-copy-report" style={{
@@ -1365,7 +1471,7 @@ export default function Teamdynamik() {
                   border: `1px solid ${copied ? "rgba(52,199,89,0.2)" : "rgba(0,0,0,0.06)"}`,
                   color: copied ? "#34C759" : "#48484A", fontSize: 12, fontWeight: 500, cursor: "pointer",
                 }}>
-                  <Copy style={{ width: 13, height: 13 }} /> {copied ? "Kopiert" : "Kopieren"}
+                  <Copy style={{ width: 13, height: 13 }} /> {copied ? (it ? "Copiato" : fr ? "Copié" : en ? "Copied" : "Kopiert") : (it ? "Copia" : fr ? "Copier" : en ? "Copy" : "Kopieren")}
                 </button>
                 <button onClick={() => window.print()} data-testid="button-export-pdf" style={{
                   display: "flex", alignItems: "center", gap: 5, padding: "7px 14px", borderRadius: 10,

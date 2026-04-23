@@ -217,9 +217,9 @@ function TriangleChart({ role, candidate }: { role: Triad; candidate: Triad }) {
         {rp.map((p, i) => <circle key={`r${i}`} cx={p.x} cy={p.y} r="3.5" fill="#3b82f6" stroke="#fff" strokeWidth="1.5" />)}
         {cp.map((p, i) => <circle key={`c${i}`} cx={p.x} cy={p.y} r="3.5" fill="#f59e0b" stroke="#fff" strokeWidth="1.5" />)}
 
-        <text x={labelPts[0].x} y={labelPts[0].y - 4} textAnchor="middle" style={{ fontSize: 12, fontWeight: 600, fill: "#64748b", letterSpacing: "0.02em" }}>{_L("Analytisch", "Analytical", "Structure et Rigueur")}</text>
-        <text x={labelPts[1].x - 4} y={labelPts[1].y + 14} textAnchor="start" style={{ fontSize: 12, fontWeight: 600, fill: "#64748b", letterSpacing: "0.02em" }}>{_L("Intuitiv", "Intuitive", "Communication et Relations")}</text>
-        <text x={labelPts[2].x + 4} y={labelPts[2].y + 14} textAnchor="end" style={{ fontSize: 12, fontWeight: 600, fill: "#64748b", letterSpacing: "0.02em" }}>{_L("Impulsiv", "Impulsive", "Rythme et Décision")}</text>
+        <text x={labelPts[0].x} y={labelPts[0].y - 4} textAnchor="middle" style={{ fontSize: 12, fontWeight: 600, fill: "#64748b", letterSpacing: "0.02em" }}>{_L("Analytisch", "Analytical", "Structure et Rigueur", "Struttura e Rigore")}</text>
+        <text x={labelPts[1].x - 4} y={labelPts[1].y + 14} textAnchor="start" style={{ fontSize: 12, fontWeight: 600, fill: "#64748b", letterSpacing: "0.02em" }}>{_L("Intuitiv", "Intuitive", "Communication et Relations", "Comunicazione e Relazioni")}</text>
+        <text x={labelPts[2].x + 4} y={labelPts[2].y + 14} textAnchor="end" style={{ fontSize: 12, fontWeight: 600, fill: "#64748b", letterSpacing: "0.02em" }}>{_L("Impulsiv", "Impulsive", "Rythme et Décision", "Ritmo e Decisione")}</text>
       </svg>
     </div>
   );

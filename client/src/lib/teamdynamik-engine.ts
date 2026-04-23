@@ -1270,6 +1270,22 @@ const VARIANT_DATA: Record<number, { title: string; text: string }> = {
   13: { title: "Hybrid / keine klare Dominanz", text: "Es gibt keine eindeutige Hauptlogik. Wirkung und Verhalten wechseln stärker je nach Situation. Das erhöht Anpassungsfähigkeit, aber erschwert Verlässlichkeit ohne klare Regeln." },
 };
 
+const VARIANT_DATA_IT: Record<number, { title: string; text: string }> = {
+  1:  { title: "Struttura in linea con la struttura", text: "Il sistema è fortemente orientato a chiarezza, pianificazione e controllo. Le decisioni sono comprensibili, gli standard vengono rispettati, la qualità è stabile." },
+  2:  { title: "Struttura con coordinamento", text: "Il pensiero strutturato e la qualità dominano, ma vengono integrati dalla comunicazione e dall'orientamento al team. Il sistema è stabile, appare meno rigido e rimane accessibile alla collaborazione." },
+  3:  { title: "Struttura con ritmo", text: "Struttura e controllo sono alla base, ma è presente anche la pressione all'esecuzione. Le decisioni sono in genere rigorose, con velocità e capacità decisionale in aumento." },
+  4:  { title: "La struttura manca nel profilo", text: "Il sistema è meno caratterizzato dalla sicurezza e dagli standard, più dalla comunicazione e dal ritmo. Senza linee guida chiare aumenta il rischio di imprecisione su qualità, priorità e reportistica." },
+  5:  { title: "La comunicazione si allinea alla comunicazione", text: "La collaborazione, l'armonia e il coordinamento sono i motori centrali. Le decisioni nascono dal dialogo. Rischio: mancanza di chiarezza se standard e priorità non vengono definiti con cura." },
+  6:  { title: "Comunicazione con struttura", text: "La relazione e la collaborazione rimangono forti, ma vengono integrate da struttura e orientamento alla qualità. Le decisioni diventano più solide senza perdere il collegamento al team." },
+  7:  { title: "Comunicazione con ritmo", text: "Il sistema è orientato al contatto e al dialogo, ma dinamico nell'esecuzione. Può diventare veloce quando le priorità sono chiare; senza struttura rischia la dispersione." },
+  8:  { title: "Struttura/Ritmo incontra la logica del consenso", text: "Si incontrano ritmi decisionali diversi: rapido e basato sui fatti versus orientato al consenso. Senza regole decisionali chiare emergono attrito e conflitti di priorità." },
+  9:  { title: "Ritmo in linea con il ritmo", text: "Le decisioni rapide e la pressione all'esecuzione dominano. Questo genera dinamismo, ma anche potenziale conflittuale se standard, ruoli e priorità non sono regolamentati chiaramente." },
+  10: { title: "Ritmo con struttura", text: "Forte capacità esecutiva incontra standard chiari. Il sistema può essere performante, ma esigente: il ritmo rimane alto, la qualità va garantita attraverso regole chiare." },
+  11: { title: "Ritmo con comunicazione", text: "Dinamismo e determinazione incontrano forte comunicazione e focus sul team. Questo è energico, ma può diventare instabile se le decisioni vengono prese in modo troppo situazionale." },
+  12: { title: "Struttura/Comunicazione incontra il sistema del ritmo", text: "Un sistema con maggiore sicurezza e coordinamento incontra una logica dinamica e rapida. Questo può rallentare il ritmo o stabilizzare la qualità a seconda della chiarezza delle aspettative." },
+  13: { title: "Ibrido / nessuna dominanza chiara", text: "Non c'è una logica principale univoca. L'impatto e il comportamento variano maggiormente a seconda della situazione. Questo aumenta la flessibilità, ma rende difficile l'affidabilità senza regole chiare." },
+};
+
 function secondDominance(triad: Triad): DominanceType {
   const arr: [DominanceType, number][] = [
     ["IMPULSIV", triad.impulsiv],
@@ -1295,10 +1311,11 @@ export function computeVariantId(teamDom: DominanceType, personPrimary: Dominanc
   return 12;
 }
 
-export function getSystemVariant(teamProfile: Triad, personProfile: Triad, teamDom: DominanceType, personDom: DominanceType): SystemVariant {
+export function getSystemVariant(teamProfile: Triad, personProfile: Triad, teamDom: DominanceType, personDom: DominanceType, region?: string): SystemVariant {
   const personSecond = secondDominance(personProfile);
   const vid = computeVariantId(teamDom, personDom, personSecond);
-  const data = VARIANT_DATA[vid] || VARIANT_DATA[13];
+  const dataMap = region === "IT" ? VARIANT_DATA_IT : VARIANT_DATA;
+  const data = dataMap[vid] || dataMap[13];
   return { id: vid, title: data.title, text: data.text };
 }
 

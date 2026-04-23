@@ -203,12 +203,15 @@ const ENGINE_VALUE_MAP_IT: Record<string, string> = {
   "Intensität": "Intensità",
   "Steuerungsaufwand": "Sforzo di gestione",
   "Passend": "Adatto",
+  "Bedingt passend": "Parzialmente adatto",
+  "Nicht passend": "Non adatto",
   "Teilweise passend": "Parzialmente adatto",
   "Kritisch": "Critico",
   "Kein Ziel gewählt": "Nessun obiettivo selezionato",
   "Stabile Ergänzung": "Complementarità stabile",
   "Ergänzung mit Spannung": "Complementarità sotto tensione",
   "nicht bewertet": "non valutato",
+  "Integrationsaufwand": "Sforzo di integrazione",
 };
 
 export function translateEngineValue(value: string | null | undefined, region: Region): string {
