@@ -363,7 +363,7 @@ export function computeSollIst(
   candProfile: Triad,
   fuehrungsArt: FuehrungsArt = "keine",
   roleAnalysis?: RoleAnalysis,
-  lang: 'de' | 'en' | 'fr' = 'de'
+  lang: 'de' | 'en' | 'fr' | 'it' = 'de'
 ): SollIstResult {
   resetVariants();
   const rt = normalizeTriad(roleProfile);
@@ -404,7 +404,7 @@ export function computeSollIst(
   const rk2 = rDom.top2.key;
   const ck = cDom.top1.key;
   const ck2Main = cDom.top2.key;
-  const cn = candidateName || (lang === 'en' ? "The person" : "Die Person");
+  const cn = candidateName || (lang === 'it' ? "La persona" : lang === 'en' ? "The person" : "Die Person");
   const isDualDomRole = rDom.gap1 <= 5 && rDom.gap2 > 5;
   const candSpreadMain = Math.max(ct.impulsiv, ct.intuitiv, ct.analytisch) - Math.min(ct.impulsiv, ct.intuitiv, ct.analytisch);
   const candIsBalFullMain = candSpreadMain <= 5;
@@ -479,12 +479,16 @@ export function computeSollIst(
     risk: a.interpretation,
   }));
   const riskTimeline: RiskPhase[] = texts.timeline.map((text, i) => ({
-    label: lang === 'fr'
+    label: lang === 'it'
+      ? (i === 0 ? "Breve termine" : i === 1 ? "Medio termine" : "Lungo termine")
+      : lang === 'fr'
       ? (i === 0 ? "Court terme" : i === 1 ? "Moyen terme" : "Long terme")
       : lang === 'en'
       ? (i === 0 ? "Short-term" : i === 1 ? "Mid-term" : "Long-term")
       : (i === 0 ? "Kurzfristig" : i === 1 ? "Mittelfristig" : "Langfristig"),
-    period: lang === 'fr'
+    period: lang === 'it'
+      ? (i === 0 ? "0\u20133 mesi" : i === 1 ? "3\u201312 mesi" : "12+ mesi")
+      : lang === 'fr'
       ? (i === 0 ? "0\u20133 mois" : i === 1 ? "3\u201312 mois" : "12+ mois")
       : lang === 'en'
       ? (i === 0 ? "0\u20133 months" : i === 1 ? "3\u201312 months" : "12+ months")
@@ -508,7 +512,9 @@ export function computeSollIst(
   }));
   const finalText = texts.summary.finalText;
 
-  const displayFitLabel = lang === 'fr'
+  const displayFitLabel = lang === 'it'
+    ? (fitLabel === "Geeignet" ? "Adatto" : fitLabel === "Bedingt geeignet" ? "Parzialmente adatto" : "Non adatto")
+    : lang === 'fr'
     ? (fitLabel === "Geeignet" ? "Adapté" : fitLabel === "Bedingt geeignet" ? "Partiellement adapté" : "Non adapté")
     : lang === 'en'
     ? (fitLabel === "Geeignet" ? "Suitable" : fitLabel === "Bedingt geeignet" ? "Conditionally suitable" : "Not suitable")

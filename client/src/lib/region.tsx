@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
 
-export type Region = "DE" | "CH" | "AT" | "EN" | "FR";
+export type Region = "DE" | "CH" | "AT" | "EN" | "FR" | "IT";
 
 interface RegionContextType {
   region: Region;
@@ -15,6 +15,7 @@ const REGION_MAP: Record<Region, { locale: string; label: string }> = {
   AT: { locale: "de-AT", label: "Österreich" },
   EN: { locale: "en-US", label: "English" },
   FR: { locale: "fr-FR", label: "Français" },
+  IT: { locale: "it-IT", label: "Italiano" },
 };
 
 const RegionContext = createContext<RegionContextType | null>(null);
@@ -22,7 +23,7 @@ const RegionContext = createContext<RegionContextType | null>(null);
 export function RegionProvider({ children }: { children: ReactNode }) {
   const [region, setRegionState] = useState<Region>(() => {
     const stored = localStorage.getItem("appRegion");
-    if (stored === "DE" || stored === "CH" || stored === "AT" || stored === "EN" || stored === "FR") return stored;
+    if (stored === "DE" || stored === "CH" || stored === "AT" || stored === "EN" || stored === "FR" || stored === "IT") return stored;
     return "DE";
   });
 
@@ -89,13 +90,13 @@ function ssToSz(text: string): string {
 export function useLocalizedText() {
   const { region } = useRegion();
   return (text: string) => {
-    if (region === "CH" || region === "EN" || region === "FR") return text;
+    if (region === "CH" || region === "EN" || region === "FR" || region === "IT") return text;
     return ssToSz(text);
   };
 }
 
 export function localizeStr(text: string, region: Region): string {
-  if (region === "CH" || region === "EN" || region === "FR") return text;
+  if (region === "CH" || region === "EN" || region === "FR" || region === "IT") return text;
   return ssToSz(text);
 }
 
@@ -173,17 +174,55 @@ const ENGINE_VALUE_MAP_FR: Record<string, string> = {
   "nicht bewertet": "non évalué",
 };
 
+const ENGINE_VALUE_MAP_IT: Record<string, string> = {
+  "Verstärkung": "Potenziamento",
+  "Spannung": "Tensione",
+  "Transformation": "Trasformazione",
+  "Ergänzung": "Complementarità",
+  "Korrekturimpuls": "Impulso correttivo",
+  "Spannungsreiche Ergänzung": "Complementarità sotto tensione",
+  "Kritische Spannung": "Tensione critica",
+  "Spannungsreiche Abweichung": "Scarto sotto tensione",
+  "Stabile Passung": "Adeguatezza stabile",
+  "Anpassungsleistung": "Capacità di adattamento",
+  "Hoch": "Elevato",
+  "hoch": "elevato",
+  "Mittel": "Moderato",
+  "mittel": "moderato",
+  "Gering": "Basso",
+  "gering": "basso",
+  "Niedrig": "Basso",
+  "niedrig": "basso",
+  "Geeignet": "Adatto",
+  "Bedingt geeignet": "Parzialmente adatto",
+  "Nicht geeignet": "Non adatto",
+  "Gesamtpassung": "Adeguatezza globale",
+  "Systemwirkung": "Impatto sistemico",
+  "Teamprofil": "Profilo del team",
+  "Personenprofil": "Profilo della persona",
+  "Intensität": "Intensità",
+  "Steuerungsaufwand": "Sforzo di gestione",
+  "Passend": "Adatto",
+  "Teilweise passend": "Parzialmente adatto",
+  "Kritisch": "Critico",
+  "Kein Ziel gewählt": "Nessun obiettivo selezionato",
+  "Stabile Ergänzung": "Complementarità stabile",
+  "Ergänzung mit Spannung": "Complementarità sotto tensione",
+  "nicht bewertet": "non valutato",
+};
+
 export function translateEngineValue(value: string | null | undefined, region: Region): string {
   if (!value) return value ?? "";
   if (region === "EN") return ENGINE_VALUE_MAP_EN[value] ?? value;
   if (region === "FR") return ENGINE_VALUE_MAP_FR[value] ?? value;
+  if (region === "IT") return ENGINE_VALUE_MAP_IT[value] ?? value;
   return value;
 }
 
 export function localizeDeep<T>(obj: T, region: Region): T {
   if (typeof obj === "string") {
     const s = localizeStr(obj, region);
-    if (region === "FR" || region === "EN") return translateEngineValue(s, region) as unknown as T;
+    if (region === "FR" || region === "EN" || region === "IT") return translateEngineValue(s, region) as unknown as T;
     return s as unknown as T;
   }
   if (Array.isArray(obj)) return obj.map(item => localizeDeep(item, region)) as unknown as T;

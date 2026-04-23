@@ -66,7 +66,7 @@ export interface MatchTextInput {
   istRelations: PairRelations;
   structureRelation: StructureRelation;
   fuehrungsArt?: 'keine' | 'fachlich' | 'disziplinarisch';
-  lang?: 'de' | 'en' | 'fr';
+  lang?: 'de' | 'en' | 'fr' | 'it';
 }
 
 export interface SummaryBlock {
@@ -126,7 +126,7 @@ export interface MatchTextResult {
 const EQ_TOL = 5;
 
 /* ── Module-level language context (set by buildMatchTexts) ─────────────── */
-let _lang: 'de' | 'en' | 'fr' = 'de';
+let _lang: 'de' | 'en' | 'fr' | 'it' = 'de';
 
 /* ── Bilingual label constants ──────────────────────────────────────────── */
 const COMP_SHORT: Record<TriadKey, string> = {
@@ -178,10 +178,26 @@ const COMP_ADJ_FR: Record<TriadKey, string> = {
   A: 'analytique',
 };
 
+const COMP_SHORT_IT: Record<TriadKey, string> = {
+  I: 'Ritmo e Decisione',
+  N: 'Comunicazione e Relazioni',
+  A: 'Struttura e Rigore',
+};
+const COMP_NOUN_IT: Record<TriadKey, string> = {
+  I: 'il ritmo e la decisione',
+  N: 'la comunicazione e le relazioni',
+  A: 'la struttura e il rigore',
+};
+const COMP_ADJ_IT: Record<TriadKey, string> = {
+  I: 'orientata all\'azione',
+  N: 'orientata alle relazioni',
+  A: 'analitica',
+};
+
 /* ── Language-aware accessors ───────────────────────────────────────────── */
-function cs(key: TriadKey): string { return _lang === 'en' ? COMP_SHORT_EN[key] : _lang === 'fr' ? COMP_SHORT_FR[key] : COMP_SHORT[key]; }
-function cn(key: TriadKey): string { return _lang === 'en' ? COMP_NOUN_EN[key] : _lang === 'fr' ? COMP_NOUN_FR[key] : COMP_NOUN[key]; }
-function ca(key: TriadKey): string { return _lang === 'en' ? COMP_ADJ_EN[key] : _lang === 'fr' ? COMP_ADJ_FR[key] : COMP_ADJ[key]; }
+function cs(key: TriadKey): string { return _lang === 'en' ? COMP_SHORT_EN[key] : _lang === 'fr' ? COMP_SHORT_FR[key] : _lang === 'it' ? COMP_SHORT_IT[key] : COMP_SHORT[key]; }
+function cn(key: TriadKey): string { return _lang === 'en' ? COMP_NOUN_EN[key] : _lang === 'fr' ? COMP_NOUN_FR[key] : _lang === 'it' ? COMP_NOUN_IT[key] : COMP_NOUN[key]; }
+function ca(key: TriadKey): string { return _lang === 'en' ? COMP_ADJ_EN[key] : _lang === 'fr' ? COMP_ADJ_FR[key] : _lang === 'it' ? COMP_ADJ_IT[key] : COMP_ADJ[key]; }
 function vars() { return _lang === 'en' ? textVariantsEN : textVariants; }
 
 function sortProfile(profile: TriadProfile): Array<{ key: TriadKey; value: number }> {
@@ -280,6 +296,11 @@ function capSeverity(severity: Severity, fitSubtype: FitSubtype, fitLabel?: stri
 }
 
 function sevLabel(severity: Severity): string {
+  if (_lang === 'it') {
+    if (severity === 'ok') return 'Allineato';
+    if (severity === 'warning') return 'Scarto presente';
+    return 'Critico';
+  }
   if (_lang === 'fr') {
     if (severity === 'ok') return 'Aligné';
     if (severity === 'warning') return 'Écart présent';
@@ -334,6 +355,38 @@ export function buildVariantFamilyText(args: {
     if (fitSubtype === 'STRUCTURE_MATCH_INTENSITY_OFF') return 'The sequence of work logic matches. However, the intensity of individual areas deviates.';
     if (fitSubtype === 'PARTIAL_MATCH') return 'The person is partly compatible but does not consistently meet the required sequence.';
     return 'The role requires a clear ranking of work logic. The person brings a different sequence.';
+  }
+
+  if (_lang === 'it') {
+    if (roleVariantType === 'ALL_EQUAL') {
+      if (fitSubtype === 'PERFECT') return 'Il ruolo richiede un profilo equilibrato senza un unico focus dominante. La persona porta anche questa versatilita\'.';
+      if (fitSubtype === 'STRUCTURE_MATCH_INTENSITY_OFF') return 'La struttura di base e\' equilibrata. Nella ponderazione si notano tuttavia leggere differenze, per cui alcune aree emergono leggermente di piu\' nel quotidiano.';
+      if (fitSubtype === 'PARTIAL_MATCH') return 'Il ruolo richiede un ampio equilibrio. La persona e\' sostanzialmente compatibile, ma in alcune aree sviluppa gia\' un accento piu\' forte.';
+      return 'Il ruolo richiede un profilo equilibrato. La persona porta invece un accento significativamente piu\' forte.';
+    }
+    if (roleVariantType === 'TOP_PAIR') {
+      if (fitSubtype === 'PERFECT') return 'Il ruolo richiede due priorita\' ugualmente forti che devono operare in parallelo. La persona porta anche questa doppia logica.';
+      if (fitSubtype === 'STRUCTURE_MATCH_INTENSITY_OFF') {
+        if (sameDualPair && roleThirdDiff >= 4) {
+          return candThirdLower
+            ? 'La stessa doppia dominanza e\' presente. La terza area e\' meno pronunciata nel profilo attuale. Di conseguenza, le due aree principali emergono nel quotidiano in modo piu\' marcato e meno equilibrato in parallelo.'
+            : 'La stessa doppia dominanza e\' presente. La terza area e\' piu\' pronunciata nel profilo attuale. Di conseguenza, le due aree principali sono piu\' stabilizzate ma vissute leggermente meno in parallelo.';
+        }
+        return 'La stessa doppia dominanza e\' presente. La ponderazione all\'interno di questa struttura non e\' tuttavia del tutto congruente.';
+      }
+      if (fitSubtype === 'PARTIAL_MATCH') return 'Il ruolo richiede una doppia logica stabile da due aree ugualmente importanti. La persona e\' sostanzialmente compatibile, ma non rispecchia questo equilibrio in modo stabile e continuativo.';
+      return 'Il ruolo richiede due priorita\' ugualmente forti. La persona non porta questa doppia logica nella forma richiesta.';
+    }
+    if (roleVariantType === 'BOTTOM_PAIR') {
+      if (fitSubtype === 'PERFECT') return 'Il ruolo richiede una priorita\' chiara integrata da due aree secondarie di forza simile. La persona rispecchia questa struttura in modo coerente.';
+      if (fitSubtype === 'STRUCTURE_MATCH_INTENSITY_OFF') return 'La priorita\' principale corrisponde. Le aree di supporto sono presenti, ma con una ponderazione diversa.';
+      if (fitSubtype === 'PARTIAL_MATCH') return 'La persona e\' sostanzialmente compatibile nella logica principale. Le aree secondarie di supporto non sono tuttavia presenti nell\'equilibrio richiesto.';
+      return 'Il ruolo richiede una priorita\' chiara con un supporto stabile da due aree secondarie simili. La persona non rispecchia adeguatamente questa struttura.';
+    }
+    if (fitSubtype === 'PERFECT') return 'Il ruolo richiede un ordine chiaro nella logica di lavoro. La persona porta quest\'ordine in forma adeguata.';
+    if (fitSubtype === 'STRUCTURE_MATCH_INTENSITY_OFF') return 'L\'ordine della logica di lavoro corrisponde. L\'intensita\' delle singole aree si discosta tuttavia.';
+    if (fitSubtype === 'PARTIAL_MATCH') return 'La persona e\' parzialmente compatibile, ma non raggiunge l\'ordine richiesto in modo sufficientemente stabile.';
+    return 'Il ruolo richiede un chiaro ordine di priorita\' nella logica di lavoro. La persona porta un ordine diverso.';
   }
 
   if (roleVariantType === 'ALL_EQUAL') {
@@ -410,6 +463,9 @@ export function buildDualDominanceText(args: {
 }
 
 function buildHeaderIntro(): string {
+  if (_lang === 'it') {
+    return 'Questa analisi mostra in che misura una persona e un ruolo si allineano nella logica di lavoro. Evidenzia dove stile di lavoro e requisiti concordano, dove emergono scostamenti e cosa questo significa per lo sforzo di leadership e integrazione nella pratica quotidiana.';
+  }
   if (_lang === 'fr') {
     return 'Cette analyse montre dans quelle mesure une personne et un poste s\'alignent dans leur logique de travail. Elle révèle où les modes de travail et les exigences concordent, où des écarts apparaissent et ce que cela implique pour l\'effort de management et d\'intégration au quotidien.';
   }
@@ -435,6 +491,59 @@ function buildSummary(input: MatchTextInput): SummaryBlock {
   const tv = vars();
   let summary = pickVariant(tv.overall[level], seed + ':overall');
   let managementSummary = familyText + ' ' + pickVariant(tv.management[level], seed + ':mgmt');
+
+  if (_lang === 'it') {
+    const itOverall: Record<string, string[]> = {
+      PERFECT: [
+        'La persona corrisponde bene al ruolo. Stile di lavoro e requisiti si integrano in modo coerente.',
+        'Il ruolo presenta una chiara adeguatezza. La persona porta la logica di lavoro richiesta in modo solido.',
+        'La composizione appare complessivamente coerente. La persona lavora secondo la logica che il ruolo richiede.',
+        'L\'adeguatezza e\' elevata. Il ruolo potra\' probabilmente essere ricoperto senza un maggiore sforzo di gestione.',
+      ],
+      EXACT_YELLOW: [
+        'La persona corrisponde sostanzialmente al ruolo. Nella ponderazione di alcune aree, tuttavia, lavora diversamente da quanto il ruolo richiede.',
+        'L\'orientamento di base e\' corretto. Nel quotidiano, la persona pone tuttavia altri accenti rispetto a quanto il ruolo prescrive.',
+        'L\'adeguatezza e\' presente, ma non del tutto netta. La logica di lavoro e\' corretta nelle grandi linee, ma la ponderazione si discosta.',
+        'La persona porta la direzione giusta. Allo stesso tempo, alcuni assi di priorita\' divergono da quanto previsto nel ruolo.',
+      ],
+      SOFT_YELLOW: [
+        'La persona e\' compatibile negli aspetti essenziali, ma non copre il ruolo in modo stabile e continuativo.',
+        'Esiste una base riconoscibile per il ruolo. Allo stesso tempo, emergono scostamenti su un punto importante.',
+        'La persona corrisponde in parte al ruolo, ma non lavora costantemente nella forma richiesta.',
+        'L\'adeguatezza e\' possibile, ma non stabile da sola. Nel quotidiano, e\' necessaria una gestione attiva.',
+      ],
+      MISMATCH: [
+        'La persona lavora diversamente da quanto il ruolo richiede.',
+        'Il ruolo esige un\'altra modalita\' di lavoro rispetto a quella che la persona porta.',
+        'Le differenze sono troppo significative per parlare di una solida adeguatezza.',
+        'Nel quotidiano, il ruolo verrebbe probabilmente esercitato diversamente da quanto previsto.',
+      ],
+    };
+    const itManagement: Record<string, string[]> = {
+      PERFECT: [
+        'La gestione serve qui soprattutto a stabilire priorita\', non a compensare differenze strutturali.',
+        'La persona ha bisogno soprattutto di orientamento e aggiustamenti puntuali, non di correzioni permanenti.',
+        'Nel quotidiano, la gestione si concentra maggiormente sul pilotaggio nei dettagli che sulla compensazione degli scostamenti.',
+      ],
+      EXACT_YELLOW: [
+        'La gestione dovrebbe qui soprattutto badare alla ponderazione e alla definizione delle priorita\'.',
+        'La persona lavora nella direzione giusta, ma pone altri accenti. E\' proprio qui che la gestione deve intervenire.',
+        'Cio\' che e\' determinante qui non e\' l\'orientamento di base, ma l\'allineamento costante al ruolo.',
+      ],
+      SOFT_YELLOW: [
+        'Senza una gestione chiara, il ruolo rischia di essere esercitato progressivamente in modo diverso.',
+        'La persona ha bisogno di un quadro chiaro affinche\' lo scostamento non si consolidi nel quotidiano.',
+        'La gestione deve qui non solo pilotare, ma anche mantenere la direzione.',
+      ],
+      MISMATCH: [
+        'La gestione dovrebbe compensare costantemente piuttosto che pilotare in modo mirato.',
+        'Lo sforzo di gestione consisterebbe qui soprattutto in correzioni.',
+        'Il ruolo dovrebbe essere costantemente riorientato nel quotidiano per non deviare verso un\'altra direzione.',
+      ],
+    };
+    summary = pickVariant(itOverall[level], seed + ':overall');
+    managementSummary = familyText + ' ' + pickVariant(itManagement[level], seed + ':mgmt');
+  }
 
   if (_lang === 'fr') {
     const frOverall: Record<string, string[]> = {
@@ -511,11 +620,37 @@ function buildSummary(input: MatchTextInput): SummaryBlock {
       ['La logique de travail diffère de l\'exigence du poste sur des points centraux.', 'Structure et pondération s\'écartent notablement l\'une de l\'autre.'],
     ],
   };
-  let whyResult = _lang === 'fr'
+  const itWhy: Record<string, string[][]> = {
+    PERFECT: [
+      ['Struttura e ponderazione concordano. Le differenze rientrano nel margine di tolleranza normale.', 'Nel quotidiano, questo genera un comportamento lavorativo coerente, ben adatto al ruolo.'],
+      ['La persona porta la logica richiesta in modo stabile. Non si percepisce nessuna deviazione significativa.', 'La modalita\' di lavoro corrisponde al ruolo sia nell\'ordine che nella ponderazione.'],
+      ['La logica di lavoro corrisponde al requisito del ruolo in struttura e ponderazione.', 'Le differenze nelle singole aree sono ridotte e rientrano in un quadro stabile.'],
+    ],
+    EXACT_YELLOW: [
+      ['La struttura e\' corretta, ma la ponderazione di alcune aree si discosta.', 'La direzione resta la stessa, ma l\'attuazione nel quotidiano puo\' spostarsi sensibilmente.'],
+      ['La persona lavora secondo la stessa logica di base, ma pone altri accenti.', 'La direzione e la struttura concordano, ma l\'intensita\' di alcuni assi non corrisponde del tutto al livello del ruolo.'],
+      ['La logica di lavoro fondamentale corrisponde alla struttura del ruolo.', 'Gli scostamenti piu\' significativi si trovano nella ponderazione di alcune aree.'],
+    ],
+    SOFT_YELLOW: [
+      ['Un punto strutturale centrale si inverte rispetto al ruolo.', 'Ne derivano priorita\' e logiche decisionali diverse nel quotidiano.'],
+      ['La persona non copre interamente la logica del ruolo su un punto di confronto importante.', 'Lo scostamento non riguarda solo l\'intensita\', ma l\'ordine delle priorita\'.'],
+      ['La logica di lavoro corrisponde in parte al requisito del ruolo, ma si discosta su un punto strutturale centrale.', 'Questo scostamento si ripercuote direttamente sul modo in cui vengono affrontati i compiti.'],
+    ],
+    MISMATCH: [
+      ['Struttura e logica di definizione delle priorita\' si discostano significativamente dal ruolo.', 'Le differenze non riguardano solo le sfumature, ma la direzione di base dell\'esercizio del ruolo.'],
+      ['La persona stabilisce altre priorita\' e segue un altro ordine di lavoro.', 'Nel quotidiano, questo genererebbe un comportamento lavorativo e decisionale diverso da quanto previsto.'],
+      ['La logica di lavoro differisce dal requisito del ruolo su punti centrali.', 'Struttura e ponderazione si discostano significativamente l\'una dall\'altra.'],
+    ],
+  };
+  let whyResult = _lang === 'it'
+    ? pickVariantSet(itWhy[level], seed + ':why')
+    : _lang === 'fr'
     ? pickVariantSet(frWhy[level], seed + ':why')
     : pickVariantSet(tv.why[level], seed + ':why');
   if (level === 'SOFT_YELLOW' || level === 'MISMATCH') {
-    whyResult = _lang === 'fr'
+    whyResult = _lang === 'it'
+      ? [whyResult[0], `Lo scostamento individuale piu\' significativo si trova nell\'area di ${cs(leadKey)}.`, whyResult[1]]
+      : _lang === 'fr'
       ? [whyResult[0], `L'écart individuel le plus important se situe dans le domaine de ${cs(leadKey)}.`, whyResult[1]]
       : _lang === 'en'
       ? [whyResult[0], `The largest single deviation lies in the area of ${cs(leadKey)}.`, whyResult[1]]
@@ -523,6 +658,59 @@ function buildSummary(input: MatchTextInput): SummaryBlock {
   }
 
   let risks = pickVariantSet(tv.risks[level], seed + ':risks');
+  if (_lang === 'it') {
+    const itRisks: Record<string, string[][]> = {
+      PERFECT: [
+        [
+          'I rischi risiedono piu\' nel sovraccarico o nella dispersione operativa che nell\'adeguatezza di base.',
+          'La collaborazione dovrebbe essere stabile. I rischi provengono piu\' dal contesto che dall\'adeguatezza persona-ruolo.',
+          'Senza una chiara definizione delle priorita\', possono occasionalmente emergere situazioni di sovraccarico o dispersione inutile.',
+        ],
+        [
+          'Nel quotidiano, le perdite per attrito sono ridotte, dato che stile di lavoro e ruolo si accordano bene.',
+          'Le possibili tensioni riguardano piu\' il ritmo e le risorse che l\'adeguatezza stessa.',
+          'I rischi si trovano soprattutto nell\'attuazione operativa, non nell\'adeguatezza fondamentale.',
+        ],
+      ],
+      EXACT_YELLOW: [
+        [
+          'Nel quotidiano, le priorita\' possono spostarsi leggermente.',
+          'I compiti tendono a essere ponderati diversamente da quanto il ruolo prevede.',
+          'Senza un orientamento chiaro, questo spostamento si consolida nel tempo.',
+        ],
+        [
+          'La persona pone nel quotidiano altre priorita\' rispetto a quanto il ruolo prescrive.',
+          'La ponderazione dei compiti puo\' cosi\' spostarsi progressivamente.',
+          'Senza un orientamento chiaro, questo spostamento si consolida nel tempo.',
+        ],
+      ],
+      SOFT_YELLOW: [
+        [
+          'Le decisioni possono variare a seconda delle situazioni.',
+          'Il ruolo non opera sempre nella stessa direzione nel quotidiano.',
+          'Ne derivano vincoli di coordinamento e attriti nel team.',
+        ],
+        [
+          'In alcune situazioni, emergono priorita\' divergenti tra la persona e il ruolo.',
+          'Le decisioni e gli approcci possono cosi\' diventare incoerenti.',
+          'Questi scostamenti generano nel quotidiano attriti e sforzi di coordinamento.',
+        ],
+      ],
+      MISMATCH: [
+        [
+          'Le aspettative e i comportamenti reali si allontanano durevolmente.',
+          'Le decisioni, la comunicazione e la modalita\' di lavoro si discosterebbero significativamente dal ruolo.',
+          'Ne deriverebbero conflitti ricorrenti e cicli di correzione.',
+        ],
+        [
+          'Il ruolo verrebbe probabilmente esercitato nel quotidiano diversamente da quanto previsto.',
+          'Le aspettative e i comportamenti reali si allontanano durevolmente.',
+          'Ne deriverebbero conflitti ricorrenti, cicli di correzione e un maggiore sforzo di gestione.',
+        ],
+      ],
+    };
+    risks = pickVariantSet(itRisks[level], seed + ':risks');
+  }
   if (_lang === 'fr') {
     const frRisks: Record<string, string[][]> = {
       PERFECT: [
@@ -578,7 +766,17 @@ function buildSummary(input: MatchTextInput): SummaryBlock {
   }
 
   let profileCompareIntro = '';
-  if (_lang === 'fr') {
+  if (_lang === 'it') {
+    if (level === 'PERFECT') {
+      profileCompareIntro = 'I profili non si discostano significativamente in nessuna delle tre aree. La struttura di base e\' allineata.';
+    } else if (level === 'EXACT_YELLOW') {
+      profileCompareIntro = 'I profili non si discostano significativamente in nessuna delle tre aree. La struttura di base e\' allineata.';
+    } else if (level === 'SOFT_YELLOW') {
+      profileCompareIntro = 'La struttura di base e\' generalmente compatibile. In alcune aree emergono tuttavia scostamenti riconoscibili.';
+    } else {
+      profileCompareIntro = 'La modalita\' di lavoro della persona differisce troppo significativamente da quanto il ruolo richiede.';
+    }
+  } else if (_lang === 'fr') {
     if (level === 'PERFECT') {
       profileCompareIntro = 'Les profils ne présentent pas d\'écart significatif dans aucun des trois domaines. La structure de base est alignée.';
     } else if (level === 'EXACT_YELLOW') {
@@ -611,7 +809,17 @@ function buildSummary(input: MatchTextInput): SummaryBlock {
   }
 
   let finalText = '';
-  if (_lang === 'fr') {
+  if (_lang === 'it') {
+    if (level === 'PERFECT') {
+      finalText = 'La persona e\' adatta al ruolo. Stile di lavoro, decisioni e approccio professionale sono allineati.';
+    } else if (level === 'EXACT_YELLOW') {
+      finalText = `Il ruolo ${input.roleName} richiede ${cn(sp.rDom.top)} e ${cn(sp.rDom.second)} in ugual misura. La persona lavora nella stessa direzione, ma la ponderazione delle aree secondarie non e\' del tutto congruente. Con una gestione mirata e una struttura chiara, la collaborazione puo\' essere stabilizzata.`;
+    } else if (level === 'SOFT_YELLOW') {
+      finalText = `Il ruolo ${input.roleName} e\' coperto dalla persona in parti sostanziali. Allo stesso tempo, esistono differenze strutturali che possono generare attrito nel quotidiano e richiedono l\'attenzione della gestione.`;
+    } else {
+      finalText = `La persona lavora in modo significativamente diverso da quanto il ruolo ${input.roleName} richiede. Un inserimento stabile e\' improbabile in queste condizioni.`;
+    }
+  } else if (_lang === 'fr') {
     if (level === 'PERFECT') {
       finalText = 'La personne est adaptée au poste. Le mode de travail, les décisions et l\'approche professionnelle sont alignés.';
     } else if (level === 'EXACT_YELLOW') {
@@ -648,6 +856,11 @@ function buildSummary(input: MatchTextInput): SummaryBlock {
 
 function dualPairLabel(top: TriadKey, second: TriadKey): string {
   const pair = [top, second].sort().join('|');
+  if (_lang === 'it') {
+    if (pair === 'A|I') return 'il ritmo e la decisione da un lato, l\'analisi rigorosa e la struttura dall\'altro';
+    if (pair === 'A|N') return 'la comunicazione e le relazioni da un lato, l\'analisi rigorosa e la struttura dall\'altro';
+    return 'il ritmo e la decisione da un lato, la comunicazione e le relazioni dall\'altro';
+  }
   if (_lang === 'fr') {
     if (pair === 'A|I') return 'le rythme et la décision d\'un côté, l\'analyse rigoureuse et la structure de l\'autre';
     if (pair === 'A|N') return 'la communication et les relations d\'un côté, l\'analyse rigoureuse et la structure de l\'autre';
@@ -666,6 +879,41 @@ function dualPairLabel(top: TriadKey, second: TriadKey): string {
 function roleNeedForArea(area: ImpactArea['key'], rDom: ReturnType<typeof dominanceModeOf>, isDual: boolean, isBal: boolean): string {
   const top = rDom.top;
   const second = rDom.second;
+  if (_lang === 'it') {
+    if (area === 'decision') {
+      if (isBal) return 'Logica decisionale ampia ed equilibrata. Le tre aree devono avere uguale peso.';
+      if (isDual) return `Decisioni che tengono conto di ${dualPairLabel(top, second)} in ugual misura. Le due logiche devono operare in parallelo.`;
+      if (top === 'I') return 'Decisioni rapide e orientate ai risultati. Valutare brevemente le opzioni, poi agire in modo deciso.';
+      if (top === 'N') return 'Decisioni che tengono conto del contesto, della collaborazione e dell\'impatto interpersonale.';
+      return 'Decisioni accurate e orientate all\'analisi. Valutare le opzioni, verificare i rischi, poi agire.';
+    }
+    if (area === 'workstyle') {
+      if (isBal) return 'Profilo lavorativo ampio ed equilibrato. Esecuzione, coordinamento e struttura devono essere ugualmente rappresentati.';
+      if (isDual) return `Modalita\' di lavoro che collega ${cn(top)} e ${cn(second)} in modo parallelo e stabile.`;
+      if (top === 'I') return 'Ritmo elevato, esecuzione diretta e definizione pragmatica delle priorita\'. Completare i compiti rapidamente.';
+      if (top === 'N') return 'Collaborazione, coordinamento e coinvolgimento. Lavorare insieme, non da soli.';
+      return 'Struttura chiara, definizione delle priorita\' e processi affidabili. Fasi di lavoro pianificate e monitorate in modo trasparente.';
+    }
+    if (area === 'communication') {
+      if (isBal) return 'Comunicazione ampia che deve essere allo stesso tempo fattuale, inclusiva e orientata all\'azione.';
+      if (isDual) return `Comunicazione allo stesso tempo ${ca(top)} e ${ca(second)}. Entrambi gli stili devono essere visibilmente presenti in parallelo.`;
+      if (top === 'I') return 'Comunicazione diretta e orientata ai risultati. Percorsi brevi, messaggi chiari.';
+      if (top === 'N') return 'Comunicazione inclusiva e contestuale. Ascoltare, mediare, creare allineamento.';
+      return 'Comunicazione fattuale e basata sui dati. Argomentazione chiara, condivisione strutturata delle informazioni.';
+    }
+    if (area === 'culture') {
+      if (isBal) return 'Cultura di team versatile che ancori in ugual misura ritmo, collaborazione e qualita\'.';
+      if (isDual) return `Cultura di team che ancori in modo stabile ${cn(top)} e ${cn(second)}.`;
+      if (top === 'I') return 'Dinamismo, responsabilizzazione e risultati rapidi. Competizione e ritmo definiscono il team.';
+      if (top === 'N') return 'Coesione, fiducia e collaborazione apprezzativa. La qualita\' delle relazioni e\' centrale.';
+      return 'Affidabilita\', calma e qualita\' tracciabile. Processi stabili e risultati prevedibili.';
+    }
+    if (isBal) return 'Leadership attraverso un impatto ampio ed equilibrato. Le tre aree devono essere ugualmente rappresentate.';
+    if (isDual) return `Leadership che trasmette ${cn(top)} e ${cn(second)} in ugual misura.`;
+    if (top === 'I') return 'Leadership attraverso il ritmo, la capacita\' decisionale e una direzione chiara.';
+    if (top === 'N') return 'Leadership attraverso la relazione, il coinvolgimento e la fiducia.';
+    return 'Leadership attraverso l\'orientamento, la definizione delle priorita\' e standard affidabili.';
+  }
   if (_lang === 'fr') {
     if (area === 'decision') {
       if (isBal) return 'Logique décisionnelle large et équilibrée. Les trois domaines doivent peser de façon égale.';
@@ -776,6 +1024,47 @@ function personTextForArea(area: ImpactArea['key'], input: MatchTextInput): stri
   const sp = getSpecialCases(input.roleProfile, input.candProfile);
   const cTop = sp.cDom.top;
   const cSecond = sp.cDom.second;
+
+  if (_lang === 'it') {
+    if (area === 'decision') {
+      if (sp.candIsBalFull) return 'La persona decide in modo ampiamente fondato, valutando le diverse prospettive in uguale misura.';
+      if (sp.candIsDualDom) {
+        const pair = [cTop, cSecond].sort().join('|');
+        if (pair === 'A|N') return 'La persona decide a seconda della situazione in modo piu\' analitico e accurato oppure attraverso il coordinamento e il coinvolgimento.';
+        if (pair === 'A|I') return 'La persona decide a seconda della situazione attraverso un\'analisi approfondita oppure attraverso un\'azione rapida.';
+        return 'La persona decide a seconda della situazione attraverso il ritmo e l\'azione diretta oppure attraverso il coordinamento e il coinvolgimento.';
+      }
+      if (cTop === 'I') return 'La persona decide rapidamente, direttamente e in modo orientato all\'azione.';
+      if (cTop === 'N') return 'La persona decide in modo contestuale, coinvolge gli altri e cerca l\'allineamento.';
+      return 'La persona decide in modo analitico e valuta le decisioni in modo approfondito.';
+    }
+    if (area === 'workstyle') {
+      if (sp.candIsBalFull) return 'La persona lavora in modo versatile e si sposta situativamente tra ritmo, coordinamento e rigore.';
+      if (sp.candIsDualDom) return `La persona lavora in parallelo attraverso ${cn(cTop)} e ${cn(cSecond)}. Entrambe le aree caratterizzano lo stile di lavoro.`;
+      if (cTop === 'I') return 'La persona lavora a ritmo elevato, agisce in modo pragmatico e implementa rapidamente.';
+      if (cTop === 'N') return 'La persona lavora in modo cooperativo, coinvolge gli altri e cerca soluzioni comuni.';
+      return 'La persona lavora in modo strutturato, con processi chiari e fasi fisse. La pianificazione ha alta priorita\'.';
+    }
+    if (area === 'communication') {
+      if (sp.candIsBalFull) return 'La persona comunica in modo versatile e adatta il proprio stile situativamente.';
+      if (sp.candIsDualDom) return `La persona comunica sia ${ca(cTop)} sia ${ca(cSecond)}. Lo stile cambia a seconda della situazione.`;
+      if (cTop === 'I') return 'La persona comunica in modo diretto, conciso e orientato ai risultati.';
+      if (cTop === 'N') return 'La persona comunica in modo inclusivo, empatico e cerca la comprensione.';
+      return 'La persona comunica in modo fattuale, strutturato e con uno sguardo chiaro al contesto.';
+    }
+    if (area === 'culture') {
+      if (sp.candIsBalFull) return 'La persona porta un ampio impatto culturale senza dominare fortemente nessuna singola area.';
+      if (sp.candIsDualDom) return `La persona modella la cultura in ugual misura attraverso ${cn(cTop)} e ${cn(cSecond)}.`;
+      if (cTop === 'I') return 'La persona rafforza il dinamismo, la responsabilizzazione e l\'orientamento ai risultati nel team.';
+      if (cTop === 'N') return 'La persona rafforza la coesione, la fiducia e la qualita\' delle relazioni nel team.';
+      return 'La persona rafforza la consapevolezza della qualita\', la chiarezza dei processi e la struttura. La cultura diventa piu\' fattuale e organizzata.';
+    }
+    if (sp.candIsBalFull) return 'La persona guida in modo ampio e media in modo equilibrato tra le tre aree.';
+    if (sp.candIsDualDom) return `La persona guida in parallelo attraverso ${cn(cTop)} e ${cn(cSecond)}.`;
+    if (cTop === 'I') return 'La persona guida attraverso il ritmo, indicazioni dirette e decisioni rapide.';
+    if (cTop === 'N') return 'La persona guida attraverso la relazione, il coinvolgimento e la fiducia.';
+    return 'La persona guida piu\' attraverso la chiarezza, la struttura e indicazioni tracciabili.';
+  }
 
   if (_lang === 'fr') {
     if (area === 'decision') {
@@ -910,6 +1199,39 @@ function areaInterpretation(key: ImpactArea['key'], input: MatchTextInput): stri
       candThirdLower: sp.candThirdLower,
     });
 
+    if (_lang === 'it') {
+      if (key === 'decision') {
+        if (input.fitSubtype === 'PERFECT') return 'Il comportamento decisionale e\' pienamente congruente con i requisiti del ruolo. Le due priorita\' richieste vengono portate in parallelo.';
+        if (input.fitSubtype === 'STRUCTURE_MATCH_INTENSITY_OFF') return `${dualText} Di conseguenza, non tutte le situazioni vengono affrontate con lo stesso equilibrio costante.`;
+        if (input.fitSubtype === 'PARTIAL_MATCH' && input.fitLabel !== 'Nicht geeignet') return `${dualText} Tuttavia, la simultaneita\' richiesta delle due logiche non viene raggiunta in modo sufficientemente stabile.`;
+        return `${dualText} La doppia logica richiesta dal ruolo non viene quindi raggiunta in modo stabile.`;
+      }
+      if (key === 'workstyle') {
+        if (input.fitSubtype === 'PERFECT') return 'Lo stile di lavoro e\' pienamente congruente con i requisiti del ruolo. Le due priorita\' richieste vengono rispecchiate in parallelo e in modo stabile.';
+        if (input.fitSubtype === 'STRUCTURE_MATCH_INTENSITY_OFF') return `${dualText} Nella pratica, gli accenti variano maggiormente invece di operare costantemente in parallelo.`;
+        if (input.fitSubtype === 'PARTIAL_MATCH' && input.fitLabel !== 'Nicht geeignet') return 'Lo stile di lavoro e\' generalmente compatibile, ma non raggiunge costantemente l\'equilibrio richiesto delle due logiche principali.';
+        return 'Lo stile di lavoro non rispecchia sufficientemente la doppia logica richiesta.';
+      }
+      if (key === 'communication') {
+        if (input.fitSubtype === 'PERFECT') return 'Il comportamento comunicativo e\' coerente e ben compatibile. Entrambi i requisiti sono ben coperti.';
+        if (input.fitSubtype === 'STRUCTURE_MATCH_INTENSITY_OFF') return `${dualText} Di conseguenza, la costanza dell\'equilibrio tra coinvolgimento e struttura fattuale varia.`;
+        if (input.fitSubtype === 'PARTIAL_MATCH' && input.fitLabel !== 'Nicht geeignet') return 'La comunicazione copre il ruolo parzialmente, ma non mantiene costantemente l\'equilibrio richiesto.';
+        return 'La logica comunicativa si discosta significativamente dal ruolo. Il coordinamento e gli scambi si svolgono diversamente da quanto richiesto.';
+      }
+      if (key === 'culture') {
+        if (input.fitSubtype === 'PERFECT') return 'L\'impatto sulla cultura del team supporta la direzione desiderata del ruolo. Entrambi gli aspetti vengono portati in parallelo.';
+        if (input.fitSubtype === 'STRUCTURE_MATCH_INTENSITY_OFF') return `${dualText} Di conseguenza, la cultura vissuta puo\' differire dalle aspettative del ruolo in alcuni aspetti.`;
+        if (input.fitSubtype === 'PARTIAL_MATCH' && input.fitLabel !== 'Nicht geeignet') return 'L\'impatto sulla collaborazione e sulla cultura del team e\' generalmente valido, ma non rimane congruente.';
+        return 'L\'impatto culturale modificherebbe sensibilmente la direzione del team desiderata. La collaborazione si sviluppa diversamente da quanto previsto per il ruolo.';
+      }
+      if (key === 'leadership') {
+        if (input.fitSubtype === 'PERFECT') return 'L\'impatto di leadership e\' coerente e ben compatibile. Le due priorita\' richieste vengono portate in parallelo e in modo stabile.';
+        if (input.fitSubtype === 'STRUCTURE_MATCH_INTENSITY_OFF') return `${dualText} Di conseguenza, l\'impatto di leadership nel quotidiano puo\' essere ponderato leggermente diversamente da quanto il ruolo richiede.`;
+        if (input.fitSubtype === 'PARTIAL_MATCH' && input.fitLabel !== 'Nicht geeignet') return 'L\'impatto di leadership e\' generalmente compatibile, ma non raggiunge costantemente l\'equilibrio richiesto delle due logiche principali.';
+        return 'L\'impatto di leadership non rispecchia sufficientemente la doppia logica richiesta.';
+      }
+    }
+
     if (_lang === 'fr') {
       if (key === 'decision') {
         if (input.fitSubtype === 'PERFECT') return 'Le comportement décisionnel est pleinement congruent avec les exigences du poste. Les deux priorités requises sont portées en parallèle.';
@@ -1012,6 +1334,34 @@ function areaInterpretation(key: ImpactArea['key'], input: MatchTextInput): stri
     }
   }
 
+  if (_lang === 'it') {
+    const fsub = input.fitSubtype;
+    const notSuitable = input.fitLabel === 'Nicht geeignet';
+    if (key === 'decision') {
+      if (fsub === 'PERFECT') return 'Il comportamento decisionale e\' pienamente allineato con i requisiti del ruolo.';
+      if (!notSuitable) return 'Il comportamento decisionale e\' generalmente compatibile, ma presenta scostamenti nella ponderazione.';
+      return 'Il comportamento decisionale si discosta significativamente dai requisiti del ruolo.';
+    }
+    if (key === 'workstyle') {
+      if (fsub === 'PERFECT') return 'Lo stile di lavoro e\' pienamente allineato con i requisiti del ruolo.';
+      if (!notSuitable) return 'Lo stile di lavoro e\' generalmente compatibile, ma presenta scostamenti in alcune aree.';
+      return 'Lo stile di lavoro si discosta significativamente dai requisiti del ruolo.';
+    }
+    if (key === 'communication') {
+      if (fsub === 'PERFECT') return 'Il comportamento comunicativo e\' coerente e ben compatibile con il ruolo.';
+      if (!notSuitable) return 'La comunicazione e\' generalmente compatibile, ma non rimane costantemente nell\'equilibrio richiesto.';
+      return 'La logica comunicativa si discosta significativamente dai requisiti del ruolo.';
+    }
+    if (key === 'culture') {
+      if (fsub === 'PERFECT') return 'L\'impatto sulla cultura del team supporta la direzione desiderata del ruolo.';
+      if (!notSuitable) return 'L\'impatto sulla cultura del team e\' generalmente compatibile, ma puo\' discostarsi in alcuni aspetti.';
+      return 'L\'impatto culturale modificherebbe sensibilmente la direzione del team desiderata.';
+    }
+    if (fsub === 'PERFECT') return 'L\'impatto di leadership e\' coerente e ben compatibile con i requisiti del ruolo.';
+    if (!notSuitable) return 'L\'impatto di leadership e\' generalmente compatibile, ma non rispecchia costantemente l\'equilibrio richiesto.';
+    return 'L\'impatto di leadership non rispecchia sufficientemente la logica del ruolo.';
+  }
+
   if (_lang === 'fr') {
     const fsub = input.fitSubtype;
     const notSuitable = input.fitLabel === 'Nicht geeignet';
@@ -1063,6 +1413,13 @@ function buildImpactAreas(input: MatchTextInput): ImpactArea[] {
   const cultSev = commSev;
 
   const areaTitle = (key: ImpactArea['key']) => {
+    if (_lang === 'it') {
+      if (key === 'decision') return 'Comportamento decisionale';
+      if (key === 'workstyle') return 'Stile di lavoro';
+      if (key === 'communication') return 'Comunicazione';
+      if (key === 'culture') return 'Impatto sulla cultura del team';
+      return 'Impatto di leadership';
+    }
     if (_lang === 'fr') {
       if (key === 'decision') return 'Comportement décisionnel';
       if (key === 'workstyle') return 'Mode de travail';
@@ -1140,6 +1497,36 @@ function buildImpactAreas(input: MatchTextInput): ImpactArea[] {
 
 function buildStress(input: MatchTextInput): StressBlock {
   const sp = getSpecialCases(input.roleProfile, input.candProfile);
+
+  if (_lang === 'it') {
+    if (sp.candIsBalFull) {
+      return {
+        controlledPressure: 'Sotto una pressione moderata, questa persona non mostra una priorita\' chiaramente definita. Poiche\' le tre componenti sono quasi ugualmente pronunciate, la reazione varia a seconda della situazione: a volte attraverso il ritmo, a volte il coordinamento, a volte la struttura. Il comportamento risulta cosi\' difficilmente prevedibile.',
+        uncontrolledStress: 'Sotto un carico elevato, non c\'e\' un\'ancora stabile. La persona puo\' passare da una logica all\'altra: a volte piu\' impulsiva, a volte piu\' orientata alle relazioni, a volte piu\' controllata. Nel quotidiano, questo passaggio diventa chiaramente percepibile e puo\' destabilizzare le persone circostanti.',
+      };
+    }
+    if (sp.candIsDualDom) {
+      return {
+        controlledPressure: `Quando la pressione aumenta, la persona si appoggia alla logica attualmente dominante. Poiche\' le due componenti principali sono quasi ugualmente forti, la reazione varia a seconda della situazione: a volte piu\' attraverso ${cn(sp.cDom.top)}, a volte attraverso ${cn(sp.cDom.second)}.`,
+        uncontrolledStress: sp.cDom.third === 'N'
+          ? 'Sotto un carico molto elevato, l\'accento puo\' spostarsi verso l\'ascolto, la mediazione e il coordinamento interpersonale.'
+          : sp.cDom.third === 'A'
+            ? 'Sotto un carico molto elevato, l\'accento puo\' spostarsi verso l\'ordine, la verifica e la sicurezza. Le decisioni diventano piu\' lente ma piu\' controllate.'
+            : 'Sotto un carico molto elevato, l\'accento puo\' spostarsi verso il ritmo e l\'azione diretta. Le decisioni diventano piu\' rapide e piu\' immediate.',
+      };
+    }
+    const candIsBottomPair = sp.cDom.gap1 > EQ_TOL && sp.cDom.gap2 <= EQ_TOL;
+    if (candIsBottomPair) {
+      return {
+        controlledPressure: `Quando la pressione aumenta, la tendenza verso ${cn(sp.cDom.top)} si intensifica inizialmente. La persona cerca di mantenere controllo e visione d\'insieme attraverso la propria logica principale.`,
+        uncontrolledStress: `Sotto un carico molto elevato, il comportamento puo\' variare a seconda delle situazioni. Poiche\' ${cn(sp.cDom.second)} e ${cn(sp.cDom.third)} sono quasi ugualmente pronunciate, queste due componenti secondarie entrano in competizione. A seconda della situazione, la reazione avviene quindi piu\' attraverso ${cn(sp.cDom.second)} o attraverso ${cn(sp.cDom.third)}. Il comportamento diventa cosi\' piu\' variabile e meno prevedibile.`,
+      };
+    }
+    return {
+      controlledPressure: `Sotto una pressione moderata, la tendenza verso ${cn(sp.cDom.top)} si intensifica inizialmente.`,
+      uncontrolledStress: `Sotto un carico elevato, il comportamento puo\' spostarsi verso ${cn(sp.cDom.second)}. La gerarchia delle priorita\' di lavoro si inclina allora a favore della seconda logica piu\' forte.`,
+    };
+  }
 
   if (_lang === 'fr') {
     if (sp.candIsBalFull) {
@@ -1235,6 +1622,27 @@ function buildStress(input: MatchTextInput): StressBlock {
 
 function buildTimeline(input: MatchTextInput): string[] {
   const rTop = dominanceModeOf(input.roleProfile).top;
+  if (_lang === 'it') {
+    if (input.fitSubtype === 'PERFECT') {
+      return [
+        `Il ruolo ${input.roleName} richiede ${cs(rTop)}. Lo stile di lavoro e\' adatto. L\'inserimento dovrebbe avvenire senza difficolta\'. Aggiustamenti sono necessari solo in casi isolati.`,
+        'I requisiti del ruolo vengono coperti in modo stabile. Nelle aree secondarie si verificano piccoli scostamenti. Colloqui sugli obiettivi regolari aiutano a identificarli precocemente.',
+        'I requisiti del ruolo vengono soddisfatti in modo stabile a lungo termine. Lo sforzo di gestione rimane ridotto. Revisioni semestrali sono sufficienti.',
+      ];
+    }
+    if (input.fitLabel === 'Nicht geeignet') {
+      return [
+        `Il ruolo ${input.roleName} richiede ${cs(rTop)}. La persona pondera le proprie priorita\' di lavoro in modo significativamente diverso. Gia\' durante l\'inserimento, le differenze diventano visibili e richiedono un accompagnamento intensivo.`,
+        'Gli scostamenti diventano sempre piu\' percepibili nella pratica. Senza una gestione molto ravvicinata, le priorita\' e lo stile di lavoro si allontanano ulteriormente dai requisiti del ruolo. Questo costa tempo di gestione e genera attrito nel team.',
+        'A lungo termine, un inserimento stabile e\' possibile solo con uno sforzo di gestione permanentemente elevato. La domanda se l\'inserimento rimanga sostenibile dovrebbe essere regolarmente e criticamente rivalutata.',
+      ];
+    }
+    return [
+      `Il ruolo ${input.roleName} richiede ${cs(rTop)}. La persona lavora nella stessa direzione, ma pondera diversamente le aree secondarie. Gia\' durante l\'inserimento e\' necessario prestare attenzione mirata a queste differenze.`,
+      'La direzione generale e\' corretta, ma gli scostamenti nelle aree secondarie diventano percepibili nella pratica. Senza una guida mirata, queste differenze possono consolidarsi. Colloqui sugli obiettivi regolari e aspettative chiare sono necessari.',
+      'Con una gestione mirata, le differenze nelle aree secondarie possono essere durevolmente compensate. Revisione semestrale raccomandata per garantire che l\'adeguatezza rimanga stabile.',
+    ];
+  }
   if (_lang === 'fr') {
     if (input.fitSubtype === 'PERFECT') {
       return [
@@ -1301,6 +1709,33 @@ function buildTimeline(input: MatchTextInput): string[] {
 
 function buildDevelopment(input: MatchTextInput): DevelopmentBlock {
   const rDom = dominanceModeOf(input.roleProfile);
+  if (_lang === 'it') {
+    if (input.fitSubtype === 'PERFECT') {
+      return {
+        title: 'Prospettiva di sviluppo',
+        subtitle: '3 su 3 — Buone prospettive, basso sforzo',
+        scoreText: 'niedrig',
+        text1: `Il ruolo richiede ${cn(rDom.top)} e ${cn(rDom.second)} in ugual misura. La persona copre questo requisito in modo coerente.`,
+        text2: `Il ruolo ${input.roleName} richiede ${cn(rDom.top)} e ${cn(rDom.second)} in ugual misura. La persona porta questo stile di lavoro. La direzione generale e la ponderazione sono allineate. Lo sforzo di gestione e\' ridotto. Un inserimento stabile e\' probabile in queste condizioni.`,
+      };
+    }
+    if (input.fitLabel === 'Nicht geeignet') {
+      return {
+        title: 'Prospettiva di sviluppo',
+        subtitle: '1 su 3 — Sforzo elevato, esito incerto',
+        scoreText: 'hoch',
+        text1: `Il ruolo richiede ${cn(rDom.top)} e ${cn(rDom.second)} in ugual misura. La persona pondera le proprie priorita\' di lavoro in modo significativamente diverso. Un adattamento e\' possibile solo con uno sforzo di gestione elevato e duraturo.`,
+        text2: `I requisiti del ruolo ${input.roleName} e lo stile di lavoro della persona non sono compatibili. Senza una gestione ravvicinata, un inserimento stabile e\' improbabile.`,
+      };
+    }
+    return {
+      title: 'Prospettiva di sviluppo',
+      subtitle: '2 su 3 — Realizzabile, richiede una gestione mirata',
+      scoreText: 'mittel',
+      text1: `Il ruolo richiede ${cn(rDom.top)} e ${cn(rDom.second)} in ugual misura. La persona lavora nella stessa direzione, ma deve ancora apprendere in modo mirato in alcune aree. Con obiettivi chiari e un feedback regolare, questo e\' ben realizzabile.`,
+      text2: buildSummary(input).finalText,
+    };
+  }
   if (_lang === 'fr') {
     if (input.fitSubtype === 'PERFECT') {
       return {
@@ -1391,6 +1826,132 @@ function buildIntegrationPlan(input: MatchTextInput): IntegrationPhase[] {
   const isPerfect = input.fitSubtype === 'PERFECT';
   const candBal = sp.candIsBalFull;
   const candDual = sp.candIsDualDom;
+
+  if (_lang === 'it') {
+    const personDesc = candBal
+      ? 'La persona non ha una priorita\' chiaramente definita e lavora in modo versatile.'
+      : candDual
+        ? 'La persona ha due priorita\' di lavoro quasi ugualmente forti e si sposta situativamente dall\'una all\'altra.'
+        : 'La persona ha una priorita\' di lavoro chiaramente riconoscibile.';
+    const focusTitle = 'Cosa e\' importante';
+
+    if (isPerfect) {
+      return [
+        {
+          phase: 1,
+          title: 'Orientamento',
+          timeframe: 'Giorni 1-10',
+          goal: `Comprendere i requisiti del ruolo ${input.roleName} e allineare le aspettative.`,
+          items: [
+            `Chiarire i percorsi decisionali e le aree di responsabilita\' nel ruolo ${input.roleName}.`,
+            'Allineare le priorita\' di lavoro piu\' importanti con l\'ambiente diretto.',
+            'Garantire la trasparenza sui processi, le procedure e gli standard di qualita\' esistenti.',
+          ],
+          focusTitle,
+          focusText: 'Lo stile di lavoro e\' adatto al ruolo. La cosa piu\' importante e\' stabilire rapidamente la chiarezza su:',
+          focusBullets: ['processi e interfacce esistenti', 'percorsi decisionali e aree di responsabilita\'', 'standard di qualita\' e aspettative'],
+        },
+        {
+          phase: 2,
+          title: 'Impatto',
+          timeframe: 'Giorni 11-20',
+          goal: `Assumere le prime responsabilita\' operative come ${input.roleName} e produrre impatto.`,
+          items: ['Gestione autonoma dei primi pacchetti di lavoro con verifica dei risultati.', 'Ricercare attivamente un feedback sull\'impatto riguardo a ritmo, qualita\' e collaborazione.', 'Stabilire il lavoro di interfaccia con le aree adiacenti.'],
+          focusTitle,
+          focusText: 'La persona opera gia\' secondo l\'approccio di base corretto. Ora si tratta di:',
+          focusBullets: [`rendere visibile l\'efficacia nel ruolo ${input.roleName}`, 'fornire i primi risultati di lavoro in modo autonomo', 'sviluppare routine affidabili'],
+        },
+        {
+          phase: 3,
+          title: 'Stabilizzazione',
+          timeframe: 'Giorni 21-30',
+          goal: `Stabilizzare lo stile di lavoro e il ritmo nel ruolo ${input.roleName}.`,
+          items: ['Valutazione dell\'impatto sul ritmo decisionale e sul carico di lavoro.', 'Affinamento della collaborazione con l\'ambiente diretto.', 'Consolidare le priorita\' e stabilizzare gli standard.'],
+          focusTitle,
+          focusText: 'Lo stile di lavoro e\' stabile. Ora si tratta di:',
+          focusBullets: ['mantenere i punti di forza e consolidare le routine', `garantire la stabilita\' a lungo termine nel ruolo ${input.roleName}`],
+        },
+      ];
+    }
+
+    if (isNichtGeeignet) {
+      return [
+        {
+          phase: 1,
+          title: 'Orientamento',
+          timeframe: 'Giorni 1-10',
+          goal: `Chiarire le aspettative del ruolo ${input.roleName} e identificare rapidamente gli scostamenti.`,
+          items: [
+            `Chiarire le aspettative centrali e i criteri di successo del ruolo ${input.roleName}.`,
+            'Garantire la trasparenza sui processi di lavoro, i percorsi decisionali e gli standard di qualita\' esistenti.',
+            'Discussione aperta sulle differenze percepibili tra i requisiti del ruolo e lo stile di lavoro.',
+            'Definire criteri di osservazione concreti per le prime settimane.',
+          ],
+          focusTitle,
+          focusText: `${personDesc} Il ruolo richiede una ponderazione diversa. Nei primi giorni deve essere chiaro:`,
+          focusBullets: ['dove esattamente lo stile di lavoro si discosta dalle aspettative del ruolo', 'quali aspettative non sono negoziabili', 'quale accompagnamento e guida sono necessari'],
+        },
+        {
+          phase: 2,
+          title: 'Impatto',
+          timeframe: 'Giorni 11-20',
+          goal: `Fornire i primi risultati di lavoro come ${input.roleName} e gestire deliberatamente gli scostamenti.`,
+          items: ['Assegnare compiti mirati con criteri di risultato chiari.', 'Ricercare regolarmente un feedback sull\'impatto riguardo a qualita\', ritmo e collaborazione.', 'Discutere apertamente gli scostamenti tra stile di lavoro e aspettative del ruolo.', 'Concordare e documentare misure di sviluppo concrete.'],
+          focusTitle,
+          focusText: 'Le differenze tra stile di lavoro e requisiti del ruolo diventano visibili nella pratica. Il responsabile dovrebbe:',
+          focusBullets: ['accompagnare e guidare da vicino', 'definire priorita\' chiare e fornire un feedback regolare', 'valutare onestamente se l\'adattamento e\' realistico'],
+        },
+        {
+          phase: 3,
+          title: 'Stabilizzazione',
+          timeframe: 'Giorni 21-30',
+          goal: `Valutare onestamente la sostenibilita\' dell\'inserimento come ${input.roleName}.`,
+          items: ['Valutazione: gli scostamenti identificati sono diminuiti o si sono consolidati?', 'Raccogliere il feedback dell\'ambiente diretto sull\'impatto nella pratica.', 'Prendere una decisione: continuare con un accompagnamento intensivo o esaminare alternative.', 'Fissare obiettivi di sviluppo a lungo termine solo se la direzione generale e\' corretta.'],
+          focusTitle,
+          focusText: 'La domanda centrale dopo 30 giorni e\': lo scostamento tra stile di lavoro e requisiti del ruolo e\' colmabile? Il responsabile valuta:',
+          focusBullets: ['se lo stile di lavoro si avvicina sensibilmente ai requisiti del ruolo', 'se lo sforzo di gestione e\' sostenibile a lungo termine', 'se l\'inserimento puo\' essere mantenuto in modo stabile a lungo termine'],
+        },
+      ];
+    }
+
+    return [
+      {
+        phase: 1,
+        title: 'Orientamento',
+        timeframe: 'Giorni 1-10',
+        goal: `Comprendere le aspettative e i requisiti del ruolo ${input.roleName} e identificare le differenze.`,
+        items: [
+          `Chiarire il ruolo, le aspettative e i criteri di successo in ${input.roleName}.`,
+          'Garantire la trasparenza sui processi, i percorsi decisionali e gli standard di qualita\' esistenti.',
+          'Allineare rapidamente le priorita\' e le aspettative reciproche.',
+          'Chiarire i processi operativi e le interfacce.',
+        ],
+        focusTitle,
+        focusText: `${personDesc} Il ruolo definisce priorita\' diverse. Da chiarire:`,
+        focusBullets: ['quale stile di lavoro il ruolo richiede concretamente', 'in cosa le abitudini della persona differiscono', 'quali adattamenti possono essere ragionevolmente attesi'],
+      },
+      {
+        phase: 2,
+        title: 'Impatto',
+        timeframe: 'Giorni 11-20',
+        goal: `Fornire i primi risultati di lavoro come ${input.roleName} e gestire deliberatamente il fabbisogno di adattamento.`,
+        items: ['Trattare un argomento concreto in modo autonomo e verificare il risultato.', 'Richiedere un feedback sull\'impatto riguardo a qualita\', collaborazione e affidabilita\' dei risultati.', 'Formulare aspettative chiare riguardo alle priorita\' e allo stile di lavoro.', 'Offrire attivamente supporto e accompagnamento.'],
+        focusTitle,
+        focusText: 'Le differenze tra stile di lavoro e requisiti del ruolo diventano visibili nella pratica. La cosa piu\' importante e\':',
+        focusBullets: ['fornire un feedback mirato e formulare chiaramente le aspettative', 'osservare i progressi e la disponibilita\' all\'adattamento', 'garantire un coordinamento regolare con il responsabile'],
+      },
+      {
+        phase: 3,
+        title: 'Stabilizzazione',
+        timeframe: 'Giorni 21-30',
+        goal: `Allineare durevolmente lo stile di lavoro e le aspettative nel ruolo ${input.roleName}.`,
+        items: ['Valutazione dell\'impatto sul ritmo decisionale, la definizione delle priorita\' e la collaborazione.', 'Adeguamento delle aspettative, delle interfacce e degli standard di lavoro.', 'Definire obiettivi di sviluppo a lungo termine e un ritmo di feedback.'],
+        focusTitle,
+        focusText: 'Lo stile di lavoro si muove nella direzione giusta. Il responsabile valuta:',
+        focusBullets: ['se lo sforzo di gestione rimane sostenibile a lungo termine', 'se l\'adattamento e\' duraturo', 'se l\'inserimento puo\' essere mantenuto in modo stabile a lungo termine'],
+      },
+    ];
+  }
 
   if (_lang === 'fr') {
     const personDesc = candBal

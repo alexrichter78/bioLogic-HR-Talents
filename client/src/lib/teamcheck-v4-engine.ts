@@ -13,7 +13,7 @@ export interface TeamCheckV4Input {
   candidateName?: string;
   teamGoal?: TeamGoal;
   roleType?: string;
-  lang?: "de" | "en" | "fr";
+  lang?: "de" | "en" | "fr" | "it";
 }
 
 export interface V4Block {
@@ -110,8 +110,9 @@ export type GoalContribution = "hoch" | "mittel" | "gering" | "nicht bewertet";
 
 const EQ_TOL = 5;
 
-let _lang: "de" | "en" | "fr" = "de";
-function t(de: string, en: string, fr?: string): string {
+let _lang: "de" | "en" | "fr" | "it" = "de";
+function t(de: string, en: string, fr?: string, it?: string): string {
+  if (_lang === "it") return it ?? en ?? de;
   if (_lang === "fr") return fr ?? de;
   return _lang === "en" ? en : de;
 }
@@ -134,7 +135,14 @@ const GOAL_LABELS_FR: Record<string, string> = {
   zusammenarbeit: "Collaboration et Communication",
 };
 
+const GOAL_LABELS_IT: Record<string, string> = {
+  umsetzung: "Esecuzione e Risultati",
+  analyse: "Analisi e Struttura",
+  zusammenarbeit: "Collaborazione e Comunicazione",
+};
+
 function goalLabel(key: string): string {
+  if (_lang === "it") return GOAL_LABELS_IT[key] ?? key;
   if (_lang === "fr") return GOAL_LABELS_FR[key] ?? key;
   return _lang === "en" ? (GOAL_LABELS_EN[key] ?? key) : (GOAL_LABELS[key] ?? key);
 }
@@ -163,7 +171,14 @@ const COMP_SHORT_FR: Record<ComponentKey, string> = {
   analytisch: "Structure et Rigueur",
 };
 
+const COMP_SHORT_IT: Record<ComponentKey, string> = {
+  impulsiv: "Ritmo e Decisione",
+  intuitiv: "Comunicazione e Relazioni",
+  analytisch: "Struttura e Rigore",
+};
+
 function cs(k: ComponentKey): string {
+  if (_lang === "it") return COMP_SHORT_IT[k];
   if (_lang === "fr") return COMP_SHORT_FR[k];
   return _lang === "en" ? COMP_SHORT_EN[k] : COMP_SHORT[k];
 }
@@ -186,7 +201,14 @@ const COMP_DOMAIN_FR: Record<ComponentKey, string> = {
   analytisch: "Structure et Rigueur",
 };
 
+const COMP_DOMAIN_IT: Record<ComponentKey, string> = {
+  impulsiv: "Ritmo e Decisione",
+  intuitiv: "Comunicazione e Relazioni",
+  analytisch: "Struttura e Rigore",
+};
+
 function cd(k: ComponentKey): string {
+  if (_lang === "it") return COMP_DOMAIN_IT[k];
   if (_lang === "fr") return COMP_DOMAIN_FR[k];
   return _lang === "en" ? COMP_DOMAIN_EN[k] : COMP_DOMAIN[k];
 }
@@ -209,7 +231,14 @@ const COMP_ADJ_FR: Record<ComponentKey, string> = {
   analytisch: "de manière plus structurée et rigoureuse",
 };
 
+const COMP_ADJ_IT: Record<ComponentKey, string> = {
+  impulsiv: "con piu' ritmo e decisione",
+  intuitiv: "attraverso lo scambio e la collaborazione",
+  analytisch: "in modo piu' strutturato e rigoroso",
+};
+
 function ca(k: ComponentKey): string {
+  if (_lang === "it") return COMP_ADJ_IT[k];
   if (_lang === "fr") return COMP_ADJ_FR[k];
   return _lang === "en" ? COMP_ADJ_EN[k] : COMP_ADJ[k];
 }

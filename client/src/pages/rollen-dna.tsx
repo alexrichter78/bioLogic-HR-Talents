@@ -1294,18 +1294,24 @@ function SummaryBar({ beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, a
 }) {
   const localizeText = (text: string) => localizeStr(text, region as any);
   const isEN = region === "EN";
+  const isIT = region === "IT";
   const isFR = region === "FR";
   const _ro = getRegionOptions(region);
   const arbeitsOpt = _ro.arbeit.find(o => o.value === arbeitslogik);
   const fuehrungOpt = _ro.fuehrung.find(o => o.value === fuehrung);
   const fokusLabels = erfolgsfokusIndices.map(i => _ro.erfolg[i]?.label).filter(Boolean);
-  const rollenName = beruf || (isEN ? "this role" : isFR ? "ce poste" : "diese Stelle");
+  const rollenName = beruf || (isEN ? "this role" : isIT ? "questo ruolo" : isFR ? "ce poste" : "diese Stelle");
 
   const aufgabenSatz: Record<string, string> = isEN ? {
     "überwiegend operativ": `combines practical work with direct execution in day-to-day business`,
     "überwiegend systemisch": `combines practical work with structured planning and steering`,
     "überwiegend strategisch": `is shaped by analysis, planning and strategic decisions`,
     "Gemischt": `combines practical work with analysis and coordination within the team`,
+  } : isIT ? {
+    "überwiegend operativ": `unisce lavoro pratico ed esecuzione diretta nel business quotidiano`,
+    "überwiegend systemisch": `unisce lavoro pratico a pianificazione strutturata e gestione`,
+    "überwiegend strategisch": `e' caratterizzato da analisi, pianificazione e decisioni strategiche`,
+    "Gemischt": `unisce lavoro pratico, analisi e coordinamento nel team`,
   } : isFR ? {
     "überwiegend operativ": `associe travail pratique et mise en oeuvre directe au quotidien`,
     "überwiegend systemisch": `associe travail pratique à une planification et un pilotage structurés`,
@@ -1323,6 +1329,11 @@ function SummaryBar({ beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, a
     "Daten-/prozessorientiert": `evaluating data, planning workflows and proceeding systematically`,
     "Menschenorientiert": `coordination, collaboration and communication within the team`,
     "Ausgewogen": `a balanced combination of different working styles is at the centre`,
+  } : isIT ? {
+    "Umsetzungsorientiert": `realizzare compiti e raggiungere risultati concreti`,
+    "Daten-/prozessorientiert": `analizzare dati, pianificare processi e procedere sistematicamente`,
+    "Menschenorientiert": `coordinamento, collaborazione e comunicazione nel team`,
+    "Ausgewogen": `una combinazione equilibrata di diversi stili lavorativi e' al centro`,
   } : isFR ? {
     "Umsetzungsorientiert": `l'exécution des tâches et l'atteinte de résultats concrets`,
     "Daten-/prozessorientiert": `l'analyse des données, la planification des processus et une approche systématique`,
@@ -1351,6 +1362,23 @@ function SummaryBar({ beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, a
     "Ausgewogen": [
       "The working style combines execution, analysis and communication.",
       "Flexibility in approach is decisive for success.",
+    ],
+  } : isIT ? {
+    "Umsetzungsorientiert": [
+      "Il ruolo lavora in modo fortemente pratico e orientato alle soluzioni.",
+      "I compiti vengono affrontati direttamente e tradotti in risultati concreti.",
+    ],
+    "Daten-/prozessorientiert": [
+      "Il lavoro si basa su dati, strutture chiare e procedure sistematiche.",
+      "Le decisioni vengono preparate analiticamente e attuate in modo comprensibile.",
+    ],
+    "Menschenorientiert": [
+      "La comunicazione e la cura delle relazioni sono al centro del lavoro quotidiano.",
+      "I risultati nascono dal coordinamento, dalla fiducia e dalla collaborazione.",
+    ],
+    "Ausgewogen": [
+      "Lo stile lavorativo unisce esecuzione, analisi e comunicazione.",
+      "La flessibilita' nell'approccio e' decisiva per il successo.",
     ],
   } : isFR ? {
     "Umsetzungsorientiert": [
@@ -1393,6 +1421,11 @@ function SummaryBar({ beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, a
     "Projekt-/Teamkoordination": "The role coordinates tasks and projects and ensures smooth collaboration within the team.",
     "Fachliche Führung": "The role takes technical responsibility within the team and ensures that work and quality are reliably delivered.",
     "Disziplinarische Führung mit Ergebnisverantwortung": "The role carries responsibility for employees, their development and the achievement of concrete results.",
+  } : isIT ? {
+    "Keine": "Il ruolo lavora in modo autonomo senza guidare direttamente altri collaboratori.",
+    "Projekt-/Teamkoordination": "Il ruolo coordina compiti e progetti e garantisce una collaborazione fluida nel team.",
+    "Fachliche Führung": "Il ruolo assume responsabilita' tecnica nel team e assicura che il lavoro e la qualita' vengano garantiti in modo affidabile.",
+    "Disziplinarische Führung mit Ergebnisverantwortung": "Il ruolo porta la responsabilita' dei collaboratori, del loro sviluppo e del raggiungimento di risultati concreti.",
   } : isFR ? {
     "Keine": "Le poste travaille de manière autonome sans diriger directement d'autres collaborateurs.",
     "Projekt-/Teamkoordination": "Le poste coordonne les tâches et projets et assure une collaboration fluide dans l'équipe.",
@@ -1418,6 +1451,13 @@ function SummaryBar({ beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, a
     "Processes and efficiency": "reliable workflows and efficient ways of working",
     "Technical quality and expertise": "high technical quality and expertise",
     "Communication and influence": "convincing communication and reaching people",
+  } : isIT ? {
+    "Ergebnisse und Zielerreichung": "risultati concreti e prestazioni misurabili",
+    "Zusammenarbeit und Netzwerk": "collaborazione stabile e relazioni affidabili",
+    "Innovation und Veränderung": "idee nuove e attuazione attiva del cambiamento",
+    "Prozesse und Effizienz": "processi affidabili e modalita' di lavoro efficienti",
+    "Fachliche Qualität und Expertise": "alta qualita' tecnica ed expertise",
+    "Kommunikation und Einfluss": "comunicazione convincente e capacita' di raggiungere le persone",
   } : isFR ? {
     "Résultats et atteinte des objectifs": "des résultats concrets et d'une performance mesurable",
     "Collaboration et réseau": "d'une collaboration stable et de relations fiables",
@@ -1434,14 +1474,18 @@ function SummaryBar({ beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, a
     "Kommunikation und Einfluss": "überzeugender Kommunikation und dem Erreichen von Menschen",
   };
 
-  const aufgText = aufgabenSatz[aufgabencharakter] || (isEN ? "combines various task areas" : isFR ? "associe différents domaines de tâches" : "verbindet verschiedene Aufgabenbereiche");
-  const arbText = arbeitsSatz[arbeitslogik] || (isEN ? "different working styles" : isFR ? "une combinaison de différents styles de travail" : "unterschiedliche Arbeitsweisen");
+  const aufgText = aufgabenSatz[aufgabencharakter] || (isEN ? "combines various task areas" : isIT ? "unisce diversi settori di compiti" : isFR ? "associe différents domaines de tâches" : "verbindet verschiedene Aufgabenbereiche");
+  const arbText = arbeitsSatz[arbeitslogik] || (isEN ? "different working styles" : isIT ? "una combinazione di diversi stili lavorativi" : isFR ? "une combinaison de différents styles de travail" : "unterschiedliche Arbeitsweisen");
   const fokusTeile = (fokusLabels as string[]).map(l => fokusKurz[l] || l.toLowerCase()).filter(Boolean);
   let fokusSatz = "";
   if (isEN) {
     if (fokusTeile.length === 1) fokusSatz = `The success of this role shows above all in ${fokusTeile[0]}.`;
     else if (fokusTeile.length === 2) fokusSatz = `The success of this role shows above all in ${fokusTeile[0]} and ${fokusTeile[1]}.`;
     else if (fokusTeile.length > 2) fokusSatz = `The success of this role shows above all in ${fokusTeile.slice(0, -1).join(", ")} and ${fokusTeile[fokusTeile.length - 1]}.`;
+  } else if (isIT) {
+    if (fokusTeile.length === 1) fokusSatz = `Il successo di questo ruolo si manifesta soprattutto in ${fokusTeile[0]}.`;
+    else if (fokusTeile.length === 2) fokusSatz = `Il successo di questo ruolo si manifesta soprattutto in ${fokusTeile[0]} e ${fokusTeile[1]}.`;
+    else if (fokusTeile.length > 2) fokusSatz = `Il successo di questo ruolo si manifesta soprattutto in ${fokusTeile.slice(0, -1).join(", ")} e ${fokusTeile[fokusTeile.length - 1]}.`;
   } else if (isFR) {
     if (fokusTeile.length === 1) fokusSatz = `Le succès de ce poste se manifeste avant tout dans ${fokusTeile[0]}.`;
     else if (fokusTeile.length === 2) fokusSatz = `Le succès de ce poste se manifeste avant tout dans ${fokusTeile[0]} et ${fokusTeile[1]}.`;
@@ -1452,7 +1496,7 @@ function SummaryBar({ beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, a
     else if (fokusTeile.length > 2) fokusSatz = `Der Erfolg dieser Stelle zeigt sich vor allem in ${fokusTeile.slice(0, -1).join(", ")} und ${fokusTeile[fokusTeile.length - 1]}.`;
   }
 
-  const arbDetail = arbeitsDetail[arbeitslogik] || (isEN ? ["The working style is versatile and situation-dependent.", ""] as [string, string] : isFR ? ["Le style de travail est polyvalent et adapté à la situation.", ""] as [string, string] : ["Die Arbeitsweise ist vielseitig und situationsabhängig.", ""]);
+  const arbDetail = arbeitsDetail[arbeitslogik] || (isEN ? ["The working style is versatile and situation-dependent.", ""] as [string, string] : isIT ? ["Lo stile lavorativo e' versatile e dipendente dalla situazione.", ""] as [string, string] : isFR ? ["Le style de travail est polyvalent et adapté à la situation.", ""] as [string, string] : ["Die Arbeitsweise ist vielseitig und situationsabhängig.", ""]);
   const fuehDetail = fuehrungDetail[fuehrung] || fuehrungOpt?.desc || "";
 
   return (
@@ -1479,20 +1523,22 @@ function SummaryBar({ beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, a
           <CheckCircle2 style={{ width: 16, height: 16, color: "#fff", strokeWidth: 2.5 }} />
         </div>
         <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.01em" }}>
-          {isEN ? "Summary" : isFR ? "Résumé" : "Zusammenfassung"}
+          {isEN ? "Summary" : isIT ? "Sintesi" : isFR ? "Résumé" : "Zusammenfassung"}
         </span>
       </div>
 
-      <p lang={isEN ? "en" : isFR ? "fr" : "de"} style={{ fontSize: 14, color: "#3A3A3C", lineHeight: 1.7, margin: "0 0 4px", ...reportTextStyle }}>
+      <p lang={isEN ? "en" : isIT ? "it" : isFR ? "fr" : "de"} style={{ fontSize: 14, color: "#3A3A3C", lineHeight: 1.7, margin: "0 0 4px", ...reportTextStyle }}>
         {isEN
           ? `The role ${rollenName} ${aufgText}. Day-to-day, the focus is above all on ${arbText}.`
+          : isIT
+          ? `Il ruolo ${rollenName} ${aufgText}. Nella pratica quotidiana, l'attenzione si concentra soprattutto su ${arbText}.`
           : isFR
           ? `Le poste ${rollenName} ${aufgText}. Au quotidien, l'accent est avant tout mis sur ${arbText}.`
           : localizeText(`Die Stelle ${rollenName} ${aufgText}. Im Alltag geht es vor allem darum, ${arbText}.`)}
       </p>
       {fokusSatz && (
-        <p lang={isEN ? "en" : isFR ? "fr" : "de"} style={{ fontSize: 14, color: "#3A3A3C", lineHeight: 1.7, margin: "8px 0 0", ...reportTextStyle }}>
-          {isFR ? fokusSatz : isEN ? fokusSatz : localizeText(fokusSatz)}
+        <p lang={isEN ? "en" : isIT ? "it" : isFR ? "fr" : "de"} style={{ fontSize: 14, color: "#3A3A3C", lineHeight: 1.7, margin: "8px 0 0", ...reportTextStyle }}>
+          {isIT ? fokusSatz : isFR ? fokusSatz : isEN ? fokusSatz : localizeText(fokusSatz)}
         </p>
       )}
 
@@ -1517,7 +1563,7 @@ function SummaryBar({ beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, a
             }}>
               <Activity style={{ width: 17, height: 17, color: "#0071E3", strokeWidth: 2 }} />
             </div>
-            <span style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F" }}>{isEN ? "Working style" : isFR ? "Style de travail" : "Arbeitsweise"}</span>
+            <span style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F" }}>{isEN ? "Working style" : isIT ? "Stile lavorativo" : isFR ? "Style de travail" : "Arbeitsweise"}</span>
           </div>
           <p style={{
             fontSize: 14, fontWeight: 600, color: "#1D1D1F",
@@ -1545,7 +1591,7 @@ function SummaryBar({ beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, a
             }}>
               <Users style={{ width: 17, height: 17, color: "#34C759", strokeWidth: 2 }} />
             </div>
-            <span style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F" }}>{isEN ? "Leadership role" : isFR ? "Rôle de management" : localizeText("Führungsrolle")}</span>
+            <span style={{ fontSize: 15, fontWeight: 700, color: "#1D1D1F" }}>{isEN ? "Leadership role" : isIT ? "Ruolo di leadership" : isFR ? "Rôle de management" : localizeText("Führungsrolle")}</span>
           </div>
           <p style={{
             fontSize: 14, fontWeight: 600, color: "#1D1D1F",
@@ -3376,9 +3422,9 @@ export default function RollenDNA() {
 
                         <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 10 }}>
                           {[
-                            { label: region === "FR" ? "Rythme et Décision" : region === "EN" ? "Impulsive" : "Impulsiv", color: "#C41E3A", bg: "rgba(196,30,58,0.05)", border: "rgba(196,30,58,0.12)", desc: region === "FR" ? "Exécution, décisions et responsabilité des résultats" : region === "EN" ? "Execution, decisions and accountability for results" : "Umsetzung, Entscheidung und Ergebnisverantwortung" },
-                            { label: region === "FR" ? "Communication et Relations" : region === "EN" ? "Intuitive" : "Intuitiv", color: "#F39200", bg: "rgba(243,146,0,0.05)", border: "rgba(243,146,0,0.12)", desc: region === "FR" ? "Collaboration et action adaptée au contexte" : region === "EN" ? "Collaboration and context-aware action" : "Zusammenarbeit und kontextbezogenes Handeln" },
-                            { label: region === "FR" ? "Structure et Rigueur" : region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", bg: "rgba(26,93,171,0.05)", border: "rgba(26,93,171,0.12)", desc: region === "FR" ? "Structure, planification et précision technique" : region === "EN" ? "Structure, planning and technical precision" : "Struktur, Planung und fachliche Präzision" },
+                            { label: region === "IT" ? "Ritmo e Decisione" : region === "FR" ? "Rythme et Décision" : region === "EN" ? "Impulsive" : "Impulsiv", color: "#C41E3A", bg: "rgba(196,30,58,0.05)", border: "rgba(196,30,58,0.12)", desc: region === "FR" ? "Exécution, décisions et responsabilité des résultats" : region === "EN" ? "Execution, decisions and accountability for results" : "Umsetzung, Entscheidung und Ergebnisverantwortung" },
+                            { label: region === "IT" ? "Comunicazione e Relazioni" : region === "FR" ? "Communication et Relations" : region === "EN" ? "Intuitive" : "Intuitiv", color: "#F39200", bg: "rgba(243,146,0,0.05)", border: "rgba(243,146,0,0.12)", desc: region === "FR" ? "Collaboration et action adaptée au contexte" : region === "EN" ? "Collaboration and context-aware action" : "Zusammenarbeit und kontextbezogenes Handeln" },
+                            { label: region === "IT" ? "Struttura e Rigore" : region === "FR" ? "Structure et Rigueur" : region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", bg: "rgba(26,93,171,0.05)", border: "rgba(26,93,171,0.12)", desc: region === "FR" ? "Structure, planification et précision technique" : region === "EN" ? "Structure, planning and technical precision" : "Struktur, Planung und fachliche Präzision" },
                           ].map(d => (
                             <div key={d.label} style={{
                               background: d.bg,
@@ -3438,9 +3484,9 @@ export default function RollenDNA() {
                             </p>
                           </div>
                           {[
-                            { label: region === "FR" ? "Rythme et Décision" : region === "FR" ? "Rythme et Décision" : region === "EN" ? "Impulsive" : "Impulsiv", color: "#C41E3A", value: section.data.imp },
-                            { label: region === "FR" ? "Communication et Relations" : region === "EN" ? "Intuitive" : "Intuitiv", color: "#F39200", value: section.data.int },
-                            { label: region === "FR" ? "Structure et Rigueur" : region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", value: section.data.ana },
+                            { label: region === "FR" ? "Rythme et Décision" : region === "IT" ? "Ritmo e Decisione" : region === "FR" ? "Rythme et Décision" : region === "EN" ? "Impulsive" : "Impulsiv", color: "#C41E3A", value: section.data.imp },
+                            { label: region === "IT" ? "Comunicazione e Relazioni" : region === "FR" ? "Communication et Relations" : region === "EN" ? "Intuitive" : "Intuitiv", color: "#F39200", value: section.data.int },
+                            { label: region === "IT" ? "Struttura e Rigore" : region === "FR" ? "Structure et Rigueur" : region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", value: section.data.ana },
                           ].map((bar) => (
                             <div
                               key={bar.label}
@@ -3524,9 +3570,9 @@ export default function RollenDNA() {
                       </div>
                       {(() => {
                         const bars = [
-                          { label: region === "FR" ? "Rythme et Décision" : region === "EN" ? "Impulsive" : "Impulsiv", color: "#C41E3A", value: bioGramGesamt.imp },
-                          { label: region === "FR" ? "Communication et Relations" : region === "EN" ? "Intuitive" : "Intuitiv", color: "#F39200", value: bioGramGesamt.int },
-                          { label: region === "FR" ? "Structure et Rigueur" : region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", value: bioGramGesamt.ana },
+                          { label: region === "IT" ? "Ritmo e Decisione" : region === "FR" ? "Rythme et Décision" : region === "EN" ? "Impulsive" : "Impulsiv", color: "#C41E3A", value: bioGramGesamt.imp },
+                          { label: region === "IT" ? "Comunicazione e Relazioni" : region === "FR" ? "Communication et Relations" : region === "EN" ? "Intuitive" : "Intuitiv", color: "#F39200", value: bioGramGesamt.int },
+                          { label: region === "IT" ? "Struttura e Rigore" : region === "FR" ? "Structure et Rigueur" : region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", value: bioGramGesamt.ana },
                         ];
                         return (
                           <div style={{ background: "#F0F0F2", borderRadius: 16, padding: "16px 18px", display: "flex", flexDirection: "column", gap: 14 }}>
@@ -3874,9 +3920,9 @@ export default function RollenDNA() {
 
                       <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 10 }}>
                         {[
-                          { label: region === "FR" ? "Rythme et Décision" : region === "EN" ? "Impulsive" : "Impulsiv", color: "#C41E3A", bg: "rgba(196,30,58,0.05)", border: "rgba(196,30,58,0.12)", desc: region === "FR" ? "Exécution, décisions et responsabilité des résultats" : region === "EN" ? "Execution, decisions and accountability for results" : "Umsetzung, Entscheidung und Ergebnisverantwortung" },
-                          { label: region === "FR" ? "Communication et Relations" : region === "EN" ? "Intuitive" : "Intuitiv", color: "#F39200", bg: "rgba(243,146,0,0.05)", border: "rgba(243,146,0,0.12)", desc: region === "FR" ? "Collaboration et action adaptée au contexte" : region === "EN" ? "Collaboration and context-aware action" : "Zusammenarbeit und kontextbezogenes Handeln" },
-                          { label: region === "FR" ? "Structure et Rigueur" : region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", bg: "rgba(26,93,171,0.05)", border: "rgba(26,93,171,0.12)", desc: region === "FR" ? "Structure, planification et précision technique" : region === "EN" ? "Structure, planning and technical precision" : "Struktur, Planung und fachliche Präzision" },
+                          { label: region === "IT" ? "Ritmo e Decisione" : region === "FR" ? "Rythme et Décision" : region === "EN" ? "Impulsive" : "Impulsiv", color: "#C41E3A", bg: "rgba(196,30,58,0.05)", border: "rgba(196,30,58,0.12)", desc: region === "FR" ? "Exécution, décisions et responsabilité des résultats" : region === "EN" ? "Execution, decisions and accountability for results" : "Umsetzung, Entscheidung und Ergebnisverantwortung" },
+                          { label: region === "IT" ? "Comunicazione e Relazioni" : region === "FR" ? "Communication et Relations" : region === "EN" ? "Intuitive" : "Intuitiv", color: "#F39200", bg: "rgba(243,146,0,0.05)", border: "rgba(243,146,0,0.12)", desc: region === "FR" ? "Collaboration et action adaptée au contexte" : region === "EN" ? "Collaboration and context-aware action" : "Zusammenarbeit und kontextbezogenes Handeln" },
+                          { label: region === "IT" ? "Struttura e Rigore" : region === "FR" ? "Structure et Rigueur" : region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", bg: "rgba(26,93,171,0.05)", border: "rgba(26,93,171,0.12)", desc: region === "FR" ? "Structure, planification et précision technique" : region === "EN" ? "Structure, planning and technical precision" : "Struktur, Planung und fachliche Präzision" },
                         ].map(d => (
                           <div key={d.label} style={{
                             background: d.bg,
@@ -3938,9 +3984,9 @@ export default function RollenDNA() {
                             </p>
                           </div>
                           {[
-                            { label: region === "FR" ? "Rythme et Décision" : region === "FR" ? "Rythme et Décision" : region === "EN" ? "Impulsive" : "Impulsiv", color: "#C41E3A", value: section.data.imp },
-                            { label: region === "FR" ? "Communication et Relations" : region === "EN" ? "Intuitive" : "Intuitiv", color: "#F39200", value: section.data.int },
-                            { label: region === "FR" ? "Structure et Rigueur" : region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", value: section.data.ana },
+                            { label: region === "FR" ? "Rythme et Décision" : region === "IT" ? "Ritmo e Decisione" : region === "FR" ? "Rythme et Décision" : region === "EN" ? "Impulsive" : "Impulsiv", color: "#C41E3A", value: section.data.imp },
+                            { label: region === "IT" ? "Comunicazione e Relazioni" : region === "FR" ? "Communication et Relations" : region === "EN" ? "Intuitive" : "Intuitiv", color: "#F39200", value: section.data.int },
+                            { label: region === "IT" ? "Struttura e Rigore" : region === "FR" ? "Structure et Rigueur" : region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", value: section.data.ana },
                           ].map((bar) => (
                             <div
                               key={bar.label}
@@ -4024,9 +4070,9 @@ export default function RollenDNA() {
                       </div>
                       {(() => {
                         const bars = [
-                          { label: region === "FR" ? "Rythme et Décision" : region === "EN" ? "Impulsive" : "Impulsiv", color: "#C41E3A", value: bioGramGesamt.imp },
-                          { label: region === "FR" ? "Communication et Relations" : region === "EN" ? "Intuitive" : "Intuitiv", color: "#F39200", value: bioGramGesamt.int },
-                          { label: region === "FR" ? "Structure et Rigueur" : region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", value: bioGramGesamt.ana },
+                          { label: region === "IT" ? "Ritmo e Decisione" : region === "FR" ? "Rythme et Décision" : region === "EN" ? "Impulsive" : "Impulsiv", color: "#C41E3A", value: bioGramGesamt.imp },
+                          { label: region === "IT" ? "Comunicazione e Relazioni" : region === "FR" ? "Communication et Relations" : region === "EN" ? "Intuitive" : "Intuitiv", color: "#F39200", value: bioGramGesamt.int },
+                          { label: region === "IT" ? "Struttura e Rigore" : region === "FR" ? "Structure et Rigueur" : region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", value: bioGramGesamt.ana },
                         ];
                         return (
                           <div style={{ background: "#F0F0F2", borderRadius: 16, padding: "16px 18px", display: "flex", flexDirection: "column", gap: 14 }}>

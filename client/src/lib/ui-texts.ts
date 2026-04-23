@@ -1,6 +1,6 @@
 import { useRegion } from "./region";
 
-type UILang = "de" | "en";
+type UILang = "de" | "en" | "fr" | "it";
 
 export const UI = {
   de: {
@@ -41,6 +41,7 @@ export const UI = {
       AT: "Österreich",
       EN: "English",
       FR: "Français",
+      IT: "Italiano",
     },
     home: {
       resetTitle: "Bist du sicher?",
@@ -223,6 +224,7 @@ export const UI = {
       AT: "Austria",
       EN: "English",
       FR: "Français",
+      IT: "Italiano",
     },
     home: {
       resetTitle: "Are you sure?",
@@ -405,6 +407,7 @@ export const UI = {
       AT: "Autriche",
       EN: "Anglais",
       FR: "Français",
+      IT: "Italiano",
     },
     home: {
       resetTitle: "Êtes-vous sûr ?",
@@ -549,6 +552,189 @@ export const UI = {
       reportEmptyHint: "Veuillez d'abord saisir le profil réel et cliquer sur « Créer le rapport ».",
     },
   },
+  it: {
+    nav: {
+      home: "Home",
+      homeSub: "",
+      jobcheck: "JobCheck",
+      jobcheckSub: "Analisi del ruolo",
+      matchcheck: "MatchCheck",
+      matchcheckSub: "Ruolo ↔ Persona",
+      teamcheck: "TeamCheck",
+      teamcheckSub: "Struttura del team",
+      coach: "Louis (Coach IA)",
+      coachSub: "Leadership e sviluppo",
+      courses: "Formazione",
+      coursesSub: "Moduli di apprendimento",
+      regionTitle: "Regione linguistica",
+      regionLabel: (l: string) => `Regione: ${l}`,
+      firmaDashboard: "Dashboard aziendale",
+      userManagement: "Gestione utenti",
+      logout: "Esci",
+    },
+    footer: {
+      aiQuotaTitle: (used: number, total: number, reset: string) =>
+        `${used} di ${total} richieste IA utilizzate\nReset automatico il ${reset}`,
+      aiPrefix: "IA:",
+      aiOf: "di",
+      aiLeft: "rimaste",
+      resetOn: "Reset il",
+      accessUntil: "Accesso fino al:",
+      imprint: "Note legali",
+      privacy: "Privacy",
+      disclaimer: "Disclaimer",
+    },
+    region: {
+      DE: "Germania",
+      CH: "Svizzera",
+      AT: "Austria",
+      EN: "Inglese",
+      FR: "Francese",
+      IT: "Italiano",
+    },
+    home: {
+      resetTitle: "Sei sicuro?",
+      resetBody: "Tutti i dati inseriti verranno eliminati.",
+      cancel: "Annulla",
+      continue: "Continua",
+      fileError: "Il file non ha potuto essere letto.",
+      jobcheckTitle: "Analisi del ruolo",
+      jobcheckSubtitle: "Adeguatezza strutturale per decisioni di selezione sicure",
+      jobcheckDesc: "Definisci un ruolo e analizza la sua adeguatezza strutturale. L'analisi fornisce raccomandazioni chiare per la selezione, la leadership e la collaborazione.",
+      newAnalysis: "Nuova analisi",
+      openAnalysis: "Apri l'analisi",
+      jobcheckBullets: [
+        "Metodologia scientificamente fondata",
+        "Struttura decisionale chiara",
+        "Decisioni HR obiettive",
+        "Logica dei risultati trasparente",
+        "Riduce i rischi di selezione errata",
+        "Posizionamento preciso nel ruolo",
+      ],
+      coachTitle: "Louis",
+      coachSubtitle: "Coach per le decisioni nel momento giusto",
+      coachDesc: "Usa Louis per il recruiting, le domande di team, la preparazione ai colloqui e raccomandazioni concrete, in qualsiasi momento, anche senza analisi.",
+      openCoach: "Apri Louis",
+      coachBullets: [
+        "Recruiting e offerte di lavoro",
+        "Preparazione al colloquio",
+        "Analisi delle dinamiche di team",
+        "Individuare e risolvere i conflitti",
+        "Role play e simulazione di conversazione",
+        "Consulenza di leadership basata su fonti",
+      ],
+    },
+    coach: {
+      pageTitle: "Louis",
+      pageSubtitle: "Il tuo coach IA per leadership, HR e team",
+      profileActive: "Profilo attivo",
+      historyTitle: "Cronologia",
+      historyButtonTitle: "Cronologia conversazioni",
+      newConvTitle: "Nuova conversazione",
+      newConvButton: "Nuova conversazione",
+      exportTitle: "Esporta conversazione come TXT",
+      clearChatTitle: "Elimina conversazione",
+      clearChatConfirm: "Vuoi davvero eliminare la conversazione corrente?",
+      historySearchPlaceholder: "Cerca nella cronologia...",
+      noHits: "Nessun risultato.",
+      noConversations: "Nessuna conversazione salvata.",
+      renameTitle: "Rinomina",
+      pinTitle: "Fissa",
+      unpinTitle: "Rimuovi",
+      deleteTitle: "Elimina",
+      deleteConvConfirm: "Eliminare questa conversazione?",
+      inputDesc: "Poni una domanda su leadership, dinamiche di team, comunicazione o scegli un prompt di esempio.",
+      promptSearchPlaceholder: "Cerca prompt di esempio...",
+      examplePromptsBtn: "Prompt di esempio",
+      noPromptResults: (q: string) => `Nessun prompt trovato per "${q}"`,
+      requireAnalysisTitle: "Analizza prima un ruolo",
+      copyAnswer: "Copia risposta",
+      goldenSaved: "Salvato come risposta di riferimento",
+      goldenSave: "Salva come risposta di riferimento (admin)",
+      suggestionsLabel: "Suggerimenti",
+      loadingDefault: "Generazione della risposta...",
+      inputPlaceholder: "Poni una domanda...",
+      uploadImage: "Carica immagine",
+      uploadDoc: "Carica PDF / documento di testo",
+      errorOverloaded: "Il coach e' momentaneamente sovraccarico. Riprova tra qualche secondo.",
+      errorQuota: "La quota IA della tua organizzazione e' esaurita. Contatta il tuo amministratore per aumentare il limite o resettare il contatore.",
+      errorTimeout: "La richiesta ha impiegato troppo tempo. Riprova: per domande complesse, prova a formularle in modo piu' breve.",
+      errorTimeoutShort: "La richiesta ha impiegato troppo tempo. Riprova.",
+      errorTech: "Si e' verificato un problema tecnico. Riprova.",
+      exportHeader: "Louis — Trascrizione della conversazione",
+      exportedAt: (d: string, t: string) => `Esportato il ${d} alle ${t}`,
+      exportLabelQuestion: "Domanda",
+      exportLabelCoach: "Coach",
+      welcome: "Benvenuto da Louis — il tuo coach bioLogic per le decisioni nel momento giusto.\n\nTi supporto su domande di leadership, decisioni HR, assessment, colloqui e comunicazione.\n\nCome posso aiutarti?",
+      imageWithText: "Immagine con testo",
+      imageDownload: "Scarica immagine",
+      imageOnly: "Solo immagine (senza testo)",
+      attachmentAlt: "Allegato",
+      docReading: "Lettura del documento...",
+      roleRequired: "(ruolo richiesto)",
+      aiImageNote: "[Un'immagine generata dall'IA e' stata creata in questo passaggio]",
+    },
+    jobcheck: {
+      pageTitle: "bioLogic JobCheck",
+      pageSubtitle: "Valuta l'adeguatezza strutturale tra il profilo del ruolo e il profilo della persona.",
+      printButton: "Stampa",
+      printTooltip: "Scegli 'Salva come PDF' nella finestra di stampa",
+      noAnalysisTitle: "Nessuna analisi disponibile",
+      noAnalysisDesc: "Crea prima un profilo del ruolo per eseguire il JobCheck.",
+      gotoDataEntry: "Vai all'inserimento dati",
+      summaryRole: "Ruolo",
+      summaryTaskStructure: "Struttura dei compiti",
+      summaryWorkStyle: "Stile di lavoro",
+      summarySuccessFocus: "Focus sul successo",
+      summaryLeadership: "Leadership",
+      summaryCompetenceCount: "Numero di competenze",
+      summaryNotDefined: "Non definito",
+      countActivities: "attivita'",
+      countHumanSkills: "competenze umane",
+      countLeadership: "leadership",
+      taskStructureLabels: {
+        "überwiegend operativ": "Operativita' quotidiana",
+        "überwiegend systemisch": "Coordinamento ed esecuzione nel flusso di lavoro",
+        "überwiegend strategisch": "Analisi, pianificazione e gestione strategica",
+        "Gemischt": "Mix equilibrato",
+      } as Record<string, string>,
+      workStyleLabels: {
+        "Umsetzungsorientiert": "Realizzazione e risultati",
+        "Daten-/prozessorientiert": "Analisi e struttura",
+        "Menschenorientiert": "Collaborazione e comunicazione",
+        "Ausgewogen": "Mix equilibrato",
+      } as Record<string, string>,
+      leadershipLabels: {
+        "Keine": "Nessuna responsabilita' di leadership",
+        "Projekt-/Teamkoordination": "Coordinamento di progetto o team",
+        "Fachliche Führung": "Leadership funzionale",
+        "Disziplinarische Führung mit Ergebnisverantwortung": "Leadership con responsabilita' sui risultati",
+      } as Record<string, string>,
+      successFocusLabels: [
+        "Risultati e raggiungimento degli obiettivi",
+        "Collaborazione e network",
+        "Innovazione e cambiamento",
+        "Processi ed efficienza",
+        "Qualita' funzionale ed expertise",
+        "Comunicazione e influenza",
+      ] as string[],
+      analyseAccordionTitle: "Analisi — Profilo target / reale",
+      reportAccordionTitle: "Rapporto JobCheck",
+      sollHeader: "Profilo target (ruolo)",
+      istHeader: "Profilo reale (persona)",
+      istDescription: "Sposta i cursori per inserire il profilo della persona. I valori vengono normalizzati automaticamente.",
+      labelImpulsiv: "Ritmo e Decisione",
+      labelIntuitiv: "Comunicazione e Relazioni",
+      labelAnalytisch: "Struttura e Rigore",
+      normalizedNote: "Profilo normalizzato (max. 67% per componente)",
+      roleDominanceText: (compLabel: string, dominanceText: string) =>
+        `La logica dominante del ruolo e' ${compLabel}: ${dominanceText}.`,
+      candDominancePrefix: "La logica dominante della persona e' ",
+      candDominanceMiddle: ": ",
+      createReportButton: "Crea rapporto",
+      reportEmptyHint: "Inserisci prima il profilo reale e clicca su \"Crea rapporto\".",
+    },
+  },
 } as const;
 
 export type UIDict = typeof UI.de;
@@ -557,11 +743,13 @@ export function useUI(): UIDict {
   const { region } = useRegion();
   if (region === "EN") return UI.en as unknown as UIDict;
   if (region === "FR") return UI.fr as unknown as UIDict;
+  if (region === "IT") return UI.it as unknown as UIDict;
   return UI.de;
 }
 
 export function getUI(region: string): UIDict {
   if (region === "EN") return UI.en as unknown as UIDict;
   if (region === "FR") return UI.fr as unknown as UIDict;
+  if (region === "IT") return UI.it as unknown as UIDict;
   return UI.de;
 }

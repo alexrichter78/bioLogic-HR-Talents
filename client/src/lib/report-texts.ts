@@ -10,6 +10,9 @@ export const REPORT_INTRO_DISCLAIMER_EN =
 export const REPORT_INTRO_DISCLAIMER_FR =
   "Ce rapport décrit des schémas de comportement typiques dans le travail quotidien, il ne constitue pas un profil de personnalité figé ni un jugement de valeur sur la personne. Il est conçu pour soutenir l'évaluation, non la remplacer. Le cas individuel fait toujours partie de la décision.";
 
+export const REPORT_INTRO_DISCLAIMER_IT =
+  "Questo rapporto descrive schemi di comportamento tipici nell'attività lavorativa quotidiana. Non costituisce un profilo di personalità fisso né una valutazione della persona. Intende supportare la valutazione, non sostituirla: il caso individuale rimane sempre parte di ogni decisione.";
+
 // Statische Labels und Überschriften für den Stellenanalyse-Bericht (rollenprofil.tsx).
 // Einmalig hier hinterlegt, damit zukünftige Sprach-Anpassungen nur an EINER Stelle erfolgen.
 export const REPORT_LABELS = {
@@ -219,6 +222,75 @@ export const REPORT_LABELS = {
     // Footer
     footerLabel: "Analyse de poste",
     footerCreatedOn: "Créé le",
+  },
+  it: {
+    pageLang: "it",
+    dateLocale: "it-IT",
+
+    // Header
+    kicker: "ANALISI DEL RUOLO",
+    title: "Profilo del ruolo",
+    printButton: "Stampa",
+    printTooltip: "Qualità 1:1 — nella finestra di stampa scegli 'Salva come PDF'",
+
+    // Empty-State
+    noProfileTitle: "Nessun profilo del ruolo disponibile",
+    noProfileBody: "Crea prima un profilo del ruolo per poter generare il rapporto.",
+    noProfileButton: "Crea profilo del ruolo",
+
+    // Loading
+    loadingTitle: "Analisi del ruolo in corso",
+    loadingBody: "I testi vengono generati in base al tuo profilo. Di solito ci vogliono 15-25 secondi.",
+
+    // Section 1
+    section1: "Profilo del ruolo · Base decisionale",
+    section1Headline: "Quale personalità richiede questo ruolo?",
+    sub1ShortDescription: "Breve descrizione del ruolo",
+    coreTasksIntro: "I compiti principali di questo ruolo:",
+    sub2StructureProfile: "Profilo strutturale del ruolo",
+    structureExplanation:
+      "Ogni persona dispone dei tre modi fondamentali di pensiero e azione: Ritmo e Decisione, Comunicazione e Relazioni, Struttura e Rigore. Tutti e tre sono sempre presenti. Ciò che varia è il loro ordine e la loro ponderazione.",
+    structureExplanation2:
+      "Questa struttura determina come le persone decidono, comunicano e agiscono nella vita quotidiana. L'effetto visibile può cambiare a seconda della situazione: nella routine lavorativa, sotto pressione o in momenti rilassati.",
+    componentMeaning: "Significato delle componenti",
+    barLabelImp: "Ritmo e Decisione",
+    barLabelInt: "Comunicazione e Relazioni",
+    barLabelAna: "Struttura e Rigore",
+    sub3WorkLogic: "Logica di lavoro del ruolo",
+    sub4Framework: "Condizioni quadro",
+    successFocusLabel: "Focus sul successo",
+
+    // Section 2
+    section2: "Comportamento · Quotidiano e pressione",
+    section2Headline: "Comportamento nel quotidiano e sotto pressione",
+    section2Sub:
+      "La seguente rappresentazione mostra come i requisiti del ruolo si esprimono tipicamente nella routine lavorativa, sotto pressione e in situazioni di forte stress.",
+    behaviourDaily: "Comportamento nel quotidiano",
+    behaviourPressure: "Comportamento sotto pressione",
+    behaviourStress: "Comportamento sotto forte stress",
+
+    // Section 3
+    section3: "Impatto sul team e rischi di selezione errata",
+    section3Headline: "Impatto, tensioni e rischi",
+    section3SubLeadership:
+      "Questa sezione descrive l'impatto del ruolo sul team, le tensioni tipiche che ne derivano e i rischi che possono emergere da una selezione errata.",
+    section3SubNonLeadership:
+      "Questa sezione descrive l'impatto del ruolo nell'ambiente lavorativo, le tensioni tipiche che ne derivano e i rischi che possono emergere da una selezione errata.",
+    sub1LeadershipImpact: "Impatto di leadership del ruolo",
+    sub1TeamImpact: "Impatto sul team",
+    sub2Tensions: "Tensioni del ruolo",
+    tensionsIntro: "Le tensioni tipiche di questo ruolo sono:",
+    sub3MiscastRisks: "Rischi di selezione errata",
+    sub4TypicalPerson: "Profilo tipico per questo ruolo",
+    candidateLoading: "Generazione in corso...",
+    candidateError: "Il profilo della persona non ha potuto essere caricato.",
+
+    // Section 4
+    section4: "Conclusione decisionale",
+
+    // Footer
+    footerLabel: "Analisi del ruolo",
+    footerCreatedOn: "Creato il",
   },
 } as const;
 

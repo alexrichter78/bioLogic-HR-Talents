@@ -17,11 +17,12 @@ const bewColor = (b: string) => {
 const axisColor = (v: string) => v === "hoch" ? BIO_COLORS.geeignet : v === "mittel" ? BIO_COLORS.bedingt : v === "gering" ? BIO_COLORS.nichtGeeignet : "#94a3b8";
 const makeAxisLabel = (region: string) => (v: string) => {
   const isEN = region === "EN";
+  const isIT = region === "IT";
   const isFR = region === "FR";
-  if (v === "hoch") return isFR ? "Élevé" : isEN ? "High" : "Hoch";
-  if (v === "mittel") return isFR ? "Modéré" : isEN ? "Moderate" : "Mittel";
-  if (v === "gering") return isFR ? "Faible" : isEN ? "Low" : "Gering";
-  return isFR ? "Non évalué" : isEN ? "Not assessed" : "Nicht bewertbar";
+  if (v === "hoch") return isIT ? "Alto" : isFR ? "Élevé" : isEN ? "High" : "Hoch";
+  if (v === "mittel") return isIT ? "Medio" : isFR ? "Modéré" : isEN ? "Moderate" : "Mittel";
+  if (v === "gering") return isIT ? "Basso" : isFR ? "Faible" : isEN ? "Low" : "Gering";
+  return isIT ? "Non valutato" : isFR ? "Non évalué" : isEN ? "Not assessed" : "Nicht bewertbar";
 };
 
 function SectionHead({ num, title, id }: { num: number; title: string; id: string }) {
@@ -75,8 +76,9 @@ export default function TeamCheckReportV4() {
   const isMobile = useIsMobile();
   const { region } = useRegion();
   const isEN = region === "EN";
+  const isIT = region === "IT";
   const isFR = region === "FR";
-  const t = (de: string, en: string, fr?: string) => isFR ? (fr ?? de) : isEN ? en : de;
+  const t = (de: string, en: string, fr?: string, it?: string) => isIT ? (it ?? de) : isFR ? (fr ?? de) : isEN ? en : de;
   const axisLabel = makeAxisLabel(region);
   const [result, setResult] = useState<TeamCheckV4Result | null>(null);
   const reportRef = useRef<HTMLDivElement>(null);
@@ -103,7 +105,7 @@ export default function TeamCheckReportV4() {
       if (raw) {
         try {
           const parsed = JSON.parse(raw) as TeamCheckV4Input;
-          const computed = computeTeamCheckV4({ ...parsed, lang: region === "FR" ? "fr" : region === "EN" ? "en" : "de" });
+          const computed = computeTeamCheckV4({ ...parsed, lang: region === "IT" ? "it" : region === "FR" ? "fr" : region === "EN" ? "en" : "de" });
           setResult(localizeDeep(computed, region));
         } catch {}
       }
@@ -115,7 +117,7 @@ export default function TeamCheckReportV4() {
     if (!raw) { navigate("/team-report"); return; }
     try {
       const parsed = JSON.parse(raw) as TeamCheckV4Input;
-      const computed = computeTeamCheckV4({ ...parsed, lang: region === "FR" ? "fr" : region === "EN" ? "en" : "de" });
+      const computed = computeTeamCheckV4({ ...parsed, lang: region === "IT" ? "it" : region === "FR" ? "fr" : region === "EN" ? "en" : "de" });
       setResult(localizeDeep(computed, region));
 
       const tp = parsed.teamProfile;
@@ -322,7 +324,7 @@ export default function TeamCheckReportV4() {
       doc.save(`TeamCheck_${safeName}.pdf`);
     } catch (e) {
       console.error("PDF error:", e);
-      alert(isFR ? "L'export PDF a échoué. Veuillez réessayer." : isEN ? "PDF export failed. Please try again." : "PDF-Export fehlgeschlagen. Bitte versuche es erneut.");
+      alert(isIT ? "Esportazione PDF non riuscita. Riprova." : isFR ? "L'export PDF a échoué. Veuillez réessayer." : isEN ? "PDF export failed. Please try again." : "PDF-Export fehlgeschlagen. Bitte versuche es erneut.");
     } finally {
       if (clone && clone.parentNode) clone.parentNode.removeChild(clone);
       if (pdfBtn) pdfBtn.style.display = "";
@@ -339,7 +341,7 @@ export default function TeamCheckReportV4() {
           <div style={{ background: "rgba(255,255,255,0.78)", backdropFilter: "blur(40px)", borderRadius: 20, padding: "40px 32px", boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)", border: "1px solid rgba(0,0,0,0.04)" }}>
             <div style={{ width: 44, height: 44, margin: "0 auto 18px", border: "3px solid #E5E5E7", borderTopColor: "#0071E3", borderRadius: "50%", animation: "bio-spin 0.9s linear infinite" }} />
             <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }}>
-              {region === "FR" ? "Génération de l'analyse d'équipe" : isEN ? "Generating team analysis" : "TeamCheck wird erstellt"}
+              {isIT ? "Creazione dell'analisi del team" : region === "FR" ? "Génération de l'analyse d'équipe" : isEN ? "Generating team analysis" : "TeamCheck wird erstellt"}
             </h2>
             <p style={{ fontSize: 14, color: "#48484A", margin: 0, lineHeight: 1.6 }}>
               {region === "FR"
@@ -356,7 +358,7 @@ export default function TeamCheckReportV4() {
   }
 
   const bCol = bewColor(result.gesamteinschaetzung);
-  const today = new Date().toLocaleDateString(isFR ? "fr-FR" : isEN ? "en-GB" : "de-DE", { day: "2-digit", month: "long", year: "numeric" });
+  const today = new Date().toLocaleDateString(isIT ? "it-IT" : isFR ? "fr-FR" : isEN ? "en-GB" : "de-DE", { day: "2-digit", month: "long", year: "numeric" });
 
   return (
     <div style={{ minHeight: "100vh", background: "#f5f7fb", fontFamily: "Inter, Arial, Helvetica, sans-serif", color: "#1D1D1F", lineHeight: 1.6 }} className="v4-report-page">
@@ -365,7 +367,7 @@ export default function TeamCheckReportV4() {
       <div style={{ maxWidth: 820, margin: "0 auto", padding: isMobile ? "64px 12px 80px" : "80px 20px 48px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }} className="no-print">
           <button onClick={() => navigate("/team-report")} style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "none", border: "none", cursor: "pointer", color: "#1A5DAB", fontWeight: 600, fontSize: 14, padding: 0 }} data-testid="button-back-v4">
-            <ArrowLeft size={16} /> {isFR ? "Retour au TeamCheck" : isEN ? "Back to TeamCheck" : "Zurück zum TeamCheck"}
+            <ArrowLeft size={16} /> {isIT ? "Torna al TeamCheck" : isFR ? "Retour au TeamCheck" : isEN ? "Back to TeamCheck" : "Zurück zum TeamCheck"}
           </button>
         </div>
 
@@ -374,9 +376,9 @@ export default function TeamCheckReportV4() {
 
             <div data-pdf-block className="report-header report-header--auto" data-testid="v4-header">
               <img src={logoPath} alt="bioLogic" className="report-logo" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-              <div className="report-kicker">{isFR ? "ANALYSE D'ÉQUIPE" : isEN ? "TEAM ANALYSIS" : "TEAMANALYSE"}</div>
-              <h1 className="report-title report-title--flow">{isFR ? "Analyse d'intégration" : isEN ? "Integration Analysis" : "Integrationsanalyse"}</h1>
-              <div className="report-subtitle report-subtitle--flow">{result.roleTitle || (isFR ? "Simulation d'équipe" : isEN ? "Team simulation" : "Teamsimulation")}</div>
+              <div className="report-kicker">{isIT ? "ANALISI DEL TEAM" : isFR ? "ANALYSE D'ÉQUIPE" : isEN ? "TEAM ANALYSIS" : "TEAMANALYSE"}</div>
+              <h1 className="report-title report-title--flow">{isIT ? "Analisi di integrazione" : isFR ? "Analyse d'intégration" : isEN ? "Integration Analysis" : "Integrationsanalyse"}</h1>
+              <div className="report-subtitle report-subtitle--flow">{result.roleTitle || (isIT ? "Simulazione del team" : isFR ? "Simulation d'équipe" : isEN ? "Team simulation" : "Teamsimulation")}</div>
               <div className="report-rings" />
               <div style={{ position: "absolute", top: 18, right: 18, display: "flex", gap: 8 }}>
                 <button
@@ -448,7 +450,11 @@ export default function TeamCheckReportV4() {
                 </div>
 
                 {(() => {
-                  const COMP_LABEL: Record<string, string> = isFR ? {
+                  const COMP_LABEL: Record<string, string> = isIT ? {
+                    impulsiv: "Ritmo e Decisione",
+                    intuitiv: "Comunicazione e Relazioni",
+                    analytisch: "Struttura e Rigore",
+                  } : isFR ? {
                     impulsiv: "Rythme et Décision",
                     intuitiv: "Communication et Relations",
                     analytisch: "Structure et Rigueur",
@@ -509,12 +515,16 @@ export default function TeamCheckReportV4() {
 
               {/* === Section 2: Vergleich der Profile === */}
               {(() => {
-                const COMP_LABEL_FULL: Record<string, string> = isFR
+                const COMP_LABEL_FULL: Record<string, string> = isIT
+                  ? { impulsiv: "Ritmo e Decisione", intuitiv: "Comunicazione e Relazioni", analytisch: "Struttura e Rigore" }
+                  : isFR
                   ? { impulsiv: "Rythme et Décision", intuitiv: "Communication et Relations", analytisch: "Structure et Rigueur" }
                   : isEN
                   ? { impulsiv: "Pace and Decision", intuitiv: "Communication and Relationships", analytisch: "Structure and Diligence" }
                   : { impulsiv: "Impulsiv", intuitiv: "Intuitiv", analytisch: "Analytisch" };
-                const COMP_LABEL_AREA: Record<string, string> = isFR
+                const COMP_LABEL_AREA: Record<string, string> = isIT
+                  ? { impulsiv: "Ritmo / Decisione", intuitiv: "Comunicazione / Relazioni", analytisch: "Struttura / Rigore" }
+                  : isFR
                   ? { impulsiv: "Rythme / Décision", intuitiv: "Communication / Relations", analytisch: "Structure / Rigueur" }
                   : isEN
                   ? { impulsiv: "Pace and Decision", intuitiv: "Communication and Relationships", analytisch: "Structure and Diligence" }
@@ -525,7 +535,9 @@ export default function TeamCheckReportV4() {
                   const g = Math.abs(result.teamTriad[k] - result.personTriad[k]);
                   if (g > maxGap) { maxGap = g; maxKey = k; }
                 }
-                const gapText = isFR
+                const gapText = isIT
+                  ? `Lo scostamento maggiore tra il team e la persona si trova nell'area ${COMP_LABEL_AREA[maxKey]}. Qui gli approcci lavorativi differiscono maggiormente.`
+                  : isFR
                   ? `L'écart le plus important entre l'équipe et la personne se situe dans le domaine ${COMP_LABEL_AREA[maxKey]}. C'est là que les approches de travail diffèrent le plus.`
                   : isEN
                   ? `The largest gap between team and person is in the area of ${COMP_LABEL_AREA[maxKey]}. This is where the working approaches differ most.`

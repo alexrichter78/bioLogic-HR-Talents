@@ -88,7 +88,18 @@ const COMP_LABELS_FR: Record<ComponentKey, string> = {
   analytisch: "Structure et Rigueur",
 };
 
+const COMP_LABELS_IT: Record<ComponentKey, string> = {
+  impulsiv: "Ritmo e Decisione",
+  intuitiv: "Comunicazione e Relazioni",
+  analytisch: "Struttura e Rigore",
+};
+
 function severityLabel(s: Severity, region?: string) {
+  if (region === "IT") {
+    if (s === "critical") return "critico";
+    if (s === "warning") return "con scostamento";
+    return "generalmente allineato";
+  }
   if (region === "FR") {
     if (s === "critical") return "critique";
     if (s === "warning") return "avec écart";
@@ -106,7 +117,8 @@ function severityLabel(s: Severity, region?: string) {
 
 function biggestGapText(rt: Triad, ct: Triad, region?: string): string {
   const isEN = region === "EN";
-  const labels = region === "FR" ? COMP_LABELS_FR : isEN ? COMP_LABELS_EN : COMP_LABELS;
+  const isIT = region === "IT";
+  const labels = region === "IT" ? COMP_LABELS_IT : region === "FR" ? COMP_LABELS_FR : isEN ? COMP_LABELS_EN : COMP_LABELS;
   const keys: ComponentKey[] = ["impulsiv", "intuitiv", "analytisch"];
   let maxGap = 0, maxKey: ComponentKey = "analytisch";
   for (const k of keys) {
@@ -117,39 +129,47 @@ function biggestGapText(rt: Triad, ct: Triad, region?: string): string {
   if (maxGap <= 3) {
     return isEN
       ? "The profiles do not differ significantly in any of the three dimensions. The basic structure is aligned."
-      : isFR
-        ? "Les profils ne diffèrent pas significativement dans aucune des trois dimensions. La structure de base est alignée."
-        : "Die Profile weichen in keinem der drei Bereiche wesentlich voneinander ab. Die Grundstruktur passt.";
+      : isIT
+        ? "I profili non si discostano significativamente in nessuna delle tre dimensioni. La struttura di base e\' allineata."
+        : isFR
+          ? "Les profils ne diffèrent pas significativement dans aucune des trois dimensions. La structure de base est alignée."
+          : "Die Profile weichen in keinem der drei Bereiche wesentlich voneinander ab. Die Grundstruktur passt.";
   }
   const sorted = keys.slice().sort((a, b) => rt[b] - rt[a]);
   const roleRange = rt[sorted[0]] - rt[sorted[2]];
   if (roleRange <= 8) {
     return isEN
       ? `The largest deviation is in the ${labels[maxKey]} dimension. Since the role requires a balanced profile, any deviation affects the overall fit.`
-      : isFR
-        ? `L'écart le plus important se trouve dans le domaine ${labels[maxKey]}. Le poste exigeant un profil équilibré, tout écart affecte l'adéquation globale.`
-        : `Die deutlichste Abweichung liegt im Bereich ${labels[maxKey]}. Da die Stelle ein ausgeglichenes Profil erfordert, wirkt sich jede Abweichung auf die Gesamtpassung aus.`;
+      : isIT
+        ? `Lo scostamento maggiore si trova nella dimensione ${labels[maxKey]}. Poiche\' il ruolo richiede un profilo equilibrato, qualsiasi scostamento influisce sull\'adeguatezza complessiva.`
+        : isFR
+          ? `L'écart le plus important se trouve dans le domaine ${labels[maxKey]}. Le poste exigeant un profil équilibré, tout écart affecte l'adéquation globale.`
+          : `Die deutlichste Abweichung liegt im Bereich ${labels[maxKey]}. Da die Stelle ein ausgeglichenes Profil erfordert, wirkt sich jede Abweichung auf die Gesamtpassung aus.`;
   }
   const primaryKey = sorted[0];
   if (maxKey === primaryKey) {
     return isEN
       ? `The largest deviation is in the ${labels[maxKey]} dimension — which is precisely the core requirement of this role.`
-      : isFR
-        ? `L'écart le plus important se trouve dans le domaine ${labels[maxKey]}, qui est précisément le domaine central du poste.`
-        : `Die deutlichste Abweichung liegt im Bereich ${labels[maxKey]} – und damit genau im Kernbereich der Stellenanforderung.`;
+      : isIT
+        ? `Lo scostamento maggiore si trova nella dimensione ${labels[maxKey]}, che e\' precisamente il requisito centrale di questo ruolo.`
+        : isFR
+          ? `L'écart le plus important se trouve dans le domaine ${labels[maxKey]}, qui est précisément le domaine central du poste.`
+          : `Die deutlichste Abweichung liegt im Bereich ${labels[maxKey]} – und damit genau im Kernbereich der Stellenanforderung.`;
   }
   return isEN
     ? `The largest deviation is in the ${labels[maxKey]} dimension. The core requirement of the role (${labels[primaryKey]}) is less affected.`
-    : isFR
-      ? `L'écart le plus important se trouve dans le domaine ${labels[maxKey]}. Le domaine central du poste (${labels[primaryKey]}) est moins concerné.`
-      : `Die deutlichste Abweichung liegt im Bereich ${labels[maxKey]}. Der Kernbereich der Stelle (${labels[primaryKey]}) ist davon weniger betroffen.`;
+    : isIT
+      ? `Lo scostamento maggiore si trova nella dimensione ${labels[maxKey]}. Il requisito centrale del ruolo (${labels[primaryKey]}) e\' meno interessato.`
+      : isFR
+        ? `L'écart le plus important se trouve dans le domaine ${labels[maxKey]}. Le domaine central du poste (${labels[primaryKey]}) est moins concerné.`
+        : `Die deutlichste Abweichung liegt im Bereich ${labels[maxKey]}. Der Kernbereich der Stelle (${labels[primaryKey]}) ist davon weniger betroffen.`;
 }
 
 
 
 function TriangleChart({ role, candidate }: { role: Triad; candidate: Triad }) {
   const { region: _r } = useRegion();
-  const _L = (de: string, en: string, fr?: string) => _r === "EN" ? en : _r === "FR" && fr ? fr : de;
+  const _L = (de: string, en: string, fr?: string, it?: string) => _r === "EN" ? en : _r === "IT" && it ? it : _r === "FR" && fr ? fr : de;
   const w = 360, h = 330;
   const cx = w / 2, cy = 178;
   const R = 110;
@@ -395,7 +415,7 @@ export default function SollIstBericht() {
 
   const result: SollIstResult | null = useMemo(() => {
     if (!roleTriad || !reportIsValid) return null;
-    const raw = computeSollIst(roleName, candidateName || "Person", roleTriad, candidateProfile, fuehrungsArt, roleAnalysisObj, region === "FR" ? "fr" : region === "EN" ? "en" : "de");
+    const raw = computeSollIst(roleName, candidateName || "Person", roleTriad, candidateProfile, fuehrungsArt, roleAnalysisObj, region === "IT" ? "it" : region === "FR" ? "fr" : region === "EN" ? "en" : "de");
     const base = localizeDeep(raw, region);
     return aiNarrative ? { ...base, ...aiNarrative } : base;
   }, [roleTriad, roleName, candidateName, candidateProfile.impulsiv, candidateProfile.intuitiv, candidateProfile.analytisch, reportIsValid, fuehrungsArt, region, roleAnalysisObj, aiNarrative]);
@@ -890,7 +910,7 @@ export default function SollIstBericht() {
                   setAiError(null);
                   setAiNarrative(null);
                   try {
-                    const computed = computeSollIst(roleName, candidateName || "Person", roleTriad, candidateProfile, fuehrungsArt, roleAnalysisObj, region === "FR" ? "fr" : region === "EN" ? "en" : "de");
+                    const computed = computeSollIst(roleName, candidateName || "Person", roleTriad, candidateProfile, fuehrungsArt, roleAnalysisObj, region === "IT" ? "it" : region === "FR" ? "fr" : region === "EN" ? "en" : "de");
                     const payload: Record<string, unknown> = {
                       context: { roleName: roleName || "Rolle", candidateName: candidateName || "Person" },
                       profiles: {
@@ -970,7 +990,7 @@ export default function SollIstBericht() {
           </div>
 
           {(() => {
-            const effective = result || (roleTriad ? localizeDeep(computeSollIst(roleName, candidateName || "Person", roleTriad, candidateProfile, fuehrungsArt, roleAnalysisObj, region === "FR" ? "fr" : region === "EN" ? "en" : "de"), region) : null);
+            const effective = result || (roleTriad ? localizeDeep(computeSollIst(roleName, candidateName || "Person", roleTriad, candidateProfile, fuehrungsArt, roleAnalysisObj, region === "IT" ? "it" : region === "FR" ? "fr" : region === "EN" ? "en" : "de"), region) : null);
             if (!effective) return null;
 
             const fitLabel = effective.fitLabel;
@@ -979,11 +999,11 @@ export default function SollIstBericht() {
 
             let shortFazit: string;
             if (fitRating === "GEEIGNET") {
-              shortFazit = region === "FR" ? "Le style de travail de la personne correspond au poste" : region === "EN" ? "The person's working style fits the role" : "Arbeitsweise der Person passt zur Stelle";
+              shortFazit = region === "IT" ? "Lo stile lavorativo della persona corrisponde al ruolo" : region === "FR" ? "Le style de travail de la personne correspond au poste" : region === "EN" ? "The person's working style fits the role" : "Arbeitsweise der Person passt zur Stelle";
             } else if (fitRating === "BEDINGT") {
-              shortFazit = region === "FR" ? "Le style de travail de la personne correspond partiellement au poste" : region === "EN" ? "The person's working style partially fits the role" : "Arbeitsweise der Person passt teilweise zur Stelle";
+              shortFazit = region === "IT" ? "Lo stile lavorativo della persona corrisponde parzialmente al ruolo" : region === "FR" ? "Le style de travail de la personne correspond partiellement au poste" : region === "EN" ? "The person's working style partially fits the role" : "Arbeitsweise der Person passt teilweise zur Stelle";
             } else {
-              shortFazit = region === "FR" ? "Le style de travail de la personne ne correspond pas au poste" : region === "EN" ? "The person's working style does not fit the role" : "Arbeitsweise der Person passt nicht zur Stelle";
+              shortFazit = region === "IT" ? "Lo stile lavorativo della persona non corrisponde al ruolo" : region === "FR" ? "Le style de travail de la personne ne correspond pas au poste" : region === "EN" ? "The person's working style does not fit the role" : "Arbeitsweise der Person passt nicht zur Stelle";
             }
 
             const devLevel = effective.developmentLevel;
@@ -991,6 +1011,8 @@ export default function SollIstBericht() {
             const devGaugeColor = devScore === 3 ? BIO_COLORS.geeignet : devScore === 2 ? BIO_COLORS.bedingt : BIO_COLORS.nichtGeeignet;
             const devShort = region === "EN"
               ? devScore === 3 ? "Good prospects \u00b7 Low effort" : devScore === 2 ? "Manageable \u00b7 Targeted leadership needed" : "High effort \u00b7 Outcome uncertain"
+              : region === "IT"
+              ? devScore === 3 ? "Buone prospettive \u00b7 Sforzo basso" : devScore === 2 ? "Realizzabile \u00b7 Gestione mirata necessaria" : "Sforzo elevato \u00b7 Esito incerto"
               : region === "FR"
               ? devScore === 3 ? "Bonnes perspectives \u00b7 Effort faible" : devScore === 2 ? "Réalisable \u00b7 Management ciblé nécessaire" : "Effort élevé \u00b7 Résultat incertain"
               : devScore === 3 ? "Gute Aussichten \u00b7 Wenig Aufwand" : devScore === 2 ? "Machbar \u00b7 Gezielte F\u00fchrung n\u00f6tig" : "Hoher Aufwand \u00b7 Ergebnis unsicher";
@@ -1005,35 +1027,35 @@ export default function SollIstBericht() {
             let kritischLabel: string;
             const kritischBullets: string[] = [];
             if (fitRating === "GEEIGNET") {
-              kritischLabel = region === "FR" ? "Points forts" : region === "EN" ? "Strengths" : "St\u00e4rken";
-              kritischBullets.push(region === "FR" ? "Le style de travail est aligné" : region === "EN" ? "Working style is aligned" : "Arbeitsweise stimmt \u00fcberein");
-              kritischBullets.push(region === "FR" ? "La logique de décision correspond" : region === "EN" ? "Decision logic matches" : "Entscheidungslogik passt");
-              kritischBullets.push(region === "FR" ? "Rythme et structure compatibles" : region === "EN" ? "Pace and structure compatible" : "Tempo und Struktur kompatibel");
+              kritischLabel = region === "IT" ? "Punti di forza" : region === "FR" ? "Points forts" : region === "EN" ? "Strengths" : "St\u00e4rken";
+              kritischBullets.push(region === "IT" ? "Stile lavorativo allineato" : region === "FR" ? "Le style de travail est aligné" : region === "EN" ? "Working style is aligned" : "Arbeitsweise stimmt \u00fcberein");
+              kritischBullets.push(region === "IT" ? "La logica decisionale corrisponde" : region === "FR" ? "La logique de décision correspond" : region === "EN" ? "Decision logic matches" : "Entscheidungslogik passt");
+              kritischBullets.push(region === "IT" ? "Ritmo e struttura compatibili" : region === "FR" ? "Rythme et structure compatibles" : region === "EN" ? "Pace and structure compatible" : "Tempo und Struktur kompatibel");
             } else if (fitRating === "BEDINGT") {
-              kritischLabel = region === "FR" ? "Notable" : region === "EN" ? "Notable" : "Auff\u00e4llig";
-              kritischBullets.push(region === "FR" ? "Le style de travail s'écarte légèrement" : region === "EN" ? "Working style deviates somewhat" : "Auspr\u00e4gung der Arbeitsweise weicht ab");
-              kritischBullets.push(region === "FR" ? "La logique de décision est globalement compatible" : region === "EN" ? "Decision logic broadly compatible" : "Entscheidungslogik grunds\u00e4tzlich kompatibel");
-              kritischBullets.push(region === "FR" ? "L'intensité principale n'est pas totalement alignée" : region === "EN" ? "Primary intensity not fully aligned" : "Intensit\u00e4t der Hauptpr\u00e4gung nicht deckungsgleich");
+              kritischLabel = region === "IT" ? "Da notare" : region === "FR" ? "Notable" : region === "EN" ? "Notable" : "Auff\u00e4llig";
+              kritischBullets.push(region === "IT" ? "Lo stile lavorativo si discosta leggermente" : region === "FR" ? "Le style de travail s'écarte légèrement" : region === "EN" ? "Working style deviates somewhat" : "Auspr\u00e4gung der Arbeitsweise weicht ab");
+              kritischBullets.push(region === "IT" ? "La logica decisionale e' globalmente compatibile" : region === "FR" ? "La logique de décision est globalement compatible" : region === "EN" ? "Decision logic broadly compatible" : "Entscheidungslogik grunds\u00e4tzlich kompatibel");
+              kritischBullets.push(region === "IT" ? "L\'intensita' principale non e' del tutto allineata" : region === "FR" ? "L'intensité principale n'est pas totalement alignée" : region === "EN" ? "Primary intensity not fully aligned" : "Intensit\u00e4t der Hauptpr\u00e4gung nicht deckungsgleich");
             } else {
-              kritischLabel = region === "FR" ? "Critique" : region === "EN" ? "Critical" : "Kritisch";
-              kritischBullets.push(region === "FR" ? "Le style de travail ne correspond pas" : region === "EN" ? "Working style does not fit" : "Auspr\u00e4gung der Arbeitsweise passt nicht");
-              kritischBullets.push(region === "FR" ? "La logique de décision s'écarte significativement" : region === "EN" ? "Decision logic deviates significantly" : "Entscheidungslogik weicht deutlich ab");
-              kritischBullets.push(region === "FR" ? "L'écart d'intensité est trop fort" : region === "EN" ? "Intensity deviation too strong" : "Intensit\u00e4t weicht zu stark ab");
+              kritischLabel = region === "IT" ? "Critico" : region === "FR" ? "Critique" : region === "EN" ? "Critical" : "Kritisch";
+              kritischBullets.push(region === "IT" ? "Lo stile lavorativo non corrisponde" : region === "FR" ? "Le style de travail ne correspond pas" : region === "EN" ? "Working style does not fit" : "Auspr\u00e4gung der Arbeitsweise passt nicht");
+              kritischBullets.push(region === "IT" ? "La logica decisionale si discosta significativamente" : region === "FR" ? "La logique de décision s'écarte significativement" : region === "EN" ? "Decision logic deviates significantly" : "Entscheidungslogik weicht deutlich ab");
+              kritischBullets.push(region === "IT" ? "Lo scostamento di intensita' e' troppo elevato" : region === "FR" ? "L'écart d'intensité est trop fort" : region === "EN" ? "Intensity deviation too strong" : "Intensit\u00e4t weicht zu stark ab");
             }
 
             const auswirkungBullets: string[] = [];
             if (fitRating === "GEEIGNET") {
-              auswirkungBullets.push(region === "FR" ? "Collaboration fluide" : region === "EN" ? "Smooth collaboration" : "Reibungslose Zusammenarbeit");
-              auswirkungBullets.push(region === "FR" ? "Dynamique d'équipe stable" : region === "EN" ? "Stable team dynamic" : "Stabiles Teamgef\u00fcge");
-              auswirkungBullets.push(region === "FR" ? "Faible effort de management" : region === "EN" ? "Low management effort" : "Geringer F\u00fchrungsaufwand");
+              auswirkungBullets.push(region === "IT" ? "Collaborazione fluida" : region === "FR" ? "Collaboration fluide" : region === "EN" ? "Smooth collaboration" : "Reibungslose Zusammenarbeit");
+              auswirkungBullets.push(region === "IT" ? "Dinamiche di team stabili" : region === "FR" ? "Dynamique d'équipe stable" : region === "EN" ? "Stable team dynamic" : "Stabiles Teamgef\u00fcge");
+              auswirkungBullets.push(region === "IT" ? "Sforzo di gestione basso" : region === "FR" ? "Faible effort de management" : region === "EN" ? "Low management effort" : "Geringer F\u00fchrungsaufwand");
             } else if (fitRating === "BEDINGT") {
-              auswirkungBullets.push(region === "FR" ? "Plus de coordination nécessaire" : region === "EN" ? "More coordination needed" : "Mehr Abstimmung n\u00f6tig");
-              auswirkungBullets.push(region === "FR" ? "Léger potentiel de tension" : region === "EN" ? "Slight tension potential" : "Leichtes Spannungspotenzial");
-              auswirkungBullets.push(region === "FR" ? "Effort de management accru" : region === "EN" ? "Increased management effort" : "Erh\u00f6hter F\u00fchrungsaufwand");
+              auswirkungBullets.push(region === "IT" ? "Maggior coordinamento necessario" : region === "FR" ? "Plus de coordination nécessaire" : region === "EN" ? "More coordination needed" : "Mehr Abstimmung n\u00f6tig");
+              auswirkungBullets.push(region === "IT" ? "Leggero potenziale di tensione" : region === "FR" ? "Léger potentiel de tension" : region === "EN" ? "Slight tension potential" : "Leichtes Spannungspotenzial");
+              auswirkungBullets.push(region === "IT" ? "Sforzo di gestione aumentato" : region === "FR" ? "Effort de management accru" : region === "EN" ? "Increased management effort" : "Erh\u00f6hter F\u00fchrungsaufwand");
             } else {
-              auswirkungBullets.push(region === "FR" ? "Coordination nettement plus importante" : region === "EN" ? "Significantly more coordination needed" : "Deutlich mehr Abstimmung n\u00f6tig");
-              auswirkungBullets.push(region === "FR" ? "Potentiel de conflit dans l'équipe" : region === "EN" ? "Conflict potential in the team" : "Konfliktpotenzial im Team");
-              auswirkungBullets.push(region === "FR" ? "Effort de management élevé" : region === "EN" ? "High management effort" : "Hoher F\u00fchrungsaufwand");
+              auswirkungBullets.push(region === "IT" ? "Coordinamento significativamente maggiore" : region === "FR" ? "Coordination nettement plus importante" : region === "EN" ? "Significantly more coordination needed" : "Deutlich mehr Abstimmung n\u00f6tig");
+              auswirkungBullets.push(region === "IT" ? "Potenziale di conflitto nel team" : region === "FR" ? "Potentiel de conflit dans l'équipe" : region === "EN" ? "Conflict potential in the team" : "Konfliktpotenzial im Team");
+              auswirkungBullets.push(region === "IT" ? "Sforzo di gestione elevato" : region === "FR" ? "Effort de management élevé" : region === "EN" ? "High management effort" : "Hoher F\u00fchrungsaufwand");
             }
 
             const BulletItem = ({ text, color }: { text: string; color: string }) => (
@@ -1176,7 +1198,7 @@ export default function SollIstBericht() {
               <ChevronLeft style={{ width: 16, height: 16 }} />
               {region === "FR" ? "Retour au MatchCheck" : region === "EN" ? "Back to MatchCheck" : "Zurück zum MatchCheck"}
             </button>
-            <div style={{ position: "relative", background: "#FFFFFF", borderRadius: 20, overflow: "hidden", boxShadow: "0 4px 40px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.03)" }} data-testid="print-report-card" data-bericht lang={region === "FR" ? "fr" : region === "EN" ? "en" : "de"}>
+            <div style={{ position: "relative", background: "#FFFFFF", borderRadius: 20, overflow: "hidden", boxShadow: "0 4px 40px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.03)" }} data-testid="print-report-card" data-bericht lang={region === "IT" ? "it" : region === "FR" ? "fr" : region === "EN" ? "en" : "de"}>
 
               {/* ─── DARK HEADER ─── */}
               <div data-pdf-block className="report-header" data-testid="section-header">
@@ -1192,7 +1214,7 @@ export default function SollIstBericht() {
                       if (!reportEl) return;
                       const styles = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
                         .map(el => el.outerHTML).join("\n");
-                      printWin.document.write(`<!DOCTYPE html><html lang="${region === "FR" ? "fr" : region === "EN" ? "en" : "de"}"><head><meta charset="utf-8"><title>MatchCheck – ${result.roleName || "Report"}</title>${styles}<style>body{margin:0;padding:20px 0;background:#fff}
+                      printWin.document.write(`<!DOCTYPE html><html lang="${region === "IT" ? "it" : region === "FR" ? "fr" : region === "EN" ? "en" : "de"}"><head><meta charset="utf-8"><title>MatchCheck – ${result.roleName || "Report"}</title>${styles}<style>body{margin:0;padding:20px 0;background:#fff}
 .report-header-btn,.report-pdf-btn,.no-print,nav{display:none!important}
 *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
 [data-pdf-block]{break-inside:avoid!important}
@@ -1219,7 +1241,7 @@ export default function SollIstBericht() {
 
               {/* ─── EXECUTIVE DECISION CONTENT (weisser Hintergrund) ─── */}
               <div style={{ padding: "28px 44px 0" }}>
-                <p data-pdf-block style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 16px", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang={region === "FR" ? "fr" : region === "EN" ? "en" : "de"} data-testid="text-einleitung">
+                <p data-pdf-block style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 16px", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang={region === "IT" ? "it" : region === "FR" ? "fr" : region === "EN" ? "en" : "de"} data-testid="text-einleitung">
                   {region === "FR"
                     ? "Cette analyse d'adéquation montre dans quelle mesure une personne et un poste s'alignent dans leur logique de travail. Elle révèle où les schémas se recoupent, où ils divergent et quel niveau d'effort de management ou de développement attendre au quotidien."
                     : region === "EN"
@@ -1227,7 +1249,7 @@ export default function SollIstBericht() {
                     : "Diese Passungsanalyse zeigt, wie gut Person und Position in ihrer Arbeitslogik zusammenpassen. Sie macht sichtbar, wo Übereinstimmungen bestehen, wo Abweichungen entstehen und welcher Führungs- oder Entwicklungsaufwand daraus im Alltag zu erwarten ist."}
                 </p>
                 <div data-pdf-block style={{ background: "linear-gradient(135deg, rgba(255,59,48,0.06) 0%, rgba(255,59,48,0.03) 100%)", borderRadius: 10, padding: "16px 20px", border: "1px solid rgba(255,59,48,0.2)", marginBottom: 24 }}>
-                  <p style={{ fontSize: 13, fontWeight: 700, color: "#FF3B30", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang={region === "FR" ? "fr" : region === "EN" ? "en" : "de"}>
+                  <p style={{ fontSize: 13, fontWeight: 700, color: "#FF3B30", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang={region === "IT" ? "it" : region === "FR" ? "fr" : region === "EN" ? "en" : "de"}>
                     {region === "FR" ? REPORT_INTRO_DISCLAIMER_FR : region === "EN" ? REPORT_INTRO_DISCLAIMER_EN : REPORT_INTRO_DISCLAIMER}
                   </p>
                 </div>
@@ -1256,24 +1278,31 @@ export default function SollIstBericht() {
                     const gl = result.gapLevel;
                     const dl = result.developmentLabel;
                     const en = region === "EN";
+                    const isIT = region === "IT";
                     const isFR = region === "FR";
 
                     if (fr === "GEEIGNET") {
                       if (ci === "gering" && gl === "gering") {
-                        return isFR
+                        return isIT
+                          ? "La valutazione complessiva indica un'ottima corrispondenza. La coerenza strutturale e' elevata, lo sforzo di gestione e sviluppo e' basso. L'inserimento puo' avvenire senza misure particolari."
+                          : isFR
                           ? "L'évaluation globale indique une très bonne adéquation. La concordance structurelle est élevée, l'effort de pilotage et de développement est faible. La prise de poste peut se faire sans mesures particulières."
                           : en
                           ? "The overall assessment indicates a very strong fit. Structural alignment is high, management and development effort is low. Placement can proceed without special measures."
                           : t("Die Gesamtbewertung spricht für eine sehr gute Passung. Die strukturelle Übereinstimmung ist hoch, der Steuerungs- und Entwicklungsaufwand gering. Die Besetzung kann ohne besondere Massnahmen erfolgen.");
                       }
                       if (ci === "mittel" || gl === "mittel") {
-                        return isFR
+                        return isIT
+                          ? "La valutazione complessiva indica una buona corrispondenza. La coerenza strutturale e' presente, lo sforzo di gestione rimane gestibile. Un inserimento riuscito e' realistico con un accompagnamento moderato."
+                          : isFR
                           ? "L'évaluation globale indique une bonne adéquation. La concordance structurelle est présente, l'effort de pilotage reste gérable. Une prise de poste réussie est réaliste avec un accompagnement modéré."
                           : en
                           ? "The overall assessment indicates a good fit. Structural alignment is present and management effort is manageable. Successful placement is realistic with moderate leadership."
                           : "Die Gesamtbewertung spricht für eine gute Passung. Die strukturelle Übereinstimmung ist gegeben, der Steuerungs- und Entwicklungsaufwand überschaubar. Eine erfolgreiche Besetzung ist mit geringem Führungsaufwand realistisch.";
                       }
-                      return isFR
+                      return isIT
+                        ? "La valutazione complessiva indica una corrispondenza solida. La logica lavorativa e' generalmente allineata. Lo sforzo di sviluppo e' limitato e l'inserimento puo' avere successo con una gestione normale."
+                        : isFR
                         ? "L'évaluation globale indique une adéquation solide. La logique de travail est globalement alignée. L'effort de développement est limité et la prise de poste peut réussir avec un pilotage normal."
                         : en
                         ? "The overall assessment indicates a solid fit. The working logic is broadly aligned. Development effort is limited and placement can succeed with normal management."
@@ -1282,27 +1311,35 @@ export default function SollIstBericht() {
 
                     if (fr === "BEDINGT") {
                       if (ci === "hoch" || dl === "hoch") {
-                        return isFR
+                        return isIT
+                          ? "La valutazione complessiva indica una corrispondenza limitata. Lo scostamento strutturale e' percettibile, lo sforzo di gestione e sviluppo e' elevato. Un inserimento riuscito richiede una gestione mirata e regolari confronti."
+                          : isFR
                           ? "L'évaluation globale indique une adéquation limitée. L'écart structurel est perceptible, l'effort de pilotage et de développement est élevé. Une prise de poste réussie exige un management ciblé et des ajustements réguliers."
                           : en
                           ? "The overall assessment indicates a limited fit. Structural deviation is noticeable and management/development effort is elevated. Successful placement requires targeted leadership and regular alignment."
                           : t("Die Gesamtbewertung spricht für eine eingeschränkte Passung. Die strukturelle Abweichung ist spürbar, der Steuerungs- und Entwicklungsaufwand erhöht. Eine erfolgreiche Besetzung erfordert gezielte Führung und regelmässige Abstimmung.");
                       }
                       if (result.fitSubtype === "STRUCTURE_MATCH_INTENSITY_OFF") {
-                        return isFR
+                        return isIT
+                          ? "La valutazione complessiva indica una corrispondenza condizionale. La logica lavorativa e' strutturalmente coerente, ma sono presenti differenze di ponderazione. Un inserimento riuscito e' realistico con una gestione mirata."
+                          : isFR
                           ? "L'évaluation globale indique une adéquation conditionnelle. La logique de travail est structurellement cohérente, mais des différences de pondération sont présentes. Une prise de poste réussie est réaliste avec un management ciblé."
                           : en
                           ? "The overall assessment indicates a conditional fit. The basic working logic is structurally sound, but weighting differences are present. Successful placement is realistic with targeted leadership."
                           : "Die Gesamtbewertung spricht für eine bedingte Passung. Die Arbeitslogik ist in ihrer Grundstruktur stimmig. In der Gewichtung zeigen sich jedoch leichte Abweichungen. Eine erfolgreiche Besetzung ist mit gezielter Führung realistisch.";
                       }
                       if (gl === "gering") {
-                        return isFR
+                        return isIT
+                          ? "La valutazione complessiva indica una corrispondenza condizionale. Lo scostamento del profilo e' basso, ma gli stili di lavoro differiscono su alcuni punti. Con una gestione mirata, l'inserimento e' realistico."
+                          : isFR
                           ? "L'évaluation globale indique une adéquation conditionnelle. L'écart de profil est faible, mais les styles de travail diffèrent sur certains points. Avec un management ciblé, la prise de poste est réaliste."
                           : en
                           ? "The overall assessment indicates a conditional fit. The profile deviation is low, but working styles differ in some areas. With targeted leadership, successful placement is realistic."
                           : "Die Gesamtbewertung spricht für eine bedingte Passung. Die Profilabweichung ist gering, doch die Arbeitslogik unterscheidet sich in einzelnen Bereichen. Mit gezielter Führung ist eine erfolgreiche Besetzung realistisch.";
                       }
-                      return isFR
+                      return isIT
+                        ? "La valutazione complessiva indica una corrispondenza condizionale. La logica lavorativa diverge su alcuni aspetti. Un inserimento riuscito e' possibile con una gestione consapevole e aspettative chiaramente formulate."
+                        : isFR
                         ? "L'évaluation globale indique une adéquation conditionnelle. La logique de travail diffère sur certains aspects. Une prise de poste réussie est possible avec un management conscient et des attentes clairement formulées."
                         : en
                         ? "The overall assessment indicates a conditional fit. Working logic deviates in some areas. Successful placement is possible with conscious leadership and clear expectations."
@@ -1310,20 +1347,26 @@ export default function SollIstBericht() {
                     }
 
                     if (ci === "hoch" && (gl === "hoch" || dl === "hoch")) {
-                      return isFR
+                      return isIT
+                        ? "La valutazione complessiva indica una corrispondenza critica. Lo scostamento strutturale e' significativo e lo sforzo di gestione e sviluppo corrispondentemente elevato. Un inserimento riuscito sarebbe realistico solo con una guida chiara e un deliberato sforzo di integrazione."
+                        : isFR
                         ? "L'évaluation globale indique une adéquation critique. L'écart structurel est significatif et l'effort de pilotage et de développement correspondant. Une prise de poste réussie ne serait réaliste qu'avec un management clair et un effort d'intégration délibéré."
                         : en
                         ? "The overall assessment indicates a critical fit. Structural deviation is significant and management/development effort correspondingly high. Successful placement would only be realistic with clear leadership and deliberate integration effort."
                         : "Die Gesamtbewertung spricht für eine kritische Passung. Die strukturelle Abweichung ist deutlich, der Steuerungs- und Entwicklungsaufwand entsprechend hoch. Eine erfolgreiche Besetzung wäre nur unter klarer Führung und mit bewusstem Integrationsaufwand realistisch.";
                     }
                     if (ci === "mittel") {
-                      return isFR
+                      return isIT
+                        ? "La valutazione complessiva indica una corrispondenza insufficiente. La logica lavorativa diverge in modo sostanziale. Anche con una gestione intensiva e misure di sviluppo, il rischio di una scelta sbagliata rimane considerevole."
+                        : isFR
                         ? "L'évaluation globale indique une adéquation insuffisante. La logique de travail diffère de manière substantielle. Même avec un management intensif et des mesures de développement, le risque de mauvaise affectation reste considérable."
                         : en
                         ? "The overall assessment indicates an insufficient fit. Working logic deviates in key areas. Even with intensive leadership and development measures, the risk of misplacement remains considerable."
                         : t("Die Gesamtbewertung spricht für eine unzureichende Passung. Die Arbeitslogik weicht in wesentlichen Bereichen ab. Selbst mit intensiver Führung und Entwicklungsmassnahmen bleibt das Risiko einer Fehlbesetzung erheblich.");
                     }
-                    return isFR
+                    return isIT
+                      ? "La valutazione complessiva indica una corrispondenza critica. Lo scostamento strutturale e' notevole e lo sforzo richiesto di gestione e sviluppo e' molto elevato. Un inserimento in queste condizioni comporta un rischio significativo."
+                      : isFR
                       ? "L'évaluation globale indique une adéquation critique. L'écart structurel est important et l'effort de pilotage et de développement requis très élevé. Une prise de poste dans ces conditions comporte un risque significatif."
                       : en
                       ? "The overall assessment indicates a critical fit. Structural deviation is substantial and required management/development effort very high. Placement under these conditions carries significant risk."
@@ -1332,7 +1375,7 @@ export default function SollIstBericht() {
 
                   return (
                     <>
-                      <p data-pdf-block style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 22px", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang={region === "FR" ? "fr" : region === "EN" ? "en" : "de"} data-testid="text-gesamt-intro">
+                      <p data-pdf-block style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 22px", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang={region === "IT" ? "it" : region === "FR" ? "fr" : region === "EN" ? "en" : "de"} data-testid="text-gesamt-intro">
                         {gesamtIntroText}
                       </p>
                       <div data-pdf-block style={{ marginBottom: 22 }} data-testid="section-systemstatus">
@@ -1392,7 +1435,7 @@ export default function SollIstBericht() {
                                 <div style={{ display: "flex", flexDirection: "column", gap: 8, alignItems: "center" }}>
                                   {roleKeys.map(k => (
                                     <div key={k} style={{ padding: "10px 20px", borderRadius: 20, background: `${BAR_HEX[k]}14`, border: `1px solid ${BAR_HEX[k]}30` }}>
-                                      <span style={{ fontSize: 14, fontWeight: 700, color: BAR_HEX[k] }}>{region === "FR" ? COMP_LABELS_FR[k] : region === "EN" ? COMP_LABELS_EN[k] : COMP_LABELS[k]}</span>
+                                      <span style={{ fontSize: 14, fontWeight: 700, color: BAR_HEX[k] }}>{region === "IT" ? COMP_LABELS_IT[k] : region === "FR" ? COMP_LABELS_FR[k] : region === "EN" ? COMP_LABELS_EN[k] : COMP_LABELS[k]}</span>
                                     </div>
                                   ))}
                                 </div>
@@ -1405,7 +1448,7 @@ export default function SollIstBericht() {
                                 <div style={{ display: "flex", flexDirection: "column", gap: 8, alignItems: "center" }}>
                                   {candKeys.map(k => (
                                     <div key={k} style={{ padding: "10px 20px", borderRadius: 20, background: `${BAR_HEX[k]}14`, border: `1px solid ${BAR_HEX[k]}30` }}>
-                                      <span style={{ fontSize: 14, fontWeight: 700, color: BAR_HEX[k] }}>{region === "FR" ? COMP_LABELS_FR[k] : region === "EN" ? COMP_LABELS_EN[k] : COMP_LABELS[k]}</span>
+                                      <span style={{ fontSize: 14, fontWeight: 700, color: BAR_HEX[k] }}>{region === "IT" ? COMP_LABELS_IT[k] : region === "FR" ? COMP_LABELS_FR[k] : region === "EN" ? COMP_LABELS_EN[k] : COMP_LABELS[k]}</span>
                                     </div>
                                   ))}
                                 </div>
@@ -1418,7 +1461,7 @@ export default function SollIstBericht() {
                       {/* AUSWIRKUNG IM ARBEITSALLTAG */}
                       <div data-pdf-block style={{ marginBottom: 22 }} data-testid="section-auswirkung">
                         <SubHead num={1} title={region === "FR" ? "Impact sur le travail quotidien" : region === "EN" ? "Impact on daily work" : "Auswirkung im Arbeitsalltag"} color="#0F3A6E" />
-                        <p style={{ margin: 0, fontSize: 14, lineHeight: 1.85, color: "#48484A", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang={region === "FR" ? "fr" : region === "EN" ? "en" : "de"}>
+                        <p style={{ margin: 0, fontSize: 14, lineHeight: 1.85, color: "#48484A", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang={region === "IT" ? "it" : region === "FR" ? "fr" : region === "EN" ? "en" : "de"}>
                           {result.dominanceShiftText.split(/\n\n+/)[0]}
                         </p>
                       </div>
@@ -1426,7 +1469,7 @@ export default function SollIstBericht() {
                       {/* MANAGEMENTKURZFAZIT */}
                       <div data-pdf-block style={{ marginBottom: 22 }} data-testid="section-fazit">
                         <SubHead num={2} title={region === "FR" ? "Synthèse managériale" : region === "EN" ? "Management summary" : "Managementkurzfazit"} color="#0F3A6E" />
-                        <p style={{ fontSize: 14, lineHeight: 1.85, color: "#48484A", margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang={region === "FR" ? "fr" : region === "EN" ? "en" : "de"} data-testid="text-summary-fazit">
+                        <p style={{ fontSize: 14, lineHeight: 1.85, color: "#48484A", margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang={region === "IT" ? "it" : region === "FR" ? "fr" : region === "EN" ? "en" : "de"} data-testid="text-summary-fazit">
                           {result.summaryText.split(/\n\n+/)[0]}
                         </p>
                       </div>
@@ -1468,7 +1511,7 @@ export default function SollIstBericht() {
 
               <div data-pdf-block style={{ ...sep, borderBottom: "none" }} data-testid="section-comparison-bars">
                 <SectionHead num={2} title={region === "FR" ? "Comparaison des profils" : region === "EN" ? "Profile comparison" : "Vergleich der Profile"} />
-                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 20px", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang={region === "FR" ? "fr" : region === "EN" ? "en" : "de"}>
+                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 20px", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang={region === "IT" ? "it" : region === "FR" ? "fr" : region === "EN" ? "en" : "de"}>
                   {biggestGapText(result.roleTriad, result.candTriad, region)}
                 </p>
                 <div className="grid gap-6 grid-cols-1 sm:grid-cols-2" style={{ marginBottom: 14 }}>
@@ -1535,7 +1578,7 @@ export default function SollIstBericht() {
                         <div style={{ flex: 1, padding: "14px 16px", borderRadius: 10, background: `linear-gradient(135deg, ${kb.color}12, ${kb.color}06)`, border: `1px solid ${kb.color}20`, display: "flex", flexDirection: "column" }}>
                           <div style={{ flex: 1 }}>
                             <span style={{ fontSize: 12, fontWeight: 700, color: kb.color, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8, display: "block" }}>{kb.label}</span>
-                            <p style={{ fontSize: 12.5, lineHeight: 1.65, margin: 0, color: "#48484A", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang={region === "FR" ? "fr" : region === "EN" ? "en" : "de"}>
+                            <p style={{ fontSize: 12.5, lineHeight: 1.65, margin: 0, color: "#48484A", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang={region === "IT" ? "it" : region === "FR" ? "fr" : region === "EN" ? "en" : "de"}>
                               {kb.text}
                             </p>
                           </div>
@@ -1567,17 +1610,17 @@ export default function SollIstBericht() {
                           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
                             <div data-text-left style={{ background: "#FAFAFA", borderRadius: 10, padding: "12px 14px", border: "1px solid rgba(0,0,0,0.07)" }}>
                               <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 6px" }}>{region === "FR" ? "Exigence du poste" : region === "EN" ? "Role requirement" : "Stellenanforderung"}</p>
-                              <p style={{ fontSize: 14, lineHeight: 1.75, color: "#48484A", margin: 0, wordBreak: "break-word", overflowWrap: "break-word" }} lang={region === "FR" ? "fr" : region === "EN" ? "en" : "de"}>{area.roleNeed}</p>
+                              <p style={{ fontSize: 14, lineHeight: 1.75, color: "#48484A", margin: 0, wordBreak: "break-word", overflowWrap: "break-word" }} lang={region === "IT" ? "it" : region === "FR" ? "fr" : region === "EN" ? "en" : "de"}>{area.roleNeed}</p>
                             </div>
                             <div data-text-left style={{ background: "#FAFAFA", borderRadius: 10, padding: "12px 14px", border: "1px solid rgba(0,0,0,0.07)" }}>
                               <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 6px" }}>{region === "FR" ? "Personne" : region === "EN" ? "Person" : "Person"}</p>
-                              <p style={{ fontSize: 14, lineHeight: 1.75, color: "#48484A", margin: 0, wordBreak: "break-word", overflowWrap: "break-word" }} lang={region === "FR" ? "fr" : region === "EN" ? "en" : "de"}>{area.candidatePattern}</p>
+                              <p style={{ fontSize: 14, lineHeight: 1.75, color: "#48484A", margin: 0, wordBreak: "break-word", overflowWrap: "break-word" }} lang={region === "IT" ? "it" : region === "FR" ? "fr" : region === "EN" ? "en" : "de"}>{area.candidatePattern}</p>
                             </div>
                           </div>
                           <div style={{ display: "flex", borderRadius: 8, background: `${sevCol}08`, alignItems: "stretch" }}>
                             <div style={{ width: 4, flexShrink: 0, background: sevCol, borderRadius: 999, margin: "8px 0 8px 8px" }} />
                             <div style={{ padding: "10px 14px", flex: 1 }}>
-                            <p style={{ fontSize: 14, lineHeight: 1.85, margin: 0, color: "#48484A", wordBreak: "break-word", overflowWrap: "break-word", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang={region === "FR" ? "fr" : region === "EN" ? "en" : "de"}>{area.risk}</p>
+                            <p style={{ fontSize: 14, lineHeight: 1.85, margin: 0, color: "#48484A", wordBreak: "break-word", overflowWrap: "break-word", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang={region === "IT" ? "it" : region === "FR" ? "fr" : region === "EN" ? "en" : "de"}>{area.risk}</p>
                             </div>
                           </div>
                         </div>
@@ -1595,17 +1638,17 @@ export default function SollIstBericht() {
                       <AlertCircle style={{ width: 14, height: 14, color: "#FF9500", flexShrink: 0 }} />
                       <p style={{ fontSize: 12, fontWeight: 700, color: "#FF9500", textTransform: "uppercase", letterSpacing: "0.05em", margin: 0 }}>{region === "FR" ? "Pression contrôlée" : region === "EN" ? "Controlled pressure" : "Kontrollierter Druck"}</p>
                     </div>
-                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, wordBreak: "break-word", overflowWrap: "break-word", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang={region === "FR" ? "fr" : region === "EN" ? "en" : "de"}>{result.stressBehavior.controlledPressure}</p>
+                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, wordBreak: "break-word", overflowWrap: "break-word", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang={region === "IT" ? "it" : region === "FR" ? "fr" : region === "EN" ? "en" : "de"}>{result.stressBehavior.controlledPressure}</p>
                   </div>
                   <div style={{ padding: "16px 18px", borderRadius: 12, background: "#FF3B3008", border: "1px solid #FF3B3018", overflow: "visible" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
                       <AlertTriangle style={{ width: 14, height: 14, color: "#FF3B30", flexShrink: 0 }} />
                       <p style={{ fontSize: 12, fontWeight: 700, color: "#FF3B30", textTransform: "uppercase", letterSpacing: "0.05em", margin: 0 }}>{region === "FR" ? "Stress incontrôlé" : region === "EN" ? "Uncontrolled stress" : "Unkontrollierter Stress"}</p>
                     </div>
-                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, wordBreak: "break-word", overflowWrap: "break-word", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang={region === "FR" ? "fr" : region === "EN" ? "en" : "de"}>{result.stressBehavior.uncontrolledStress}</p>
+                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, wordBreak: "break-word", overflowWrap: "break-word", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang={region === "IT" ? "it" : region === "FR" ? "fr" : region === "EN" ? "en" : "de"}>{result.stressBehavior.uncontrolledStress}</p>
                   </div>
                 </div>
-                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "14px 0 0", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang={region === "FR" ? "fr" : region === "EN" ? "en" : "de"}>
+                <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "14px 0 0", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang={region === "IT" ? "it" : region === "FR" ? "fr" : region === "EN" ? "en" : "de"}>
                   {region === "FR"
                     ? "Sous une pression croissante, ces schémas de comportement tendent à s'intensifier et font apparaitre des risques pour la coordination, le management et la collaboration."
                     : region === "EN"
@@ -1626,7 +1669,7 @@ export default function SollIstBericht() {
                           <div style={{ position: "absolute", left: -22, top: 14, width: 10, height: 10, borderRadius: 5, background: phaseCol, boxShadow: `0 0 0 3px ${phaseCol}20` }} />
                           <div style={{ padding: "12px 16px", borderRadius: 12, background: `${phaseCol}06`, border: `1px solid ${phaseCol}15` }}>
                             <p style={{ fontSize: 12, fontWeight: 700, color: phaseCol, marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.05em" }}>{phase.label} <span style={{ fontWeight: 500, textTransform: "none", letterSpacing: "0" }}>{phase.period}</span></p>
-                            <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, wordBreak: "break-word", overflowWrap: "break-word", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang={region === "FR" ? "fr" : region === "EN" ? "en" : "de"}>{phase.text}</p>
+                            <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, wordBreak: "break-word", overflowWrap: "break-word", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang={region === "IT" ? "it" : region === "FR" ? "fr" : region === "EN" ? "en" : "de"}>{phase.text}</p>
                           </div>
                         </div>
                       );
@@ -1642,33 +1685,44 @@ export default function SollIstBericht() {
                 const rGapLevel = result.gapLevel;
                 let rFazit: string;
                 const isEN = region === "EN";
+                const isITr = region === "IT";
                 const isFRr = region === "FR";
-                if (rFitLabel === "Geeignet" || rFitLabel === "Suitable" || rFitLabel === "Adapté") {
-                  rFazit = isFRr
+                if (rFitLabel === "Geeignet" || rFitLabel === "Suitable" || rFitLabel === "Adapté" || rFitLabel === "Adatto") {
+                  rFazit = isITr
+                    ? "Lo stile di lavoro della persona corrisponde ai requisiti del ruolo. Compiti, decisioni e stile di lavoro sono coerenti."
+                    : isFRr
                     ? "Le mode de travail de la personne correspond aux exigences du poste. Les tâches, les décisions et le style de travail sont cohérents."
                     : isEN
                     ? "The person's working style matches the role requirements. Tasks, decisions, and work style are well aligned."
                     : "Die Arbeitsweise der Person ist deckungsgleich mit den Anforderungen der Stelle. Aufgaben, Entscheidungen und Arbeitsstil sind stimmig.";
-                } else if ((rFitLabel === "Bedingt geeignet" || rFitLabel === "Conditionally suitable" || rFitLabel === "Partiellement adapté") && rGapLevel === "gering") {
-                  rFazit = isFRr
+                } else if ((rFitLabel === "Bedingt geeignet" || rFitLabel === "Conditionally suitable" || rFitLabel === "Partiellement adapté" || rFitLabel === "Parzialmente adatto") && rGapLevel === "gering") {
+                  rFazit = isITr
+                    ? "L'orientamento di base e' simile, ma la ponderazione delle singole aree di lavoro differisce. Nella pratica quotidiana, cio' puo' portare a un maggior bisogno di coordinamento e a richieste di gestione piu' elevate."
+                    : isFRr
                     ? "La direction générale est similaire, mais la pondération des domaines de travail individuels diffère. Au quotidien, cela peut entraîner un besoin de coordination accru et une charge managériale plus élevée."
                     : isEN
                     ? "The basic direction is similar, but the weighting of individual work areas differs. In day-to-day practice this can lead to increased coordination effort and higher management demands."
                     : "Die Grundausrichtung ist ähnlich, jedoch unterscheidet sich die Gewichtung einzelner Arbeitsbereiche. Im Alltag kann das zu erhöhtem Abstimmungsbedarf und höherem Führungsaufwand führen.";
-                } else if (rFitLabel === "Bedingt geeignet" || rFitLabel === "Conditionally suitable" || rFitLabel === "Partiellement adapté") {
-                  rFazit = isFRr
+                } else if (rFitLabel === "Bedingt geeignet" || rFitLabel === "Conditionally suitable" || rFitLabel === "Partiellement adapté" || rFitLabel === "Parzialmente adatto") {
+                  rFazit = isITr
+                    ? "L'orientamento di base e' simile. In alcune aree emergono pero' notevoli necessita' di adattamento. Nella pratica, cio' puo' creare tensioni nel team e un onere di gestione notevolmente maggiore."
+                    : isFRr
                     ? "La direction générale est similaire. Dans certains domaines, des besoins d'adaptation notables se font sentir. En pratique, cela peut générer des tensions dans l'équipe et une charge managériale nettement plus élevée."
                     : isEN
                     ? "The basic direction is similar, but noticeable adaptation needs are present in some areas. In practice this can create team friction and significantly higher management effort."
                     : "Die Grundausrichtung ist ähnlich. In einzelnen Bereichen zeigt sich jedoch spürbarer Anpassungsbedarf. Im Alltag kann das zu Konflikten im Team und deutlich höherem Führungsaufwand führen.";
-                } else if ((rFitLabel === "Nicht geeignet" || rFitLabel === "Not suitable" || rFitLabel === "Non adapté") && rGapLevel !== "hoch") {
-                  rFazit = isFRr
+                } else if ((rFitLabel === "Nicht geeignet" || rFitLabel === "Not suitable" || rFitLabel === "Non adapté" || rFitLabel === "Non adatto") && rGapLevel !== "hoch") {
+                  rFazit = isITr
+                    ? "Lo scostamento strutturale tra il ruolo e la persona e' significativo. Nella pratica, cio' puo' portare a un aumento del fabbisogno di coordinamento, a conflitti nel team e a un onere di gestione considerevolmente maggiore."
+                    : isFRr
                     ? "L'écart structurel entre le poste et la personne est significatif. En pratique, cela peut entraîner un besoin de coordination accru, des tensions dans l'équipe et une charge managériale considérablement plus élevée."
                     : isEN
                     ? "The structural deviation between role and person is significant. In practice this can lead to increased coordination needs, team conflicts, and considerably higher management effort."
                     : "Die strukturelle Abweichung zwischen Stelle und Person ist deutlich. Im Alltag kann das zu erhöhtem Abstimmungsbedarf, Konflikten im Team und deutlich höherem Führungsaufwand führen.";
                 } else {
-                  rFazit = isFRr
+                  rFazit = isITr
+                    ? "I requisiti del ruolo e lo stile di lavoro della persona differiscono in modo sostanziale. Nella pratica, cio' puo' portare a un maggior sforzo di coordinamento, a conflitti nel team e a richieste di gestione significativamente piu' elevate."
+                    : isFRr
                     ? "Les exigences du poste et le mode de travail de la personne diffèrent nettement. Au quotidien, cela peut entraîner un besoin de coordination accru, des conflits dans l'équipe et une charge managériale sensiblement plus élevée."
                     : isEN
                     ? "The role requirements and the person's working style differ substantially. In practice this can lead to increased coordination effort, team conflicts, and significantly higher management demands."
@@ -1689,10 +1743,10 @@ export default function SollIstBericht() {
                     </div>
 
                     <div style={{ background: `${rFitColor}08`, borderLeft: `3px solid ${rFitColor}`, borderRadius: "0 8px 8px 0", padding: "12px 16px", marginBottom: 22 }}>
-                      <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang={region === "FR" ? "fr" : region === "EN" ? "en" : "de"}>{rFazit}</p>
+                      <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang={region === "IT" ? "it" : region === "FR" ? "fr" : region === "EN" ? "en" : "de"}>{rFazit}</p>
                     </div>
 
-                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, wordBreak: "break-word", overflowWrap: "break-word", hyphens: "auto", WebkitHyphens: "auto" } as any} lang={region === "FR" ? "fr" : region === "EN" ? "en" : "de"}>{result.finalText}</p>
+                    <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, wordBreak: "break-word", overflowWrap: "break-word", hyphens: "auto", WebkitHyphens: "auto" } as any} lang={region === "IT" ? "it" : region === "FR" ? "fr" : region === "EN" ? "en" : "de"}>{result.finalText}</p>
                   </div>
                 );
               })()}
@@ -1728,7 +1782,7 @@ export default function SollIstBericht() {
 
                             <div style={{ padding: "14px 16px", borderRadius: 10, background: `${phaseCol}06`, borderLeft: `4px solid ${phaseCol}` }}>
                               <p style={{ fontSize: 11, fontWeight: 700, color: phaseCol, textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 6px" }}>{region === "FR" ? "Ce qui compte" : region === "EN" ? "What matters" : "Worauf es ankommt"}</p>
-                              <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: "0 0 8px", hyphens: "auto", WebkitHyphens: "auto" } as any} lang={region === "FR" ? "fr" : region === "EN" ? "en" : "de"}>{phase.fokus.intro}</p>
+                              <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: "0 0 8px", hyphens: "auto", WebkitHyphens: "auto" } as any} lang={region === "IT" ? "it" : region === "FR" ? "fr" : region === "EN" ? "en" : "de"}>{phase.fokus.intro}</p>
                               <ul style={{ margin: 0, paddingLeft: 0, listStyle: "none" }}>
                                 {phase.fokus.bullets.map((b, bi) => (
                                   <li key={bi} style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, marginBottom: 4, paddingLeft: 18, position: "relative" }}>
