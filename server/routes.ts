@@ -3948,9 +3948,10 @@ WICHTIG:
       const isLeading = context?.is_leading === true;
       const isEN = region === "EN";
       const isFR = region === "FR";
+      const isIT = region === "IT";
       const personRole = isLeading
-        ? (isFR ? "nouveau responsable" : isEN ? "new leader" : "Führungskraft")
-        : (isFR ? "nouveau membre d'équipe" : isEN ? "new team member" : "Teammitglied");
+        ? (isFR ? "nouveau responsable" : isEN ? "new leader" : isIT ? "nuovo manager" : "Führungskraft")
+        : (isFR ? "nouveau membre d'équipe" : isEN ? "new team member" : isIT ? "nuovo membro del team" : "Teammitglied");
 
       const systemPrompt = isFR
         ? `Tu crées un rapport systémique d'équipe unifié (bioLogic) comme document de management.
@@ -4078,6 +4079,68 @@ Numerical values:
 
 Forbidden terms:
 personality, type, mindset, unlocking potential, appreciative, holistic, authentic, carried.`
+        : isIT
+        ? `Crei un report sistemico di team unificato (bioLogic) come documento di management.
+I lettori non conoscono il modello. Descrivi la logica di lavoro e di decisione nel team, non la personalita'.
+Scrivi in modo fattuale, preciso, senza linguaggio di coaching e senza diagnosi psicologiche.
+
+IMPORTANTE - Distinzione del ruolo:
+La nuova persona e' un/a ${personRole}. Questo cambia fondamentalmente l'intera analisi.
+
+${isLeading ? `MODALITA' MANAGER:
+- La nuova persona prende la leadership del team. Determina la logica di decisione, la priorizzazione e lo stile di gestione.
+- Analizza come la logica decisionale del nuovo manager modifica le dinamiche del team esistente.
+- Descrivi il cambiamento come un "cambio di leadership": come cambiano la cultura decisionale, la priorizzazione e il ritmo di lavoro?
+- Formula i rischi dal punto di vista della leadership: perdita di accettazione, resistenza, scontro culturale, gestione eccessiva.
+- Formula le opportunita' dal punto di vista della leadership: professionalizzazione, disciplina dei risultati, chiarezza strategica.
+- Le leve di leadership sono azioni che il nuovo manager puo' implementare direttamente.
+- Nel piano di integrazione: il nuovo manager agisce attivamente, il team risponde.
+- Usa sistematicamente "il nuovo manager" o "la nuova direzione", non "la nuova persona".` :
+`MODALITA' MEMBRO DEL TEAM:
+- La nuova persona entra nel team esistente senza ruolo di leadership.
+- Analizza come il nuovo membro del team influenza le dinamiche del team esistente (senza autorita' di gestione).
+- Descrivi il cambiamento come un "ampliamento del team": come cambiano la collaborazione, il ritmo di lavoro e l'equilibrio del team?
+- Rischi: difficolta' di integrazione, attrito con il team esistente, isolamento silenzioso, pressione a conformarsi.
+- Opportunita': nuove prospettive, complementarieta' di competenze, copertura piu' ampia, nuovo slancio.
+- Le leve di leadership sono azioni che il management esistente dovrebbe attuare per gestire l'integrazione.
+- Nel piano di integrazione: il team esistente e il management guidano l'integrazione, il nuovo membro viene accolto.
+- Usa sistematicamente "il nuovo membro del team" o "la nuova persona", non "il nuovo manager".`}
+
+Principi obbligatori:
+- Non usare mai termini del modello senza una traduzione funzionale (Impulsiv/Intuitiv/Analytisch solo come descrizione della logica di lavoro).
+- Usa sempre le etichette in chiaro: "Ritmo e Decisione" (Impulsiv), "Comunicazione e Relazioni" (Intuitiv), "Struttura e Rigore" (Analytisch).
+- Ogni affermazione di rischio include un impatto concreto (velocita', qualita', KPI, dinamiche del team, impegno gestionale).
+- Nessun cliche', nessuna ripetizione, nessuna metafora.
+- Punti elenco: max 2 frasi ciascuno, osservazione + effetto.
+- Fai riferimento ai compiti e alle priorita' KPI dai dati di input.
+- Nessun trattino em (- o --). Dividi le frasi o usa i due punti.
+- Nessuna percentuale o punteggio grezzo nel testo narrativo. Descrivi qualitativamente: "chiaramente in primo piano", "nettamente presente", "molto vicini", "chiaramente secondario".
+
+I valori calcolati (DG, DC, RG, TS, CI, intensita', tipo di spostamento, necessita' di gestione) sono gia' calcolati deterministicamente e trasmessi come input. Usali esattamente, NON ricalcolarli.
+
+Formato di output:
+Scrivi solo il report (nessuna spiegazione, nessun JSON). Usa esattamente questa struttura:
+
+1. Sintesi sistemica esecutiva
+2. Panoramica dei profili (Team / ${isLeading ? "Nuovo manager" : "Nuovo membro del team"} / Target opzionale)
+3. Tipo di sistema e asse di spostamento
+4. Impatto sistemico nel quotidiano (4 aree: Decisioni/Priorita', Qualita', Ritmo, Collaborazione)
+5. Impatto compiti e KPI (derivato da tasks e kpi_focus)
+6. Previsione di conflitti e pressione
+7. Maturita' del team (5 dimensioni)
+8. Opportunita' (max 6)
+9. Rischi (max 6)
+10. Leve di leadership (max 6, concrete)
+11. Piano di integrazione (30 giorni, 3 fasi)
+12. Punti di misurazione (3-5, obiettivi)
+13. Valutazione complessiva (chiara, 4-6 frasi)
+
+Valori numerici:
+- TS come numero 0-100 (arrotondato), Intensita' (Basso/Medio/Alto)
+- DG, DC, RG, CI opzionali come valori secondari nel riepilogo (breve, 1 riga)
+
+Termini vietati:
+personalita', tipo, mindset, liberare il potenziale, apprezzativo, olistico, autentico.`
         : `Du erstellst einen einheitlichen Team-Systemreport (bioLogic) als Managementdokument.
 Die Leser kennen das Modell nicht. Du beschreibst keine Persönlichkeit, sondern Arbeits- und Entscheidungslogik im Team.
 Schreibe sachlich, präzise, ohne Coaching-Sprache und ohne psychologische Diagnosen.
@@ -4142,6 +4205,8 @@ Persönlichkeit, Typ, Mindset, Potenzial entfalten, wertschätzend, ganzheitlich
         ? `Crée le rapport systémique d'équipe sur la base des données suivantes :\n\n${JSON.stringify({ context, profiles, computed, levers }, null, 2)}`
         : isEN
         ? `Create the Team System Report based on the following data:\n\n${JSON.stringify({ context, profiles, computed, levers }, null, 2)}`
+        : isIT
+        ? `Crea il report sistemico di team sulla base dei seguenti dati:\n\n${JSON.stringify({ context, profiles, computed, levers }, null, 2)}`
         : `Erstelle den Team-Systemreport basierend auf folgenden Daten:\n\n${JSON.stringify({ context, profiles, computed, levers }, null, 2)}`;
 
       const report = await callClaudeForText("generate-team-report", systemPrompt, userContent, { temperature: 0.6, maxTokens: 4096 });
@@ -4940,6 +5005,7 @@ Du befindest dich GERADE in einer aktiven Gesprächssimulation. WICHTIGE REGELN:
 
       const isEN = region === "EN";
       const isFR = region === "FR";
+      const isIT = region === "IT";
 
       const systemPrompt = isFR
         ? `Tu es spécialiste en psychologie organisationnelle et en diagnostic comportemental pour la plateforme bioLogic HR Analytics.
@@ -4988,6 +5054,30 @@ Output JSON schema (all fields required, all values English strings):
   "chancen": "string — 2-3 concrete opportunities this person brings to the team",
   "risiken": "string — 2-3 concrete risks or friction points leadership should monitor",
   "systemfazit": "string — overall conclusion: fit quality and key recommendation for leadership"
+}`
+        : isIT
+        ? `Sei specialista in psicologia organizzativa e diagnostica comportamentale per la piattaforma bioLogic HR Analytics.
+Il tuo obiettivo: scrivere testi narrativi concisi e professionali per un rapporto di integrazione nel team in ITALIANO.
+
+Regole di redazione (da rispettare obbligatoriamente):
+- Scrivi NATIVAMENTE in italiano. Non tradurre dal tedesco.
+- Sii obiettivo e fattuale. Nessun coaching, nessuna banalita', nessuna diagnosi psicologica.
+- Ogni sezione: 2-4 frasi brevi e attive. Affronta solo le implicazioni concrete in ambito lavorativo.
+- Non usare mai percentuali o numeri grezzi per descrivere i profili. Usa termini qualitativi: "chiaramente in primo piano", "nettamente presente", "molto vicini", "leggermente avanti", "chiaramente dominante", "complessivamente equilibrato", "peso simile".
+- Non usare mai il gergo del modello. Non scrivere mai "impulsivo", "intuitivo" o "analitico". Usa: "Ritmo e Decisione" per la dimensione d'azione, "Comunicazione e Relazioni" per la dimensione umana, "Struttura e Rigore" per la dimensione di processo.
+- Non usare trattini em. Usa virgole, due punti o punti.
+- Frasi brevi e attive. Un'idea per frase.
+- Restituisci SOLO JSON valido. Nessun markdown, nessun blocco di codice, nessun testo aggiuntivo.
+
+Schema JSON di output (tutti i campi obbligatori, tutti i valori in italiano):
+{
+  "fuehrungsprofil": "string — come il pattern comportamentale della persona struttura il suo stile di lavoro quotidiano e le interazioni con il team",
+  "teamdynamikAlltag": "string — quali tensioni o sinergie emergono tra il profilo della persona e quello del team nel quotidiano",
+  "systemwirkung": "string — impatto sistemico complessivo di questa assunzione sui processi e l'efficacia del team",
+  "kulturwirkung": "string — come il pattern della persona influenza la cultura del team e le norme di lavoro condivise",
+  "chancen": "string — 2-3 opportunita' concrete che questa persona porta al team",
+  "risiken": "string — 2-3 rischi concreti o punti di attrito che il management dovrebbe monitorare",
+  "systemfazit": "string — conclusione complessiva: qualita' della corrispondenza e raccomandazione chiave per il management"
 }`
         : `Du bist Spezialist für Organisationspsychologie und Verhaltensdiagnostik der bioLogic HR-Analytics-Plattform.
 Deine Aufgabe: Schreibe prägnante, professionelle Narrative-Texte für einen Team-Fit-Bericht auf DEUTSCH.
@@ -5052,6 +5142,28 @@ Development level: ${calculated.developmentLevel}/4
 ${calculated.teamGoalLabel ? `Team goal assessment: ${calculated.teamGoalLabel}` : ""}
 
 Return only the JSON object.`
+        : isIT
+        ? `Genera i testi narrativi per il seguente rapporto di integrazione nel team:
+
+Ruolo: "${context.roleName}" | Persona: "${context.candidateName}"
+Ruolo di leadership: ${context.isLeadership ? "Si'" : "No"}
+${context.teamGoal ? `Obiettivo del team: ${context.teamGoal}` : ""}
+${context.roleLevel ? `Livello del ruolo: ${context.roleLevel}` : ""}
+${context.taskStructure ? `Struttura dei compiti: ${context.taskStructure}` : ""}
+${context.workStyle ? `Stile di lavoro: ${context.workStyle}` : ""}
+
+Profilo del team: Ritmo e Decisione ${profiles.team.impulsiv} / Comunicazione e Relazioni ${profiles.team.intuitiv} / Struttura e Rigore ${profiles.team.analytisch}
+Profilo della persona: Ritmo e Decisione ${profiles.person.impulsiv} / Comunicazione e Relazioni ${profiles.person.intuitiv} / Struttura e Rigore ${profiles.person.analytisch}
+Costellazione del team: ${calculated.teamConstellationLabel}
+Costellazione della persona: ${calculated.istConstellationLabel}
+
+Corrispondenza complessiva: ${calculated.gesamtpassungLabel} (${calculated.gesamtpassung})
+Scarto di profilo: ${calculated.teamIstGap}
+Intensita' di gestione: ${calculated.controlIntensity}
+Livello di sviluppo: ${calculated.developmentLevel}/4
+${calculated.teamGoalLabel ? `Valutazione obiettivo del team: ${calculated.teamGoalLabel}` : ""}
+
+Restituisci solo l'oggetto JSON.`
         : `Erstelle die Narrative-Texte für den folgenden Team-Fit-Bericht:
 
 Stelle: "${context.roleName}" | Person: "${context.candidateName}"
@@ -5123,6 +5235,7 @@ Gib nur das JSON-Objekt zurück.`;
 
       const isEN = region === "EN";
       const isFR = region === "FR";
+      const isIT = region === "IT";
 
       const systemPrompt = isFR
         ? `Tu es spécialiste en psychologie organisationnelle et en diagnostic comportemental pour la plateforme bioLogic HR Analytics.
@@ -5219,6 +5332,55 @@ Output JSON schema (all fields required):
   "actions": ["string", "string", "string"] — 3 concrete recommended management actions,
   "finalText": "string — 2–3 sentence overall conclusion and hiring recommendation"
 }`
+        : isIT
+        ? `Sei specialista in psicologia organizzativa e diagnostica comportamentale per la piattaforma bioLogic HR Analytics.
+Il tuo obiettivo: scrivere testi narrativi concisi e professionali per un rapporto di corrispondenza persona-ruolo (MatchCheck) in ITALIANO.
+
+REGOLE DI STILE (obbligatorie):
+
+1) SOLO VOCE ATTIVA. Nessuna costruzione passiva.
+   Sbagliato: "Si dovrebbe assicurare che il candidato possa comunicare."
+   Giusto: "Chi ricopre questo ruolo comunica con chiarezza e agisce sotto pressione."
+
+2) NESSUN numero, NESSUNA percentuale, NESSUN punteggio nell'output. Descrivi i rapporti qualitativamente.
+   Sbagliato: "Forte allineamento in dinamica d'azione (40% vs. 45%)"
+   Giusto: "I due profili sono molto vicini sul ritmo e la presa di decisione."
+   Parole di intensita' qualitativa: "chiaramente in primo piano", "chiaramente dominante", "nettamente avanti", "leggermente avanti", "molto vicini", "praticamente alla pari", "nettamente presente", "sullo sfondo", "chiaramente secondario".
+
+3) NESSUN gergo del modello bioLogic nel testo di output. Non scrivere mai: "impulsivo", "intuitivo", "analitico", "componente", "triade", "classe di profilo", "BAL_FULL", "scarto".
+   Usa SOLO etichette in chiaro:
+   - dimensione d'azione -> "Ritmo e Decisione"
+   - dimensione umana -> "Comunicazione e Relazioni"
+   - dimensione di processo -> "Struttura e Rigore"
+
+4) NESSUN trattino em (- o --) nel testo. Dividi in due frasi o usa i due punti.
+
+5) NESSUN linguaggio di coaching, nessuna banalita', nessun disclaimer nel corpo del rapporto.
+   Vietato: "senza giudizio di valore", "non sostituisce la valutazione individuale", "ogni persona e' unica", "approccio olistico".
+
+6) Ogni sezione: affermazione chiave prima, breve giustificazione, un'implicazione concreta per la selezione o il management.
+
+7) "executiveBullets" e "actions" devono essere array di stringhe brevi in italiano (max 2 frasi ciascuna).
+
+8) Se vengono forniti "sourceTexts" nel messaggio utente, traducili fedelmente in italiano mantenendo la struttura esatta (id, num, severity invariati). Adatta liberamente lo stile rispettando le regole 1-6.
+
+9) Restituisci SOLO JSON valido. Nessun markdown, nessun blocco di codice, nessun testo aggiuntivo.
+
+CHECKLIST prima dell'output: Nessuna percentuale? Nessun "impulsivo/intuitivo/analitico"? Nessun trattino em? Voce attiva in tutto?
+
+Schema JSON di output (tutti i campi obbligatori):
+{
+  "summaryText": "string — riepilogo esecutivo in 3-4 frasi della corrispondenza persona-ruolo",
+  "executiveBullets": ["string", "string", "string"] — 3 ragioni principali per il risultato di corrispondenza,
+  "constellationRisks": ["string", "string"] — 2 rischi derivanti dalla differenza di costellazione,
+  "dominanceShiftText": "string — 2-3 frasi sull'interazione degli assi dominanti",
+  "developmentText": "string — 2-3 frasi sull'impegno di sviluppo e l'intensita' di gestione necessaria",
+  "actions": ["string", "string", "string"] — 3 raccomandazioni concrete per il management,
+  "finalText": "string — conclusione complessiva in 2-3 frasi e raccomandazione di selezione",
+  "impactAreas": [{ "id": "string", "label": "string", "severity": "string", "roleNeed": "string", "candidatePattern": "string", "risk": "string" }] — traduzione delle aree d'impatto (se sourceTexts fornito),
+  "riskTimeline": [{ "label": "string", "period": "string", "text": "string" }] — traduzione della cronologia dei rischi (se sourceTexts fornito),
+  "integrationsplan": [{ "num": number, "title": "string", "period": "string", "ziel": "string", "items": ["string"], "fokus": { "intro": "string", "bullets": ["string"] } }] — traduzione del piano di integrazione (se sourceTexts fornito, altrimenti null)
+}`
         : `Du bist Spezialist für Organisationspsychologie und Verhaltensdiagnostik der bioLogic HR-Analytics-Plattform.
 Deine Aufgabe: Schreibe prägnante, professionelle Narrative-Texte für einen Personen-Stellen-Passungs-Bericht (MatchCheck) auf DEUTSCH.
 
@@ -5310,6 +5472,35 @@ Development level: ${calculated.developmentLabel} (level ${calculated.developmen
 Management intensity: ${calculated.controlIntensity}
 
 Return only the JSON object.`
+        : isIT
+        ? `Genera i testi narrativi per il seguente rapporto MatchCheck:
+
+Ruolo: "${context.roleName}" | Candidato: "${context.candidateName}"
+
+DATI DEL PROFILO (solo per il contesto e il confronto relativo — NON riprodurre questi numeri nel testo di output):
+Profilo target: Ritmo e Decisione ${profiles.role.impulsiv} / Comunicazione e Relazioni ${profiles.role.intuitiv} / Struttura e Rigore ${profiles.role.analytisch}
+Profilo reale: Ritmo e Decisione ${profiles.candidate.impulsiv} / Comunicazione e Relazioni ${profiles.candidate.intuitiv} / Struttura e Rigore ${profiles.candidate.analytisch}
+Costellazione target: ${calculated.roleConstellationLabel}
+Costellazione reale: ${calculated.candConstellationLabel}
+
+Risultato di corrispondenza: ${calculated.fitLabel} (${calculated.fitRating})
+Scarto di profilo (solo per il contesto — descrivere qualitativamente nel testo): ${calculated.totalGap} punti
+Livello di scarto: ${calculated.gapLevel}
+Livello di sviluppo: ${calculated.developmentLabel} (livello ${calculated.developmentLevel} di 4)
+Intensita' di gestione: ${calculated.controlIntensity}
+${sourceTexts ? `
+TESTI SORGENTE DA TRADURRE IN ITALIANO (mantieni id, num, severity invariati; adatta lo stile alle regole):
+
+AREE D'IMPATTO:
+${JSON.stringify(sourceTexts.impactAreas, null, 2)}
+
+CRONOLOGIA DEI RISCHI:
+${JSON.stringify(sourceTexts.riskTimeline, null, 2)}
+
+PIANO DI INTEGRAZIONE:
+${JSON.stringify(sourceTexts.integrationsplan, null, 2)}
+` : ""}
+Restituisci solo l'oggetto JSON.`
         : `Erstelle die Narrative-Texte für den folgenden MatchCheck-Bericht:
 
 Stelle: "${context.roleName}" | Kandidat: "${context.candidateName}"
@@ -5328,7 +5519,7 @@ Steuerungsintensität: ${calculated.controlIntensity}
 
 Gib nur das JSON-Objekt zurück.`;
 
-      const raw = await callClaudeForText("generate-soll-ist-narrative", systemPrompt, userMsg, { temperature: 0.6, maxTokens: isFR ? 5000 : 2000 });
+      const raw = await callClaudeForText("generate-soll-ist-narrative", systemPrompt, userMsg, { temperature: 0.6, maxTokens: (isFR || isIT) ? 5000 : 2000 });
       const jsonStr = raw.replace(/```json\s*/gi, "").replace(/```\s*/g, "").trim();
       const narrative = JSON.parse(jsonStr);
 
