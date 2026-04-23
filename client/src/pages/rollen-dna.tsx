@@ -1921,7 +1921,12 @@ export default function RollenDNA() {
   const [summaryOpen, setSummaryOpen] = useState(true);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
-  const [selectedLaender, setSelectedLaender] = useState<Set<BerufLand>>(new Set(["DE", "CH", "AT"]));
+  const [selectedLaender, setSelectedLaender] = useState<Set<BerufLand>>(() => {
+    if (region === "FR") return new Set<BerufLand>(["FR"]);
+    if (region === "IT") return new Set<BerufLand>(["IT"]);
+    if (region === "EN") return new Set<BerufLand>(["EN"]);
+    return new Set<BerufLand>(["DE", "CH", "AT"]);
+  });
   const suggestionsRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -2774,11 +2779,14 @@ export default function RollenDNA() {
                       <p style={{ fontSize: 13, color: "#6E6E73", margin: "0 0 8px" }}>
                         {region === "IT" ? "I suggerimenti vengono mostrati per i paesi attivi. Clicca per attivare o disattivare." : region === "FR" ? "Les suggestions s'affichent pour les pays actifs. Clique pour activer ou désactiver." : region === "EN" ? "Suggestions are shown for the active countries. Click to enable or disable." : "Vorschläge werden für die aktiven Länder angezeigt. Zum Ein- oder Ausschalten einfach klicken."}
                       </p>
-                      <div className="flex items-center gap-2" data-testid="land-filter">
+                      <div className="flex items-center gap-2 flex-wrap" data-testid="land-filter">
                         {([
                           { land: "DE" as BerufLand, label: "DE", flag: (<svg viewBox="0 0 20 14" className="w-4 h-3 rounded-[2px] overflow-hidden"><rect y="0" width="20" height="4.67" fill="#000"/><rect y="4.67" width="20" height="4.67" fill="#D00"/><rect y="9.33" width="20" height="4.67" fill="#FFCE00"/></svg>) },
                           { land: "CH" as BerufLand, label: "CH", flag: (<svg viewBox="0 0 20 14" className="w-4 h-3 rounded-[2px] overflow-hidden"><rect width="20" height="14" fill="#D52B1E"/><rect x="8" y="2.5" width="4" height="9" fill="#FFF"/><rect x="5.5" y="5" width="9" height="4" fill="#FFF"/></svg>) },
                           { land: "AT" as BerufLand, label: "AT", flag: (<svg viewBox="0 0 20 14" className="w-4 h-3 rounded-[2px] overflow-hidden"><rect y="0" width="20" height="4.67" fill="#ED2939"/><rect y="4.67" width="20" height="4.67" fill="#FFF"/><rect y="9.33" width="20" height="4.67" fill="#ED2939"/></svg>) },
+                          { land: "FR" as BerufLand, label: "FR", flag: (<svg viewBox="0 0 20 14" className="w-4 h-3 rounded-[2px] overflow-hidden"><rect x="0" y="0" width="6.67" height="14" fill="#002395"/><rect x="6.67" y="0" width="6.67" height="14" fill="#FFF"/><rect x="13.33" y="0" width="6.67" height="14" fill="#ED2939"/></svg>) },
+                          { land: "IT" as BerufLand, label: "IT", flag: (<svg viewBox="0 0 20 14" className="w-4 h-3 rounded-[2px] overflow-hidden"><rect x="0" y="0" width="6.67" height="14" fill="#009246"/><rect x="6.67" y="0" width="6.67" height="14" fill="#FFF"/><rect x="13.33" y="0" width="6.67" height="14" fill="#CE2B37"/></svg>) },
+                          { land: "EN" as BerufLand, label: "EN", flag: (<svg viewBox="0 0 20 14" className="w-4 h-3 rounded-[2px] overflow-hidden"><rect width="20" height="14" fill="#012169"/><line x1="0" y1="0" x2="20" y2="14" stroke="#FFF" strokeWidth="2.5"/><line x1="20" y1="0" x2="0" y2="14" stroke="#FFF" strokeWidth="2.5"/><line x1="0" y1="0" x2="20" y2="14" stroke="#C8102E" strokeWidth="1.5"/><line x1="20" y1="0" x2="0" y2="14" stroke="#C8102E" strokeWidth="1.5"/><rect x="8.5" y="0" width="3" height="14" fill="#FFF"/><rect x="0" y="5.5" width="20" height="3" fill="#FFF"/><rect x="9" y="0" width="2" height="14" fill="#C8102E"/><rect x="0" y="6" width="20" height="2" fill="#C8102E"/></svg>) },
                         ]).map(({ land, label, flag }) => {
                           const active = selectedLaender.has(land);
                           return (
