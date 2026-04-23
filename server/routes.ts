@@ -2428,35 +2428,35 @@ Beispiel für 3 Einträge:
       };
 
       const PROFILE_TYPE_DESCRIPTIONS_FR: Record<string, string> = {
-        "balanced_all": "Profil équilibré : les trois domaines de compétences (Rythme et Décision, Communication et Relations, Structure et Rigueur) sont pratiquement égaux. Le poste demande de la polyvalence sans spécialisation claire. Décris le poste comme varié et équilibré.",
-        "strong_imp": "Fortement orienté Rythme et Décision : la compétence d'action et d'exécution domine largement. Le poste exige principalement de la détermination, des décisions rapides et une orientation résultats. Les dimensions relationnelle et structurelle sont clairement secondaires.",
-        "strong_ana": "Fortement orienté Structure et Rigueur : la compétence technique et méthodologique domine largement. Le poste exige principalement une pensée systématique, une expertise professionnelle et une approche structurée. Le rythme et la relation sont clairement secondaires.",
-        "strong_int": "Fortement orienté Communication et Relations : la compétence sociale et relationnelle domine largement. Le poste exige principalement de l'empathie, le développement de relations et une intelligence émotionnelle. Le rythme et la structure sont clairement secondaires.",
-        "dominant_imp": "Orienté Rythme et Décision : la compétence d'action est clairement en tête, mais sans excès. Le poste a principalement besoin de la force d'exécution, complétée par le deuxième domaine le plus fort.",
-        "dominant_ana": "Orienté Structure et Rigueur : la compétence technique est clairement en tête, mais sans excès. Le poste a principalement besoin d'une approche méthodique, complétée par le deuxième domaine le plus fort.",
-        "dominant_int": "Orienté Communication et Relations : la compétence relationnelle est clairement en tête. Le poste a principalement besoin de compétences sociales, complétées par le deuxième domaine le plus fort.",
-        "light_imp": "Légèrement orienté Rythme et Décision : la compétence d'action est légèrement en tête, sans dominance claire. Le poste tend vers l'exécution, mais requiert aussi de la largeur dans les autres domaines.",
-        "light_ana": "Légèrement orienté Structure et Rigueur : la compétence technique est légèrement en tête, sans dominance claire. Le poste tend vers le travail structuré, mais requiert aussi de la largeur dans les autres domaines.",
-        "light_int": "Légèrement orienté Communication et Relations : la compétence relationnelle est légèrement en tête, sans dominance claire. Le poste tend vers le travail relationnel, mais requiert aussi de la largeur dans les autres domaines.",
-        "hybrid_imp_ana": "Double structure Rythme et Décision / Structure et Rigueur : compétence d'action et compétence technique sont proches et forment un tandem. Le poste exige à la fois la force d'exécution et la pensée méthodique. La dimension relationnelle est clairement secondaire.",
-        "hybrid_ana_int": "Double structure Structure et Rigueur / Communication et Relations : compétence technique et compétence relationnelle sont proches et forment un tandem. Le poste exige à la fois la profondeur professionnelle et les aptitudes interpersonnelles. Le rythme est clairement secondaire.",
-        "hybrid_imp_int": "Double structure Rythme et Décision / Communication et Relations : compétence d'action et compétence relationnelle sont proches et forment un tandem. Le poste exige à la fois la détermination et l'empathie. La structure est clairement secondaire.",
+        "balanced_all": "Profil équilibré : les trois domaines de compétences (Orienté action, Relationnel, Analytique) sont pratiquement égaux. Le poste demande de la polyvalence sans spécialisation claire. Décris le poste comme varié et équilibré.",
+        "strong_imp": "Fortement orienté Orienté action : la compétence d'action et d'exécution domine largement. Le poste exige principalement de la détermination, des décisions rapides et une orientation résultats. Les dimensions relationnelle et structurelle sont clairement secondaires.",
+        "strong_ana": "Fortement orienté Analytique : la compétence technique et méthodologique domine largement. Le poste exige principalement une pensée systématique, une expertise professionnelle et une approche structurée. Le rythme et la relation sont clairement secondaires.",
+        "strong_int": "Fortement orienté Relationnel : la compétence sociale et relationnelle domine largement. Le poste exige principalement de l'empathie, le développement de relations et une intelligence émotionnelle. Le rythme et la structure sont clairement secondaires.",
+        "dominant_imp": "Orienté Orienté action : la compétence d'action est clairement en tête, mais sans excès. Le poste a principalement besoin de la force d'exécution, complétée par le deuxième domaine le plus fort.",
+        "dominant_ana": "Orienté Analytique : la compétence technique est clairement en tête, mais sans excès. Le poste a principalement besoin d'une approche méthodique, complétée par le deuxième domaine le plus fort.",
+        "dominant_int": "Orienté Relationnel : la compétence relationnelle est clairement en tête. Le poste a principalement besoin de compétences sociales, complétées par le deuxième domaine le plus fort.",
+        "light_imp": "Légèrement orienté Orienté action : la compétence d'action est légèrement en tête, sans dominance claire. Le poste tend vers l'exécution, mais requiert aussi de la largeur dans les autres domaines.",
+        "light_ana": "Légèrement orienté Analytique : la compétence technique est légèrement en tête, sans dominance claire. Le poste tend vers le travail structuré, mais requiert aussi de la largeur dans les autres domaines.",
+        "light_int": "Légèrement orienté Relationnel : la compétence relationnelle est légèrement en tête, sans dominance claire. Le poste tend vers le travail relationnel, mais requiert aussi de la largeur dans les autres domaines.",
+        "hybrid_imp_ana": "Double structure Orienté action / Analytique : compétence d'action et compétence technique sont proches et forment un tandem. Le poste exige à la fois la force d'exécution et la pensée méthodique. La dimension relationnelle est clairement secondaire.",
+        "hybrid_ana_int": "Double structure Analytique / Relationnel : compétence technique et compétence relationnelle sont proches et forment un tandem. Le poste exige à la fois la profondeur professionnelle et les aptitudes interpersonnelles. Le rythme est clairement secondaire.",
+        "hybrid_imp_int": "Double structure Orienté action / Relationnel : compétence d'action et compétence relationnelle sont proches et forment un tandem. Le poste exige à la fois la détermination et l'empathie. La structure est clairement secondaire.",
       };
 
       const PROFILE_TYPE_DESCRIPTIONS_IT: Record<string, string> = {
-        "balanced_all": "Profilo equilibrato: tutte e tre le aree di competenza (Ritmo e Decisione, Comunicazione e Relazioni, Struttura e Rigore) sono quasi uguali. Il ruolo richiede versatilità senza una specializzazione chiara. Descrivi il ruolo come vario ed equilibrato.",
-        "strong_imp": "Fortemente orientato a Ritmo e Decisione: la competenza d'azione ed esecuzione domina con grande vantaggio. Il ruolo richiede principalmente determinazione, decisioni rapide e orientamento ai risultati. Le dimensioni relazionale e strutturale sono chiaramente secondarie.",
-        "strong_ana": "Fortemente orientato a Struttura e Rigore: la competenza tecnica e metodologica domina con grande vantaggio. Il ruolo richiede principalmente pensiero sistematico, competenza professionale e approccio strutturato. Ritmo e relazioni sono chiaramente secondari.",
-        "strong_int": "Fortemente orientato a Comunicazione e Relazioni: la competenza sociale e relazionale domina con grande vantaggio. Il ruolo richiede principalmente empatia, costruzione di relazioni e intelligenza emotiva. Ritmo e struttura sono chiaramente secondari.",
-        "dominant_imp": "Orientato a Ritmo e Decisione: la competenza d'azione e' chiaramente in testa, ma non in modo eccessivo. Il ruolo ha bisogno principalmente di forza esecutiva, integrata dalla seconda area più forte.",
-        "dominant_ana": "Orientato a Struttura e Rigore: la competenza tecnica e' chiaramente in testa, ma non in modo eccessivo. Il ruolo ha bisogno principalmente di approccio metodico, integrato dalla seconda area più forte.",
-        "dominant_int": "Orientato a Comunicazione e Relazioni: la competenza relazionale è chiaramente in testa. Il ruolo ha bisogno principalmente di capacità sociali, integrate dalla seconda area più forte.",
-        "light_imp": "Leggermente orientato a Ritmo e Decisione: la competenza d'azione e' leggermente in testa, senza dominanza chiara. Il ruolo tende all'esecuzione, ma richiede anche ampiezza nelle altre aree.",
-        "light_ana": "Leggermente orientato a Struttura e Rigore: la competenza tecnica e' leggermente in testa, senza dominanza chiara. Il ruolo tende al lavoro strutturato, ma richiede anche ampiezza nelle altre aree.",
-        "light_int": "Leggermente orientato a Comunicazione e Relazioni: la competenza relazionale e' leggermente in testa, senza dominanza chiara. Il ruolo tende al lavoro relazionale, ma richiede anche ampiezza nelle altre aree.",
-        "hybrid_imp_ana": "Doppia struttura Ritmo e Decisione / Struttura e Rigore: competenza d'azione e competenza tecnica sono vicine e formano un tandem. Il ruolo richiede sia forza esecutiva che pensiero metodico. La dimensione relazionale è chiaramente secondaria.",
-        "hybrid_ana_int": "Doppia struttura Struttura e Rigore / Comunicazione e Relazioni: competenza tecnica e competenza relazionale sono vicine e formano un tandem. Il ruolo richiede sia profondità professionale che capacità interpersonali. Il ritmo è chiaramente secondario.",
-        "hybrid_imp_int": "Doppia struttura Ritmo e Decisione / Comunicazione e Relazioni: competenza d'azione e competenza relazionale sono vicine e formano un tandem. Il ruolo richiede sia determinazione che empatia. La struttura è chiaramente secondaria.",
+        "balanced_all": "Profilo equilibrato: tutte e tre le aree di competenza (Orientato all'azione, Relazionale, Analitico) sono quasi uguali. Il ruolo richiede versatilità senza una specializzazione chiara. Descrivi il ruolo come vario ed equilibrato.",
+        "strong_imp": "Fortemente orientato a Orientato all'azione: la competenza d'azione ed esecuzione domina con grande vantaggio. Il ruolo richiede principalmente determinazione, decisioni rapide e orientamento ai risultati. Le dimensioni relazionale e strutturale sono chiaramente secondarie.",
+        "strong_ana": "Fortemente orientato a Analitico: la competenza tecnica e metodologica domina con grande vantaggio. Il ruolo richiede principalmente pensiero sistematico, competenza professionale e approccio strutturato. Ritmo e relazioni sono chiaramente secondari.",
+        "strong_int": "Fortemente orientato a Relazionale: la competenza sociale e relazionale domina con grande vantaggio. Il ruolo richiede principalmente empatia, costruzione di relazioni e intelligenza emotiva. Ritmo e struttura sono chiaramente secondari.",
+        "dominant_imp": "Orientato a Orientato all'azione: la competenza d'azione e' chiaramente in testa, ma non in modo eccessivo. Il ruolo ha bisogno principalmente di forza esecutiva, integrata dalla seconda area più forte.",
+        "dominant_ana": "Orientato a Analitico: la competenza tecnica e' chiaramente in testa, ma non in modo eccessivo. Il ruolo ha bisogno principalmente di approccio metodico, integrato dalla seconda area più forte.",
+        "dominant_int": "Orientato a Relazionale: la competenza relazionale è chiaramente in testa. Il ruolo ha bisogno principalmente di capacità sociali, integrate dalla seconda area più forte.",
+        "light_imp": "Leggermente orientato a Orientato all'azione: la competenza d'azione e' leggermente in testa, senza dominanza chiara. Il ruolo tende all'esecuzione, ma richiede anche ampiezza nelle altre aree.",
+        "light_ana": "Leggermente orientato a Analitico: la competenza tecnica e' leggermente in testa, senza dominanza chiara. Il ruolo tende al lavoro strutturato, ma richiede anche ampiezza nelle altre aree.",
+        "light_int": "Leggermente orientato a Relazionale: la competenza relazionale e' leggermente in testa, senza dominanza chiara. Il ruolo tende al lavoro relazionale, ma richiede anche ampiezza nelle altre aree.",
+        "hybrid_imp_ana": "Doppia struttura Orientato all'azione / Analitico: competenza d'azione e competenza tecnica sono vicine e formano un tandem. Il ruolo richiede sia forza esecutiva che pensiero metodico. La dimensione relazionale è chiaramente secondaria.",
+        "hybrid_ana_int": "Doppia struttura Analitico / Relazionale: competenza tecnica e competenza relazionale sono vicine e formano un tandem. Il ruolo richiede sia profondità professionale che capacità interpersonali. Il ritmo è chiaramente secondario.",
+        "hybrid_imp_int": "Doppia struttura Orientato all'azione / Relazionale: competenza d'azione e competenza relazionale sono vicine e formano un tandem. Il ruolo richiede sia determinazione che empatia. La struttura è chiaramente secondaria.",
       };
 
       const profileDescription = isIT
@@ -2498,17 +2498,17 @@ ${gapAnalysis}
 
 ## VALEURS DE PROFIL CALCULÉES (exactes — NE PAS modifier)
 
-Profil global : Rythme et Décision ${gesamt?.imp || 33}% / Communication et Relations ${gesamt?.int || 33}% / Structure et Rigueur ${gesamt?.ana || 34}%
-Facteurs contextuels : Rythme et Décision ${rahmen?.imp || 33}% / Communication et Relations ${rahmen?.int || 33}% / Structure et Rigueur ${rahmen?.ana || 34}%
-${isLeadership ? `Compétences de direction : Rythme et Décision ${fuehrungBG?.imp || 33}% / Communication et Relations ${fuehrungBG?.int || 33}% / Structure et Rigueur ${fuehrungBG?.ana || 34}%` : "Aucune responsabilité managériale"}
-Tâches principales : Rythme et Décision ${haupt?.imp || 33}% / Communication et Relations ${haupt?.int || 33}% / Structure et Rigueur ${haupt?.ana || 34}%
-Compétences humaines : Rythme et Décision ${neben?.imp || 33}% / Communication et Relations ${neben?.int || 33}% / Structure et Rigueur ${neben?.ana || 34}%
+Profil global : Orienté action ${gesamt?.imp || 33}% / Relationnel ${gesamt?.int || 33}% / Analytique ${gesamt?.ana || 34}%
+Facteurs contextuels : Orienté action ${rahmen?.imp || 33}% / Relationnel ${rahmen?.int || 33}% / Analytique ${rahmen?.ana || 34}%
+${isLeadership ? `Compétences de direction : Orienté action ${fuehrungBG?.imp || 33}% / Relationnel ${fuehrungBG?.int || 33}% / Analytique ${fuehrungBG?.ana || 34}%` : "Aucune responsabilité managériale"}
+Tâches principales : Orienté action ${haupt?.imp || 33}% / Relationnel ${haupt?.int || 33}% / Analytique ${haupt?.ana || 34}%
+Compétences humaines : Orienté action ${neben?.imp || 33}% / Relationnel ${neben?.int || 33}% / Analytique ${neben?.ana || 34}%
 
 ## DOMAINES DE COMPÉTENCES (signification)
 
-- **Rythme et Décision** = Compétence d'action/exécution (faire, imposer, décider sous pression, orienter résultats)
-- **Communication et Relations** = Compétence sociale/relationnelle (ressentir, connecter, empathie, développer des relations)
-- **Structure et Rigueur** = Compétence technique/méthodologique (penser, structurer, analyser, expertise professionnelle)
+- **Orienté action** = Compétence d'action/exécution (faire, imposer, décider sous pression, orienter résultats)
+- **Relationnel** = Compétence sociale/relationnelle (ressentir, connecter, empathie, développer des relations)
+- **Analytique** = Compétence technique/méthodologique (penser, structurer, analyser, expertise professionnelle)
 
 ## DONNÉES DU PROFIL — CLASSÉES PAR NIVEAU
 
@@ -2559,7 +2559,7 @@ Réponds uniquement en JSON avec exactement cette structure (les NOMS de champs 
 
 {
   "rollencharakter": "Une phrase descriptive capturant le caractère structurel du poste, ex. 'Orienté résultats avec ancrage analytique' ou 'Leadership relationnel avec forte orientation exécution'",
-  "dominanteKomponente": "Axe dominant plus secondaire, ex. 'Rythme et Décision avec soutien de Structure et Rigueur' ou 'Double structure : Structure et Rigueur avec Communication et Relations'",
+  "dominanteKomponente": "Axe dominant plus secondaire, ex. 'Orienté action avec soutien de Analytique' ou 'Double structure : Analytique avec Relationnel'",
   "einleitung": "2-3 courts paragraphes séparés par \\n\\n. Chaque paragraphe max 2-3 phrases. Premier : qu'est-ce qui décide de ce poste ? Qu'est-ce qui détermine l'efficacité ? Deuxième : pourquoi les connaissances professionnelles seules ne suffisent-elles pas ? Dernier : 'Ce rapport décrit les exigences structurelles du poste, indépendamment de [référence spécifique au poste].'",
   "gesamtprofil": "3-4 courts paragraphes séparés par \\n\\n. Chaque max 2-3 phrases. Premier : quel domaine domine et pourquoi ? Deuxième : qu'est-ce que cela signifie pour le poste au quotidien ? Troisième : quelle fonction jouent les domaines secondaires ? Dernière phrase : 'L'efficacité vient [principalement de / par] ...'",
   "rahmenbedingungen": {
@@ -3313,9 +3313,9 @@ Antworte als JSON:
       // Klartext-Labels: keine Fachbegriffe wie "impulsiv/intuitiv/analytisch" im Bericht
       const componentLabel: Record<string, string> = isFR
         ? {
-            imp: "Rythme et Décision",
-            int: "Communication et Relations",
-            ana: "Structure et Rigueur",
+            imp: "Orienté action",
+            int: "Relationnel",
+            ana: "Analytique",
           }
         : isEN
         ? {
@@ -3325,9 +3325,9 @@ Antworte als JSON:
           }
         : isIT
         ? {
-            imp: "Ritmo e Decisione",
-            int: "Comunicazione e Relazioni",
-            ana: "Struttura e Rigore",
+            imp: "Orientato all'azione",
+            int: "Relazionale",
+            ana: "Analitico",
           }
         : {
             imp: "Tempo und Entscheidung",
@@ -3477,7 +3477,7 @@ RÈGLES DE STYLE (obligatoires) :
 
 3) AUCUN chiffre, aucun pourcentage, aucune note. Utilise des mots : "clairement au premier plan", "structure nettement le poste", "nettement présent", "en arrière-plan", "pratiquement à égalité", "légèrement devant", "nettement devant".
 
-4) AUCUN jargon technique du modèle : jamais "impulsif", "intuitif", "analytique", "composante", "triade", "classe de profil", "BAL_FULL", "DUAL_TOP", "CLEAR_TOP", "ORDER". Utilise toujours les libellés clairs : "Rythme et Décision", "Communication et Relations", "Structure et Rigueur".
+4) AUCUN jargon technique du modèle : jamais "impulsif", "intuitif", "analytique", "composante", "triade", "classe de profil", "BAL_FULL", "DUAL_TOP", "CLEAR_TOP", "ORDER". Utilise toujours les libellés clairs : "Orienté action", "Relationnel", "Analytique".
 
 5) Aucune clause de style. Interdit : "dans une approche globale", "il convient de noter", "à la lumière des développements actuels", "valeur ajoutée significative", "approche holistique".
 
@@ -3492,9 +3492,9 @@ RÈGLES DE STYLE (obligatoires) :
 10) Réponds en ${languageName}.
 
 COMMENT NOMMER LES TROIS AXES (toujours en clair) :
-- "Rythme et Décision" = agir, décider rapidement, imprimer le rythme, livrer des résultats
-- "Communication et Relations" = aller vers les gens, coordonner, médiatiser, développer des relations
-- "Structure et Rigueur" = organiser, vérifier, analyser, assurer soin et précision
+- "Orienté action" = agir, décider rapidement, imprimer le rythme, livrer des résultats
+- "Relationnel" = aller vers les gens, coordonner, médiatiser, développer des relations
+- "Analytique" = organiser, vérifier, analyser, assurer soin et précision
 
 AVANT (ce que ça ne doit PAS ressembler) :
 "Le profil de tâches correspond à la structure des axes. Le rôle de direction avec responsabilité de résultats exige des décisions rapides et une communication claire, deux éléments fortement ancrés dans le profil. Le travail structurel pourrait devenir un risque dans des tâches de planification plus complexes."
@@ -3690,7 +3690,7 @@ REGOLE DI STILE (obbligatorie):
 
 3) NESSUN numero, nessuna percentuale, nessun punteggio. Nessun valore come "52%", "distanza 3 punti" o "quasi 40". Usa invece parole: "chiaramente in primo piano", "struttura nettamente il ruolo", "chiaramente presente", "in secondo piano", "praticamente alla pari", "leggermente davanti", "chiaramente davanti".
 
-4) NESSUN termine tecnico del modello bioLogic: mai "impulsivo", "intuitivo", "analitico", "componente", "triade", "classe di profilo", "BAL_FULL", "DUAL_TOP", "CLEAR_TOP", "ORDER", "top1/top2/top3", "gap". Usa sempre etichette chiare: "Ritmo e Decisione", "Comunicazione e Relazioni", "Struttura e Rigore", "asse principale", "focus principale", "accompagna il ruolo".
+4) NESSUN termine tecnico del modello bioLogic: mai "impulsivo", "intuitivo", "analitico", "componente", "triade", "classe di profilo", "BAL_FULL", "DUAL_TOP", "CLEAR_TOP", "ORDER", "top1/top2/top3", "gap". Usa sempre etichette chiare: "Orientato all'azione", "Relazionale", "Analitico", "asse principale", "focus principale", "accompagna il ruolo".
 
 5) NESSUN disclaimer, nessuna formula di copertura. Vietato:
    - "da intendere in modo neutrale"
@@ -3713,9 +3713,9 @@ REGOLE DI STILE (obbligatorie):
 11) Rispondi in ${languageName}.
 
 COME NOMINARE I TRE ASSI (sempre in chiaro):
-- "Ritmo e Decisione" = agire, decidere rapidamente, imprimere ritmo, portare risultati
-- "Comunicazione e Relazioni" = andare verso le persone, coordinare, mediare, costruire relazioni
-- "Struttura e Rigore" = organizzare, verificare, analizzare, garantire cura e precisione
+- "Orientato all'azione" = agire, decidere rapidamente, imprimere ritmo, portare risultati
+- "Relazionale" = andare verso le persone, coordinare, mediare, costruire relazioni
+- "Analitico" = organizzare, verificare, analizzare, garantire cura e precisione
 
 PRIMA (come NON deve suonare):
 "Il profilo dei compiti corrisponde alla struttura degli assi. Il ruolo di leadership con responsabilità sui risultati richiede decisioni rapide e comunicazione chiara, entrambi fortemente ancorati nel profilo. Il lavoro strutturale potrebbe diventare un rischio in compiti di pianificazione più complessi, qui dovrebbe essere valutato un supporto."
@@ -3983,7 +3983,7 @@ ${isLeading ? `MODE RESPONSABLE :
 
 Principes obligatoires :
 - N'utilise jamais les termes du modèle sans traduction fonctionnelle (Impulsiv/Intuitiv/Analytisch uniquement comme description de logique de travail).
-- Utilise toujours les étiquettes en clair : "Rythme et Décision" (Impulsiv), "Communication et Relations" (Intuitiv), "Structure et Rigueur" (Analytisch).
+- Utilise toujours les étiquettes en clair : "Orienté action" (Impulsiv), "Relationnel" (Intuitiv), "Analytique" (Analytisch).
 - Chaque risque inclut un impact concret (vitesse, qualité, KPI, dynamique d'équipe, effort de management).
 - Pas de clichés, pas de répétitions, pas de métaphores.
 - Points de liste : max 2 phrases chacun, observation + effet.
@@ -4108,7 +4108,7 @@ ${isLeading ? `MODALITA' MANAGER:
 
 Principi obbligatori:
 - Non usare mai termini del modello senza una traduzione funzionale (Impulsiv/Intuitiv/Analytisch solo come descrizione della logica di lavoro).
-- Usa sempre le etichette in chiaro: "Ritmo e Decisione" (Impulsiv), "Comunicazione e Relazioni" (Intuitiv), "Struttura e Rigore" (Analytisch).
+- Usa sempre le etichette in chiaro: "Orientato all'azione" (Impulsiv), "Relazionale" (Intuitiv), "Analitico" (Analytisch).
 - Ogni affermazione di rischio include un impatto concreto (velocita', qualità, KPI, dinamiche del team, impegno gestionale).
 - Nessun cliche', nessuna ripetizione, nessuna metafora.
 - Punti elenco: max 2 frasi ciascuno, osservazione + effetto.
@@ -5016,7 +5016,7 @@ Règles de rédaction (à respecter impérativement) :
 - Sois objectif et factuel. Pas de coaching, pas de platitudes, pas de diagnostics psychologiques.
 - Chaque section : 2-4 phrases courtes et actives. N'aborde que les implications concrètes en situation de travail.
 - N'utilise jamais de pourcentages ni de chiffres bruts pour décrire les profils. Utilise des termes qualitatifs : "clairement au premier plan", "nettement présent", "très proches", "légèrement devant", "clairement dominant", "globalement équilibré", "poids similaire".
-- N'utilise jamais le jargon du modèle. N'écris jamais "impulsif", "intuitif" ou "analytique". Utilise : "Rythme et Décision" pour la dimension action, "Communication et Relations" pour la dimension humaine, "Structure et Rigueur" pour la dimension processus.
+- N'utilise jamais le jargon du modèle. N'écris jamais "impulsif", "intuitif" ou "analytique". Utilise : "Orienté action" pour la dimension action, "Relationnel" pour la dimension humaine, "Analytique" pour la dimension processus.
 - N'utilise pas de tirets cadratins. Utilise des virgules, des deux-points ou des points.
 - Formule des phrases courtes et actives. Une idée par phrase.
 - Renvoie UNIQUEMENT du JSON valide. Pas de markdown, pas de blocs de code, pas de texte supplémentaire.
@@ -5064,7 +5064,7 @@ Regole di redazione (da rispettare obbligatoriamente):
 - Sii obiettivo e fattuale. Nessun coaching, nessuna banalita', nessuna diagnosi psicologica.
 - Ogni sezione: 2-4 frasi brevi e attive. Affronta solo le implicazioni concrete in ambito lavorativo.
 - Non usare mai percentuali o numeri grezzi per descrivere i profili. Usa termini qualitativi: "chiaramente in primo piano", "nettamente presente", "molto vicini", "leggermente avanti", "chiaramente dominante", "complessivamente equilibrato", "peso simile".
-- Non usare mai il gergo del modello. Non scrivere mai "impulsivo", "intuitivo" o "analitico". Usa: "Ritmo e Decisione" per la dimensione d'azione, "Comunicazione e Relazioni" per la dimensione umana, "Struttura e Rigore" per la dimensione di processo.
+- Non usare mai il gergo del modello. Non scrivere mai "impulsivo", "intuitivo" o "analitico". Usa: "Orientato all'azione" per la dimensione d'azione, "Relazionale" per la dimensione umana, "Analitico" per la dimensione di processo.
 - Non usare trattini em. Usa virgole, due punti o punti.
 - Frasi brevi e attive. Un'idea per frase.
 - Restituisci SOLO JSON valido. Nessun markdown, nessun blocco di codice, nessun testo aggiuntivo.
@@ -5108,8 +5108,8 @@ ${context.roleLevel ? `Niveau du poste : ${context.roleLevel}` : ""}
 ${context.taskStructure ? `Structure des tâches : ${context.taskStructure}` : ""}
 ${context.workStyle ? `Style de travail : ${context.workStyle}` : ""}
 
-Profil d'équipe : Rythme et Décision ${profiles.team.impulsiv} / Communication et Relations ${profiles.team.intuitiv} / Structure et Rigueur ${profiles.team.analytisch}
-Profil de la personne : Rythme et Décision ${profiles.person.impulsiv} / Communication et Relations ${profiles.person.intuitiv} / Structure et Rigueur ${profiles.person.analytisch}
+Profil d'équipe : Orienté action ${profiles.team.impulsiv} / Relationnel ${profiles.team.intuitiv} / Analytique ${profiles.team.analytisch}
+Profil de la personne : Orienté action ${profiles.person.impulsiv} / Relationnel ${profiles.person.intuitiv} / Analytique ${profiles.person.analytisch}
 Constellation d'équipe : ${calculated.teamConstellationLabel}
 Constellation de la personne : ${calculated.istConstellationLabel}
 
@@ -5152,8 +5152,8 @@ ${context.roleLevel ? `Livello del ruolo: ${context.roleLevel}` : ""}
 ${context.taskStructure ? `Struttura dei compiti: ${context.taskStructure}` : ""}
 ${context.workStyle ? `Stile di lavoro: ${context.workStyle}` : ""}
 
-Profilo del team: Ritmo e Decisione ${profiles.team.impulsiv} / Comunicazione e Relazioni ${profiles.team.intuitiv} / Struttura e Rigore ${profiles.team.analytisch}
-Profilo della persona: Ritmo e Decisione ${profiles.person.impulsiv} / Comunicazione e Relazioni ${profiles.person.intuitiv} / Struttura e Rigore ${profiles.person.analytisch}
+Profilo del team: Orientato all'azione ${profiles.team.impulsiv} / Relazionale ${profiles.team.intuitiv} / Analitico ${profiles.team.analytisch}
+Profilo della persona: Orientato all'azione ${profiles.person.impulsiv} / Relazionale ${profiles.person.intuitiv} / Analitico ${profiles.person.analytisch}
 Costellazione del team: ${calculated.teamConstellationLabel}
 Costellazione della persona: ${calculated.istConstellationLabel}
 
@@ -5254,9 +5254,9 @@ RÈGLES DE STYLE (obligatoires) :
 
 3) AUCUN jargon du modèle bioLogic dans le texte. N'écris jamais : "impulsif", "intuitif", "analytique", "composante", "triade", "classe de profil", "BAL_FULL", "écart".
    Utilise UNIQUEMENT des étiquettes en clair :
-   - dimension action → "Rythme et Décision"
-   - dimension humaine → "Communication et Relations"
-   - dimension processus → "Structure et Rigueur"
+   - dimension action → "Orienté action"
+   - dimension humaine → "Relationnel"
+   - dimension processus → "Analytique"
 
 4) PAS de tirets cadratins (– ou —) dans le texte. Découpe en deux phrases ou utilise un deux-points.
 
@@ -5349,9 +5349,9 @@ REGOLE DI STILE (obbligatorie):
 
 3) NESSUN gergo del modello bioLogic nel testo di output. Non scrivere mai: "impulsivo", "intuitivo", "analitico", "componente", "triade", "classe di profilo", "BAL_FULL", "scarto".
    Usa SOLO etichette in chiaro:
-   - dimensione d'azione -> "Ritmo e Decisione"
-   - dimensione umana -> "Comunicazione e Relazioni"
-   - dimensione di processo -> "Struttura e Rigore"
+   - dimensione d'azione -> "Orientato all'azione"
+   - dimensione umana -> "Relazionale"
+   - dimensione di processo -> "Analitico"
 
 4) NESSUN trattino em (- o --) nel testo. Dividi in due frasi o usa i due punti.
 
@@ -5431,8 +5431,8 @@ Ausgabe-JSON-Schema (alle Felder pflicht):
 Poste : "${context.roleName}" | Candidat : "${context.candidateName}"
 
 DONNÉES DE PROFIL (pour le contexte et la comparaison relative uniquement — NE PAS reproduire ces chiffres dans le texte de sortie) :
-Profil cible : Rythme et Décision ${profiles.role.impulsiv}% / Communication et Relations ${profiles.role.intuitiv}% / Structure et Rigueur ${profiles.role.analytisch}%
-Profil réel : Rythme et Décision ${profiles.candidate.impulsiv}% / Communication et Relations ${profiles.candidate.intuitiv}% / Structure et Rigueur ${profiles.candidate.analytisch}%
+Profil cible : Orienté action ${profiles.role.impulsiv}% / Relationnel ${profiles.role.intuitiv}% / Analytique ${profiles.role.analytisch}%
+Profil réel : Orienté action ${profiles.candidate.impulsiv}% / Relationnel ${profiles.candidate.intuitiv}% / Analytique ${profiles.candidate.analytisch}%
 Constellation cible : ${calculated.roleConstellationLabel}
 Constellation réelle : ${calculated.candConstellationLabel}
 
@@ -5478,8 +5478,8 @@ Return only the JSON object.`
 Ruolo: "${context.roleName}" | Candidato: "${context.candidateName}"
 
 DATI DEL PROFILO (solo per il contesto e il confronto relativo — NON riprodurre questi numeri nel testo di output):
-Profilo target: Ritmo e Decisione ${profiles.role.impulsiv} / Comunicazione e Relazioni ${profiles.role.intuitiv} / Struttura e Rigore ${profiles.role.analytisch}
-Profilo reale: Ritmo e Decisione ${profiles.candidate.impulsiv} / Comunicazione e Relazioni ${profiles.candidate.intuitiv} / Struttura e Rigore ${profiles.candidate.analytisch}
+Profilo target: Orientato all'azione ${profiles.role.impulsiv} / Relazionale ${profiles.role.intuitiv} / Analitico ${profiles.role.analytisch}
+Profilo reale: Orientato all'azione ${profiles.candidate.impulsiv} / Relazionale ${profiles.candidate.intuitiv} / Analitico ${profiles.candidate.analytisch}
 Costellazione target: ${calculated.roleConstellationLabel}
 Costellazione reale: ${calculated.candConstellationLabel}
 
@@ -5644,7 +5644,7 @@ Wichtig:
 
 SULLA PIATTAFORMA:
 - bioLogic HR Talents è una piattaforma di analisi delle competenze HR
-- JobCheck: analizza profili di ruolo basandosi sulla sistematica bioLogic (Ritmo e Decisione, Comunicazione e Relazioni, Struttura e Rigore)
+- JobCheck: analizza profili di ruolo basandosi sulla sistematica bioLogic (Orientato all'azione, Relazionale, Analitico)
 - MatchCheck (Profilo target/reale): confronta un profilo di ruolo con un profilo personale per analizzare l'adeguatezza strutturale
 - TeamCheck: analizza la struttura e le dinamiche del team
 - Louis (coach IA): un coach basato su IA per domande di leadership, HR, assessment e comunicazione
@@ -5652,7 +5652,7 @@ SULLA PIATTAFORMA:
 
 UTILIZZO:
 - Tutte le aree sono raggiungibili tramite la navigazione superiore
-- I profili sono rappresentati con un triangolo (Ritmo e Decisione / Comunicazione e Relazioni / Struttura e Rigore)
+- I profili sono rappresentati con un triangolo (Orientato all'azione / Relazionale / Analitico)
 - I rapporti possono essere esportati come PDF
 - La piattaforma supporta le seguenti regioni: Germania (DE), Svizzera (CH), Austria (AT), Inglese (EN), Francese (FR), Italiano (IT)
 
@@ -5664,7 +5664,7 @@ REGOLE IMPORTANTI:
 
 SUR LA PLATEFORME :
 - bioLogic HR Talents est une plateforme d'analyse des compétences RH
-- JobCheck : analyse les profils de poste selon la systématique bioLogic (Rythme et Décision, Communication et Relations, Structure et Rigueur)
+- JobCheck : analyse les profils de poste selon la systématique bioLogic (Orienté action, Relationnel, Analytique)
 - MatchCheck (Profil cible/réel) : compare un profil de poste avec un profil de personne pour analyser l'adéquation structurelle
 - TeamCheck : analyse la structure et la dynamique d'équipe
 - Louis (coach IA) : un coach basé sur l'IA pour les questions de leadership, RH, assessment et communication
@@ -5672,7 +5672,7 @@ SUR LA PLATEFORME :
 
 UTILISATION :
 - Toutes les sections sont accessibles via la navigation supérieure
-- Les profils sont représentés par un triangle (Rythme et Décision / Communication et Relations / Structure et Rigueur)
+- Les profils sont représentés par un triangle (Orienté action / Relationnel / Analytique)
 - Les rapports peuvent être exportés en PDF
 - La plateforme prend en charge : Allemagne (DE), Suisse (CH), Autriche (AT), Anglais (EN), Français (FR), Italien (IT)
 
@@ -5704,7 +5704,7 @@ IMPORTANT RULES:
 
 ÜBER DIE PLATTFORM:
 - bioLogic HR Talents ist eine HR-Kompetenzanalyse-Plattform
-- JobCheck: Analysiert Stellenprofile und erstellt Rollenprofile basierend auf der bioLogic-Systematik (Ritmo e Decisione / Comunicazione e Relazioni / Struttura e Rigore)
+- JobCheck: Analysiert Stellenprofile und erstellt Rollenprofile basierend auf der bioLogic-Systematik (Orientato all'azione / Relazionale / Analitico)
 - MatchCheck (Soll-Ist): Vergleicht ein Stellenprofil mit einem Personenprofil um die strukturelle Passung zu analysieren
 - TeamCheck: Analysiert die Teamstruktur und Teamdynamik
 - Louis (KI-Coach): Ein KI-gestützter Coach für Fragen zu Führung, Personal, Assessment und Kommunikation
@@ -5713,7 +5713,7 @@ IMPORTANT RULES:
 
 NUTZUNG:
 - Über die obere Navigation erreicht man alle Bereiche
-- Profile werden mit einem Dreieck (Ritmo e Decisione / Comunicazione e Relazioni / Struttura e Rigore) dargestellt
+- Profile werden mit einem Dreieck (Orientato all'azione / Relazionale / Analitico) dargestellt
 - Berichte können als PDF exportiert werden
 - Die Plattform unterstützt Regionen: Deutschland (DE), Schweiz (CH), Österreich (AT), Englisch (EN), Französisch (FR), Italienisch (IT)
 
