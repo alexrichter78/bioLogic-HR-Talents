@@ -305,6 +305,26 @@ export const ALL_TRANSLATIONS: TranslationEntry[] = [
   { section: "Allgemein", key: "general.high", de: "Hoch", en: "High", fr: "Élevé", it: "Alto" },
   { section: "Allgemein", key: "general.medium", de: "Mittel", en: "Medium", fr: "Modéré", it: "Medio" },
   { section: "Allgemein", key: "general.low", de: "Gering", en: "Low", fr: "Faible", it: "Basso" },
+
+  { section: "Kursbereich", key: "kurs.title", de: "Kurszugänge freischalten", en: "Unlock course access", fr: "Activer les accès aux cours", it: "Attivare accessi al corso" },
+  { section: "Kursbereich", key: "kurs.subtitle", de: "Hier kannst du mehrere Personen für den bioLogic-Kursbereich freischalten. Füge alle Teilnehmer hinzu und starte die Freischaltung gesammelt.", en: "Unlock the bioLogic course area for multiple people. Add all participants and start the unlock in one go.", fr: "Tu peux activer l'accès au module de cours bioLogic pour plusieurs personnes. Ajoute tous les participants et lance l'activation en une seule fois.", it: "Puoi attivare l'area corsi bioLogic per più persone. Aggiungi tutti i partecipanti e avvia l'attivazione in un'unica volta." },
+  { section: "Kursbereich", key: "kurs.intro", de: "Einführung in die bioLogic", en: "Introduction to bioLogic", fr: "Introduction à la bioLogic", it: "Introduzione alla bioLogic" },
+  { section: "Kursbereich", key: "kurs.modules", de: "3 Module mit 15 Lektionen", en: "3 modules with 15 lessons", fr: "3 modules avec 15 leçons", it: "3 moduli con 15 lezioni" },
+  { section: "Kursbereich", key: "kurs.video", de: "3 Stunden Video-Material", en: "3 hours of video material", fr: "3 heures de vidéos", it: "3 ore di materiale video" },
+  { section: "Kursbereich", key: "kurs.firstName", de: "Vorname", en: "First name", fr: "Prénom", it: "Nome" },
+  { section: "Kursbereich", key: "kurs.lastName", de: "Nachname", en: "Last name", fr: "Nom de famille", it: "Cognome" },
+  { section: "Kursbereich", key: "kurs.email", de: "E-Mail-Adresse", en: "Email address", fr: "Adresse e-mail", it: "Indirizzo e-mail" },
+  { section: "Kursbereich", key: "kurs.addParticipant", de: "Teilnehmer hinzufügen", en: "Add participant", fr: "Ajouter un participant", it: "Aggiungi partecipante" },
+  { section: "Kursbereich", key: "kurs.unlockAccess", de: "Zugänge freischalten", en: "Unlock access", fr: "Activer les accès", it: "Attivare accessi" },
+  { section: "Kursbereich", key: "kurs.unlocking", de: "Wird freigeschaltet…", en: "Unlocking…", fr: "Activation en cours…", it: "Attivazione in corso…" },
+  { section: "Kursbereich", key: "kurs.successTitle", de: "Zugänge freigeschaltet", en: "Access unlocked", fr: "Accès activés", it: "Accessi attivati" },
+  { section: "Kursbereich", key: "kurs.successDesc", de: "Die Teilnehmer wurden erfolgreich für den Kursbereich verarbeitet.", en: "The participants have been successfully processed for the course area.", fr: "Les participants ont été enregistrés avec succès pour le module de cours.", it: "I partecipanti sono stati elaborati con successo per l'area corsi." },
+  { section: "Kursbereich", key: "kurs.unlockMore", de: "Weitere Teilnehmer freischalten", en: "Unlock more participants", fr: "Activer d'autres participants", it: "Attivare altri partecipanti" },
+  { section: "Kursbereich", key: "kurs.noAccess", de: "Kein Zugang", en: "No access", fr: "Accès refusé", it: "Nessun accesso" },
+  { section: "Kursbereich", key: "kurs.noAccessDesc", de: "Der Kursbereich ist für dein Konto nicht freigeschaltet. Bitte wende dich an deinen Administrator.", en: "The course area is not unlocked for your account. Please contact your administrator.", fr: "Le module de cours n'est pas activé pour ton compte. Contacte ton administrateur.", it: "L'area corsi non è attivata per il tuo account. Contatta il tuo amministratore." },
+  { section: "Kursbereich", key: "kurs.backHome", de: "Zurück zur Startseite", en: "Back to home", fr: "Retour à l'accueil", it: "Torna alla home" },
+  { section: "Kursbereich", key: "kurs.comingSoon", de: "Inhalte in Vorbereitung", en: "Content in preparation", fr: "Contenu en préparation", it: "Contenuti in preparazione" },
+  { section: "Kursbereich", key: "kurs.comingSoonDesc", de: "Die Kursmodule werden in Kürze freigeschaltet und erscheinen hier automatisch, sobald sie verfügbar sind.", en: "The course modules will be unlocked shortly and appear here automatically as soon as they are available.", fr: "Les modules de cours seront activés prochainement et apparaîtront ici automatiquement dès qu'ils seront disponibles.", it: "I moduli del corso saranno disponibili a breve e appariranno qui automaticamente non appena saranno disponibili." },
 ];
 
 export const SECTIONS = Array.from(new Set(ALL_TRANSLATIONS.map(e => e.section)));
