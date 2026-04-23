@@ -35,21 +35,21 @@ const COMP_LABELS: Record<ComponentKey, string> = {
 };
 
 const COMP_LABELS_EN: Record<ComponentKey, string> = {
-  impulsiv: "Execution / Speed",
-  intuitiv: "Collaboration / Communication",
-  analytisch: "Structure / Analysis",
+  impulsiv: "Action-oriented",
+  intuitiv: "Relational",
+  analytisch: "Analytical",
 };
 
 const COMP_LABELS_FR: Record<ComponentKey, string> = {
-  impulsiv: "Rythme et Décision",
-  intuitiv: "Communication et Relations",
-  analytisch: "Structure et Rigueur",
+  impulsiv: "Orienté action",
+  intuitiv: "Relationnel",
+  analytisch: "Analytique",
 };
 
 const COMP_LABELS_IT: Record<ComponentKey, string> = {
-  impulsiv: "Ritmo e Decisione",
-  intuitiv: "Comunicazione e Relazioni",
-  analytisch: "Struttura e Rigore",
+  impulsiv: "Orientato all'azione",
+  intuitiv: "Relazionale",
+  analytisch: "Analitico",
 };
 
 const COMP_SHORT: Record<ComponentKey, string> = {
@@ -926,14 +926,14 @@ export default function TeamReport() {
   const tone = result ? passungTone(result.gesamtpassung) : passungTone("geeignet");
 
   const istProfileArr = [
-    { label: region === "IT" ? "Ritmo e Decisione" : region === "FR" ? "Rythme et Décision" : region === "EN" ? "Impulsive" : "Impulsiv", short: "Umsetzung", value: istProfile.impulsiv, color: BAR_CSS.impulsiv },
-    { label: region === "IT" ? "Comunicazione e Relazioni" : region === "FR" ? "Communication et Relations" : region === "EN" ? "Intuitive" : "Intuitiv", short: "Zusammenarbeit", value: istProfile.intuitiv, color: BAR_CSS.intuitiv },
-    { label: region === "IT" ? "Struttura e Rigore" : region === "FR" ? "Structure et Rigueur" : region === "EN" ? "Analytical" : "Analytisch", short: "Struktur", value: istProfile.analytisch, color: BAR_CSS.analytisch },
+    { label: region === "IT" ? "Orientato all'azione" : region === "FR" ? "Orienté action" : region === "EN" ? "Action-oriented" : "Impulsiv", short: "Umsetzung", value: istProfile.impulsiv, color: BAR_CSS.impulsiv },
+    { label: region === "IT" ? "Relazionale" : region === "FR" ? "Relationnel" : region === "EN" ? "Relational" : "Intuitiv", short: "Zusammenarbeit", value: istProfile.intuitiv, color: BAR_CSS.intuitiv },
+    { label: region === "IT" ? "Analitico" : region === "FR" ? "Analytique" : region === "EN" ? "Analytical" : "Analytisch", short: "Struktur", value: istProfile.analytisch, color: BAR_CSS.analytisch },
   ];
   const teamProfileArr = [
-    { label: region === "IT" ? "Ritmo e Decisione" : region === "FR" ? "Rythme et Décision" : region === "EN" ? "Impulsive" : "Impulsiv", short: "Umsetzung", value: teamProfileN.impulsiv, color: BAR_CSS.impulsiv },
-    { label: region === "IT" ? "Comunicazione e Relazioni" : region === "FR" ? "Communication et Relations" : region === "EN" ? "Intuitive" : "Intuitiv", short: "Zusammenarbeit", value: teamProfileN.intuitiv, color: BAR_CSS.intuitiv },
-    { label: region === "IT" ? "Struttura e Rigore" : region === "FR" ? "Structure et Rigueur" : region === "EN" ? "Analytical" : "Analytisch", short: "Struktur", value: teamProfileN.analytisch, color: BAR_CSS.analytisch },
+    { label: region === "IT" ? "Orientato all'azione" : region === "FR" ? "Orienté action" : region === "EN" ? "Action-oriented" : "Impulsiv", short: "Umsetzung", value: teamProfileN.impulsiv, color: BAR_CSS.impulsiv },
+    { label: region === "IT" ? "Relazionale" : region === "FR" ? "Relationnel" : region === "EN" ? "Relational" : "Intuitiv", short: "Zusammenarbeit", value: teamProfileN.intuitiv, color: BAR_CSS.intuitiv },
+    { label: region === "IT" ? "Analitico" : region === "FR" ? "Analytique" : region === "EN" ? "Analytical" : "Analytisch", short: "Struktur", value: teamProfileN.analytisch, color: BAR_CSS.analytisch },
   ];
 
   const deltas: { label: string; team: number; ist: number; delta: string; deltaTone: string }[] = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {

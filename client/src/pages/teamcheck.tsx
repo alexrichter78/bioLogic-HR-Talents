@@ -71,9 +71,9 @@ const axisLabel = (v: string, r?: string) => {
 
 function getDominanceLabel(t: Triad, r?: string): string {
   const sorted = [
-    { k: r === "EN" ? "Impulsive" : r === "FR" ? "Rythme et Décision" : r === "IT" ? "Ritmo e Decisione" : "Impulsiv", v: t.impulsiv },
-    { k: r === "EN" ? "Intuitive" : r === "FR" ? "Communication et Relations" : r === "IT" ? "Comunicazione e Relazioni" : "Intuitiv", v: t.intuitiv },
-    { k: r === "EN" ? "Analytical" : r === "FR" ? "Structure et Rigueur" : r === "IT" ? "Struttura e Rigore" : "Analytisch", v: t.analytisch },
+    { k: r === "EN" ? "Action-oriented" : r === "FR" ? "Orienté action" : r === "IT" ? "Orientato all'azione" : "Impulsiv", v: t.impulsiv },
+    { k: r === "EN" ? "Relational" : r === "FR" ? "Relationnel" : r === "IT" ? "Relazionale" : "Intuitiv", v: t.intuitiv },
+    { k: r === "EN" ? "Analytical" : r === "FR" ? "Analytique" : r === "IT" ? "Analitico" : "Analytisch", v: t.analytisch },
   ].sort((a, b) => b.v - a.v);
   if (sorted[0].v - sorted[1].v <= 5) return r === "EN" ? "Balanced" : r === "FR" ? "Équilibré" : r === "IT" ? "Equilibrato" : "Ausgeglichen";
   return sorted[0].k;
@@ -998,9 +998,9 @@ export default function TeamCheck() {
               <div style={{ display: "flex", gap: 4, background: "rgba(0,0,0,0.03)", borderRadius: 10, padding: 3 }}>
                 {([
                   { value: "" as typeof teamGoal, label: region === "FR" ? "Aucun" : region === "EN" ? "None" : region === "IT" ? "Nessuno" : "Keins", icon: null },
-                  { value: "umsetzung" as typeof teamGoal, label: region === "FR" ? "Rythme et Décision" : region === "EN" ? "Execution" : region === "IT" ? "Ritmo e Decisione" : "Umsetzung", icon: Rocket },
-                  { value: "analyse" as typeof teamGoal, label: region === "FR" ? "Structure et Rigueur" : region === "EN" ? "Analysis" : region === "IT" ? "Struttura e Rigore" : "Analyse", icon: BarChart3 },
-                  { value: "zusammenarbeit" as typeof teamGoal, label: region === "FR" ? "Communication et Relations" : region === "EN" ? "Collaboration" : region === "IT" ? "Comunicazione e Relazioni" : "Zusammenarbeit", icon: Handshake },
+                  { value: "umsetzung" as typeof teamGoal, label: region === "FR" ? "Orienté action" : region === "EN" ? "Action-oriented" : region === "IT" ? "Orientato all'azione" : "Umsetzung", icon: Rocket },
+                  { value: "analyse" as typeof teamGoal, label: region === "FR" ? "Analytique" : region === "EN" ? "Analytical" : region === "IT" ? "Analitico" : "Analyse", icon: BarChart3 },
+                  { value: "zusammenarbeit" as typeof teamGoal, label: region === "FR" ? "Relationnel" : region === "EN" ? "Relational" : region === "IT" ? "Relazionale" : "Zusammenarbeit", icon: Handshake },
                 ]).map(opt => {
                   const active = teamGoal === opt.value;
                   const OptIcon = opt.icon;

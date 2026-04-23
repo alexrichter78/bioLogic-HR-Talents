@@ -77,21 +77,21 @@ function bgToTriad(bg: BG | undefined): Triad {
 }
 
 const COMP_LABELS_EN: Record<ComponentKey, string> = {
-  impulsiv: "Action / Pace",
-  intuitiv: "Collaboration / Communication",
-  analytisch: "Structure / Analysis",
+  impulsiv: "Action-oriented",
+  intuitiv: "Relational",
+  analytisch: "Analytical",
 };
 
 const COMP_LABELS_FR: Record<ComponentKey, string> = {
-  impulsiv: "Rythme et Décision",
-  intuitiv: "Communication et Relations",
-  analytisch: "Structure et Rigueur",
+  impulsiv: "Orienté action",
+  intuitiv: "Relationnel",
+  analytisch: "Analytique",
 };
 
 const COMP_LABELS_IT: Record<ComponentKey, string> = {
-  impulsiv: "Ritmo e Decisione",
-  intuitiv: "Comunicazione e Relazioni",
-  analytisch: "Struttura e Rigore",
+  impulsiv: "Orientato all'azione",
+  intuitiv: "Relazionale",
+  analytisch: "Analitico",
 };
 
 function severityLabel(s: Severity, region?: string) {
@@ -217,9 +217,9 @@ function TriangleChart({ role, candidate }: { role: Triad; candidate: Triad }) {
         {rp.map((p, i) => <circle key={`r${i}`} cx={p.x} cy={p.y} r="3.5" fill="#3b82f6" stroke="#fff" strokeWidth="1.5" />)}
         {cp.map((p, i) => <circle key={`c${i}`} cx={p.x} cy={p.y} r="3.5" fill="#f59e0b" stroke="#fff" strokeWidth="1.5" />)}
 
-        <text x={labelPts[0].x} y={labelPts[0].y - 4} textAnchor="middle" style={{ fontSize: 12, fontWeight: 600, fill: "#64748b", letterSpacing: "0.02em" }}>{_L("Analytisch", "Analytical", "Structure et Rigueur", "Struttura e Rigore")}</text>
-        <text x={labelPts[1].x - 4} y={labelPts[1].y + 14} textAnchor="start" style={{ fontSize: 12, fontWeight: 600, fill: "#64748b", letterSpacing: "0.02em" }}>{_L("Intuitiv", "Intuitive", "Communication et Relations", "Comunicazione e Relazioni")}</text>
-        <text x={labelPts[2].x + 4} y={labelPts[2].y + 14} textAnchor="end" style={{ fontSize: 12, fontWeight: 600, fill: "#64748b", letterSpacing: "0.02em" }}>{_L("Impulsiv", "Impulsive", "Rythme et Décision", "Ritmo e Decisione")}</text>
+        <text x={labelPts[0].x} y={labelPts[0].y - 4} textAnchor="middle" style={{ fontSize: 12, fontWeight: 600, fill: "#64748b", letterSpacing: "0.02em" }}>{_L("Analytisch", "Analytical", "Analytique", "Analitico")}</text>
+        <text x={labelPts[1].x - 4} y={labelPts[1].y + 14} textAnchor="start" style={{ fontSize: 12, fontWeight: 600, fill: "#64748b", letterSpacing: "0.02em" }}>{_L("Intuitiv", "Relational", "Relationnel", "Relazionale")}</text>
+        <text x={labelPts[2].x + 4} y={labelPts[2].y + 14} textAnchor="end" style={{ fontSize: 12, fontWeight: 600, fill: "#64748b", letterSpacing: "0.02em" }}>{_L("Impulsiv", "Action-oriented", "Orienté action", "Orientato all'azione")}</text>
       </svg>
     </div>
   );
@@ -1578,9 +1578,9 @@ export default function SollIstBericht() {
                   <p style={{ fontSize: 13, fontWeight: 600, color: "#48484A", margin: "0 0 12px" }}>{region === "IT" ? "Significato delle componenti" : region === "FR" ? "Signification des composantes" : region === "EN" ? "Meaning of the components" : "Bedeutung der Komponenten"}</p>
                   <div style={{ display: "flex", gap: 12 }}>
                     {([
-                      { key: "impulsiv", label: region === "IT" ? "Ritmo e Decisione" : region === "FR" ? "Rythme et Décision" : region === "EN" ? "Action / Pace" : "Impulsiv", color: BAR_HEX.impulsiv, text: region === "IT" ? "Indica azione decisa, priorita' chiare e attuazione coerente." : region === "FR" ? "Désigne l'action décisive, les priorités claires et l'exécution constante." : region === "EN" ? "Stands for decisive action, clear priorities and consistent execution." : "Steht für zügiges Handeln, klare Prioritäten und konsequente Umsetzung." },
-                      { key: "analytisch", label: region === "IT" ? "Struttura e Rigore" : region === "FR" ? "Structure et Rigueur" : region === "EN" ? "Structure / Analysis" : "Analytisch", color: BAR_HEX.analytisch, text: region === "IT" ? "Garantisce struttura, accuratezza e processi tracciabili." : region === "FR" ? "Assure la structure, la rigueur et des processus traçables." : region === "EN" ? "Ensures structure, thoroughness, and traceable processes." : "Sichert Struktur, Sorgfalt und nachvollziehbare Abläufe." },
-                      { key: "intuitiv", label: region === "IT" ? "Comunicazione e Relazioni" : region === "FR" ? "Communication et Relations" : region === "EN" ? "Collaboration / Communication" : "Intuitiv", color: BAR_HEX.intuitiv, text: region === "IT" ? "Supporta la comprensione dei bisogni del team e una collaborazione efficace." : region === "FR" ? "Favorise la compréhension des besoins de l'équipe et une collaboration efficace." : region === "EN" ? "Supports reading team needs and building effective collaboration." : "Unterstützt das Erkennen von Bedürfnissen und die passende Abstimmung im Team." },
+                      { key: "impulsiv", label: region === "IT" ? "Orientato all'azione" : region === "FR" ? "Orienté action" : region === "EN" ? "Action-oriented" : "Impulsiv", color: BAR_HEX.impulsiv, text: region === "IT" ? "Indica azione decisa, priorita' chiare e attuazione coerente." : region === "FR" ? "Désigne l'action décisive, les priorités claires et l'exécution constante." : region === "EN" ? "Stands for decisive action, clear priorities and consistent execution." : "Steht für zügiges Handeln, klare Prioritäten und konsequente Umsetzung." },
+                      { key: "analytisch", label: region === "IT" ? "Analitico" : region === "FR" ? "Analytique" : region === "EN" ? "Analytical" : "Analytisch", color: BAR_HEX.analytisch, text: region === "IT" ? "Garantisce struttura, accuratezza e processi tracciabili." : region === "FR" ? "Assure la structure, la rigueur et des processus traçables." : region === "EN" ? "Ensures structure, thoroughness, and traceable processes." : "Sichert Struktur, Sorgfalt und nachvollziehbare Abläufe." },
+                      { key: "intuitiv", label: region === "IT" ? "Relazionale" : region === "FR" ? "Relationnel" : region === "EN" ? "Relational" : "Intuitiv", color: BAR_HEX.intuitiv, text: region === "IT" ? "Supporta la comprensione dei bisogni del team e una collaborazione efficace." : region === "FR" ? "Favorise la compréhension des besoins de l'équipe et une collaboration efficace." : region === "EN" ? "Supports reading team needs and building effective collaboration." : "Unterstützt das Erkennen von Bedürfnissen und die passende Abstimmung im Team." },
                     ] as const).map(kb => (
                       <div key={kb.key} style={{ flex: 1, display: "flex", flexDirection: "column" }}>
                         <div style={{ flex: 1, padding: "14px 16px", borderRadius: 10, background: `linear-gradient(135deg, ${kb.color}12, ${kb.color}06)`, border: `1px solid ${kb.color}20`, display: "flex", flexDirection: "column" }}>

@@ -3452,7 +3452,7 @@ export default function RollenDNA() {
                                         }}
                                         data-testid={`kompetenz-${t.id}-${k.toLowerCase()}`}
                                       >
-                                        {region === "IT" ? { Impulsiv: "Ritmo e Decisione", Intuitiv: "Comunicazione e Relazioni", Analytisch: "Struttura e Rigore" }[k] ?? k : region === "FR" ? { Impulsiv: "Rythme et Décision", Intuitiv: "Communication et Relations", Analytisch: "Structure et Rigueur" }[k] ?? k : region === "EN" ? { Impulsiv: "Impulsive", Intuitiv: "Intuitive", Analytisch: "Analytical" }[k] : k}
+                                        {region === "IT" ? { Impulsiv: "Orientato all'azione", Intuitiv: "Relazionale", Analytisch: "Analitico" }[k] ?? k : region === "FR" ? { Impulsiv: "Orienté action", Intuitiv: "Relationnel", Analytisch: "Analytique" }[k] ?? k : region === "EN" ? { Impulsiv: "Action-oriented", Intuitiv: "Relational", Analytisch: "Analytical" }[k] : k}
                                       </button>
                                     ))}
                                   </div>
@@ -3660,9 +3660,9 @@ export default function RollenDNA() {
 
                         <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 10 }}>
                           {[
-                            { label: region === "IT" ? "Ritmo e Decisione" : region === "FR" ? "Rythme et Décision" : region === "EN" ? "Impulsive" : "Impulsiv", color: "#C41E3A", bg: "rgba(196,30,58,0.05)", border: "rgba(196,30,58,0.12)", desc: region === "IT" ? "Attuazione, decisione e responsabilita' dei risultati" : region === "FR" ? "Exécution, décisions et responsabilité des résultats" : region === "EN" ? "Execution, decisions and accountability for results" : "Umsetzung, Entscheidung und Ergebnisverantwortung" },
-                            { label: region === "IT" ? "Comunicazione e Relazioni" : region === "FR" ? "Communication et Relations" : region === "EN" ? "Intuitive" : "Intuitiv", color: "#F39200", bg: "rgba(243,146,0,0.05)", border: "rgba(243,146,0,0.12)", desc: region === "IT" ? "Collaborazione e azione contestualizzata" : region === "FR" ? "Collaboration et action adaptée au contexte" : region === "EN" ? "Collaboration and context-aware action" : "Zusammenarbeit und kontextbezogenes Handeln" },
-                            { label: region === "IT" ? "Struttura e Rigore" : region === "FR" ? "Structure et Rigueur" : region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", bg: "rgba(26,93,171,0.05)", border: "rgba(26,93,171,0.12)", desc: region === "IT" ? "Struttura, pianificazione e precisione tecnica" : region === "FR" ? "Structure, planification et précision technique" : region === "EN" ? "Structure, planning and technical precision" : "Struktur, Planung und fachliche Präzision" },
+                            { label: region === "IT" ? "Orientato all'azione" : region === "FR" ? "Orienté action" : region === "EN" ? "Action-oriented" : "Impulsiv", color: "#C41E3A", bg: "rgba(196,30,58,0.05)", border: "rgba(196,30,58,0.12)", desc: region === "IT" ? "Attuazione, decisione e responsabilita' dei risultati" : region === "FR" ? "Exécution, décisions et responsabilité des résultats" : region === "EN" ? "Execution, decisions and accountability for results" : "Umsetzung, Entscheidung und Ergebnisverantwortung" },
+                            { label: region === "IT" ? "Relazionale" : region === "FR" ? "Relationnel" : region === "EN" ? "Relational" : "Intuitiv", color: "#F39200", bg: "rgba(243,146,0,0.05)", border: "rgba(243,146,0,0.12)", desc: region === "IT" ? "Collaborazione e azione contestualizzata" : region === "FR" ? "Collaboration et action adaptée au contexte" : region === "EN" ? "Collaboration and context-aware action" : "Zusammenarbeit und kontextbezogenes Handeln" },
+                            { label: region === "IT" ? "Analitico" : region === "FR" ? "Analytique" : region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", bg: "rgba(26,93,171,0.05)", border: "rgba(26,93,171,0.12)", desc: region === "IT" ? "Struttura, pianificazione e precisione tecnica" : region === "FR" ? "Structure, planification et précision technique" : region === "EN" ? "Structure, planning and technical precision" : "Struktur, Planung und fachliche Präzision" },
                           ].map(d => (
                             <div key={d.label} style={{
                               background: d.bg,
@@ -3722,9 +3722,9 @@ export default function RollenDNA() {
                             </p>
                           </div>
                           {[
-                            { label: region === "IT" ? "Ritmo e Decisione" : region === "FR" ? "Rythme et Décision" : region === "EN" ? "Impulsive" : "Impulsiv", color: "#C41E3A", value: section.data.imp },
-                            { label: region === "IT" ? "Comunicazione e Relazioni" : region === "FR" ? "Communication et Relations" : region === "EN" ? "Intuitive" : "Intuitiv", color: "#F39200", value: section.data.int },
-                            { label: region === "IT" ? "Struttura e Rigore" : region === "FR" ? "Structure et Rigueur" : region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", value: section.data.ana },
+                            { label: region === "IT" ? "Orientato all'azione" : region === "FR" ? "Orienté action" : region === "EN" ? "Action-oriented" : "Impulsiv", color: "#C41E3A", value: section.data.imp },
+                            { label: region === "IT" ? "Relazionale" : region === "FR" ? "Relationnel" : region === "EN" ? "Relational" : "Intuitiv", color: "#F39200", value: section.data.int },
+                            { label: region === "IT" ? "Analitico" : region === "FR" ? "Analytique" : region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", value: section.data.ana },
                           ].map((bar) => (
                             <div
                               key={bar.label}
@@ -3808,9 +3808,9 @@ export default function RollenDNA() {
                       </div>
                       {(() => {
                         const bars = [
-                          { label: region === "IT" ? "Ritmo e Decisione" : region === "FR" ? "Rythme et Décision" : region === "EN" ? "Impulsive" : "Impulsiv", color: "#C41E3A", value: bioGramGesamt.imp },
-                          { label: region === "IT" ? "Comunicazione e Relazioni" : region === "FR" ? "Communication et Relations" : region === "EN" ? "Intuitive" : "Intuitiv", color: "#F39200", value: bioGramGesamt.int },
-                          { label: region === "IT" ? "Struttura e Rigore" : region === "FR" ? "Structure et Rigueur" : region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", value: bioGramGesamt.ana },
+                          { label: region === "IT" ? "Orientato all'azione" : region === "FR" ? "Orienté action" : region === "EN" ? "Action-oriented" : "Impulsiv", color: "#C41E3A", value: bioGramGesamt.imp },
+                          { label: region === "IT" ? "Relazionale" : region === "FR" ? "Relationnel" : region === "EN" ? "Relational" : "Intuitiv", color: "#F39200", value: bioGramGesamt.int },
+                          { label: region === "IT" ? "Analitico" : region === "FR" ? "Analytique" : region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", value: bioGramGesamt.ana },
                         ];
                         return (
                           <div style={{ background: "#F0F0F2", borderRadius: 16, padding: "16px 18px", display: "flex", flexDirection: "column", gap: 14 }}>
@@ -4158,9 +4158,9 @@ export default function RollenDNA() {
 
                       <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 10 }}>
                         {[
-                          { label: region === "IT" ? "Ritmo e Decisione" : region === "FR" ? "Rythme et Décision" : region === "EN" ? "Impulsive" : "Impulsiv", color: "#C41E3A", bg: "rgba(196,30,58,0.05)", border: "rgba(196,30,58,0.12)", desc: region === "IT" ? "Attuazione, decisione e responsabilita' dei risultati" : region === "FR" ? "Exécution, décisions et responsabilité des résultats" : region === "EN" ? "Execution, decisions and accountability for results" : "Umsetzung, Entscheidung und Ergebnisverantwortung" },
-                          { label: region === "IT" ? "Comunicazione e Relazioni" : region === "FR" ? "Communication et Relations" : region === "EN" ? "Intuitive" : "Intuitiv", color: "#F39200", bg: "rgba(243,146,0,0.05)", border: "rgba(243,146,0,0.12)", desc: region === "IT" ? "Collaborazione e azione contestualizzata" : region === "FR" ? "Collaboration et action adaptée au contexte" : region === "EN" ? "Collaboration and context-aware action" : "Zusammenarbeit und kontextbezogenes Handeln" },
-                          { label: region === "IT" ? "Struttura e Rigore" : region === "FR" ? "Structure et Rigueur" : region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", bg: "rgba(26,93,171,0.05)", border: "rgba(26,93,171,0.12)", desc: region === "IT" ? "Struttura, pianificazione e precisione tecnica" : region === "FR" ? "Structure, planification et précision technique" : region === "EN" ? "Structure, planning and technical precision" : "Struktur, Planung und fachliche Präzision" },
+                          { label: region === "IT" ? "Orientato all'azione" : region === "FR" ? "Orienté action" : region === "EN" ? "Action-oriented" : "Impulsiv", color: "#C41E3A", bg: "rgba(196,30,58,0.05)", border: "rgba(196,30,58,0.12)", desc: region === "IT" ? "Attuazione, decisione e responsabilita' dei risultati" : region === "FR" ? "Exécution, décisions et responsabilité des résultats" : region === "EN" ? "Execution, decisions and accountability for results" : "Umsetzung, Entscheidung und Ergebnisverantwortung" },
+                          { label: region === "IT" ? "Relazionale" : region === "FR" ? "Relationnel" : region === "EN" ? "Relational" : "Intuitiv", color: "#F39200", bg: "rgba(243,146,0,0.05)", border: "rgba(243,146,0,0.12)", desc: region === "IT" ? "Collaborazione e azione contestualizzata" : region === "FR" ? "Collaboration et action adaptée au contexte" : region === "EN" ? "Collaboration and context-aware action" : "Zusammenarbeit und kontextbezogenes Handeln" },
+                          { label: region === "IT" ? "Analitico" : region === "FR" ? "Analytique" : region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", bg: "rgba(26,93,171,0.05)", border: "rgba(26,93,171,0.12)", desc: region === "IT" ? "Struttura, pianificazione e precisione tecnica" : region === "FR" ? "Structure, planification et précision technique" : region === "EN" ? "Structure, planning and technical precision" : "Struktur, Planung und fachliche Präzision" },
                         ].map(d => (
                           <div key={d.label} style={{
                             background: d.bg,
@@ -4222,9 +4222,9 @@ export default function RollenDNA() {
                             </p>
                           </div>
                           {[
-                            { label: region === "IT" ? "Ritmo e Decisione" : region === "FR" ? "Rythme et Décision" : region === "EN" ? "Impulsive" : "Impulsiv", color: "#C41E3A", value: section.data.imp },
-                            { label: region === "IT" ? "Comunicazione e Relazioni" : region === "FR" ? "Communication et Relations" : region === "EN" ? "Intuitive" : "Intuitiv", color: "#F39200", value: section.data.int },
-                            { label: region === "IT" ? "Struttura e Rigore" : region === "FR" ? "Structure et Rigueur" : region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", value: section.data.ana },
+                            { label: region === "IT" ? "Orientato all'azione" : region === "FR" ? "Orienté action" : region === "EN" ? "Action-oriented" : "Impulsiv", color: "#C41E3A", value: section.data.imp },
+                            { label: region === "IT" ? "Relazionale" : region === "FR" ? "Relationnel" : region === "EN" ? "Relational" : "Intuitiv", color: "#F39200", value: section.data.int },
+                            { label: region === "IT" ? "Analitico" : region === "FR" ? "Analytique" : region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", value: section.data.ana },
                           ].map((bar) => (
                             <div
                               key={bar.label}
@@ -4308,9 +4308,9 @@ export default function RollenDNA() {
                       </div>
                       {(() => {
                         const bars = [
-                          { label: region === "IT" ? "Ritmo e Decisione" : region === "FR" ? "Rythme et Décision" : region === "EN" ? "Impulsive" : "Impulsiv", color: "#C41E3A", value: bioGramGesamt.imp },
-                          { label: region === "IT" ? "Comunicazione e Relazioni" : region === "FR" ? "Communication et Relations" : region === "EN" ? "Intuitive" : "Intuitiv", color: "#F39200", value: bioGramGesamt.int },
-                          { label: region === "IT" ? "Struttura e Rigore" : region === "FR" ? "Structure et Rigueur" : region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", value: bioGramGesamt.ana },
+                          { label: region === "IT" ? "Orientato all'azione" : region === "FR" ? "Orienté action" : region === "EN" ? "Action-oriented" : "Impulsiv", color: "#C41E3A", value: bioGramGesamt.imp },
+                          { label: region === "IT" ? "Relazionale" : region === "FR" ? "Relationnel" : region === "EN" ? "Relational" : "Intuitiv", color: "#F39200", value: bioGramGesamt.int },
+                          { label: region === "IT" ? "Analitico" : region === "FR" ? "Analytique" : region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", value: bioGramGesamt.ana },
                         ];
                         return (
                           <div style={{ background: "#F0F0F2", borderRadius: 16, padding: "16px 18px", display: "flex", flexDirection: "column", gap: 14 }}>

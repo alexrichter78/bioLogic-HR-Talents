@@ -344,19 +344,19 @@ export function dominanceModeOf(tIn: Triad): DominanceResult {
 
 export function labelComponent(k: ComponentKey, lang?: string) {
   if (lang === "EN") {
-    if (k === "impulsiv") return "Impulsive";
-    if (k === "intuitiv") return "Intuitive";
+    if (k === "impulsiv") return "Action-oriented";
+    if (k === "intuitiv") return "Relational";
     return "Analytical";
   }
   if (lang === "FR") {
-    if (k === "impulsiv") return "Rythme et Décision";
-    if (k === "intuitiv") return "Communication et Relations";
-    return "Structure et Rigueur";
+    if (k === "impulsiv") return "Orienté action";
+    if (k === "intuitiv") return "Relationnel";
+    return "Analytique";
   }
   if (lang === "IT") {
-    if (k === "impulsiv") return "Ritmo e Decisione";
-    if (k === "intuitiv") return "Comunicazione e Relazioni";
-    return "Struttura e Rigore";
+    if (k === "impulsiv") return "Orientato all'azione";
+    if (k === "intuitiv") return "Relazionale";
+    return "Analitico";
   }
   if (k === "impulsiv") return "Impulsiv";
   if (k === "intuitiv") return "Intuitiv";

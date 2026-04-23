@@ -160,21 +160,21 @@ const COMP_SHORT: Record<ComponentKey, string> = {
 };
 
 const COMP_SHORT_EN: Record<ComponentKey, string> = {
-  impulsiv: "Pace and Decision",
-  intuitiv: "Communication and Relationships",
-  analytisch: "Structure and Diligence",
+  impulsiv: "Action-oriented",
+  intuitiv: "Relational",
+  analytisch: "Analytical",
 };
 
 const COMP_SHORT_FR: Record<ComponentKey, string> = {
-  impulsiv: "Rythme et Décision",
-  intuitiv: "Communication et Relations",
-  analytisch: "Structure et Rigueur",
+  impulsiv: "Orienté action",
+  intuitiv: "Relationnel",
+  analytisch: "Analytique",
 };
 
 const COMP_SHORT_IT: Record<ComponentKey, string> = {
-  impulsiv: "Ritmo e Decisione",
-  intuitiv: "Comunicazione e Relazioni",
-  analytisch: "Struttura e Rigore",
+  impulsiv: "Orientato all'azione",
+  intuitiv: "Relazionale",
+  analytisch: "Analitico",
 };
 
 function cs(k: ComponentKey): string {
@@ -190,21 +190,21 @@ const COMP_DOMAIN: Record<ComponentKey, string> = {
 };
 
 const COMP_DOMAIN_EN: Record<ComponentKey, string> = {
-  impulsiv: "Pace and Decision",
-  intuitiv: "Communication and Relationships",
-  analytisch: "Structure and Diligence",
+  impulsiv: "Action-oriented",
+  intuitiv: "Relational",
+  analytisch: "Analytical",
 };
 
 const COMP_DOMAIN_FR: Record<ComponentKey, string> = {
-  impulsiv: "Rythme et Décision",
-  intuitiv: "Communication et Relations",
-  analytisch: "Structure et Rigueur",
+  impulsiv: "Orienté action",
+  intuitiv: "Relationnel",
+  analytisch: "Analytique",
 };
 
 const COMP_DOMAIN_IT: Record<ComponentKey, string> = {
-  impulsiv: "Ritmo e Decisione",
-  intuitiv: "Comunicazione e Relazioni",
-  analytisch: "Struttura e Rigore",
+  impulsiv: "Orientato all'azione",
+  intuitiv: "Relazionale",
+  analytisch: "Analitico",
 };
 
 function cd(k: ComponentKey): string {
@@ -1163,7 +1163,7 @@ function buildChancenRisiken(c: Ctx): { chancen: V4Block[]; risiken: V4Block[]; 
       chancen.push({ title: "Direction fondamentale commune", text: `Les deux parties s'appuient sur ${cd(c.teamPrimary)} comme logique de travail principale. Cela crée une base stable pour la collaboration et réduit le risque de malentendus fondamentaux. La personne est comprise dans sa façon de penser et peut évoluer en terrain familier.` });
       chancen.push({ title: `Complément par ${cs(c.personSecondary)}`, text: `La personne apporte ${cs(c.personSecondary)} comme approche complémentaire au quotidien, tandis que l'équipe s'appuie davantage sur ${cs(c.teamSecondary)}. Concrètement, cela signifie : ${c.personSecondary === "impulsiv" ? "des décisions plus rapides, plus de dynamisme d'exécution et une approche plus pragmatique des sujets" : c.personSecondary === "analytisch" ? "plus de pensée structurée, une préparation plus systématique et une analyse plus approfondie avant les décisions" : "une plus forte implication de toutes les parties, plus de coordination et un style de travail orienté vers les relations"}. Cela peut renforcer l'équipe dans ce domaine sans compromettre la logique fondamentale commune.` });
       chancen.push({ title: "Opportunité d'apprentissage mutuel", text: `Les différences dans l'approche concrète de travail offrent une opportunité d'apprentissage. L'équipe peut apprendre de la personne ${c.personSecondary === "impulsiv" ? "plus de rythme et de capacité de décision" : c.personSecondary === "analytisch" ? "plus de profondeur et de structure" : "plus d'ouverture et d'échange"}, et la personne peut apprendre de l'équipe ${c.teamSecondary === "impulsiv" ? "la rapidité et le pragmatisme" : c.teamSecondary === "analytisch" ? "la rigueur et la précision" : "la coordination et l'orientation collective"}. Cet enrichissement mutuel peut augmenter la polyvalence de l'équipe à long terme.` });
-      risiken.push({ title: "Rythme et approche différents", text: `Dans l'exécution concrète, l'équipe et la personne diffèrent notablement. L'équipe attend ${c.teamSecondary === "analytisch" ? "plus de rigueur et de vérification approfondie" : c.teamSecondary === "impulsiv" ? "une action rapide et une orientation résultats" : "de la coordination et une prise de décision collective"}, tandis que la personne tend ${c.personSecondary === "impulsiv" ? "vers une action plus rapide et peut être perçue comme trop prompte" : c.personSecondary === "analytisch" ? "vers plus de détails et peut être perçue comme trop lente" : "vers la discussion et l'inclusion et peut être perçue comme trop hésitante"}. Inversement, la personne peut trouver l'équipe ${c.teamSecondary === "analytisch" ? "trop lente et trop prudente" : c.teamSecondary === "impulsiv" ? "trop réactive et trop superficielle" : "trop axée sur le consensus et peu encline à décider"}.` });
+      risiken.push({ title: "Approche et méthode différentes", text: `Dans l'exécution concrète, l'équipe et la personne diffèrent notablement. L'équipe attend ${c.teamSecondary === "analytisch" ? "plus de rigueur et de vérification approfondie" : c.teamSecondary === "impulsiv" ? "une action rapide et une orientation résultats" : "de la coordination et une prise de décision collective"}, tandis que la personne tend ${c.personSecondary === "impulsiv" ? "vers une action plus rapide et peut être perçue comme trop prompte" : c.personSecondary === "analytisch" ? "vers plus de détails et peut être perçue comme trop lente" : "vers la discussion et l'inclusion et peut être perçue comme trop hésitante"}. Inversement, la personne peut trouver l'équipe ${c.teamSecondary === "analytisch" ? "trop lente et trop prudente" : c.teamSecondary === "impulsiv" ? "trop réactive et trop superficielle" : "trop axée sur le consensus et peu encline à décider"}.` });
       risiken.push({ title: "Besoin d'alignement", text: "La personne comprend fondamentalement la logique de l'équipe et ne se sent pas comme un corps étranger. Elle a néanmoins besoin de repères dans l'exécution concrète et d'indications claires sur la façon dont l'équipe gère certaines choses. Sans ces repères, des contributions bien intentionnées peuvent involontairement créer des frictions." });
     } else if (c.matchCase === "TOP2_ONLY") {
       chancen.push({ title: "Perspective différente", text: `La personne apporte ${cd(c.personPrimary)} dans une équipe qui en est peu dotée. Elle peut prendre en charge des tâches pour lesquelles l'équipe a des lacunes et soulever des sujets que personne d'autre ne suit.` });
@@ -1214,7 +1214,7 @@ function buildChancenRisiken(c: Ctx): { chancen: V4Block[]; risiken: V4Block[]; 
       chancen.push({ title: "Direzione fondamentale condivisa", text: `Entrambe le parti si affidano a ${cd(c.teamPrimary)} come logica di lavoro principale. Questo crea una base stabile per la collaborazione e riduce il rischio di incomprensioni fondamentali. La persona è compresa nel proprio modo di pensare e può muoversi su terreno familiare.` });
       chancen.push({ title: `Complemento attraverso ${cs(c.personSecondary)}`, text: `La persona porta ${cs(c.personSecondary)} come approccio complementare, mentre il team si affida maggiormente a ${cs(c.teamSecondary)}. In concreto questo significa: ${c.personSecondary === "impulsiv" ? "decisioni più rapide, maggiore dinamismo esecutivo e un approccio più pragmatico ai temi" : c.personSecondary === "analytisch" ? "maggiore pensiero strutturato, preparazione più sistematica e analisi più attenta prima delle decisioni" : "maggiore coinvolgimento di tutti i soggetti, più coordinazione e uno stile di lavoro orientato alle relazioni"}. Questo può rafforzare il team in quest'area senza compromettere la logica fondamentale condivisa.` });
       chancen.push({ title: "Opportunità di apprendimento reciproco", text: `Le differenze nell'approccio concreto di lavoro offrono un'opportunità di apprendimento. Il team può imparare dalla persona ${c.personSecondary === "impulsiv" ? "maggiore ritmo e capacità decisionale" : c.personSecondary === "analytisch" ? "maggiore profondità e struttura" : "maggiore apertura e scambio"}, e la persona può imparare dal team ${c.teamSecondary === "impulsiv" ? "velocità e pragmatismo" : c.teamSecondary === "analytisch" ? "accuratezza e precisione" : "coordinazione e orientamento collettivo"}. Questo arricchimento reciproco può aumentare la versatilità del team nel lungo periodo.` });
-      risiken.push({ title: "Ritmo e approccio diversi", text: `Nell'esecuzione concreta, team e persona differiscono in modo evidente. Il team si aspetta ${c.teamSecondary === "analytisch" ? "maggiore accuratezza e verifica approfondita" : c.teamSecondary === "impulsiv" ? "azione rapida e orientamento ai risultati" : "coordinazione e decisione condivisa"}, mentre la persona tende ${c.personSecondary === "impulsiv" ? "verso un'azione più rapida e può essere percepita come precipitosa" : c.personSecondary === "analytisch" ? "verso maggiore dettaglio e può essere percepita come troppo lenta" : "verso la discussione e il coinvolgimento e può essere percepita come troppo esitante"}. A sua volta, la persona può percepire il team come ${c.teamSecondary === "analytisch" ? "troppo lento e troppo cauto" : c.teamSecondary === "impulsiv" ? "troppo reattivo e troppo superficiale" : "troppo orientato al consenso e poco propenso a decidere"}.` });
+      risiken.push({ title: "Approccio e metodo diversi", text: `Nell'esecuzione concreta, team e persona differiscono in modo evidente. Il team si aspetta ${c.teamSecondary === "analytisch" ? "maggiore accuratezza e verifica approfondita" : c.teamSecondary === "impulsiv" ? "azione rapida e orientamento ai risultati" : "coordinazione e decisione condivisa"}, mentre la persona tende ${c.personSecondary === "impulsiv" ? "verso un'azione più rapida e può essere percepita come precipitosa" : c.personSecondary === "analytisch" ? "verso maggiore dettaglio e può essere percepita come troppo lenta" : "verso la discussione e il coinvolgimento e può essere percepita come troppo esitante"}. A sua volta, la persona può percepire il team come ${c.teamSecondary === "analytisch" ? "troppo lento e troppo cauto" : c.teamSecondary === "impulsiv" ? "troppo reattivo e troppo superficiale" : "troppo orientato al consenso e poco propenso a decidere"}.` });
       risiken.push({ title: "Necessità di allineamento", text: "La persona comprende fondamentalmente la logica del team e non si sente un corpo estraneo. Ha tuttavia bisogno di orientamento nell'esecuzione concreta e di indicazioni chiare su come il team gestisce certe cose. Senza questo orientamento, contributi ben intenzionati possono creare attriti involontariamente." });
     } else if (c.matchCase === "TOP2_ONLY") {
       chancen.push({ title: "Prospettiva diversa", text: `La persona porta ${cd(c.personPrimary)} in un team che ne ha poca. Può occuparsi di compiti in cui il team ha lacune e sollevare temi che nessun altro ha nell'agenda.` });

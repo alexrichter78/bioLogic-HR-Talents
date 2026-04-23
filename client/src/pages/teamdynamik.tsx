@@ -105,9 +105,9 @@ function BarSliders({ triad, onChange }: { triad: Triad; onChange: (t: Triad) =>
   };
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-      <BarSlider label={it ? "Ritmo e Decisione" : fr ? "Rythme et Décision" : en ? "Impulsive" : "Impulsiv"} value={triad.impulsiv} color={COLORS.imp} onChange={v => handleChange("impulsiv", v)} />
-      <BarSlider label={it ? "Comunicazione e Relazioni" : fr ? "Communication et Relations" : en ? "Intuitive" : "Intuitiv"} value={triad.intuitiv} color={COLORS.int} onChange={v => handleChange("intuitiv", v)} />
-      <BarSlider label={it ? "Struttura e Rigore" : fr ? "Structure et Rigueur" : en ? "Analytical" : "Analytisch"} value={triad.analytisch} color={COLORS.ana} onChange={v => handleChange("analytisch", v)} />
+      <BarSlider label={it ? "Orientato all'azione" : fr ? "Orienté action" : en ? "Action-oriented" : "Impulsiv"} value={triad.impulsiv} color={COLORS.imp} onChange={v => handleChange("impulsiv", v)} />
+      <BarSlider label={it ? "Relazionale" : fr ? "Relationnel" : en ? "Relational" : "Intuitiv"} value={triad.intuitiv} color={COLORS.int} onChange={v => handleChange("intuitiv", v)} />
+      <BarSlider label={it ? "Analitico" : fr ? "Analytique" : en ? "Analytical" : "Analytisch"} value={triad.analytisch} color={COLORS.ana} onChange={v => handleChange("analytisch", v)} />
     </div>
   );
 }
@@ -293,9 +293,9 @@ function ReportChapter({ section, chapterIndex }: { section: ParsedSection; chap
 function ReadOnlyBars({ triad }: { triad: Triad }) {
   const { region } = useRegion();
   const bars: { label: string; value: number; color: string }[] = [
-    { label: region === "IT" ? "Ritmo e Decisione" : region === "FR" ? "Rythme et Décision" : region === "EN" ? "Impulsive" : "Impulsiv", value: triad.impulsiv, color: COLORS.imp },
-    { label: region === "IT" ? "Comunicazione e Relazioni" : region === "FR" ? "Communication et Relations" : region === "EN" ? "Intuitive" : "Intuitiv", value: triad.intuitiv, color: COLORS.int },
-    { label: region === "IT" ? "Struttura e Rigore" : region === "FR" ? "Structure et Rigueur" : region === "EN" ? "Analytical" : "Analytisch", value: triad.analytisch, color: COLORS.ana },
+    { label: region === "IT" ? "Orientato all'azione" : region === "FR" ? "Orienté action" : region === "EN" ? "Action-oriented" : "Impulsiv", value: triad.impulsiv, color: COLORS.imp },
+    { label: region === "IT" ? "Relazionale" : region === "FR" ? "Relationnel" : region === "EN" ? "Relational" : "Intuitiv", value: triad.intuitiv, color: COLORS.int },
+    { label: region === "IT" ? "Analitico" : region === "FR" ? "Analytique" : region === "EN" ? "Analytical" : "Analytisch", value: triad.analytisch, color: COLORS.ana },
   ];
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -848,9 +848,9 @@ export default function Teamdynamik() {
           const vc = getViewContent(viewMode, result, result.activeMatrixCell);
           if (!vc.showMatrix && viewMode === "CEO") return null;
           const domLabels: { key: DominanceType; label: string; short: string; color: string }[] = [
-            { key: "IMPULSIV", label: region === "IT" ? "Ritmo e Decisione" : region === "FR" ? "Rythme et Décision" : region === "EN" ? "Impulsive" : "Impulsiv", short: "IMP", color: COLORS.imp },
-            { key: "INTUITIV", label: region === "IT" ? "Comunicazione e Relazioni" : region === "FR" ? "Communication et Relations" : region === "EN" ? "Intuitive" : "Intuitiv", short: "INT", color: COLORS.int },
-            { key: "ANALYTISCH", label: region === "IT" ? "Struttura e Rigore" : region === "FR" ? "Structure et Rigueur" : region === "EN" ? "Analytical" : "Analytisch", short: "ANA", color: COLORS.ana },
+            { key: "IMPULSIV", label: region === "IT" ? "Orientato all'azione" : region === "FR" ? "Orienté action" : region === "EN" ? "Action-oriented" : "Impulsiv", short: "IMP", color: COLORS.imp },
+            { key: "INTUITIV", label: region === "IT" ? "Relazionale" : region === "FR" ? "Relationnel" : region === "EN" ? "Relational" : "Intuitiv", short: "INT", color: COLORS.int },
+            { key: "ANALYTISCH", label: region === "IT" ? "Analitico" : region === "FR" ? "Analytique" : region === "EN" ? "Analytical" : "Analytisch", short: "ANA", color: COLORS.ana },
           ];
           const personDom = result.dominancePerson;
           const teamDom = result.dominanceTeam;

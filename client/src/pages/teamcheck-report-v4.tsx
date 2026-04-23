@@ -432,7 +432,7 @@ export default function TeamCheckReportV4() {
 
               {/* === Section 1: Gesamtbewertung === */}
               <div style={sectionStyle} data-testid="v4-section-gesamtbewertung">
-              <SectionHead num={1} title={t("Gesamtbewertung", "Overall assessment", "Évaluation globale", "Valutazione complessiva")} id="gesamtbewertung" />
+              <SectionHead num={1} title={t("Gesamtbewertung", "Overall Assessment", "Évaluation globale", "Valutazione complessiva")} id="gesamtbewertung" />
 
               <div style={{ margin: "0 0 24px" }} data-testid="v4-hero-bewertung">
                 <TextBlock text={aiNarrative?.fuehrungsprofil || result.gesamtbewertungText} />
@@ -450,17 +450,17 @@ export default function TeamCheckReportV4() {
 
                 {(() => {
                   const COMP_LABEL: Record<string, string> = isIT ? {
-                    impulsiv: "Ritmo e Decisione",
-                    intuitiv: "Comunicazione e Relazioni",
-                    analytisch: "Struttura e Rigore",
+                    impulsiv: "Orientato all'azione",
+                    intuitiv: "Relazionale",
+                    analytisch: "Analitico",
                   } : isFR ? {
-                    impulsiv: "Rythme et Décision",
-                    intuitiv: "Communication et Relations",
-                    analytisch: "Structure et Rigueur",
+                    impulsiv: "Orienté action",
+                    intuitiv: "Relationnel",
+                    analytisch: "Analytique",
                   } : isEN ? {
-                    impulsiv: "Pace and Decision",
-                    intuitiv: "Communication and Relationships",
-                    analytisch: "Structure and Diligence",
+                    impulsiv: "Action-oriented",
+                    intuitiv: "Relational",
+                    analytisch: "Analytical",
                   } : {
                     impulsiv: "Umsetzung / Tempo",
                     intuitiv: "Zusammenarbeit / Kommunikation",
@@ -515,18 +515,18 @@ export default function TeamCheckReportV4() {
               {/* === Section 2: Vergleich der Profile === */}
               {(() => {
                 const COMP_LABEL_FULL: Record<string, string> = isIT
-                  ? { impulsiv: "Ritmo e Decisione", intuitiv: "Comunicazione e Relazioni", analytisch: "Struttura e Rigore" }
+                  ? { impulsiv: "Orientato all'azione", intuitiv: "Relazionale", analytisch: "Analitico" }
                   : isFR
-                  ? { impulsiv: "Rythme et Décision", intuitiv: "Communication et Relations", analytisch: "Structure et Rigueur" }
+                  ? { impulsiv: "Orienté action", intuitiv: "Relationnel", analytisch: "Analytique" }
                   : isEN
-                  ? { impulsiv: "Pace and Decision", intuitiv: "Communication and Relationships", analytisch: "Structure and Diligence" }
+                  ? { impulsiv: "Action-oriented", intuitiv: "Relational", analytisch: "Analytical" }
                   : { impulsiv: "Impulsiv", intuitiv: "Intuitiv", analytisch: "Analytisch" };
                 const COMP_LABEL_AREA: Record<string, string> = isIT
-                  ? { impulsiv: "Ritmo / Decisione", intuitiv: "Comunicazione / Relazioni", analytisch: "Struttura / Rigore" }
+                  ? { impulsiv: "Orientato all'azione", intuitiv: "Relazionale", analytisch: "Analitico" }
                   : isFR
-                  ? { impulsiv: "Rythme / Décision", intuitiv: "Communication / Relations", analytisch: "Structure / Rigueur" }
+                  ? { impulsiv: "Orienté action", intuitiv: "Relationnel", analytisch: "Analytique" }
                   : isEN
-                  ? { impulsiv: "Pace and Decision", intuitiv: "Communication and Relationships", analytisch: "Structure and Diligence" }
+                  ? { impulsiv: "Action-oriented", intuitiv: "Relational", analytisch: "Analytical" }
                   : { impulsiv: "Umsetzung / Tempo", intuitiv: "Zusammenarbeit / Kommunikation", analytisch: "Struktur / Analyse" };
                 const keys: ComponentKey[] = ["impulsiv", "intuitiv", "analytisch"];
                 let maxGap = 0, maxKey: ComponentKey = "analytisch";
@@ -582,9 +582,9 @@ export default function TeamCheckReportV4() {
                       <p style={{ fontSize: 13, fontWeight: 600, color: "#48484A", margin: "0 0 12px" }}>{t("Bedeutung der Komponenten", "What the dimensions mean", "Signification des composantes", "Significato delle componenti")}</p>
                       <div style={{ display: "flex", gap: 12 }}>
                         {([
-                          { key: "impulsiv" as ComponentKey, label: t("Impulsiv", "Pace and Decision", "Rythme et Décision", "Ritmo e Decisione"), color: COMP_HEX.impulsiv, text: t("Steht für zügiges Handeln, klare Prioritäten und konsequente Umsetzung.", "Drives pace, clear priorities and direct results.", "Incarne la rapidité d'action, des priorités claires et une mise en œuvre résolue.", "Rappresenta l'azione rapida, le priorità chiare e l'esecuzione decisa.") },
-                          { key: "analytisch" as ComponentKey, label: t("Analytisch", "Structure and Diligence", "Structure et Rigueur", "Struttura e Rigore"), color: COMP_HEX.analytisch, text: t("Sichert Struktur, Sorgfalt und nachvollziehbare Abläufe.", "Ensures structure, thoroughness and reliable processes.", "Garantit la structure, la rigueur et des processus transparents.", "Garantisce struttura, accuratezza e processi affidabili.") },
-                          { key: "intuitiv" as ComponentKey, label: t("Intuitiv", "Communication and Relationships", "Communication et Relations", "Comunicazione e Relazioni"), color: COMP_HEX.intuitiv, text: t("Unterstützt das Erkennen von Bedürfnissen und die passende Abstimmung im Team.", "Supports collaboration, sensing needs and aligning the team.", "Favorise la compréhension des besoins et la coordination au sein de l'équipe.", "Supporta la comprensione dei bisogni e il coordinamento nel team.") },
+                          { key: "impulsiv" as ComponentKey, label: t("Impulsiv", "Action-oriented", "Orienté action", "Orientato all'azione"), color: COMP_HEX.impulsiv, text: t("Steht für zügiges Handeln, klare Prioritäten und konsequente Umsetzung.", "Drives pace, clear priorities and direct results.", "Incarne la rapidité d'action, des priorités claires et une mise en œuvre résolue.", "Rappresenta l'azione rapida, le priorità chiare e l'esecuzione decisa.") },
+                          { key: "analytisch" as ComponentKey, label: t("Analytisch", "Analytical", "Analytique", "Analitico"), color: COMP_HEX.analytisch, text: t("Sichert Struktur, Sorgfalt und nachvollziehbare Abläufe.", "Ensures structure, thoroughness and reliable processes.", "Garantit la structure, la rigueur et des processus transparents.", "Garantisce struttura, accuratezza e processi affidabili.") },
+                          { key: "intuitiv" as ComponentKey, label: t("Intuitiv", "Relational", "Relationnel", "Relazionale"), color: COMP_HEX.intuitiv, text: t("Unterstützt das Erkennen von Bedürfnissen und die passende Abstimmung im Team.", "Supports collaboration, sensing needs and aligning the team.", "Favorise la compréhension des besoins et la coordination au sein de l'équipe.", "Supporta la comprensione dei bisogni e il coordinamento nel team.") },
                         ]).map(kb => (
                           <div key={kb.key} style={{ flex: 1, display: "flex", flexDirection: "column" }}>
                             <div style={{ flex: 1, padding: "14px 16px", borderRadius: 10, background: `linear-gradient(135deg, ${kb.color}12, ${kb.color}06)`, border: `1px solid ${kb.color}20`, display: "flex", flexDirection: "column" }}>
@@ -603,13 +603,13 @@ export default function TeamCheckReportV4() {
 
               {/* === Section 3: Warum dieses Ergebnis entsteht === */}
               <div data-pdf-block style={sectionStyle} data-testid="v4-section-warum">
-                <SectionHead num={3} title={t("Warum dieses Ergebnis entsteht", "Why this result occurs", "Pourquoi ce résultat", "Perché si ottiene questo risultato")} id="warum" />
+                <SectionHead num={3} title={t("Begründung", "Rationale", "Justification", "Motivazione")} id="warum" />
                 <TextBlock text={aiNarrative?.systemwirkung || result.warumText} />
               </div>
 
               {/* === Section 4: Wirkung im Arbeitsalltag === */}
               <div data-pdf-block style={sectionStyle} data-testid="v4-section-wirkung">
-                <SectionHead num={4} title={t("Wirkung im Arbeitsalltag", "Day-to-day impact", "Impact au quotidien", "Effetto nel quotidiano")} id="wirkung" />
+                <SectionHead num={4} title={t("Wirkung im Arbeitsalltag", "Impact on Daily Work", "Impact au quotidien", "Impatto nel lavoro quotidiano")} id="wirkung" />
                 <TextBlock text={aiNarrative?.teamdynamikAlltag || result.wirkungAlltagText} />
               </div>
 
@@ -649,7 +649,7 @@ export default function TeamCheckReportV4() {
 
               {/* === Section 5: Verhalten unter Druck === */}
               <div data-pdf-block style={sectionStyle} data-testid="v4-section-druck">
-                <SectionHead num={6} title={t("Verhalten unter Druck", "Behaviour under pressure", "Comportement sous pression", "Comportamento sotto pressione")} id="druck" />
+                <SectionHead num={6} title={t("Verhalten unter Druck", "Behavior Under Pressure", "Comportement sous pression", "Comportamento sotto pressione")} id="druck" />
                 <TextBlock text={aiNarrative?.kulturwirkung || result.druckText} />
               </div>
 
@@ -676,7 +676,7 @@ export default function TeamCheckReportV4() {
                 const planNum = result.fuehrungshinweis ? 8 : 7;
                 return (
                   <div style={sectionStyle} data-testid="v4-section-integrationsplan">
-                    <SectionHead num={planNum} title={t("30-Tage-Integrationsplan", "30-day integration plan", "Plan d'intégration de 30 jours", "Piano di integrazione di 30 giorni")} id="integrationsplan" />
+                    <SectionHead num={planNum} title={t("Integrationsplan", "Integration Plan", "Plan d'intégration", "Piano di integrazione")} id="integrationsplan" />
                     <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
                       {result.integrationsplan.map(phase => {
                         const phaseCol = phase.num === 1 ? "#0071E3" : phase.num === 2 ? "#F39200" : "#34C759";
@@ -785,7 +785,7 @@ export default function TeamCheckReportV4() {
                 const riskNum = result.fuehrungshinweis ? 9 : 8;
                 return (
                   <div data-pdf-block style={sectionStyle} data-testid="v4-section-risikoprognose">
-                    <SectionHead num={riskNum} title={t("Risikoprognose", "Risk forecast", "Prévision des risques", "Previsione dei rischi")} id="risikoprognose" />
+                    <SectionHead num={riskNum} title={t("Risikoprognose", "Risk Outlook", "Projection des risques", "Previsione dei rischi")} id="risikoprognose" />
                     <div style={{ position: "relative", paddingLeft: 28 }}>
                       <div style={{ position: "absolute", left: 9, top: 8, bottom: 8, width: 2, background: "rgba(0,0,0,0.08)", borderRadius: 1 }} />
                       <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>

@@ -1,0 +1,119 @@
+keine Übersetzungen mehr, die „übersetzt“ wirken
+klare Produktlogik
+einheitlicher Ton über alle Sprachen
+entscheidungsorientiert, nicht akademisch
+🧠 Grundlogik (wichtig – zieht sich durch alles)
+
+Dein System ist:
+👉 kein Test
+👉 kein Fragebogen
+👉 kein HR-Tool von der Stange
+
+Sondern:
+👉 Decision Support System für Role–Person–Team Fit
+
+→ genau das spiegelt sich jetzt in der Sprache
+
+🌍 FINAL – CLEAN VERSION
+🇩🇪 Deutsch (Referenz)
+Bereich	Begriff
+Home	Home
+Stellenanalyse	Stellenprofil
+MatchCheck	MatchCheck
+Stelle ↔ Person	Stelle – Person
+TeamCheck	TeamCheck
+Bericht	Bericht
+Gesamtbewertung	Gesamtbewertung
+Grundpassung	Grundpassung
+Führungsaufwand	Führungsaufwand
+Entwicklungsaufwand	Entwicklungsaufwand
+Warum dieses Ergebnis	Begründung
+Risiken	Risiken
+Wirkung im Arbeitsalltag	Wirkung im Arbeitsalltag
+Entscheidungsverhalten	Entscheidungsverhalten
+Arbeitsweise	Arbeitsweise
+Kommunikation	Kommunikation
+Teamkultur	Teamkultur
+Verhalten unter Druck	Verhalten unter Druck
+Risikoprognose	Risikoprognose
+Integrationsplan	Integrationsplan
+
+👉 kleine Anpassung:
+„Stellenanalyse“ → „Stellenprofil“ (viel stärker, weniger technisch)
+
+🇬🇧 Englisch (sauber & hochwertig)
+DE	EN
+Home	Home
+Stellenprofil	Role Profile
+MatchCheck	MatchCheck
+Stelle – Person	Role – Person Fit
+TeamCheck	TeamCheck
+Bericht	Report
+Gesamtbewertung	Overall Assessment
+Grundpassung	Core Fit
+Führungsaufwand	Management Effort
+Entwicklungsaufwand	Development Effort
+Begründung	Rationale
+Risiken	Risks
+Wirkung im Arbeitsalltag	Impact on Daily Work
+Entscheidungsverhalten	Decision Making
+Arbeitsweise	Work Style
+Kommunikation	Communication
+Teamkultur	Team Dynamics
+Verhalten unter Druck	Behavior Under Pressure
+Risikoprognose	Risk Outlook
+Integrationsplan	Integration Plan
+
+👉 Wichtig:
+
+NICHT „analysis“ überall
+sondern Business-/Executive-Sprache
+🇫🇷 Französisch (natürlich, nicht Lehrbuch)
+DE	FR
+Home	Accueil
+Stellenprofil	Profil du poste
+MatchCheck	MatchCheck
+Stelle – Person	Poste – Personne (adéquation)
+TeamCheck	TeamCheck
+Bericht	Rapport
+Gesamtbewertung	Évaluation globale
+Grundpassung	Adéquation de base
+Führungsaufwand	Effort de management
+Entwicklungsaufwand	Effort de développement
+Begründung	Justification
+Risiken	Risques
+Wirkung im Arbeitsalltag	Impact au quotidien
+Entscheidungsverhalten	Prise de décision
+Arbeitsweise	Mode de travail
+Kommunikation	Communication
+Teamkultur	Dynamique d’équipe
+Verhalten unter Druck	Comportement sous pression
+Risikoprognose	Projection des risques
+Integrationsplan	Plan d’intégration
+
+👉 Wichtig:
+
+„Analyse de poste“ raus → zu bürokratisch
+„Profil du poste“ → viel stärker
+🇮🇹 Italienisch (klar & modern)
+DE	IT
+Home	Home
+Stellenprofil	Profilo del ruolo
+MatchCheck	MatchCheck
+Stelle – Person	Ruolo – Persona (compatibilità)
+TeamCheck	TeamCheck
+Bericht	Report
+Gesamtbewertung	Valutazione complessiva
+Grundpassung	Compatibilità di base
+Führungsaufwand	Impegno di gestione
+Entwicklungsaufwand	Impegno di sviluppo
+Begründung	Motivazione
+Risiken	Rischi
+Wirkung im Arbeitsalltag	Impatto nel lavoro quotidiano
+Entscheidungsverhalten	Processo decisionale
+Arbeitsweise	Metodo di lavoro
+Kommunikation	Comunicazione
+Teamkultur	Dinamica del team
+Verhalten unter Druck	Comportamento sotto pressione
+Risikoprognose	Previsione dei rischi
+Integrationsplan	Piano di integrazione
