@@ -508,7 +508,9 @@ export function computeSollIst(
   }));
   const finalText = texts.summary.finalText;
 
-  const displayFitLabel = lang === 'en'
+  const displayFitLabel = lang === 'fr'
+    ? (fitLabel === "Geeignet" ? "Adapté" : fitLabel === "Bedingt geeignet" ? "Partiellement adapté" : "Non adapté")
+    : lang === 'en'
     ? (fitLabel === "Geeignet" ? "Suitable" : fitLabel === "Bedingt geeignet" ? "Conditionally suitable" : "Not suitable")
     : fitLabel;
 

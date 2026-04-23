@@ -551,7 +551,7 @@ export default function SollIstBericht() {
       doc.save(`MatchCheck_${safeName}.pdf`);
     } catch (e) {
       console.error("PDF error:", e);
-      alert("PDF-Export fehlgeschlagen. Bitte versuche es erneut.");
+      alert(region === "FR" ? "L'export PDF a échoué. Veuillez réessayer." : region === "EN" ? "PDF export failed. Please try again." : "PDF-Export fehlgeschlagen. Bitte versuche es erneut.");
     } finally {
       if (clone && clone.parentNode) clone.parentNode.removeChild(clone);
       if (pdfBtn) pdfBtn.style.display = "";
@@ -1090,7 +1090,7 @@ export default function SollIstBericht() {
                       </div>
 
                       <div style={{ padding: "14px 16px", borderRadius: 12, background: "rgba(0,0,0,0.02)" }}>
-                        <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 12px" }}>{region === "FR" ? (kritischLabel === "Stärken" ? "Points forts" : kritischLabel === "Auffällig" ? "Notable" : "Critique") : region === "EN" ? (kritischLabel === "Stärken" ? "Strengths" : kritischLabel === "Auffällig" ? "Notable" : "Critical") : kritischLabel}</p>
+                        <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 12px" }}>{kritischLabel}</p>
                         {kritischBullets.map((b, i) => (
                           <BulletItem key={i} text={b} color={bulletCol} />
                         ))}
@@ -1349,7 +1349,7 @@ export default function SollIstBericht() {
                         <div style={{ display: "flex", gap: 16, marginTop: 16 }}>
                           <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: `${gapCol}08`, border: `1px solid ${gapCol}25` }}>
                             <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>{region === "FR" ? "Écart de profil" : region === "EN" ? "Profile deviation" : "Profilabweichung"}</div>
-                            <div style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", lineHeight: 1.5 }} data-testid="status-profilabweichung">{result.gapLevel}</div>
+                            <div style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", lineHeight: 1.5 }} data-testid="status-profilabweichung">{region === "FR" ? (result.gapLevel === "gering" ? "faible" : result.gapLevel === "mittel" ? "modéré" : "élevé") : region === "EN" ? (result.gapLevel === "gering" ? "low" : result.gapLevel === "mittel" ? "medium" : "high") : result.gapLevel}</div>
                           </div>
                           <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: `${devCol}08`, border: `1px solid ${devCol}25` }}>
                             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>

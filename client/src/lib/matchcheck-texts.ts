@@ -280,6 +280,11 @@ function capSeverity(severity: Severity, fitSubtype: FitSubtype, fitLabel?: stri
 }
 
 function sevLabel(severity: Severity): string {
+  if (_lang === 'fr') {
+    if (severity === 'ok') return 'Aligné';
+    if (severity === 'warning') return 'Écart présent';
+    return 'Critique';
+  }
   if (_lang === 'en') {
     if (severity === 'ok') return 'Aligned';
     if (severity === 'warning') return 'Deviation present';
@@ -405,6 +410,9 @@ export function buildDualDominanceText(args: {
 }
 
 function buildHeaderIntro(): string {
+  if (_lang === 'fr') {
+    return 'Cette analyse montre dans quelle mesure une personne et un poste s\'alignent dans leur logique de travail. Elle révèle où les modes de travail et les exigences concordent, où des écarts apparaissent et ce que cela implique pour l\'effort de management et d\'intégration au quotidien.';
+  }
   if (_lang === 'en') {
     return 'This analysis shows how well the person and position fit together. It makes visible where working style and requirements align, where deviations arise, and what this means for leadership and integration effort in practice.';
   }
@@ -430,7 +438,9 @@ function buildSummary(input: MatchTextInput): SummaryBlock {
 
   let whyResult = pickVariantSet(tv.why[level], seed + ':why');
   if (level === 'SOFT_YELLOW' || level === 'MISMATCH') {
-    whyResult = _lang === 'en'
+    whyResult = _lang === 'fr'
+      ? [whyResult[0], `L'écart individuel le plus important se situe dans le domaine de ${cs(leadKey)}.`, whyResult[1]]
+      : _lang === 'en'
       ? [whyResult[0], `The largest single deviation lies in the area of ${cs(leadKey)}.`, whyResult[1]]
       : [whyResult[0], `Die größte Einzelabweichung liegt im Bereich ${cs(leadKey)}.`, whyResult[1]];
   }
@@ -438,7 +448,17 @@ function buildSummary(input: MatchTextInput): SummaryBlock {
   const risks = pickVariantSet(tv.risks[level], seed + ':risks');
 
   let profileCompareIntro = '';
-  if (_lang === 'en') {
+  if (_lang === 'fr') {
+    if (level === 'PERFECT') {
+      profileCompareIntro = 'Les profils ne présentent pas d\'écart significatif dans aucun des trois domaines. La structure de base est alignée.';
+    } else if (level === 'EXACT_YELLOW') {
+      profileCompareIntro = 'Les profils ne présentent pas d\'écart significatif dans aucun des trois domaines. La structure de base est alignée.';
+    } else if (level === 'SOFT_YELLOW') {
+      profileCompareIntro = 'La structure de base est globalement compatible. Des écarts perceptibles apparaissent néanmoins dans certains domaines.';
+    } else {
+      profileCompareIntro = 'Le mode de travail de la personne diffère trop significativement de ce que le poste requiert.';
+    }
+  } else if (_lang === 'en') {
     if (level === 'PERFECT') {
       profileCompareIntro = 'The profiles do not deviate significantly in any of the three areas. The basic structure fits.';
     } else if (level === 'EXACT_YELLOW') {
@@ -461,7 +481,17 @@ function buildSummary(input: MatchTextInput): SummaryBlock {
   }
 
   let finalText = '';
-  if (_lang === 'en') {
+  if (_lang === 'fr') {
+    if (level === 'PERFECT') {
+      finalText = 'La personne est adaptée au poste. Le mode de travail, les décisions et l\'approche professionnelle sont alignés.';
+    } else if (level === 'EXACT_YELLOW') {
+      finalText = `Le poste ${input.roleName} exige ${cn(sp.rDom.top)} et ${cn(sp.rDom.second)} à parts égales. La personne travaille dans la même direction, mais la pondération des domaines secondaires n'est pas entièrement congruente. Avec un management ciblé et une structure claire, la collaboration peut être stabilisée.`;
+    } else if (level === 'SOFT_YELLOW') {
+      finalText = `Le poste ${input.roleName} est couvert en grande partie par la personne. Simultanément, des différences structurelles existent qui peuvent générer des frictions au quotidien et nécessitent l'attention du management.`;
+    } else {
+      finalText = `La personne travaille de façon significativement différente de ce que le poste ${input.roleName} requiert. Une prise de poste stable est peu probable dans ces conditions.`;
+    }
+  } else if (_lang === 'en') {
     if (level === 'PERFECT') {
       finalText = 'The person fits the role. Working style, decisions, and work approach are aligned.';
     } else if (level === 'EXACT_YELLOW') {
@@ -488,6 +518,11 @@ function buildSummary(input: MatchTextInput): SummaryBlock {
 
 function dualPairLabel(top: TriadKey, second: TriadKey): string {
   const pair = [top, second].sort().join('|');
+  if (_lang === 'fr') {
+    if (pair === 'A|I') return 'le rythme et la décision d\'un côté, l\'analyse rigoureuse et la structure de l\'autre';
+    if (pair === 'A|N') return 'la communication et les relations d\'un côté, l\'analyse rigoureuse et la structure de l\'autre';
+    return 'le rythme et la décision d\'un côté, la communication et les relations de l\'autre';
+  }
   if (_lang === 'en') {
     if (pair === 'A|I') return 'action and pace on one hand, careful analysis and structure on the other';
     if (pair === 'A|N') return 'relationship-building and engagement on one hand, analytical rigour and structure on the other';
@@ -501,6 +536,41 @@ function dualPairLabel(top: TriadKey, second: TriadKey): string {
 function roleNeedForArea(area: ImpactArea['key'], rDom: ReturnType<typeof dominanceModeOf>, isDual: boolean, isBal: boolean): string {
   const top = rDom.top;
   const second = rDom.second;
+  if (_lang === 'fr') {
+    if (area === 'decision') {
+      if (isBal) return 'Logique décisionnelle large et équilibrée. Les trois domaines doivent peser de façon égale.';
+      if (isDual) return `Décisions qui tiennent compte de ${dualPairLabel(top, second)} à parts égales. Les deux logiques doivent opérer en parallèle.`;
+      if (top === 'I') return 'Décisions rapides et orientées résultats. Évaluer brièvement les options, puis agir de façon décisive.';
+      if (top === 'N') return 'Décisions qui prennent en compte le contexte, la collaboration et l\'impact interpersonnel.';
+      return 'Décisions soigneuses et orientées analyse. Peser les options, vérifier les risques, puis agir.';
+    }
+    if (area === 'workstyle') {
+      if (isBal) return 'Profil de travail large et équilibré. L\'exécution, la coordination et la structure doivent être également représentées.';
+      if (isDual) return `Mode de travail qui relie ${cn(top)} et ${cn(second)} de façon parallèle et stable.`;
+      if (top === 'I') return 'Rythme élevé, exécution directe et priorisation pragmatique. Mener les tâches rapidement à terme.';
+      if (top === 'N') return 'Collaboration, coordination et implication. Travailler ensemble, pas seul.';
+      return 'Structure claire, priorisation et processus fiables. Étapes de travail planifiées et suivies de façon transparente.';
+    }
+    if (area === 'communication') {
+      if (isBal) return 'Communication large qui doit être à la fois factuelle, inclusive et orientée action à parts égales.';
+      if (isDual) return `Communication à la fois ${ca(top)} et ${ca(second)}. Les deux styles doivent être visiblement présents en parallèle.`;
+      if (top === 'I') return 'Communication directe et orientée résultats. Voies courtes, messages clairs.';
+      if (top === 'N') return 'Communication inclusive et contextuelle. Écouter, arbitrer, créer l\'alignement.';
+      return 'Communication factuelle et basée sur les faits. Argumentation claire, partage d\'information structuré.';
+    }
+    if (area === 'culture') {
+      if (isBal) return 'Culture d\'équipe polyvalente qui ancre de façon égale le rythme, la collaboration et la qualité.';
+      if (isDual) return `Culture d\'équipe qui ancre de façon stable ${cn(top)} et ${cn(second)}.`;
+      if (top === 'I') return 'Dynamisme, responsabilisation et résultats rapides. La compétition et le rythme définissent l\'équipe.';
+      if (top === 'N') return 'Cohésion, confiance et collaboration appréciative. La qualité des relations est centrale.';
+      return 'Fiabilité, calme et qualité traçable. Processus stables et résultats prévisibles.';
+    }
+    if (isBal) return 'Management à travers un impact large et équilibré. Les trois domaines doivent être également représentés.';
+    if (isDual) return `Management qui transmet ${cn(top)} et ${cn(second)} à parts égales.`;
+    if (top === 'I') return 'Management par le rythme, la capacité décisionnelle et une direction claire.';
+    if (top === 'N') return 'Management par la relation, l\'implication et la confiance.';
+    return 'Management par l\'orientation, la priorisation et des standards fiables.';
+  }
   if (_lang === 'en') {
     if (area === 'decision') {
       if (isBal) return 'Broad, balanced decision logic. All three areas should be equally weighted.';
@@ -576,6 +646,47 @@ function personTextForArea(area: ImpactArea['key'], input: MatchTextInput): stri
   const sp = getSpecialCases(input.roleProfile, input.candProfile);
   const cTop = sp.cDom.top;
   const cSecond = sp.cDom.second;
+
+  if (_lang === 'fr') {
+    if (area === 'decision') {
+      if (sp.candIsBalFull) return 'La personne décide de façon largement fondée et pondère diverses perspectives de façon égale.';
+      if (sp.candIsDualDom) {
+        const pair = [cTop, cSecond].sort().join('|');
+        if (pair === 'A|N') return 'La personne décide selon la situation soit plus par la coordination et l\'implication, soit par l\'analyse et la rigueur.';
+        if (pair === 'A|I') return 'La personne décide selon la situation soit par une analyse approfondie, soit par une action rapide.';
+        return 'La personne décide selon la situation soit par le rythme et l\'action directe, soit par la coordination et l\'implication.';
+      }
+      if (cTop === 'I') return 'La personne décide rapidement, directement et de façon orientée action.';
+      if (cTop === 'N') return 'La personne décide de façon contextuelle, implique les autres et recherche l\'alignement.';
+      return 'La personne décide de façon analytique et examine les décisions en profondeur.';
+    }
+    if (area === 'workstyle') {
+      if (sp.candIsBalFull) return 'La personne travaille de façon polyvalente et passe situativement entre le rythme, la coordination et la rigueur.';
+      if (sp.candIsDualDom) return `La personne travaille en parallèle par ${cn(cTop)} et ${cn(cSecond)}. Les deux domaines façonnent le mode de travail.`;
+      if (cTop === 'I') return 'La personne travaille à un rythme élevé, agit de façon pragmatique et met en oeuvre rapidement.';
+      if (cTop === 'N') return 'La personne travaille de façon coopérative, implique les autres et recherche des solutions communes.';
+      return 'La personne travaille de façon structurée avec des processus clairs et des étapes fixes. La planification a une haute priorité.';
+    }
+    if (area === 'communication') {
+      if (sp.candIsBalFull) return 'La personne communique de façon polyvalente et adapte son style situativement.';
+      if (sp.candIsDualDom) return `La personne communique à la fois ${ca(cTop)} et ${ca(cSecond)}. Le style change selon la situation.`;
+      if (cTop === 'I') return 'La personne communique directement, de façon concise et orientée résultats.';
+      if (cTop === 'N') return 'La personne communique de façon inclusive, empathique et recherche la compréhension.';
+      return 'La personne communique de façon factuelle, structurée et avec un regard clair sur le contexte.';
+    }
+    if (area === 'culture') {
+      if (sp.candIsBalFull) return 'La personne apporte un impact culturel large sans dominer fortement un domaine particulier.';
+      if (sp.candIsDualDom) return `La personne façonne la culture de façon égale par ${cn(cTop)} et ${cn(cSecond)}.`;
+      if (cTop === 'I') return 'La personne renforce le dynamisme, la responsabilisation et l\'orientation résultats dans l\'équipe.';
+      if (cTop === 'N') return 'La personne renforce la cohésion, la confiance et la qualité des relations dans l\'équipe.';
+      return 'La personne renforce la conscience qualité, la clarté des processus et la structure. La culture devient plus factuelle et organisée.';
+    }
+    if (sp.candIsBalFull) return 'La personne manage de façon polyvalente et arbitre de façon équilibrée entre les trois domaines.';
+    if (sp.candIsDualDom) return `La personne manage en parallèle par ${cn(cTop)} et ${cn(cSecond)}.`;
+    if (cTop === 'I') return 'La personne manage par le rythme, des directives directes et des décisions rapides.';
+    if (cTop === 'N') return 'La personne manage par la relation, l\'implication et la confiance.';
+    return 'La personne manage plutôt par la clarté, la structure et des directives traçables.';
+  }
 
   if (_lang === 'en') {
     if (area === 'decision') {
@@ -669,6 +780,39 @@ function areaInterpretation(key: ImpactArea['key'], input: MatchTextInput): stri
       candThirdLower: sp.candThirdLower,
     });
 
+    if (_lang === 'fr') {
+      if (key === 'decision') {
+        if (input.fitSubtype === 'PERFECT') return 'Le comportement décisionnel est pleinement congruent avec les exigences du poste. Les deux priorités requises sont portées en parallèle.';
+        if (input.fitSubtype === 'STRUCTURE_MATCH_INTENSITY_OFF') return `${dualText} Par conséquent, toutes les situations ne sont pas traitées avec le même équilibre constant.`;
+        if (input.fitSubtype === 'PARTIAL_MATCH' && input.fitLabel !== 'Nicht geeignet') return `${dualText} Cependant, la simultanéité requise des deux logiques n'est pas atteinte de façon suffisamment stable.`;
+        return `${dualText} La double logique requise du poste n'est donc pas atteinte de façon stable.`;
+      }
+      if (key === 'workstyle') {
+        if (input.fitSubtype === 'PERFECT') return 'Le mode de travail est pleinement congruent avec les exigences du poste. Les deux priorités requises sont reflétées en parallèle et de façon stable.';
+        if (input.fitSubtype === 'STRUCTURE_MATCH_INTENSITY_OFF') return `${dualText} Dans la pratique, les accents varient davantage plutôt que d'agir constamment en parallèle.`;
+        if (input.fitSubtype === 'PARTIAL_MATCH' && input.fitLabel !== 'Nicht geeignet') return 'Le mode de travail est globalement compatible mais n\'atteint pas constamment l\'équilibre requis des deux logiques principales.';
+        return 'Le mode de travail ne reflète pas suffisamment la double logique requise.';
+      }
+      if (key === 'communication') {
+        if (input.fitSubtype === 'PERFECT') return 'Le comportement communicationnel est cohérent et bien compatible. Les deux exigences sont bien couvertes.';
+        if (input.fitSubtype === 'STRUCTURE_MATCH_INTENSITY_OFF') return `${dualText} Par conséquent, la constance de l'articulation entre implication et structure factuelle varie.`;
+        if (input.fitSubtype === 'PARTIAL_MATCH' && input.fitLabel !== 'Nicht geeignet') return 'La communication couvre le poste en partie mais ne maintient pas constamment l\'équilibre requis.';
+        return 'La logique de communication diffère significativement du poste. La coordination et les échanges se déroulent différemment de ce qui est requis.';
+      }
+      if (key === 'culture') {
+        if (input.fitSubtype === 'PERFECT') return 'L\'impact sur la culture d\'équipe soutient la direction souhaitée du poste. Les deux aspects sont portés en parallèle.';
+        if (input.fitSubtype === 'STRUCTURE_MATCH_INTENSITY_OFF') return `${dualText} Par conséquent, la culture vécue peut différer des attentes du poste sur certains aspects.`;
+        if (input.fitSubtype === 'PARTIAL_MATCH' && input.fitLabel !== 'Nicht geeignet') return 'L\'impact sur la collaboration et la culture d\'équipe est globalement viable mais ne reste pas congruent.';
+        return 'L\'impact culturel modifierait sensiblement la direction d\'équipe souhaitée. La collaboration évolue différemment de ce qui est prévu pour le poste.';
+      }
+      if (key === 'leadership') {
+        if (input.fitSubtype === 'PERFECT') return 'L\'impact managérial est cohérent et bien compatible. Les deux priorités requises sont portées en parallèle et de façon stable.';
+        if (input.fitSubtype === 'STRUCTURE_MATCH_INTENSITY_OFF') return `${dualText} Par conséquent, l'impact managérial au quotidien peut être pondéré légèrement différemment de ce que le poste requiert.`;
+        if (input.fitSubtype === 'PARTIAL_MATCH' && input.fitLabel !== 'Nicht geeignet') return 'L\'impact managérial est globalement compatible mais n\'atteint pas constamment l\'équilibre requis des deux logiques principales.';
+        return 'L\'impact managérial ne reflète pas suffisamment la double logique requise.';
+      }
+    }
+
     if (_lang === 'en') {
       if (key === 'decision') {
         if (input.fitSubtype === 'PERFECT') return 'Decision-making is fully congruent with the role requirement. Both required priorities are carried in parallel.';
@@ -738,6 +882,34 @@ function areaInterpretation(key: ImpactArea['key'], input: MatchTextInput): stri
     }
   }
 
+  if (_lang === 'fr') {
+    const fsub = input.fitSubtype;
+    const notSuitable = input.fitLabel === 'Nicht geeignet';
+    if (key === 'decision') {
+      if (fsub === 'PERFECT') return 'Le comportement décisionnel est pleinement aligné avec les exigences du poste.';
+      if (!notSuitable) return 'Le comportement décisionnel est globalement compatible, mais présente des écarts dans la pondération.';
+      return 'Le comportement décisionnel s\'écarte significativement des exigences du poste.';
+    }
+    if (key === 'workstyle') {
+      if (fsub === 'PERFECT') return 'Le mode de travail est pleinement aligné avec les exigences du poste.';
+      if (!notSuitable) return 'Le mode de travail est globalement compatible, mais présente des écarts dans certains domaines.';
+      return 'Le mode de travail s\'écarte significativement des exigences du poste.';
+    }
+    if (key === 'communication') {
+      if (fsub === 'PERFECT') return 'Le comportement communicationnel est cohérent et bien compatible avec le poste.';
+      if (!notSuitable) return 'La communication est globalement compatible, mais ne reste pas constamment dans l\'équilibre requis.';
+      return 'La logique de communication diffère significativement des exigences du poste.';
+    }
+    if (key === 'culture') {
+      if (fsub === 'PERFECT') return 'L\'impact sur la culture d\'équipe soutient la direction souhaitée du poste.';
+      if (!notSuitable) return 'L\'impact sur la culture d\'équipe est globalement compatible, mais peut s\'écarter dans certains aspects.';
+      return 'L\'impact culturel modifierait sensiblement la direction d\'équipe souhaitée.';
+    }
+    if (fsub === 'PERFECT') return 'L\'impact managérial est cohérent et bien compatible avec les exigences du poste.';
+    if (!notSuitable) return 'L\'impact managérial est globalement compatible, mais ne reflète pas constamment l\'équilibre requis.';
+    return 'L\'impact managérial ne reflète pas suffisamment la logique du poste.';
+  }
+
   const level = mapToVariantLevel(input.fitSubtype, input.fitLabel);
   const tv = vars();
   const areaKey = key as keyof typeof tv.impact;
@@ -761,6 +933,13 @@ function buildImpactAreas(input: MatchTextInput): ImpactArea[] {
   const cultSev = commSev;
 
   const areaTitle = (key: ImpactArea['key']) => {
+    if (_lang === 'fr') {
+      if (key === 'decision') return 'Comportement décisionnel';
+      if (key === 'workstyle') return 'Mode de travail';
+      if (key === 'communication') return 'Communication';
+      if (key === 'culture') return 'Impact sur la culture d\'équipe';
+      return 'Impact managérial';
+    }
     if (_lang === 'en') {
       if (key === 'decision') return 'Decision-making';
       if (key === 'workstyle') return 'Work style';
@@ -926,6 +1105,27 @@ function buildStress(input: MatchTextInput): StressBlock {
 
 function buildTimeline(input: MatchTextInput): string[] {
   const rTop = dominanceModeOf(input.roleProfile).top;
+  if (_lang === 'fr') {
+    if (input.fitSubtype === 'PERFECT') {
+      return [
+        `Le poste ${input.roleName} exige ${cs(rTop)}. Le mode de travail est adapté. La prise de poste devrait se dérouler sans difficulté. Des ajustements ne sont nécessaires que dans des cas isolés.`,
+        'Les exigences du poste sont couvertes de façon stable. Des écarts mineurs apparaissent dans les domaines secondaires. Des entretiens d\'objectifs réguliers permettent de les identifier rapidement.',
+        'Les exigences du poste sont satisfaites de façon stable à long terme. L\'effort de management reste faible. Des révisions semestrielles suffisent.',
+      ];
+    }
+    if (input.fitLabel === 'Nicht geeignet') {
+      return [
+        `Le poste ${input.roleName} exige ${cs(rTop)}. La personne pondère ses priorités de travail de façon significativement différente. Dès la prise de poste, les différences deviennent visibles et nécessitent un accompagnement intensif.`,
+        'Les écarts deviennent de plus en plus perceptibles dans la pratique. Sans un management très proche, les priorités et le mode de travail s\'éloignent davantage des exigences du poste. Cela consomme du temps de management et génère des frictions dans l\'équipe.',
+        'À long terme, une adéquation stable n\'est possible qu\'avec un effort de management durablement élevé. La question de la viabilité de la prise de poste devrait être régulièrement et critiquement réévaluée.',
+      ];
+    }
+    return [
+      `Le poste ${input.roleName} exige ${cs(rTop)}. La personne travaille dans la même direction, mais pondère différemment les domaines secondaires. Il convient d'être attentif à ces différences dès la prise de poste.`,
+      'La direction générale est juste, mais les écarts dans les domaines secondaires deviennent perceptibles dans la pratique. Sans pilotage ciblé, ces différences peuvent se consolider. Des entretiens d\'objectifs réguliers et des attentes claires sont nécessaires.',
+      'Avec un management ciblé, les différences dans les domaines secondaires peuvent être durablement compensées. Révision semestrielle recommandée pour s\'assurer que l\'adéquation reste stable.',
+    ];
+  }
   if (_lang === 'en') {
     if (input.fitSubtype === 'PERFECT') {
       return [
@@ -971,6 +1171,33 @@ function buildTimeline(input: MatchTextInput): string[] {
 
 function buildDevelopment(input: MatchTextInput): DevelopmentBlock {
   const rDom = dominanceModeOf(input.roleProfile);
+  if (_lang === 'fr') {
+    if (input.fitSubtype === 'PERFECT') {
+      return {
+        title: 'Perspectives de développement',
+        subtitle: '3 sur 3 — Bonnes perspectives, faible effort',
+        scoreText: 'niedrig',
+        text1: `Le poste exige ${cn(rDom.top)} et ${cn(rDom.second)} à parts égales. La personne couvre cette exigence de façon cohérente.`,
+        text2: `Le poste ${input.roleName} exige ${cn(rDom.top)} et ${cn(rDom.second)} à parts égales. La personne apporte ce mode de travail. La direction générale et la pondération sont alignées. L'effort de management est faible. Une prise de poste stable est probable dans ces conditions.`,
+      };
+    }
+    if (input.fitLabel === 'Nicht geeignet') {
+      return {
+        title: 'Perspectives de développement',
+        subtitle: '1 sur 3 — Effort élevé, résultat incertain',
+        scoreText: 'hoch',
+        text1: `Le poste exige ${cn(rDom.top)} et ${cn(rDom.second)} à parts égales. La personne pondère ses priorités de travail de façon significativement différente. Une adaptation n'est possible qu'avec un effort de management élevé et durable.`,
+        text2: `Les exigences du poste ${input.roleName} et le mode de travail de la personne ne sont pas compatibles. Sans management étroit, une prise de poste stable est peu probable.`,
+      };
+    }
+    return {
+      title: 'Perspectives de développement',
+      subtitle: '2 sur 3 — Réalisable, nécessite un management ciblé',
+      scoreText: 'mittel',
+      text1: `Le poste exige ${cn(rDom.top)} et ${cn(rDom.second)} à parts égales. La personne travaille dans la même direction, mais doit encore apprendre de façon ciblée dans certains domaines. Avec des objectifs clairs et un retour régulier, c'est bien réalisable.`,
+      text2: buildSummary(input).finalText,
+    };
+  }
   if (_lang === 'en') {
     if (input.fitSubtype === 'PERFECT') {
       return {
@@ -1034,6 +1261,132 @@ function buildIntegrationPlan(input: MatchTextInput): IntegrationPhase[] {
   const isPerfect = input.fitSubtype === 'PERFECT';
   const candBal = sp.candIsBalFull;
   const candDual = sp.candIsDualDom;
+
+  if (_lang === 'fr') {
+    const personDesc = candBal
+      ? 'La personne n\'a pas de priorité clairement définie et travaille de façon polyvalente.'
+      : candDual
+        ? 'La personne a deux priorités de travail presque aussi fortes et passe situativement de l\'une à l\'autre.'
+        : 'La personne a une priorité de travail clairement reconnaissable.';
+    const focusTitle = 'Ce qui compte';
+
+    if (isPerfect) {
+      return [
+        {
+          phase: 1,
+          title: 'Orientation',
+          timeframe: 'Jours 1–10',
+          goal: `Comprendre les exigences du poste ${input.roleName} et aligner les attentes.`,
+          items: [
+            `Clarifier les circuits décisionnels et les domaines de responsabilité dans le poste ${input.roleName}.`,
+            'Aligner les priorités de travail les plus importantes avec l\'environnement direct.',
+            'Assurer la transparence sur les processus, procédures et standards de qualité existants.',
+          ],
+          focusTitle,
+          focusText: 'Le mode de travail est adapté au poste. L\'essentiel est d\'établir rapidement la clarté sur :',
+          focusBullets: ['les processus et interfaces existants', 'les circuits décisionnels et domaines de responsabilité', 'les standards de qualité et les attentes'],
+        },
+        {
+          phase: 2,
+          title: 'Impact',
+          timeframe: 'Jours 11–20',
+          goal: `Prendre en charge les premières responsabilités opérationnelles en tant que ${input.roleName} et produire un impact.`,
+          items: ['Traitement autonome des premiers lots de travail avec contrôle des résultats.', 'Rechercher activement un retour sur l\'impact concernant le rythme, la qualité et la collaboration.', 'Établir le travail d\'interface avec les domaines adjacents.'],
+          focusTitle,
+          focusText: 'La personne travaille déjà selon la bonne approche de base. Il s\'agit maintenant de :',
+          focusBullets: [`rendre visible l'efficacité dans le poste ${input.roleName}`, 'livrer les premiers résultats de travail de façon autonome', 'développer des routines fiables'],
+        },
+        {
+          phase: 3,
+          title: 'Stabilisation',
+          timeframe: 'Jours 21–30',
+          goal: `Stabiliser le mode de travail et le rythme dans le poste ${input.roleName}.`,
+          items: ['Évaluation de l\'impact sur le rythme décisionnel et la charge de travail.', 'Ajustement fin de la collaboration avec l\'environnement direct.', 'Consolider les priorités et stabiliser les standards.'],
+          focusTitle,
+          focusText: 'Le mode de travail est stable. Il s\'agit maintenant de :',
+          focusBullets: ['maintenir les points forts et consolider les routines', `assurer la stabilité à long terme dans le poste ${input.roleName}`],
+        },
+      ];
+    }
+
+    if (isNichtGeeignet) {
+      return [
+        {
+          phase: 1,
+          title: 'Orientation',
+          timeframe: 'Jours 1–10',
+          goal: `Clarifier les attentes du poste ${input.roleName} et identifier les écarts rapidement.`,
+          items: [
+            `Clarifier les attentes centrales et les critères de succès du poste ${input.roleName}.`,
+            'Assurer la transparence sur les processus de travail, circuits décisionnels et standards de qualité existants.',
+            'Discussion ouverte sur les différences perceptibles entre les exigences du poste et le mode de travail.',
+            'Définir des critères d\'observation concrets pour les premières semaines.',
+          ],
+          focusTitle,
+          focusText: `${personDesc} Le poste requiert une pondération différente. Durant les premiers jours, il doit être clair :`,
+          focusBullets: ['où précisément le mode de travail s\'écarte des attentes du poste', 'quelles attentes ne sont pas négociables', 'quel accompagnement et pilotage sont nécessaires'],
+        },
+        {
+          phase: 2,
+          title: 'Impact',
+          timeframe: 'Jours 11–20',
+          goal: `Livrer les premiers résultats de travail en tant que ${input.roleName} et gérer délibérément les écarts.`,
+          items: ['Confier des tâches ciblées avec des critères de résultats clairs.', 'Rechercher régulièrement un retour sur l\'impact concernant la qualité, le rythme et la collaboration.', 'Discuter ouvertement des écarts entre le mode de travail et les attentes du poste.', 'Convenir et documenter des mesures de développement concrètes.'],
+          focusTitle,
+          focusText: 'Les différences entre le mode de travail et les exigences du poste deviennent visibles dans la pratique. Le manager devrait :',
+          focusBullets: ['accompagner et piloter de près', 'définir des priorités claires et fournir un retour régulier', 'évaluer honnêtement si l\'adaptation est réaliste'],
+        },
+        {
+          phase: 3,
+          title: 'Stabilisation',
+          timeframe: 'Jours 21–30',
+          goal: `Évaluer honnêtement la viabilité de la prise de poste en tant que ${input.roleName}.`,
+          items: ['Évaluation : les écarts identifiés ont-ils diminué ou se sont-ils consolidés ?', 'Recueillir les retours de l\'environnement direct sur l\'impact dans la pratique.', 'Prendre une décision : poursuivre avec un accompagnement intensif ou examiner des alternatives.', 'Ne fixer des objectifs de développement à long terme que si la direction générale est juste.'],
+          focusTitle,
+          focusText: 'La question centrale après 30 jours est : l\'écart entre le mode de travail et les exigences du poste est-il comblable ? Le manager évalue :',
+          focusBullets: ['si le mode de travail évolue sensiblement vers les exigences du poste', 'si l\'effort de management est viable à long terme', 'si la prise de poste peut être maintenue de façon stable à long terme'],
+        },
+      ];
+    }
+
+    return [
+      {
+        phase: 1,
+        title: 'Orientation',
+        timeframe: 'Jours 1–10',
+        goal: `Comprendre les attentes et exigences du poste ${input.roleName} et identifier les différences.`,
+        items: [
+          `Clarifier le poste, les attentes et les critères de succès dans ${input.roleName}.`,
+          'Assurer la transparence sur les processus, circuits décisionnels et standards de qualité existants.',
+          'Aligner rapidement les priorités et les attentes mutuelles.',
+          'Clarifier les processus opérationnels et les interfaces.',
+        ],
+        focusTitle,
+        focusText: `${personDesc} Le poste définit des priorités différentes. À clarifier :`,
+        focusBullets: ['quel mode de travail le poste exige concrètement', 'en quoi les habitudes de la personne en diffèrent', 'quelles adaptations peuvent être raisonnablement attendues'],
+      },
+      {
+        phase: 2,
+        title: 'Impact',
+        timeframe: 'Jours 11–20',
+        goal: `Livrer les premiers résultats de travail en tant que ${input.roleName} et gérer délibérément le besoin d'adaptation.`,
+        items: ['Traiter un sujet concret de façon autonome et contrôler le résultat.', 'Rechercher un retour sur l\'impact concernant la qualité, la collaboration et la fiabilité des résultats.', 'Formuler des attentes claires concernant les priorités et le mode de travail.', 'Proposer activement soutien et accompagnement.'],
+        focusTitle,
+        focusText: 'Les différences entre le mode de travail et les exigences du poste deviennent visibles dans la pratique. L\'essentiel est de :',
+        focusBullets: ['donner un retour ciblé et formuler clairement les attentes', 'observer les progrès et la volonté d\'adaptation', 'assurer une coordination régulière avec le manager'],
+      },
+      {
+        phase: 3,
+        title: 'Stabilisation',
+        timeframe: 'Jours 21–30',
+        goal: `Aligner durablement le mode de travail et les attentes dans le poste ${input.roleName}.`,
+        items: ['Évaluation de l\'impact sur le rythme décisionnel, la priorisation et la collaboration.', 'Ajustement des attentes, interfaces et standards de travail.', 'Définir des objectifs de développement à long terme et un rythme de retour.'],
+        focusTitle,
+        focusText: 'Le mode de travail évolue dans la bonne direction. Le manager évalue :',
+        focusBullets: ['si l\'effort de management reste viable à long terme', 'si l\'adaptation est durable', 'si la prise de poste peut être maintenue de façon stable à long terme'],
+      },
+    ];
+  }
 
   if (_lang === 'en') {
     const personDesc = candBal
