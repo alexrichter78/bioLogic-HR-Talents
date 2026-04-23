@@ -229,7 +229,7 @@ function SoftBar({ items, region }: { items: { label: string; value: number; col
         const isSmall = widthPct < 18;
         return (
           <div key={bar.label} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <span style={{ fontSize: region === "FR" ? 11 : 14, color: "#48484A", width: region === "FR" ? 115 : 72, flexShrink: 0, lineHeight: "1.35" }}>{bar.label}</span>
+            <span style={{ fontSize: 14, color: "#48484A", width: region === "FR" || region === "IT" ? 115 : 72, flexShrink: 0, lineHeight: "1.35" }}>{bar.label}</span>
             <div style={{ flex: 1, position: "relative", height: 26 }}>
               <div style={{
                 position: "absolute", inset: 0,
@@ -268,7 +268,7 @@ function BarSlider({ label, value, color, onChange, region }: { label: string; v
   const isSmall = widthPct < 18;
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-      <span style={{ fontSize: region === "FR" ? 11 : 14, color: "#48484A", width: region === "FR" ? 115 : 72, flexShrink: 0, lineHeight: "1.35" }}>{label}</span>
+      <span style={{ fontSize: 14, color: "#48484A", width: region === "FR" || region === "IT" ? 115 : 72, flexShrink: 0, lineHeight: "1.35" }}>{label}</span>
       <div style={{ flex: 1, position: "relative", height: 26 }}>
         <div style={{
           position: "absolute", inset: 0,
