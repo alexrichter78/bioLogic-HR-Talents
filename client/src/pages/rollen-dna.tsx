@@ -335,7 +335,7 @@ const analysisPrincipleText = {
 const analysisPrincipleText_EN = {
   title: "Underlying principle of the analysis",
   body: [
-    "Every person draws on the three basic ways of thinking and acting: impulsive, intuitive and analytical.",
+    "Every person draws on the three basic ways of thinking and acting: Action-oriented, Relational and Analytical.",
     "All three parts are always present. The difference lies in their order and weighting.",
     "This structure shapes how people decide, communicate and act in daily life.",
     "Depending on the situation, the visible effect can shift: in everyday work, under stress or in relaxed situations.",
@@ -354,7 +354,7 @@ const roleRequirementText = {
 const roleRequirementText_EN = {
   intro: [
     "This evaluation describes the working logic of the role.",
-    "The requirements are mapped to the three dimensions impulsive, intuitive and analytical.",
+    "The requirements are mapped to the three dimensions Action-oriented, Relational and Analytical.",
     "This makes visible which form of effectiveness is central in the daily work of this position.",
   ],
   outro: "",
@@ -363,7 +363,7 @@ const roleRequirementText_EN = {
 const analysisPrincipleText_FR = {
   title: "Principe fondamental de l'analyse",
   body: [
-    "Chaque personne dispose des trois modes fondamentaux de pensée et d'action : Rythme et Décision, Communication et Relations, et Structure et Rigueur.",
+    "Chaque personne dispose des trois modes fondamentaux de pensée et d'action : Orienté action, Relationnel et Analytique.",
     "Ces trois composantes sont toujours présentes. La différence réside dans leur ordre et leur pondération.",
     "Cette structure détermine la façon dont les personnes décident, communiquent et agissent au quotidien.",
     "Selon la situation, l'effet visible peut varier : dans le travail quotidien, sous pression ou dans des situations détendues.",
@@ -373,7 +373,7 @@ const analysisPrincipleText_FR = {
 const roleRequirementText_FR = {
   intro: [
     "Cette évaluation décrit la logique de travail du poste.",
-    "Les exigences sont réparties selon les trois dimensions Rythme et Décision, Communication et Relations et Structure et Rigueur.",
+    "Les exigences sont réparties selon les trois dimensions Orienté action, Relationnel et Analytique.",
     "Cela permet d'identifier quelle forme d'efficacité est au centre du quotidien professionnel de ce poste.",
   ],
   outro: "",
@@ -382,7 +382,7 @@ const roleRequirementText_FR = {
 const analysisPrincipleText_IT = {
     title: "Principio fondamentale dell'analisi",
     body: [
-      "Ogni persona dispone dei tre modi fondamentali di pensiero e azione: Ritmo e Decisione, Comunicazione e Relazioni e Struttura e Rigore.",
+      "Ogni persona dispone dei tre modi fondamentali di pensiero e azione: Orientato all'azione, Relazionale e Analitico.",
       "Tutte e tre le componenti sono sempre presenti. La differenza sta nel loro ordine e nella loro ponderazione.",
       "Questa struttura determina il modo in cui le persone decidono, comunicano e agiscono nel quotidiano.",
       "A seconda della situazione, l'effetto visibile puo' variare: nel lavoro quotidiano, sotto pressione o in situazioni rilassate.",
@@ -392,7 +392,7 @@ const analysisPrincipleText_IT = {
   const roleRequirementText_IT = {
     intro: [
       "Questa valutazione descrive la logica lavorativa del ruolo.",
-      "I requisiti vengono attribuiti alle tre dimensioni Ritmo e Decisione, Comunicazione e Relazioni e Struttura e Rigore.",
+      "I requisiti vengono attribuiti alle tre dimensioni Orientato all'azione, Relazionale e Analitico.",
       "Cio' rende visibile quale forma di efficacia e' al centro del lavoro quotidiano di questa posizione.",
     ],
     outro: "",
