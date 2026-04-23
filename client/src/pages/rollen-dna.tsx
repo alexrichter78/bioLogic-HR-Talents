@@ -379,7 +379,26 @@ const roleRequirementText_FR = {
   outro: "",
 };
 
-const roleResultTextsFR: Record<ResultKey, RoleResultEntry> = {
+const analysisPrincipleText_IT = {
+    title: "Principio fondamentale dell'analisi",
+    body: [
+      "Ogni persona dispone dei tre modi fondamentali di pensiero e azione: Ritmo e Decisione, Comunicazione e Relazioni e Struttura e Rigore.",
+      "Tutte e tre le componenti sono sempre presenti. La differenza sta nel loro ordine e nella loro ponderazione.",
+      "Questa struttura determina il modo in cui le persone decidono, comunicano e agiscono nel quotidiano.",
+      "A seconda della situazione, l'effetto visibile puo' variare: nel lavoro quotidiano, sotto pressione o in situazioni rilassate.",
+    ],
+  };
+
+  const roleRequirementText_IT = {
+    intro: [
+      "Questa valutazione descrive la logica lavorativa del ruolo.",
+      "I requisiti vengono attribuiti alle tre dimensioni Ritmo e Decisione, Comunicazione e Relazioni e Struttura e Rigore.",
+      "Cio' rende visibile quale forma di efficacia e' al centro del lavoro quotidiano di questa posizione.",
+    ],
+    outro: "",
+  };
+
+  const roleResultTextsFR: Record<ResultKey, RoleResultEntry> = {
   IMP_INT_ANA: {
     headline: "L'action active marque le quotidien, sous pression davantage d'échange avec les autres",
     body: [
@@ -526,7 +545,154 @@ const roleResultTextsFR: Record<ResultKey, RoleResultEntry> = {
   },
 };
 
-const roleResultTextsEN: Record<ResultKey, RoleResultEntry> = {
+const roleResultTextsIT: Record<ResultKey, RoleResultEntry> = {
+    IMP_INT_ANA: {
+      headline: "L'azione attiva caratterizza il quotidiano, sotto pressione maggiore scambio con gli altri",
+      body: [
+        "Nel lavoro quotidiano, questo ruolo e' caratterizzato soprattutto da uno stile lavorativo attivo e orientato alle decisioni. I temi vengono affrontati tempestivamente, le responsabilita' vengono assunte e le decisioni vengono prese in tempi relativamente rapidi. Il ruolo esprime dinamismo e capacita' di azione.",
+        "Quando la pressione aumenta, lo scambio con gli altri acquista maggiore importanza. Conversazioni, coordinamento e il coinvolgimento di diverse prospettive aiutano a consolidare le decisioni e a sviluppare soluzioni insieme.",
+        "Questa combinazione fa si che i temi non solo vengano messi in moto rapidamente, ma vengano anche sviluppati nel dialogo con gli altri. Le decisioni vengono cosi' sia condivise che attuate.",
+      ],
+      leadership: "Nell'attivita' di leadership, cio' si manifesta in decisioni chiare, responsabilita' visibile e una comunicazione aperta con l'ambiente.",
+    },
+    IMP_ANA_INT: {
+      headline: "Decisioni e attuazione caratterizzano il quotidiano, sotto pressione maggiore struttura e controllo",
+      body: [
+        "Nel lavoro quotidiano, questo ruolo e' caratterizzato soprattutto dalla capacita' decisionale e dall'orientamento all'attuazione. I temi vengono affrontati attivamente, le responsabilita' assunte e le decisioni prese in tempi relativamente rapidi.",
+        "Quando la pressione aumenta, cresce spesso il bisogno di struttura, pianificazione e controllo. I temi vengono esaminati piu' attentamente, i processi vengono meglio organizzati e le decisioni vengono maggiormente supportate dall'analisi.",
+        "Questa combinazione fa si che le decisioni non vengano solo prese, ma anche attuate in modo strutturato. Il dinamismo viene completato dall'ordine.",
+      ],
+      leadership: "Nell'attivita' di leadership, cio' si manifesta in un chiaro orientamento agli obiettivi, una gestione strutturata e decisioni vincolanti.",
+    },
+    INT_IMP_ANA: {
+      headline: "La collaborazione caratterizza il quotidiano, sotto pressione decisioni e azioni piu' rapide",
+      body: [
+        "Nel lavoro quotidiano, la collaborazione e lo scambio con gli altri sono al primo posto. Conversazioni, coordinamento e un buon senso delle situazioni caratterizzano lo stile lavorativo.",
+        "Quando la pressione aumenta, le decisioni possono essere prese in modo piu' diretto e rapido per far avanzare i temi.",
+        "Questa combinazione fa si che la collaborazione non passi solo attraverso le conversazioni, ma si traduca anche in passi concreti.",
+      ],
+      leadership: "Nell'attivita' di leadership, cio' si manifesta in una comunicazione aperta, un'alta presenza nel team e la capacita' di far avanzare i temi insieme.",
+    },
+    INT_ANA_IMP: {
+      headline: "La collaborazione caratterizza il quotidiano, sotto pressione maggiore struttura e chiarezza",
+      body: [
+        "Nel lavoro quotidiano, la collaborazione e il coordinamento caratterizzano soprattutto questo ruolo. Lo scambio, le conversazioni e un buon senso per le persone sono al centro.",
+        "Quando la pressione aumenta, cresce spesso il bisogno di struttura, pianificazione e processi chiari. Le decisioni vengono maggiormente supportate dall'analisi e dall'organizzazione.",
+        "Questa combinazione fa si che la collaborazione non funzioni solo attraverso le conversazioni, ma venga anche stabilizzata da strutture chiare.",
+      ],
+      leadership: "Nell'attivita' di leadership, cio' si manifesta in una guida orientata al dialogo, decisioni comprensibili e un'organizzazione strutturata della collaborazione.",
+    },
+    ANA_IMP_INT: {
+      headline: "Struttura e pianificazione caratterizzano il quotidiano, sotto pressione decisioni piu' rapide",
+      body: [
+        "Nel lavoro quotidiano, struttura, pianificazione e chiarezza tecnica caratterizzano soprattutto lo stile lavorativo. I temi vengono analizzati e preparati con cura prima che vengano prese le decisioni.",
+        "Quando la pressione aumenta, le decisioni possono essere prese in modo piu' rapido e diretto per far avanzare i temi.",
+        "Questa combinazione unisce una pianificazione accurata a una chiara capacita' di attuazione.",
+      ],
+      leadership: "Nell'attivita' di leadership, cio' si manifesta in strutture chiare, decisioni fondate e un'attuazione coerente.",
+    },
+    ANA_INT_IMP: {
+      headline: "Struttura e pianificazione caratterizzano il quotidiano, sotto pressione maggiore scambio e coordinamento",
+      body: [
+        "Nel lavoro quotidiano, struttura, pianificazione e chiarezza tecnica sono al centro. I temi vengono preparati sistematicamente e riflettuti con cura.",
+        "Quando la pressione aumenta, lo scambio con gli altri acquista maggiore importanza. Conversazioni e coordinamento aiutano a condividere le decisioni.",
+        "Questa combinazione fa si che le decisioni vengano prese in modo sia ponderato che coordinato.",
+      ],
+      leadership: "Nell'attivita' di leadership, cio' si manifesta in strutture chiare, decisioni comprensibili e un coordinamento aperto nel team.",
+    },
+    IMP_INT__ANA: {
+      headline: "Azione attiva e collaborazione caratterizzano il quotidiano, sotto pressione maggiore struttura",
+      body: [
+        "Nel lavoro quotidiano, l'orientamento all'azione e la collaborazione interagiscono in modo particolarmente stretto. I temi vengono portati avanti attivamente e allo stesso tempo coordinati con gli altri.",
+        "Quando la pressione aumenta, cresce spesso il desiderio di maggiore struttura e orientamento per organizzare meglio i temi e consolidare le decisioni.",
+        "Questa combinazione unisce il dinamismo al coordinamento comune e fa si che movimento e collaborazione siano possibili simultaneamente.",
+      ],
+      leadership: "Nell'attivita' di leadership, cio' si manifesta in una comunicazione attiva, decisioni chiare e un'alta presenza nel team.",
+    },
+    IMP_ANA__INT: {
+      headline: "Decisioni e struttura caratterizzano il quotidiano, sotto pressione maggiore scambio",
+      body: [
+        "Nel lavoro quotidiano, la capacita' decisionale e lo stile lavorativo strutturato si combinano in modo particolarmente stretto. I temi vengono portati avanti attivamente e allo stesso tempo pianificati con cura.",
+        "Quando la pressione aumenta, lo scambio con gli altri acquista maggiore importanza. Le conversazioni aiutano a riflettere sulle decisioni e a includere diverse prospettive.",
+        "Questa combinazione fa si che le decisioni vengano attuate in modo sia coerente che comprensibile.",
+      ],
+      leadership: "Nell'attivita' di leadership, cio' si manifesta in un chiaro orientamento, una gestione strutturata e un dialogo aperto.",
+    },
+    INT_IMP__ANA: {
+      headline: "Collaborazione e attivita' caratterizzano il quotidiano, sotto pressione maggiore struttura",
+      body: [
+        "Nel lavoro quotidiano, collaborazione e attivita' interagiscono in modo particolarmente stretto. I temi vengono sviluppati nello scambio con gli altri e allo stesso tempo portati avanti attivamente.",
+        "Quando la pressione aumenta, cresce spesso il bisogno di maggiore struttura e ordine per consolidare le decisioni.",
+        "Questa combinazione unisce il dinamismo al coordinamento comune e fa si che la collaborazione rimanga operativa.",
+      ],
+      leadership: "Nell'attivita' di leadership, cio' si manifesta in una comunicazione aperta, un'alta presenza nel team e decisioni chiare.",
+    },
+    INT_ANA__IMP: {
+      headline: "Collaborazione e struttura caratterizzano il quotidiano, sotto pressione decisioni piu' rapide",
+      body: [
+        "Nel lavoro quotidiano, collaborazione e stile lavorativo strutturato si combinano in modo particolarmente stretto. Scambio e processi chiari caratterizzano il lavoro quotidiano.",
+        "Quando la pressione aumenta, le decisioni possono essere prese in modo piu' diretto e rapido per far avanzare i temi.",
+        "Questa combinazione fa si che la collaborazione venga supportata da strutture chiare e passi concreti.",
+      ],
+      leadership: "Nell'attivita' di leadership, cio' si manifesta in una comunicazione aperta, una pianificazione strutturata e un chiaro orientamento per il team.",
+    },
+    ANA_IMP__INT: {
+      headline: "Struttura e attuazione caratterizzano il quotidiano, sotto pressione maggiore scambio",
+      body: [
+        "Nel lavoro quotidiano, la capacita' decisionale e lo stile lavorativo strutturato si combinano in modo particolarmente stretto. I temi vengono portati avanti attivamente e allo stesso tempo pianificati con cura.",
+        "Quando la pressione aumenta, lo scambio con gli altri acquista maggiore importanza. Le conversazioni aiutano a riflettere sulle decisioni e a includere diverse prospettive.",
+        "Questa combinazione fa si che le decisioni vengano attuate in modo sia coerente che comprensibile.",
+      ],
+      leadership: "Nell'attivita' di leadership, cio' si manifesta in un chiaro orientamento, una gestione strutturata e un dialogo aperto.",
+    },
+    ANA_INT__IMP: {
+      headline: "Struttura e collaborazione caratterizzano il quotidiano, sotto pressione decisioni piu' rapide",
+      body: [
+        "Nel lavoro quotidiano, collaborazione e stile lavorativo strutturato si combinano in modo particolarmente stretto. Scambio e processi chiari caratterizzano il lavoro quotidiano.",
+        "Quando la pressione aumenta, le decisioni possono essere prese in modo piu' diretto e rapido per far avanzare i temi.",
+        "Questa combinazione fa si che la collaborazione venga supportata da strutture chiare e passi concreti.",
+      ],
+      leadership: "Nell'attivita' di leadership, cio' si manifesta in una comunicazione aperta, una pianificazione strutturata e un chiaro orientamento per il team.",
+    },
+    BD_IMP: {
+      headline: "Decisioni rapide caratterizzano il quotidiano, sotto pressione maggiore scambio o struttura",
+      body: [
+        "Nel lavoro quotidiano, l'orientamento alla decisione e all'azione caratterizza soprattutto lo stile lavorativo. I temi vengono affrontati attivamente e portati avanti.",
+        "Accanto a questo chiaro orientamento, agiscono tuttavia due direzioni complementari di forza quasi uguale: il desiderio di scambio con gli altri e il bisogno di struttura e pianificazione.",
+        "Questi due aspetti sono in competizione permanente. A seconda della situazione, puo' essere piu' visibile una maggiore coordinazione o una maggiore struttura.",
+      ],
+      leadership: "Nell'attivita' di leadership, cio' si manifesta in decisioni chiare, combinate a un adattamento situazionale tra dialogo e struttura.",
+    },
+    BD_INT: {
+      headline: "La collaborazione caratterizza il quotidiano, sotto pressione maggiore struttura o decisioni piu' rapide",
+      body: [
+        "Nel lavoro quotidiano, la collaborazione e il coordinamento caratterizzano soprattutto lo stile lavorativo. Conversazioni, scambio e un buon senso per le persone sono in primo piano.",
+        "Allo stesso tempo, in secondo piano agiscono due direzioni complementari di forza quasi uguale: il desiderio di struttura e pianificazione da un lato, e l'impulso verso una decisione rapida e un'attuazione diretta dall'altro.",
+        "Queste due tendenze sono in competizione permanente e possono essere piu' o meno visibili a seconda della situazione.",
+      ],
+      leadership: "Nell'attivita' di leadership, cio' si manifesta in una guida orientata al dialogo con una tensione interna tra gestione attenta e attuazione rapida.",
+    },
+    BD_ANA: {
+      headline: "La struttura caratterizza il quotidiano, sotto pressione decisioni piu' rapide o maggiore scambio",
+      body: [
+        "Nel lavoro quotidiano, struttura, pianificazione e chiarezza tecnica caratterizzano lo stile lavorativo. I temi vengono esaminati e preparati con cura.",
+        "Allo stesso tempo, in secondo piano agiscono due direzioni complementari di forza quasi uguale: l'impulso verso un'attuazione rapida e il desiderio di scambio e coordinamento con gli altri.",
+        "Queste due direzioni sono in competizione tra loro e possono emergere in modo piu' o meno forte a seconda della situazione.",
+      ],
+      leadership: "Nell'attivita' di leadership, cio' si manifesta in strutture chiare, combinate a un adattamento situazionale tra decisione e dialogo.",
+    },
+    BALANCED: {
+      headline: "Profilo equilibrato",
+      body: [
+        "In questo profilo, diversi approcci sono di forza simile. Il ruolo non e' quindi orientato unilateralmente, ma puo' adattarsi in modo flessibile a requisiti diversi.",
+        "A seconda della situazione, e' possibile passare tra attuazione, collaborazione e analisi strutturata. Quale aspetto risulti piu' visibile dipende spesso dal compito, dall'ambiente e dalla situazione di pressione.",
+        "Questa ampiezza fa si che il ruolo sia particolarmente efficace dove sono richieste flessibilita', visione d'insieme e un approccio variabile.",
+      ],
+      leadership: "Nell'attivita' di leadership, cio' si manifesta in una gestione adattata alla situazione e nella capacita' di passare secondo le necessita' tra chiarezza, dialogo e attuazione.",
+    },
+  };
+
+  const roleResultTextsEN: Record<ResultKey, RoleResultEntry> = {
   IMP_INT_ANA: {
     headline: "Active action shapes daily work \u2014 under pressure, more exchange with others",
     body: [
@@ -676,6 +842,7 @@ const roleResultTextsEN: Record<ResultKey, RoleResultEntry> = {
 function getRoleResultEntry(key: ResultKey, region: string): RoleResultEntry {
   if (region === "EN") return roleResultTextsEN[key];
   if (region === "FR") return roleResultTextsFR[key];
+  if (region === "IT") return roleResultTextsIT[key];
   return roleResultTexts[key];
 }
 
@@ -809,15 +976,54 @@ const FUEHRUNG_OPTIONS_FR: DescOption[] = [
   { value: "Disziplinarische Führung mit Ergebnisverantwortung", label: "Management avec responsabilité du personnel", desc: "Le poste dirige des collaborateurs, porte la responsabilité des résultats et développe l'équipe de manière ciblée." },
 ];
 
+
+  const SECTION_SUBTITLES_IT: Record<string, string> = {
+    aufgabencharakter: "Che tipo di compiti caratterizza principalmente questo ruolo?",
+    arbeitslogik: "Cosa influenza maggiormente il lavoro quotidiano di questo ruolo?",
+    erfolgsfokus: "In base a cosa viene misurato principalmente il successo di questo ruolo?",
+    fuehrung: "Quale ruolo di leadership appartiene a questa posizione?",
+  };
+
+  const ERFOLGSFOKUS_DISPLAY_IT = [
+    { label: "Risultati e raggiungimento degli obiettivi", desc: "Il successo si manifesta in risultati concreti, nel raggiungimento degli obiettivi e in performance misurabili." },
+    { label: "Collaborazione e reti", desc: "Il successo nasce da relazioni stabili, buona coordinazione e una partnership funzionante." },
+    { label: "Innovazione e cambiamento", desc: "Il successo deriva da idee nuove, approcci audaci e dall'implementazione attiva del cambiamento." },
+    { label: "Processi ed efficienza", desc: "Il successo si raggiunge attraverso processi chiari, struttura e un approccio sistematico." },
+    { label: "Qualita' tecnica ed expertise", desc: "Il successo si basa su un lavoro preciso, profondita' tecnica e alta accuratezza." },
+    { label: "Comunicazione e influenza", desc: "Il successo si manifesta nel raggiungere le persone, convincerle e promuovere soluzioni comuni." },
+  ];
+
+  const AUFGABENCHARAKTER_OPTIONS_IT: DescOption[] = [
+    { value: "überwiegend operativ", label: "Attuazione pratica nell'operativita' quotidiana", desc: "Il focus e' sull'esecuzione diretta e sulla gestione rapida dei compiti nel lavoro operativo quotidiano. I risultati nascono soprattutto dall'azione concreta." },
+    { value: "überwiegend systemisch", label: "Coordinamento e attuazione nei processi di lavoro", desc: "Il focus e' sul coordinamento, la concertazione e un'interazione funzionante nel quotidiano. I compiti vengono pianificati in modo collaborativo e portati avanti insieme." },
+    { value: "überwiegend strategisch", label: "Analisi, pianificazione e gestione strategica", desc: "Il focus e' sulla pianificazione strutturata, l'analisi approfondita e la valutazione chiara. Le decisioni vengono preparate e gestite sistematicamente." },
+    { value: "Gemischt", label: "Mix equilibrato", desc: "Il ruolo combina attuazione operativa, analisi e coordinamento." },
+  ];
+
+  const ARBEITSLOGIK_OPTIONS_IT: DescOption[] = [
+    { value: "Umsetzungsorientiert", label: "Attuazione e risultati", desc: "Il focus e' sull'esecuzione diretta e sui risultati visibili. I compiti vengono affrontati rapidamente e portati a termine con coerenza." },
+    { value: "Daten-/prozessorientiert", label: "Analisi e struttura", desc: "Il focus e' su una pianificazione accurata, una struttura chiara e un approccio sistematico. Le decisioni nascono sulla base di dati e valutazioni." },
+    { value: "Menschenorientiert", label: "Collaborazione e comunicazione", desc: "Al centro ci sono il coordinamento, lo scambio e una partnership funzionante. I risultati nascono da una buona collaborazione e da una comunicazione chiara." },
+    { value: "Ausgewogen", label: "Mix equilibrato", desc: "Nessuno stile lavorativo prevale chiaramente." },
+  ];
+
+  const FUEHRUNG_OPTIONS_IT: DescOption[] = [
+    { value: "Keine", label: "Nessuna responsabilita' di management", desc: "Il ruolo opera senza responsabilita' verso altre persone ed e' focalizzato sulla propria gestione dei compiti." },
+    { value: "Projekt-/Teamkoordination", label: "Coordinamento di progetto o team", desc: "Il ruolo coordina compiti, processi o progetti e garantisce l'allineamento nel team, senza responsabilita' diretta sul personale." },
+    { value: "Fachliche Führung", label: "Leadership tecnica", desc: "Il ruolo gestisce i contenuti, fornisce orientamento tecnico e garantisce la qualita' del lavoro nel team." },
+    { value: "Disziplinarische Führung mit Ergebnisverantwortung", label: "Leadership con responsabilita' sul personale", desc: "Il ruolo guida i collaboratori, porta la responsabilita' dei risultati e sviluppa il team in modo mirato." },
+  ];
+  
 function getRegionOptions(region: string) {
   const isEn = region === "EN";
   const isFr = region === "FR";
+  const isIt = region === "IT";
   return {
-    aufgaben: isEn ? AUFGABENCHARAKTER_OPTIONS_EN : isFr ? AUFGABENCHARAKTER_OPTIONS_FR : AUFGABENCHARAKTER_OPTIONS,
-    arbeit: isEn ? ARBEITSLOGIK_OPTIONS_EN : isFr ? ARBEITSLOGIK_OPTIONS_FR : ARBEITSLOGIK_OPTIONS,
-    fuehrung: isEn ? FUEHRUNG_OPTIONS_EN : isFr ? FUEHRUNG_OPTIONS_FR : FUEHRUNG_OPTIONS,
-    erfolg: isEn ? ERFOLGSFOKUS_DISPLAY_EN : isFr ? ERFOLGSFOKUS_DISPLAY_FR : ERFOLGSFOKUS_DISPLAY,
-    subtitles: isEn ? SECTION_SUBTITLES_EN : isFr ? SECTION_SUBTITLES_FR : SECTION_SUBTITLES,
+    aufgaben: isEn ? AUFGABENCHARAKTER_OPTIONS_EN : isFr ? AUFGABENCHARAKTER_OPTIONS_FR : isIt ? AUFGABENCHARAKTER_OPTIONS_IT : AUFGABENCHARAKTER_OPTIONS,
+    arbeit: isEn ? ARBEITSLOGIK_OPTIONS_EN : isFr ? ARBEITSLOGIK_OPTIONS_FR : isIt ? ARBEITSLOGIK_OPTIONS_IT : ARBEITSLOGIK_OPTIONS,
+    fuehrung: isEn ? FUEHRUNG_OPTIONS_EN : isFr ? FUEHRUNG_OPTIONS_FR : isIt ? FUEHRUNG_OPTIONS_IT : FUEHRUNG_OPTIONS,
+    erfolg: isEn ? ERFOLGSFOKUS_DISPLAY_EN : isFr ? ERFOLGSFOKUS_DISPLAY_FR : isIt ? ERFOLGSFOKUS_DISPLAY_IT : ERFOLGSFOKUS_DISPLAY,
+    subtitles: isEn ? SECTION_SUBTITLES_EN : isFr ? SECTION_SUBTITLES_FR : isIt ? SECTION_SUBTITLES_IT : SECTION_SUBTITLES,
   };
 }
 
@@ -938,7 +1144,7 @@ function CollapsedStep({
         data-testid={`button-edit-step-${step}`}
       >
         <Pencil style={{ width: 13, height: 13 }} />
-        {region === "FR" ? "Modifier" : region === "EN" ? "Edit" : "Bearbeiten"}
+        {region === "IT" ? "Modifica" : region === "FR" ? "Modifier" : region === "EN" ? "Edit" : "Bearbeiten"}
       </button>
       <ChevronDown className="w-4 h-4 text-muted-foreground/40 flex-shrink-0" />
     </div>
@@ -1259,7 +1465,7 @@ function SectionNumber({ num, isComplete }: { num: number; isComplete: boolean }
 
 function MiniProgressBar({ filled, total, region }: { filled: number; total: number; region?: string }) {
   const pct = (filled / total) * 100;
-  const ofWord = region === "EN" ? "of" : region === "FR" ? "sur" : "von";
+  const ofWord = region === "EN" ? "of" : region === "IT" ? "di" : region === "FR" ? "sur" : "von";
   return (
     <div data-testid="mini-progress" style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 32 }}>
       <div style={{
@@ -2272,7 +2478,7 @@ export default function RollenDNA() {
         >
           <div className="flex items-center justify-between mb-4">
             <h4 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F" }}>
-              {region === "FR" ? "Définition de la responsabilité de management" : region === "EN" ? "Definition: Leadership responsibility" : "Definition Führungsverantwortung"}
+              {region === "IT" ? "Definizione della responsabilita' di management" : region === "FR" ? "Définition de la responsabilité de management" : region === "EN" ? "Definition: Leadership responsibility" : "Definition Führungsverantwortung"}
             </h4>
             <button
               onClick={() => setShowFuehrungInfo(false)}
@@ -2283,14 +2489,21 @@ export default function RollenDNA() {
             </button>
           </div>
           <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.6, marginBottom: 16 }}>
-            {region === "FR"
+            {region === "IT"
+              ? "Classifica il ruolo in base alla responsabilita' gerarchica e sul personale reale, non in base al titolo. Cio' che conta e' il potere decisionale formale e la responsabilita' dei risultati associati al ruolo."
+              : region === "FR"
               ? "Classe ce poste selon la responsabilité hiérarchique et du personnel réelle, et non selon le titre. Ce qui compte, c'est le pouvoir décisionnel formel et la responsabilité des résultats associés au poste."
               : region === "EN"
               ? "Please classify the role according to actual reporting authority and personnel responsibility, not the job title. What matters is the formal decision-making authority and accountability for results associated with the role."
               : "Bitte ordne die Stelle nach der tatsächlichen Weisungs- und Personalverantwortung ein, nicht nach dem Jobtitel. Entscheidend ist, welche formale Entscheidungsmacht und Ergebnisverantwortung mit der Stelle verbunden sind."}
           </p>
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            {(region === "FR" ? [
+            {(region === "IT" ? [
+              { label: "Nessuna", desc: "Nessuna responsabilita' gerarchica o di coordinamento." },
+              { label: "Coordinamento", desc: "Coordina la collaborazione senza responsabilita' gerarchica o sul personale formale." },
+              { label: "Leadership tecnica", desc: "Guida sul piano professionale (qualita', standard, priorita') senza decisioni sul personale." },
+              { label: "Management con responsabilita' sul personale", desc: "Responsabilita' per i collaboratori, inclusi obiettivi, sviluppo, decisioni e KPI di risultato." },
+            ] : region === "FR" ? [
               { label: "Aucune", desc: "Aucune responsabilité hiérarchique ou de pilotage." },
               { label: "Coordination", desc: "Pilote la collaboration, sans responsabilité hiérarchique ou du personnel formelle." },
               { label: "Management technique", desc: "Dirige sur le plan professionnel (qualité, standards, priorités), sans décisions de personnel." },
@@ -2314,7 +2527,13 @@ export default function RollenDNA() {
           </div>
           <div style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid rgba(0,0,0,0.06)" }}>
             <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", lineHeight: 1.6 }}>
-              {region === "FR" ? (
+              {region === "IT" ? (
+                <>
+                  In caso di dubbio, poniti la seguente domanda guida:<br />
+                  Il ruolo ha responsabilita' formale di fissazione degli obiettivi e valutazione per i collaboratori?<br />
+                  Se si', si tratta in linea di principio di management con responsabilita' sul personale.
+                </>
+              ) : region === "FR" ? (
                 <>
                   En cas de doute, pose-toi la question suivante :<br />
                   Ce poste a-t-il une responsabilité formelle d'entretien d'évaluation et de fixation d'objectifs pour des collaborateurs ?<br />
@@ -2362,10 +2581,10 @@ export default function RollenDNA() {
             <div className="w-full mx-auto" style={{ maxWidth: 1100, padding: isMobile ? "0 12px" : "0 24px" }}>
               <div className="text-center">
                 <h1 style={{ fontSize: 24, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 2px", color: "#34C759" }} data-testid="text-rollen-dna-title">
-                  {region === "FR" ? "Définir le profil du poste" : region === "EN" ? "Define role profile" : "Stellenprofil definieren"}
+                  {region === "IT" ? "Definisci il profilo del ruolo" : region === "FR" ? "Définir le profil du poste" : region === "EN" ? "Define role profile" : "Stellenprofil definieren"}
                 </h1>
                 <p style={{ fontSize: 14, color: "#48484A", fontWeight: 450, margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }} data-testid="text-rollen-dna-subtitle">
-                  {region === "FR" ? "Capturez les exigences et la logique de travail du poste pour servir de base au rapport de décision, à l'analyse d'adéquation et au TeamCheck." : region === "EN" ? "Capture the requirements and working logic of the position as a basis for the decision report, fit analysis and TeamCheck." : "Erfasse die Anforderungen und Arbeitslogik der Stelle als Grundlage für den Entscheidungsbericht, die Passungsanalyse sowie den TeamCheck."}
+                  {region === "IT" ? "Acquisisci i requisiti e la logica lavorativa del ruolo come base per il rapporto decisionale, l'analisi di compatibilita' e il TeamCheck." : region === "FR" ? "Capturez les exigences et la logique de travail du poste pour servir de base au rapport de décision, à l'analyse d'adéquation et au TeamCheck." : region === "EN" ? "Capture the requirements and working logic of the position as a basis for the decision report, fit analysis and TeamCheck." : "Erfasse die Anforderungen und Arbeitslogik der Stelle als Grundlage für den Entscheidungsbericht, die Passungsanalyse sowie den TeamCheck."}
                 </p>
               </div>
 
@@ -2385,16 +2604,20 @@ export default function RollenDNA() {
                     <div style={{ width: 28, height: 28, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, background: "rgba(0,0,0,0.06)", color: "#AEAEB2" }}>3</div>
                   </div>
                   <h2 style={{ fontSize: 28, fontWeight: 700, color: "#34C759", letterSpacing: "-0.02em", margin: "0 0 8px" }} data-testid="text-step-1-title">
-                    {region === "FR" ? "Quel poste souhaites-tu analyser ?" : region === "EN" ? "Which role do you want to analyse?" : "Welche Stelle möchtest du analysieren?"}
+                    {region === "IT" ? "Quale ruolo vuoi analizzare?" : region === "FR" ? "Quel poste souhaites-tu analyser ?" : region === "EN" ? "Which role do you want to analyse?" : "Welche Stelle möchtest du analysieren?"}
                   </h2>
                   <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.6, margin: "0 0 28px" }}>
-                    {region === "FR"
+                    {region === "IT"
+                      ? "Inserisci il titolo o la denominazione del ruolo, es. Direttore Vendite, HR Business Partner o Project Manager IT."
+                      : region === "FR"
                       ? "Indique le titre ou la désignation du poste, p.ex. « Directeur commercial », « HR Business Partner » ou « Chef de projet IT »."
                       : region === "EN"
-                        ? "Enter the job title or role name, e.g. \"Sales Director\", \"HR Business Partner\" or \"IT Project Manager\"."
+                        ? `Enter the job title or role name, e.g. "Sales Director", "HR Business Partner" or "IT Project Manager".`
                         : "Gib die Berufsbezeichnung oder Stellenbezeichnung ein, z.B. Vertriebsleiter, HR Business Partner oder Projektmanager IT."}
                     <br />
-                    {region === "FR"
+                    {region === "IT"
+                      ? "Nessun suggerimento? Scrivi semplicemente il ruolo e lo riconosceremo automaticamente."
+                      : region === "FR"
                       ? "Aucune suggestion ? Tu peux simplement décrire le poste et nous le reconnaissons automatiquement."
                       : region === "EN"
                         ? "No matching suggestion? Simply type the role and we will recognise it automatically."
@@ -2408,7 +2631,7 @@ export default function RollenDNA() {
                         ref={inputRef}
                         type="text"
                         autoComplete="off"
-                        placeholder={region === "FR" ? "p.ex. Responsable grands comptes, Chef d'équipe production, ..." : region === "EN" ? "e.g. Key Account Manager, Production Team Lead, ..." : "z.B. Key Account Manager, Teamleiter Produktion, ..."}
+                        placeholder={region === "IT" ? "es. Key Account Manager, Responsabile Produzione, ..." : region === "FR" ? "p.ex. Responsable grands comptes, Chef d'équipe production, ..." : region === "EN" ? "e.g. Key Account Manager, Production Team Lead, ..." : "z.B. Key Account Manager, Teamleiter Produktion, ..."}
                         value={beruf}
                         onChange={(e) => {
                           setBeruf(e.target.value);
@@ -2526,14 +2749,14 @@ export default function RollenDNA() {
 
 
                     <div style={{ marginTop: 28 }}>
-                      <p style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", margin: "0 0 6px" }}>{region === "FR" ? "Informations complémentaires (optionnel)" : region === "EN" ? "Optional additions" : "Optionale Ergänzungen"}</p>
+                      <p style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", margin: "0 0 6px" }}>{region === "IT" ? "Informazioni aggiuntive (opzionale)" : region === "FR" ? "Informations complémentaires (optionnel)" : region === "EN" ? "Optional additions" : "Optionale Ergänzungen"}</p>
                       <p style={{ fontSize: 13, color: "#6E6E73", margin: "0 0 12px" }}>
-                        {region === "FR" ? "Qu'est-ce qui rend ce poste particulier dans ton entreprise ? Plus c'est concret, plus l'analyse est précise." : region === "EN" ? "What makes this role special in your organisation? The more specific, the more accurate the analysis." : "Was macht diese Stelle in deinem Unternehmen besonders? Je konkreter, desto genauer die Analyse."}
+                        {region === "IT" ? "Cosa rende questo ruolo speciale nella tua azienda? Piu' e' specifico, piu' l'analisi sara' precisa." : region === "FR" ? "Qu'est-ce qui rend ce poste particulier dans ton entreprise ? Plus c'est concret, plus l'analyse est précise." : region === "EN" ? "What makes this role special in your organisation? The more specific, the more accurate the analysis." : "Was macht diese Stelle in deinem Unternehmen besonders? Je konkreter, desto genauer die Analyse."}
                       </p>
                       <textarea
                         value={zusatzInfo}
                         onChange={(e) => setZusatzInfo(e.target.value)}
-                        placeholder={region === "FR" ? "p.ex. Accent Key Account, déplacements fréquents, travail posté, secteur pharma, ..." : region === "EN" ? "e.g. Key Account focus, high travel share, shift model, pharma industry, ..." : "z.B. Schwerpunkt Key Account, hoher Reiseanteil, Schichtmodell, Branche Pharma, ..."}
+                        placeholder={region === "IT" ? "es. Focus Key Account, alta quota trasferte, modello a turni, settore pharma, ..." : region === "FR" ? "p.ex. Accent Key Account, déplacements fréquents, travail posté, secteur pharma, ..." : region === "EN" ? "e.g. Key Account focus, high travel share, shift model, pharma industry, ..." : "z.B. Schwerpunkt Key Account, hoher Reiseanteil, Schichtmodell, Branche Pharma, ..."}
                         className="w-full border border-border/40 focus:border-primary/40 rounded-lg px-3 py-2 text-sm resize-none placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary/20 transition-all"
                         style={{ background: "rgba(255, 248, 225, 0.5)" }}
                         rows={2}
@@ -2542,9 +2765,9 @@ export default function RollenDNA() {
                     </div>
 
                     <div style={{ marginTop: 32, borderTop: "1px solid rgba(0,0,0,0.06)", paddingTop: 24 }}>
-                      <p style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", margin: "0 0 2px" }}>{region === "FR" ? "Marché de l'emploi" : region === "EN" ? "Job market" : "Arbeitsmarkt"}</p>
+                      <p style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", margin: "0 0 2px" }}>{region === "IT" ? "Mercato del lavoro" : region === "FR" ? "Marché de l'emploi" : region === "EN" ? "Job market" : "Arbeitsmarkt"}</p>
                       <p style={{ fontSize: 13, color: "#6E6E73", margin: "0 0 8px" }}>
-                        {region === "FR" ? "Les suggestions s'affichent pour les pays actifs. Clique pour activer ou désactiver." : region === "EN" ? "Suggestions are shown for the active countries. Click to enable or disable." : "Vorschläge werden für die aktiven Länder angezeigt. Zum Ein- oder Ausschalten einfach klicken."}
+                        {region === "IT" ? "I suggerimenti vengono mostrati per i paesi attivi. Clicca per attivare o disattivare." : region === "FR" ? "Les suggestions s'affichent pour les pays actifs. Clique pour activer ou désactiver." : region === "EN" ? "Suggestions are shown for the active countries. Click to enable or disable." : "Vorschläge werden für die aktiven Länder angezeigt. Zum Ein- oder Ausschalten einfach klicken."}
                       </p>
                       <div className="flex items-center gap-2" data-testid="land-filter">
                         {([
@@ -2597,7 +2820,7 @@ export default function RollenDNA() {
                       }}
                       data-testid="button-step-1-weiter"
                     >
-                      {editingFromOverview ? (region === "FR" ? "Appliquer" : region === "EN" ? "Apply" : "Übernehmen") : (region === "FR" ? "Analyser le poste" : region === "EN" ? "Analyse role" : "Stelle analysieren")}
+                      {editingFromOverview ? (region === "IT" ? "Applica" : region === "FR" ? "Appliquer" : region === "EN" ? "Apply" : "Übernehmen") : (region === "IT" ? "Analizza il ruolo" : region === "FR" ? "Analyser le poste" : region === "EN" ? "Analyse role" : "Stelle analysieren")}
                       <ArrowRight className="w-4 h-4" />
                     </Button>
                   </div>
@@ -2606,7 +2829,7 @@ export default function RollenDNA() {
             ) : (
               <CollapsedStep
                 step={1}
-                title={region === "FR" ? "Poste / Titre sélectionné" : region === "EN" ? "Selected role / title" : "Ausgewählte Stelle / Bezeichnung"}
+                title={region === "IT" ? "Ruolo / Titolo selezionato" : region === "FR" ? "Poste / Titre sélectionné" : region === "EN" ? "Selected role / title" : "Ausgewählte Stelle / Bezeichnung"}
                 summary={beruf}
                 onEdit={() => goToStep(1)}
                 icon={Briefcase}
@@ -2622,10 +2845,10 @@ export default function RollenDNA() {
                     <div style={{ width: 28, height: 28, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, background: "rgba(0,0,0,0.06)", color: "#AEAEB2" }}>3</div>
                   </div>
                   <h2 style={{ fontSize: 28, fontWeight: 700, color: "#34C759", letterSpacing: "-0.02em" }} className="dark:text-foreground/90" data-testid="text-step-2-title">
-                    {region === "FR" ? "Conditions-cadres du poste" : region === "EN" ? "Role framework conditions" : "Rahmenbedingungen der Stelle"}
+                    {region === "IT" ? "Condizioni quadro del ruolo" : region === "FR" ? "Conditions-cadres du poste" : region === "EN" ? "Role framework conditions" : "Rahmenbedingungen der Stelle"}
                   </h2>
                   <p style={{ fontSize: 14, color: "#48484A", marginTop: 6 }}>
-                    {region === "FR" ? "Définissez les caractéristiques de base de ce poste. Les informations aident à déterminer la logique structurelle du rôle." : region === "EN" ? "Define the basic characteristics of this role. The details help determine the structural role logic." : "Definiere die grundlegenden Merkmale dieser Stelle. Die Angaben helfen dabei, die strukturelle Stellenlogik zu bestimmen."}
+                    {region === "IT" ? "Definisci le caratteristiche di base di questo ruolo. I dati aiutano a determinare la logica strutturale del ruolo." : region === "FR" ? "Définissez les caractéristiques de base de ce poste. Les informations aident à déterminer la logique structurelle du rôle." : region === "EN" ? "Define the basic characteristics of this role. The details help determine the structural role logic." : "Definiere die grundlegenden Merkmale dieser Stelle. Die Angaben helfen dabei, die strukturelle Stellenlogik zu bestimmen."}
                   </p>
                 </div>
 
@@ -2649,14 +2872,14 @@ export default function RollenDNA() {
                         <div className="flex items-center gap-3">
                           <Layers style={{ width: 20, height: 20, color: "#34C759", strokeWidth: 1.5 }} />
                           <h3 style={{ fontSize: 22, fontWeight: 600, color: "#34C759" }} className="dark:text-foreground/90">
-                            {region === "FR" ? "Type de tâches" : region === "EN" ? "Type of tasks" : "Art der Aufgaben"}
+                            {region === "IT" ? "Tipo di compiti" : region === "FR" ? "Type de tâches" : region === "EN" ? "Type of tasks" : "Art der Aufgaben"}
                           </h3>
                         </div>
                         <p style={{ fontSize: 14, color: "#6E6E73", marginTop: 6, paddingLeft: 32 }}>
                           {getRegionOptions(region).subtitles.aufgabencharakter}
                         </p>
                         <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", marginTop: 4, paddingLeft: 32 }}>
-                          {region === "FR" ? "(Sélectionnez une option)" : region === "EN" ? "(Please select one option)" : "(Bitte ein Feld auswählen)"}
+                          {region === "IT" ? "(Seleziona un'opzione)" : region === "FR" ? "(Sélectionnez une option)" : region === "EN" ? "(Please select one option)" : "(Bitte ein Feld auswählen)"}
                         </p>
                         <div style={{ marginTop: 20 }}>
                           <DescriptiveOptionGroup
@@ -2677,14 +2900,14 @@ export default function RollenDNA() {
                         <div className="flex items-center gap-3">
                           <Activity style={{ width: 20, height: 20, color: "#34C759", strokeWidth: 1.5 }} />
                           <h3 style={{ fontSize: 22, fontWeight: 600, color: "#34C759" }} className="dark:text-foreground/90">
-                            {region === "FR" ? "Style de travail du poste" : region === "EN" ? "Working style of the role" : "Arbeitsweise der Stelle"}
+                            {region === "IT" ? "Stile lavorativo del ruolo" : region === "FR" ? "Style de travail du poste" : region === "EN" ? "Working style of the role" : "Arbeitsweise der Stelle"}
                           </h3>
                         </div>
                         <p style={{ fontSize: 14, color: "#6E6E73", marginTop: 6, paddingLeft: 32 }}>
                           {getRegionOptions(region).subtitles.arbeitslogik}
                         </p>
                         <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", marginTop: 4, paddingLeft: 32 }}>
-                          {region === "FR" ? "(Sélectionnez une option)" : region === "EN" ? "(Please select one option)" : "(Bitte ein Feld auswählen)"}
+                          {region === "IT" ? "(Seleziona un'opzione)" : region === "FR" ? "(Sélectionnez une option)" : region === "EN" ? "(Please select one option)" : "(Bitte ein Feld auswählen)"}
                         </p>
                         <div style={{ marginTop: 20 }}>
                           <DescriptiveOptionGroup
@@ -2705,14 +2928,14 @@ export default function RollenDNA() {
                         <div className="flex items-center gap-3">
                           <Target style={{ width: 20, height: 20, color: "#34C759", strokeWidth: 1.5 }} />
                           <h3 style={{ fontSize: 22, fontWeight: 600, color: "#34C759" }} className="dark:text-foreground/90">
-                            {region === "FR" ? "Priorité de réussite" : region === "EN" ? "Success focus" : "Erfolgsfokus"}
+                            {region === "IT" ? "Focus di successo" : region === "FR" ? "Priorité de réussite" : region === "EN" ? "Success focus" : "Erfolgsfokus"}
                           </h3>
                         </div>
                         <p style={{ fontSize: 14, color: "#6E6E73", marginTop: 6, paddingLeft: 32 }}>
                           {getRegionOptions(region).subtitles.erfolgsfokus}
                         </p>
                         <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", marginTop: 4, paddingLeft: 32 }}>
-                          {region === "FR" ? "(Sélectionnez deux options)" : region === "EN" ? "(Please select two options)" : "(Bitte zwei Felder auswählen)"}
+                          {region === "IT" ? "(Seleziona due opzioni)" : region === "FR" ? "(Sélectionnez deux options)" : region === "EN" ? "(Please select two options)" : "(Bitte zwei Felder auswählen)"}
                         </p>
                         <div style={{ marginTop: 20 }}>
                           <DescriptiveOptionGroupIndexed
@@ -2733,14 +2956,14 @@ export default function RollenDNA() {
                         <div className="flex items-center gap-3">
                           <Users style={{ width: 20, height: 20, color: "#34C759", strokeWidth: 1.5 }} />
                           <h3 style={{ fontSize: 22, fontWeight: 600, color: "#34C759" }} className="dark:text-foreground/90">
-                            {region === "FR" ? "Responsabilité de management" : region === "EN" ? "Leadership responsibility" : "Führungsverantwortung"}
+                            {region === "IT" ? "Responsabilita' di management" : region === "FR" ? "Responsabilité de management" : region === "EN" ? "Leadership responsibility" : "Führungsverantwortung"}
                           </h3>
                         </div>
                         <p style={{ fontSize: 14, color: "#6E6E73", marginTop: 6, paddingLeft: 32 }}>
                           {getRegionOptions(region).subtitles.fuehrung}
                         </p>
                         <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", marginTop: 4, paddingLeft: 32 }}>
-                          {region === "FR" ? "(Sélectionnez une option)" : region === "EN" ? "(Please select one option)" : "(Bitte ein Feld auswählen)"}
+                          {region === "IT" ? "(Seleziona un'opzione)" : region === "FR" ? "(Sélectionnez une option)" : region === "EN" ? "(Please select one option)" : "(Bitte ein Feld auswählen)"}
                         </p>
                         <div style={{ marginTop: 20 }}>
                           <DescriptiveOptionGroup
@@ -2796,7 +3019,7 @@ export default function RollenDNA() {
                       data-testid="button-step-2-zurueck"
                     >
                       <ArrowLeft className="w-5 h-5" />
-                      {region === "FR" ? "Retour" : region === "EN" ? "Back" : "Zurück"}
+                      {region === "IT" ? "Indietro" : region === "FR" ? "Retour" : region === "EN" ? "Back" : "Zurück"}
                     </Button>
                     <Button
                       disabled={!step2Valid}
@@ -2815,7 +3038,7 @@ export default function RollenDNA() {
                       className="gap-2"
                       data-testid="button-step-2-weiter"
                     >
-                      {editingFromOverview ? (region === "FR" ? "Appliquer" : region === "EN" ? "Apply" : "Übernehmen") : (region === "FR" ? "Suivant" : region === "EN" ? "Next" : "Weiter")}
+                      {editingFromOverview ? (region === "IT" ? "Applica" : region === "FR" ? "Appliquer" : region === "EN" ? "Apply" : "Übernehmen") : (region === "IT" ? "Avanti" : region === "FR" ? "Suivant" : region === "EN" ? "Next" : "Weiter")}
                       <ArrowRight className="w-5 h-5" />
                     </Button>
                   </div>
@@ -2824,20 +3047,22 @@ export default function RollenDNA() {
             ) : !allCollapsed && currentStep > 2 ? (
               <CollapsedStep
                 step={2}
-                title={region === "FR" ? "Conditions-cadres du poste" : region === "EN" ? "Role framework conditions" : "Rahmenbedingungen der Stelle"}
-                summary={region === "FR" ? "Caractéristiques de base de ce poste / titre." : region === "EN" ? "Basic characteristics of this role / title." : "Grundlegende Merkmale dieser Stelle / Bezeichnung."}
+                title={region === "IT" ? "Condizioni quadro del ruolo" : region === "FR" ? "Conditions-cadres du poste" : region === "EN" ? "Role framework conditions" : "Rahmenbedingungen der Stelle"}
+                summary={region === "IT" ? "Caratteristiche di base di questo ruolo / titolo." : region === "FR" ? "Caractéristiques de base de ce poste / titre." : region === "EN" ? "Basic characteristics of this role / title." : "Grundlegende Merkmale dieser Stelle / Bezeichnung."}
                 onEdit={() => goToStep(2)}
                 icon={Settings}
               />
             ) : (
-              <LockedStep step={2} title={region === "FR" ? "Conditions-cadres du poste" : region === "EN" ? "Role framework conditions" : "Rahmenbedingungen der Stelle"} />
+              <LockedStep step={2} title={region === "IT" ? "Condizioni quadro del ruolo" : region === "FR" ? "Conditions-cadres du poste" : region === "EN" ? "Role framework conditions" : "Rahmenbedingungen der Stelle"} />
             )}
 
             {allCollapsed ? null : currentStep >= 4 && taetigkeiten.length > 0 ? (
               <CollapsedStep
                 step={3}
-                title={region === "FR" ? "Tâches et compétences" : region === "EN" ? "Tasks & competencies" : "Tätigkeiten & Kompetenzen"}
-                summary={region === "FR"
+                title={region === "IT" ? "Compiti e competenze" : region === "FR" ? "Tâches et compétences" : region === "EN" ? "Tasks & competencies" : "Tätigkeiten & Kompetenzen"}
+                summary={region === "IT"
+                  ? `${taetigkeiten.filter(t => t.kategorie === "haupt").length} compiti · ${taetigkeiten.filter(t => t.kategorie === "neben").length} competenze umane${taetigkeiten.filter(t => t.kategorie === "fuehrung").length > 0 ? ` · ${taetigkeiten.filter(t => t.kategorie === "fuehrung").length} management` : ""}`
+                  : region === "FR"
                   ? `${taetigkeiten.filter(t => t.kategorie === "haupt").length} activités · ${taetigkeiten.filter(t => t.kategorie === "neben").length} compétences humaines${taetigkeiten.filter(t => t.kategorie === "fuehrung").length > 0 ? ` · ${taetigkeiten.filter(t => t.kategorie === "fuehrung").length} management` : ""}`
                   : region === "EN"
                     ? `${taetigkeiten.filter(t => t.kategorie === "haupt").length} tasks · ${taetigkeiten.filter(t => t.kategorie === "neben").length} human skills${taetigkeiten.filter(t => t.kategorie === "fuehrung").length > 0 ? ` · ${taetigkeiten.filter(t => t.kategorie === "fuehrung").length} leadership` : ""}`
@@ -2855,17 +3080,17 @@ export default function RollenDNA() {
                       <div style={{ width: 28, height: 28, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, background: "#34C759", color: "#fff" }}>3</div>
                     </div>
                     <h2 style={{ fontSize: 28, fontWeight: 700, color: "#34C759", letterSpacing: "-0.02em" }} className="dark:text-foreground/90" data-testid="text-step-3-title">
-                      {region === "FR" ? "Tâches et compétences" : region === "EN" ? "Tasks & competencies" : "Tätigkeiten & Kompetenzen"}
+                      {region === "IT" ? "Compiti e competenze" : region === "FR" ? "Tâches et compétences" : region === "EN" ? "Tasks & competencies" : "Tätigkeiten & Kompetenzen"}
                     </h2>
                     <p style={{ fontSize: 14, color: "#48484A", marginTop: 4 }}>
-                      {region === "FR" ? "Définissez la structure concrète de ce poste." : region === "EN" ? "Shape the concrete structure of this role." : "Forme die konkrete Struktur dieser Stelle."}
+                      {region === "IT" ? "Definisci la struttura concreta di questo ruolo." : region === "FR" ? "Définissez la structure concrète de ce poste." : region === "EN" ? "Shape the concrete structure of this role." : "Forme die konkrete Struktur dieser Stelle."}
                     </p>
                   </div>
                   <div style={{ textAlign: "right", fontSize: 14, color: "#48484A", lineHeight: 1.8 }}>
-                    <div>{region === "FR" ? "Tâches" : region === "EN" ? "Tasks" : "Tätigkeiten"} <span style={{ fontWeight: 600, color: "#1D1D1F" }}>{hauptCount} / 15</span></div>
-                    <div>{region === "FR" ? "Compétences humaines" : region === "EN" ? "Human competences" : "Humankompetenzen"} <span style={{ fontWeight: 600, color: "#1D1D1F" }}>{nebenCount} / 10</span></div>
+                    <div>{region === "IT" ? "Compiti" : region === "FR" ? "Tâches" : region === "EN" ? "Tasks" : "Tätigkeiten"} <span style={{ fontWeight: 600, color: "#1D1D1F" }}>{hauptCount} / 15</span></div>
+                    <div>{region === "IT" ? "Competenze umane" : region === "FR" ? "Compétences humaines" : region === "EN" ? "Human competences" : "Humankompetenzen"} <span style={{ fontWeight: 600, color: "#1D1D1F" }}>{nebenCount} / 10</span></div>
                     {fuehrung !== "Keine" && (
-                      <div>{region === "FR" ? "Compétences de management" : region === "EN" ? "Leadership competences" : "Führungskompetenzen"} <span style={{ fontWeight: 600, color: "#1D1D1F" }}>{fuehrungCount} / 10</span></div>
+                      <div>{region === "IT" ? "Competenze di management" : region === "FR" ? "Compétences de management" : region === "EN" ? "Leadership competences" : "Führungskompetenzen"} <span style={{ fontWeight: 600, color: "#1D1D1F" }}>{fuehrungCount} / 10</span></div>
                     )}
                   </div>
                 </div>
@@ -2876,8 +3101,8 @@ export default function RollenDNA() {
                       display: "flex",
                       alignItems: "center",
                       gap: 12,
-                      background: region === "FR" ? "rgba(52,199,89,0.08)" : region === "EN" ? "rgba(52,199,89,0.08)" : "rgba(0,122,255,0.08)",
-                      border: `1px solid ${region === "FR" ? "rgba(52,199,89,0.25)" : region === "EN" ? "rgba(52,199,89,0.25)" : "rgba(0,122,255,0.25)"}`,
+                      background: region === "FR" || region === "EN" || region === "IT" ? "rgba(52,199,89,0.08)" : "rgba(0,122,255,0.08)",
+                      border: `1px solid ${region === "FR" || region === "EN" || region === "IT" ? "rgba(52,199,89,0.25)" : "rgba(0,122,255,0.25)"}`,
                       borderRadius: 14,
                       padding: "12px 18px",
                       marginBottom: 16,
@@ -2904,7 +3129,7 @@ export default function RollenDNA() {
                         padding: "8px 16px",
                         borderRadius: 10,
                         border: "none",
-                        background: region === "FR" ? "#34C759" : region === "EN" ? "#34C759" : "#007AFF",
+                        background: region === "FR" || region === "EN" || region === "IT" ? "#34C759" : "#007AFF",
                         color: "#fff",
                         fontSize: 13,
                         fontWeight: 600,
@@ -2913,7 +3138,7 @@ export default function RollenDNA() {
                         flexShrink: 0,
                       }}
                     >
-                      {region === "FR" ? "Régénérer en français" : region === "EN" ? "Regenerate in English" : "Neu generieren auf Deutsch"}
+                      {region === "IT" ? "Rigenera in italiano" : region === "FR" ? "Régénérer en français" : region === "EN" ? "Regenerate in English" : "Neu generieren auf Deutsch"}
                     </button>
                   </div>
                 )}
@@ -2941,9 +3166,9 @@ export default function RollenDNA() {
                     data-testid="tabs-taetigkeiten"
                   >
                     {([
-                      { key: "haupt" as TaetigkeitKategorie, label: region === "FR" ? "Tâches" : region === "EN" ? "Tasks" : "Tätigkeiten", count: hauptCount },
-                      { key: "neben" as TaetigkeitKategorie, label: region === "FR" ? "Compétences humaines" : region === "EN" ? "Human competences" : "Humankompetenzen", count: nebenCount },
-                      ...(fuehrung !== "Keine" ? [{ key: "fuehrung" as TaetigkeitKategorie, label: region === "FR" ? "Compétences de management" : region === "EN" ? "Leadership competences" : "Führungskompetenzen", count: fuehrungCount }] : []),
+                      { key: "haupt" as TaetigkeitKategorie, label: region === "IT" ? "Compiti" : region === "FR" ? "Tâches" : region === "EN" ? "Tasks" : "Tätigkeiten", count: hauptCount },
+                      { key: "neben" as TaetigkeitKategorie, label: region === "IT" ? "Competenze umane" : region === "FR" ? "Compétences humaines" : region === "EN" ? "Human competences" : "Humankompetenzen", count: nebenCount },
+                      ...(fuehrung !== "Keine" ? [{ key: "fuehrung" as TaetigkeitKategorie, label: region === "IT" ? "Competenze di management" : region === "FR" ? "Compétences de management" : region === "EN" ? "Leadership competences" : "Führungskompetenzen", count: fuehrungCount }] : []),
                     ]).map(tab => {
                       const isActive = activeTab === tab.key;
                       return (
@@ -3005,16 +3230,16 @@ export default function RollenDNA() {
                           margin: "0 auto 16px",
                         }} />
                         <p style={{ fontSize: 15, color: "#0071E3", fontWeight: 500 }}>
-                          {region === "FR" ? `L'IA crée le profil de poste pour « ${beruf} »` : region === "EN" ? `AI is creating role profile for “${beruf}”` : `KI erstellt Stellenprofil für „${beruf}“`}
+                          {region === "IT" ? `L'IA sta creando il profilo del ruolo per "${beruf}"` : region === "FR" ? `L'IA crée le profil de poste pour « ${beruf} »` : region === "EN" ? `AI is creating role profile for "${beruf}"` : `KI erstellt Stellenprofil für „${beruf}"`}
                         </p>
                         <p style={{ fontSize: 13, color: "#6E6E73", marginTop: 4, marginBottom: 20 }}>
-                          {region === "FR" ? "Cela peut prendre quelques secondes." : region === "EN" ? "This may take a few seconds." : "Das kann einige Sekunden dauern."}
+                          {region === "IT" ? "Potrebbero volerci alcuni secondi." : region === "FR" ? "Cela peut prendre quelques secondes." : region === "EN" ? "This may take a few seconds." : "Das kann einige Sekunden dauern."}
                         </p>
                         <div style={{ display: "inline-flex", flexDirection: "column", gap: 10, textAlign: "left" }}>
                           {[
-                            { label: region === "FR" ? "Les tâches sont en cours de création" : region === "EN" ? "Tasks are being created" : "Tätigkeiten werden erstellt", step: 0 },
-                            { label: region === "FR" ? "Les compétences humaines sont en cours d'identification" : region === "EN" ? "Human competences are being identified" : "Humankompetenzen werden ermittelt", step: 1 },
-                            { label: region === "FR" ? "Les compétences de management sont en cours d'analyse" : region === "EN" ? "Leadership competences are being analysed" : "Führungskompetenzen werden analysiert", step: 2 },
+                            { label: region === "IT" ? "I compiti vengono creati" : region === "FR" ? "Les tâches sont en cours de création" : region === "EN" ? "Tasks are being created" : "Tätigkeiten werden erstellt", step: 0 },
+                            { label: region === "IT" ? "Le competenze umane vengono identificate" : region === "FR" ? "Les compétences humaines sont en cours d'identification" : region === "EN" ? "Human competences are being identified" : "Humankompetenzen werden ermittelt", step: 1 },
+                            { label: region === "IT" ? "Le competenze di management vengono analizzate" : region === "FR" ? "Les compétences de management sont en cours d'analyse" : region === "EN" ? "Leadership competences are being analysed" : "Führungskompetenzen werden analysiert", step: 2 },
                           ].map((item) => {
                             const done = generatingStep > item.step;
                             const active = generatingStep === item.step;
@@ -3074,7 +3299,7 @@ export default function RollenDNA() {
                     ) : filteredTaetigkeiten.length === 0 ? (
                       <div className="text-center py-12">
                         <p style={{ fontSize: 15, color: "#6E6E73" }}>
-                          {region === "FR" ? <>Aucune {activeTab === "haupt" ? "tâche" : activeTab === "neben" ? "compétence humaine" : "compétence de management"} ajoutée pour l'instant.</> : region === "EN" ? <>No {activeTab === "haupt" ? "tasks" : activeTab === "neben" ? "human competences" : "leadership competences"} added yet.</> : <>Noch keine {activeTab === "haupt" ? "Tätigkeiten" : activeTab === "neben" ? "Humankompetenzen" : "Führungskompetenzen"} hinzugefügt.</>}
+                          {region === "IT" ? <>Nessun {activeTab === "haupt" ? "compito" : activeTab === "neben" ? "competenza umana" : "competenza di management"} aggiunto per ora.</> : region === "FR" ? <>Aucune {activeTab === "haupt" ? "tâche" : activeTab === "neben" ? "compétence humaine" : "compétence de management"} ajoutée pour l'instant.</> : region === "EN" ? <>No {activeTab === "haupt" ? "tasks" : activeTab === "neben" ? "human competences" : "leadership competences"} added yet.</> : <>Noch keine {activeTab === "haupt" ? "Tätigkeiten" : activeTab === "neben" ? "Humankompetenzen" : "Führungskompetenzen"} hinzugefügt.</>}
                         </p>
                       </div>
                     ) : (
@@ -3159,7 +3384,7 @@ export default function RollenDNA() {
                               </div>
 
                               <div style={{ marginTop: 14, display: "grid", gridTemplateColumns: "max-content auto", rowGap: 10, columnGap: 8, alignItems: "center" }}>
-                                  <span style={{ fontSize: 12, fontWeight: 500, color: "#48484A", textTransform: "uppercase", letterSpacing: "0.5px", whiteSpace: "nowrap" }}>{region === "FR" ? "Pondération" : region === "EN" ? "Weighting" : "Gewichtung"}</span>
+                                  <span style={{ fontSize: 12, fontWeight: 500, color: "#48484A", textTransform: "uppercase", letterSpacing: "0.5px", whiteSpace: "nowrap" }}>{region === "IT" ? "Ponderazione" : region === "FR" ? "Pondération" : region === "EN" ? "Weighting" : "Gewichtung"}</span>
                                   <div style={{ display: "flex", gap: 6 }}>
                                     {NIVEAU_OPTIONS.map(n => (
                                       <button
@@ -3185,12 +3410,12 @@ export default function RollenDNA() {
                                         data-testid={`niveau-${t.id}-${n.toLowerCase()}`}
                                       >
                                         {t.niveau === n && <Check style={{ width: 10, height: 10 }} />}
-                                        {region === "FR" ? { Niedrig: "Bas", Mittel: "Moyen", Hoch: "Élevé" }[n] ?? n : region === "EN" ? { Niedrig: "Low", Mittel: "Medium", Hoch: "High" }[n] : n}
+                                        {region === "IT" ? { Niedrig: "Basso", Mittel: "Medio", Hoch: "Alto" }[n] ?? n : region === "FR" ? { Niedrig: "Bas", Mittel: "Moyen", Hoch: "Élevé" }[n] ?? n : region === "EN" ? { Niedrig: "Low", Mittel: "Medium", Hoch: "High" }[n] : n}
                                       </button>
                                     ))}
                                   </div>
 
-                                  <span style={{ fontSize: 12, fontWeight: 500, color: "#48484A", textTransform: "uppercase", letterSpacing: "0.5px", whiteSpace: "nowrap" }}>{region === "FR" ? "Priorité" : region === "EN" ? "Focus" : "Schwerpunkt"}</span>
+                                  <span style={{ fontSize: 12, fontWeight: 500, color: "#48484A", textTransform: "uppercase", letterSpacing: "0.5px", whiteSpace: "nowrap" }}>{region === "IT" ? "Focus" : region === "FR" ? "Priorité" : region === "EN" ? "Focus" : "Schwerpunkt"}</span>
                                   <div style={{ display: "flex", gap: 6 }}>
                                     {KOMPETENZ_OPTIONS.map(k => (
                                       <button
@@ -3214,7 +3439,7 @@ export default function RollenDNA() {
                                         }}
                                         data-testid={`kompetenz-${t.id}-${k.toLowerCase()}`}
                                       >
-                                        {region === "FR" ? { Impulsiv: "Rythme et Décision", Intuitiv: "Communication et Relations", Analytisch: "Structure et Rigueur" }[k] ?? k : region === "EN" ? { Impulsiv: "Impulsive", Intuitiv: "Intuitive", Analytisch: "Analytical" }[k] : k}
+                                        {region === "IT" ? { Impulsiv: "Ritmo e Decisione", Intuitiv: "Comunicazione e Relazioni", Analytisch: "Struttura e Rigore" }[k] ?? k : region === "FR" ? { Impulsiv: "Rythme et Décision", Intuitiv: "Communication et Relations", Analytisch: "Structure et Rigueur" }[k] ?? k : region === "EN" ? { Impulsiv: "Impulsive", Intuitiv: "Intuitive", Analytisch: "Analytical" }[k] : k}
                                       </button>
                                     ))}
                                   </div>
@@ -3272,8 +3497,8 @@ export default function RollenDNA() {
                   {!isGenerating && (
                     <p style={{ fontSize: 12, color: "#AEAEB2", textAlign: "center", marginTop: 16 }}>
                       {currentTabCount >= currentTabMax
-                        ? region === "FR" ? `Maximum de ${currentTabMax} atteint` : region === "EN" ? `Maximum of ${currentTabMax} reached` : `Maximum von ${currentTabMax} erreicht`
-                        : region === "FR" ? `Max. ${currentTabMax} ${activeTab === "haupt" ? "tâches" : activeTab === "neben" ? "compétences humaines" : "compétences de management"}` : region === "EN" ? `Max. ${currentTabMax} ${activeTab === "haupt" ? "tasks" : activeTab === "neben" ? "human competences" : "leadership competences"}` : `Maximal ${currentTabMax} ${activeTab === "haupt" ? "Tätigkeiten" : activeTab === "neben" ? "Humankompetenzen" : "Führungskompetenzen"}`
+                        ? region === "IT" ? `Massimo di ${currentTabMax} raggiunto` : region === "FR" ? `Maximum de ${currentTabMax} atteint` : region === "EN" ? `Maximum of ${currentTabMax} reached` : `Maximum von ${currentTabMax} erreicht`
+                        : region === "IT" ? `Max. ${currentTabMax} ${activeTab === "haupt" ? "compiti" : activeTab === "neben" ? "competenze umane" : "competenze di management"}` : region === "FR" ? `Max. ${currentTabMax} ${activeTab === "haupt" ? "tâches" : activeTab === "neben" ? "compétences humaines" : "compétences de management"}` : region === "EN" ? `Max. ${currentTabMax} ${activeTab === "haupt" ? "tasks" : activeTab === "neben" ? "human competences" : "leadership competences"}` : `Maximal ${currentTabMax} ${activeTab === "haupt" ? "Tätigkeiten" : activeTab === "neben" ? "Humankompetenzen" : "Führungskompetenzen"}`
                       }
                     </p>
                   )}
@@ -3333,7 +3558,7 @@ export default function RollenDNA() {
                           localStorage.setItem("rollenDnaCompleted", "true");
                         }}
                       >
-                        {region === "FR" ? "Vers la définition du poste" : region === "EN" ? "To role definition" : "zur Stellendefinition"}
+                        {region === "IT" ? "Alla definizione del ruolo" : region === "FR" ? "Vers la définition du poste" : region === "EN" ? "To role definition" : "zur Stellendefinition"}
                         <ChevronRight className="w-5 h-5" />
                       </Button>
                     );
@@ -3378,8 +3603,8 @@ export default function RollenDNA() {
                         <FileText style={{ width: 15, height: 15, color: "#FFF", strokeWidth: 2.2 }} />
                       </div>
                       <span style={{ color: "#1D1D1F", display: "flex", alignItems: "baseline", gap: 6 }}>
-                        <span style={{ fontSize: 18, fontWeight: 700, flexShrink: 0, color: "#34C759" }}>{region === "FR" ? "Profil du poste :" : region === "EN" ? "Job profile:" : "Kurzprofil der Stelle:"}</span>
-                        <span style={{ fontSize: 18, fontWeight: 700 }}>{beruf}{fuehrung && fuehrung !== "Keine" ? "" + (region === "FR" ? " avec responsabilité de management" : region === "EN" ? " with leadership responsibility" : " mit Führungsverantwortung") : ""}</span>
+                        <span style={{ fontSize: 18, fontWeight: 700, flexShrink: 0, color: "#34C759" }}>{region === "IT" ? "Profilo del ruolo:" : region === "FR" ? "Profil du poste :" : region === "EN" ? "Job profile:" : "Kurzprofil der Stelle:"}</span>
+                        <span style={{ fontSize: 18, fontWeight: 700 }}>{beruf}{fuehrung && fuehrung !== "Keine" ? "" + (region === "IT" ? " con responsabilita' di management" : region === "FR" ? " avec responsabilité de management" : region === "EN" ? " with leadership responsibility" : " mit Führungsverantwortung") : ""}</span>
                       </span>
                     </div>
                     <ChevronDown style={{
@@ -3404,8 +3629,8 @@ export default function RollenDNA() {
                         background: "#FFFFFF",
                         border: "1px solid rgba(0,0,0,0.06)",
                       }} data-testid="card-grundprinzip">
-                        <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0", display: "flex", alignItems: "center", gap: 6 }}><Info style={{ width: 15, height: 15, color: "#1D1D1F", flexShrink: 0 }} />{(region === "FR" ? analysisPrincipleText_FR : region === "EN" ? analysisPrincipleText_EN : analysisPrincipleText).title}</h3>
-                        <p lang="de" style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: 0, ...reportTextStyle }}>{localizeText((region === "FR" ? analysisPrincipleText_FR : region === "EN" ? analysisPrincipleText_EN : analysisPrincipleText).body.join(" "))}</p>
+                        <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0", display: "flex", alignItems: "center", gap: 6 }}><Info style={{ width: 15, height: 15, color: "#1D1D1F", flexShrink: 0 }} />{(region === "IT" ? analysisPrincipleText_IT : region === "FR" ? analysisPrincipleText_FR : region === "EN" ? analysisPrincipleText_EN : analysisPrincipleText).title}</h3>
+                        <p lang="de" style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: 0, ...reportTextStyle }}>{localizeText((region === "IT" ? analysisPrincipleText_IT : region === "FR" ? analysisPrincipleText_FR : region === "EN" ? analysisPrincipleText_EN : analysisPrincipleText).body.join(" "))}</p>
                       </div>
 
                       <div style={{
@@ -3415,16 +3640,16 @@ export default function RollenDNA() {
                         background: "#FFFFFF",
                         border: "1px solid rgba(0,0,0,0.06)",
                       }} data-testid="card-anforderungsprofil">
-                        <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0", display: "flex", alignItems: "center", gap: 6 }}><ClipboardList style={{ width: 15, height: 15, color: "#1D1D1F", flexShrink: 0 }} />{region === "FR" ? "Profil d'exigences du poste" : region === "EN" ? "Requirements profile of the role" : "Anforderungsprofil der Stelle"}</h3>
+                        <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0", display: "flex", alignItems: "center", gap: 6 }}><ClipboardList style={{ width: 15, height: 15, color: "#1D1D1F", flexShrink: 0 }} />{region === "IT" ? "Profilo dei requisiti del ruolo" : region === "FR" ? "Profil d'exigences du poste" : region === "EN" ? "Requirements profile of the role" : "Anforderungsprofil der Stelle"}</h3>
                         <p lang="de" style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: "0 0 14px 0", ...reportTextStyle }}>
-                          {localizeText((region === "FR" ? roleRequirementText_FR : region === "EN" ? roleRequirementText_EN : roleRequirementText).intro.join(" "))}
+                          {localizeText((region === "IT" ? roleRequirementText_IT : region === "FR" ? roleRequirementText_FR : region === "EN" ? roleRequirementText_EN : roleRequirementText).intro.join(" "))}
                         </p>
 
                         <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 10 }}>
                           {[
-                            { label: region === "IT" ? "Ritmo e Decisione" : region === "FR" ? "Rythme et Décision" : region === "EN" ? "Impulsive" : "Impulsiv", color: "#C41E3A", bg: "rgba(196,30,58,0.05)", border: "rgba(196,30,58,0.12)", desc: region === "FR" ? "Exécution, décisions et responsabilité des résultats" : region === "EN" ? "Execution, decisions and accountability for results" : "Umsetzung, Entscheidung und Ergebnisverantwortung" },
-                            { label: region === "IT" ? "Comunicazione e Relazioni" : region === "FR" ? "Communication et Relations" : region === "EN" ? "Intuitive" : "Intuitiv", color: "#F39200", bg: "rgba(243,146,0,0.05)", border: "rgba(243,146,0,0.12)", desc: region === "FR" ? "Collaboration et action adaptée au contexte" : region === "EN" ? "Collaboration and context-aware action" : "Zusammenarbeit und kontextbezogenes Handeln" },
-                            { label: region === "IT" ? "Struttura e Rigore" : region === "FR" ? "Structure et Rigueur" : region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", bg: "rgba(26,93,171,0.05)", border: "rgba(26,93,171,0.12)", desc: region === "FR" ? "Structure, planification et précision technique" : region === "EN" ? "Structure, planning and technical precision" : "Struktur, Planung und fachliche Präzision" },
+                            { label: region === "IT" ? "Ritmo e Decisione" : region === "FR" ? "Rythme et Décision" : region === "EN" ? "Impulsive" : "Impulsiv", color: "#C41E3A", bg: "rgba(196,30,58,0.05)", border: "rgba(196,30,58,0.12)", desc: region === "IT" ? "Attuazione, decisione e responsabilita' dei risultati" : region === "FR" ? "Exécution, décisions et responsabilité des résultats" : region === "EN" ? "Execution, decisions and accountability for results" : "Umsetzung, Entscheidung und Ergebnisverantwortung" },
+                            { label: region === "IT" ? "Comunicazione e Relazioni" : region === "FR" ? "Communication et Relations" : region === "EN" ? "Intuitive" : "Intuitiv", color: "#F39200", bg: "rgba(243,146,0,0.05)", border: "rgba(243,146,0,0.12)", desc: region === "IT" ? "Collaborazione e azione contestualizzata" : region === "FR" ? "Collaboration et action adaptée au contexte" : region === "EN" ? "Collaboration and context-aware action" : "Zusammenarbeit und kontextbezogenes Handeln" },
+                            { label: region === "IT" ? "Struttura e Rigore" : region === "FR" ? "Structure et Rigueur" : region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", bg: "rgba(26,93,171,0.05)", border: "rgba(26,93,171,0.12)", desc: region === "IT" ? "Struttura, pianificazione e precisione tecnica" : region === "FR" ? "Structure, planification et précision technique" : region === "EN" ? "Structure, planning and technical precision" : "Struktur, Planung und fachliche Präzision" },
                           ].map(d => (
                             <div key={d.label} style={{
                               background: d.bg,
@@ -3452,7 +3677,7 @@ export default function RollenDNA() {
                           background: "#FFFFFF",
                           border: "1px solid rgba(0,0,0,0.06)",
                         }} data-testid="box-biocheck-description">
-                          <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0", display: "flex", alignItems: "center", gap: 6 }}><Lightbulb style={{ width: 15, height: 15, color: "#1D1D1F", flexShrink: 0 }} />{region === "FR" ? "Résultat de l'analyse" : region === "EN" ? "Result of the analysis" : "Ergebnis der Analyse"}</h3>
+                          <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0", display: "flex", alignItems: "center", gap: 6 }}><Lightbulb style={{ width: 15, height: 15, color: "#1D1D1F", flexShrink: 0 }} />{region === "IT" ? "Risultato dell'analisi" : region === "FR" ? "Résultat de l'analyse" : region === "EN" ? "Result of the analysis" : "Ergebnis der Analyse"}</h3>
                           <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: 0, ...reportTextStyle }} data-testid="text-biocheck-body">
                             {localizeText([...rt.body, ...(isLeadershipRole ? [rt.leadership] : [])].join(" "))}
                           </p>
@@ -3462,10 +3687,10 @@ export default function RollenDNA() {
 
                     <div style={{ marginTop: 16, display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 10 : 16 }}>
                       {[
-                        { title: region === "FR" ? "Activités" : region === "EN" ? "Activities" : "Tätigkeiten", key: "haupttaetigkeiten", data: bioGramHaupt, icon: Briefcase },
-                        { title: region === "FR" ? "Compétences humaines" : region === "EN" ? "Human competences" : "Humankompetenzen", key: "humankompetenzen", data: bioGramNeben, icon: Heart },
-                        { title: region === "FR" ? "Conditions-cadres du poste" : region === "EN" ? "Role framework conditions" : "Rahmenbedingungen der Stelle", key: "rahmenbedingungen", data: bioGramRahmen, icon: Settings },
-                        ...(isLeadershipRole ? [{ title: region === "FR" ? "Compétences de management" : region === "EN" ? "Leadership competences" : "Führungskompetenzen", key: "fuehrungskompetenzen", data: bioGramFuehrung, icon: Shield }] : []),
+                        { title: region === "IT" ? "Attivita'" : region === "FR" ? "Activités" : region === "EN" ? "Activities" : "Tätigkeiten", key: "haupttaetigkeiten", data: bioGramHaupt, icon: Briefcase },
+                        { title: region === "IT" ? "Competenze umane" : region === "FR" ? "Compétences humaines" : region === "EN" ? "Human competences" : "Humankompetenzen", key: "humankompetenzen", data: bioGramNeben, icon: Heart },
+                        { title: region === "IT" ? "Condizioni quadro del ruolo" : region === "FR" ? "Conditions-cadres du poste" : region === "EN" ? "Role framework conditions" : "Rahmenbedingungen der Stelle", key: "rahmenbedingungen", data: bioGramRahmen, icon: Settings },
+                        ...(isLeadershipRole ? [{ title: region === "IT" ? "Competenze di management" : region === "FR" ? "Compétences de management" : region === "EN" ? "Leadership competences" : "Führungskompetenzen", key: "fuehrungskompetenzen", data: bioGramFuehrung, icon: Shield }] : []),
                       ].map((section) => (
                         <div
                           key={section.key}
@@ -3484,7 +3709,7 @@ export default function RollenDNA() {
                             </p>
                           </div>
                           {[
-                            { label: region === "FR" ? "Rythme et Décision" : region === "IT" ? "Ritmo e Decisione" : region === "FR" ? "Rythme et Décision" : region === "EN" ? "Impulsive" : "Impulsiv", color: "#C41E3A", value: section.data.imp },
+                            { label: region === "IT" ? "Ritmo e Decisione" : region === "FR" ? "Rythme et Décision" : region === "EN" ? "Impulsive" : "Impulsiv", color: "#C41E3A", value: section.data.imp },
                             { label: region === "IT" ? "Comunicazione e Relazioni" : region === "FR" ? "Communication et Relations" : region === "EN" ? "Intuitive" : "Intuitiv", color: "#F39200", value: section.data.int },
                             { label: region === "IT" ? "Struttura e Rigore" : region === "FR" ? "Structure et Rigueur" : region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", value: section.data.ana },
                           ].map((bar) => (
@@ -3608,7 +3833,7 @@ export default function RollenDNA() {
                 </div>
               </div>
             ) : (
-              <LockedStep step={3} title={region === "FR" ? "Tâches et compétences" : region === "EN" ? "Tasks & competencies" : "Tätigkeiten & Kompetenzen"} />
+              <LockedStep step={3} title={region === "IT" ? "Compiti e competenze" : region === "FR" ? "Tâches et compétences" : region === "EN" ? "Tasks & competencies" : "Tätigkeiten & Kompetenzen"} />
             )}
 
             {allCollapsed && (
@@ -3647,8 +3872,8 @@ export default function RollenDNA() {
                       <Briefcase style={{ width: 15, height: 15, color: "#FFF", strokeWidth: 2.2 }} />
                     </div>
                     <span style={{ color: "#1D1D1F", display: "flex", alignItems: "baseline", gap: 6 }}>
-                      <span style={{ fontSize: 18, fontWeight: 700, flexShrink: 0, color: "#34C759" }}>{region === "FR" ? "Définition du poste :" : region === "EN" ? "Role definition:" : "Stellendefinition:"}</span>
-                      <span style={{ fontSize: 18, fontWeight: 700 }}>{beruf}{fuehrung && fuehrung !== "Keine" ? (region === "FR" ? " avec responsabilité de management" : region === "EN" ? " with leadership responsibility" : " mit Führungsverantwortung") : ""}</span>
+                      <span style={{ fontSize: 18, fontWeight: 700, flexShrink: 0, color: "#34C759" }}>{region === "IT" ? "Definizione del ruolo:" : region === "FR" ? "Définition du poste :" : region === "EN" ? "Role definition:" : "Stellendefinition:"}</span>
+                      <span style={{ fontSize: 18, fontWeight: 700 }}>{beruf}{fuehrung && fuehrung !== "Keine" ? (region === "IT" ? " con responsabilita' di management" : region === "FR" ? " avec responsabilité de management" : region === "EN" ? " with leadership responsibility" : " mit Führungsverantwortung") : ""}</span>
                     </span>
                   </div>
                   <div className="flex items-center gap-3">
@@ -3668,7 +3893,7 @@ export default function RollenDNA() {
                       data-testid="button-summary-edit"
                     >
                       <Pencil style={{ width: 14, height: 14 }} />
-                      {region === "FR" ? "Modifier" : region === "EN" ? "Edit" : "Bearbeiten"}
+                      {region === "IT" ? "Modifica" : region === "FR" ? "Modifier" : region === "EN" ? "Edit" : "Bearbeiten"}
                     </span>
                     <ChevronDown style={{
                       width: 18,
@@ -3685,11 +3910,11 @@ export default function RollenDNA() {
                 
                 <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 10 }} data-testid="dna-summary-grid">
                   {(() => { const _ro = getRegionOptions(region); return [
-                    { icon: Briefcase, label: region === "FR" ? "Poste / Titre" : region === "EN" ? "Role / title" : "Stelle / Bezeichnung", value: beruf },
-                    { icon: LayoutGrid, label: region === "FR" ? "Structure des tâches" : region === "EN" ? "Task structure" : "Aufgabenstruktur", value: _ro.aufgaben.find(o => o.value === aufgabencharakter)?.label || aufgabencharakter },
-                    { icon: Wrench, label: region === "FR" ? "Style de travail" : region === "EN" ? "Working style" : "Arbeitsweise", value: _ro.arbeit.find(o => o.value === arbeitslogik)?.label || arbeitslogik },
-                    { icon: Target, label: region === "FR" ? "Priorité de réussite" : region === "EN" ? "Success focus" : "Erfolgsfokus", value: erfolgsfokusIndices.map(i => _ro.erfolg[i]?.label).filter(Boolean).join(", ") },
-                    { icon: UserCheck, label: region === "FR" ? "Management" : region === "EN" ? "Leadership" : "Führung", value: _ro.fuehrung.find(o => o.value === fuehrung)?.label || fuehrung },
+                    { icon: Briefcase, label: region === "IT" ? "Ruolo / Titolo" : region === "FR" ? "Poste / Titre" : region === "EN" ? "Role / title" : "Stelle / Bezeichnung", value: beruf },
+                    { icon: LayoutGrid, label: region === "IT" ? "Struttura dei compiti" : region === "FR" ? "Structure des tâches" : region === "EN" ? "Task structure" : "Aufgabenstruktur", value: _ro.aufgaben.find(o => o.value === aufgabencharakter)?.label || aufgabencharakter },
+                    { icon: Wrench, label: region === "IT" ? "Stile lavorativo" : region === "FR" ? "Style de travail" : region === "EN" ? "Working style" : "Arbeitsweise", value: _ro.arbeit.find(o => o.value === arbeitslogik)?.label || arbeitslogik },
+                    { icon: Target, label: region === "IT" ? "Focus di successo" : region === "FR" ? "Priorité de réussite" : region === "EN" ? "Success focus" : "Erfolgsfokus", value: erfolgsfokusIndices.map(i => _ro.erfolg[i]?.label).filter(Boolean).join(", ") },
+                    { icon: UserCheck, label: region === "IT" ? "Management" : region === "FR" ? "Management" : region === "EN" ? "Leadership" : "Führung", value: _ro.fuehrung.find(o => o.value === fuehrung)?.label || fuehrung },
                   ]; })().map(card => (
                     <div
                       key={card.label}
@@ -3719,12 +3944,12 @@ export default function RollenDNA() {
                   >
                     <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 3 }}>
                       <Hash style={{ width: 14, height: 14, color: "#8E8E93", flexShrink: 0 }} />
-                      <span style={{ fontSize: 14, fontWeight: 650, color: "#1D1D1F" }}>{region === "FR" ? "Nombre de tâches et compétences" : region === "EN" ? "Tasks / competency count" : "Tätigkeits-/Kompetenzanzahl"}</span>
+                      <span style={{ fontSize: 14, fontWeight: 650, color: "#1D1D1F" }}>{region === "IT" ? "Numero di compiti e competenze" : region === "FR" ? "Nombre de tâches et compétences" : region === "EN" ? "Tasks / competency count" : "Tätigkeits-/Kompetenzanzahl"}</span>
                     </div>
                     <div style={{ display: "flex", gap: 12, paddingLeft: 21, flexWrap: "wrap" }}>
-                      <span style={{ fontSize: 14, color: "#48484A" }}><strong style={{ color: "#1D1D1F" }}>{hauptCount}</strong> {region === "FR" ? "tâches" : region === "EN" ? "tasks" : "Tätigkeiten"}</span>
-                      <span style={{ fontSize: 14, color: "#48484A" }}><strong style={{ color: "#1D1D1F" }}>{nebenCount}</strong> {region === "FR" ? "compétences humaines" : region === "EN" ? "human skills" : "Humankompetenzen"}</span>
-                      {fuehrung !== "Keine" && <span style={{ fontSize: 14, color: "#48484A" }}><strong style={{ color: "#1D1D1F" }}>{fuehrungCount}</strong> {region === "FR" ? "management" : region === "EN" ? "leadership" : "Führung"}</span>}
+                      <span style={{ fontSize: 14, color: "#48484A" }}><strong style={{ color: "#1D1D1F" }}>{hauptCount}</strong> {region === "IT" ? "compiti" : region === "FR" ? "tâches" : region === "EN" ? "tasks" : "Tätigkeiten"}</span>
+                      <span style={{ fontSize: 14, color: "#48484A" }}><strong style={{ color: "#1D1D1F" }}>{nebenCount}</strong> {region === "IT" ? "competenze umane" : region === "FR" ? "compétences humaines" : region === "EN" ? "human skills" : "Humankompetenzen"}</span>
+                      {fuehrung !== "Keine" && <span style={{ fontSize: 14, color: "#48484A" }}><strong style={{ color: "#1D1D1F" }}>{fuehrungCount}</strong> {region === "IT" ? "management" : region === "FR" ? "management" : region === "EN" ? "leadership" : "Führung"}</span>}
                     </div>
                   </div>
                 </div>
@@ -3764,7 +3989,7 @@ export default function RollenDNA() {
                     data-testid="button-rolle-bearbeiten"
                   >
                     <RefreshCw className="w-4 h-4" />
-                    {region === "FR" ? "Modifier le profil du poste" : region === "EN" ? "Edit role profile" : "Stellenprofil ändern"}
+                    {region === "IT" ? "Modifica il profilo del ruolo" : region === "FR" ? "Modifier le profil du poste" : region === "EN" ? "Edit role profile" : "Stellenprofil ändern"}
                   </button>
                   <button
                     onClick={handleSave}
@@ -3796,7 +4021,7 @@ export default function RollenDNA() {
                     data-testid="button-profil-speichern"
                   >
                     <Save className="w-4 h-4" />
-                    {region === "FR" ? "Enregistrer le profil du poste" : region === "EN" ? "Save role profile" : "Stellenprofil speichern"}
+                    {region === "IT" ? "Salva il profilo del ruolo" : region === "FR" ? "Enregistrer le profil du poste" : region === "EN" ? "Save role profile" : "Stellenprofil speichern"}
                   </button>
                   <button
                     onClick={() => setLocation("/bericht")}
@@ -3831,7 +4056,7 @@ export default function RollenDNA() {
                     data-testid="button-entscheidungsbericht"
                   >
                     <FileText className="w-4 h-4" />
-                    {region === "FR" ? "Générer le rapport de décision" : region === "EN" ? "Generate decision report" : "Entscheidungsbericht erstellen"}
+                    {region === "IT" ? "Genera il rapporto decisionale" : region === "FR" ? "Générer le rapport de décision" : region === "EN" ? "Generate decision report" : "Entscheidungsbericht erstellen"}
                   </button>
                 </div>
                   </>
@@ -3876,8 +4101,8 @@ export default function RollenDNA() {
                       <Lightbulb style={{ width: 15, height: 15, color: "#FFF", strokeWidth: 2.2 }} />
                     </div>
                     <span style={{ color: "#1D1D1F", display: "flex", alignItems: "baseline", gap: 6 }}>
-                      <span style={{ fontSize: 18, fontWeight: 700, flexShrink: 0, color: "#34C759" }}>{region === "FR" ? "Profil du poste :" : region === "EN" ? "Job profile:" : "Kurzprofil der Stelle:"}</span>
-                      <span style={{ fontSize: 18, fontWeight: 700 }}>{beruf}{fuehrung && fuehrung !== "Keine" ? "" + (region === "FR" ? " avec responsabilité de management" : region === "EN" ? " with leadership responsibility" : " mit Führungsverantwortung") : ""}</span>
+                      <span style={{ fontSize: 18, fontWeight: 700, flexShrink: 0, color: "#34C759" }}>{region === "IT" ? "Profilo del ruolo:" : region === "FR" ? "Profil du poste :" : region === "EN" ? "Job profile:" : "Kurzprofil der Stelle:"}</span>
+                      <span style={{ fontSize: 18, fontWeight: 700 }}>{beruf}{fuehrung && fuehrung !== "Keine" ? "" + (region === "IT" ? " con responsabilita' di management" : region === "FR" ? " avec responsabilité de management" : region === "EN" ? " with leadership responsibility" : " mit Führungsverantwortung") : ""}</span>
                     </span>
                   </div>
                   <ChevronDown style={{
@@ -3902,8 +4127,8 @@ export default function RollenDNA() {
                       background: "#FFFFFF",
                       border: "1px solid rgba(0,0,0,0.06)",
                     }} data-testid="card-grundprinzip-collapsed">
-                      <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0", display: "flex", alignItems: "center", gap: 6 }}><Info style={{ width: 15, height: 15, color: "#1D1D1F", flexShrink: 0 }} />{(region === "FR" ? analysisPrincipleText_FR : region === "EN" ? analysisPrincipleText_EN : analysisPrincipleText).title}</h3>
-                      <p lang="de" style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: 0, ...reportTextStyle }}>{localizeText((region === "FR" ? analysisPrincipleText_FR : region === "EN" ? analysisPrincipleText_EN : analysisPrincipleText).body.join(" "))}</p>
+                      <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0", display: "flex", alignItems: "center", gap: 6 }}><Info style={{ width: 15, height: 15, color: "#1D1D1F", flexShrink: 0 }} />{(region === "IT" ? analysisPrincipleText_IT : region === "FR" ? analysisPrincipleText_FR : region === "EN" ? analysisPrincipleText_EN : analysisPrincipleText).title}</h3>
+                      <p lang="de" style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: 0, ...reportTextStyle }}>{localizeText((region === "IT" ? analysisPrincipleText_IT : region === "FR" ? analysisPrincipleText_FR : region === "EN" ? analysisPrincipleText_EN : analysisPrincipleText).body.join(" "))}</p>
                     </div>
 
                     <div style={{
@@ -3913,16 +4138,16 @@ export default function RollenDNA() {
                       background: "#FFFFFF",
                       border: "1px solid rgba(0,0,0,0.06)",
                     }} data-testid="card-anforderungsprofil-collapsed">
-                      <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0", display: "flex", alignItems: "center", gap: 6 }}><ClipboardList style={{ width: 15, height: 15, color: "#1D1D1F", flexShrink: 0 }} />{region === "FR" ? "Profil d'exigences du poste" : region === "EN" ? "Requirements profile of the role" : "Anforderungsprofil der Stelle"}</h3>
+                      <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0", display: "flex", alignItems: "center", gap: 6 }}><ClipboardList style={{ width: 15, height: 15, color: "#1D1D1F", flexShrink: 0 }} />{region === "IT" ? "Profilo dei requisiti del ruolo" : region === "FR" ? "Profil d'exigences du poste" : region === "EN" ? "Requirements profile of the role" : "Anforderungsprofil der Stelle"}</h3>
                       <p lang="de" style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: "0 0 14px 0", ...reportTextStyle }}>
-                        {localizeText((region === "FR" ? roleRequirementText_FR : region === "EN" ? roleRequirementText_EN : roleRequirementText).intro.join(" "))}
+                        {localizeText((region === "IT" ? roleRequirementText_IT : region === "FR" ? roleRequirementText_FR : region === "EN" ? roleRequirementText_EN : roleRequirementText).intro.join(" "))}
                       </p>
 
                       <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 10 }}>
                         {[
-                          { label: region === "IT" ? "Ritmo e Decisione" : region === "FR" ? "Rythme et Décision" : region === "EN" ? "Impulsive" : "Impulsiv", color: "#C41E3A", bg: "rgba(196,30,58,0.05)", border: "rgba(196,30,58,0.12)", desc: region === "FR" ? "Exécution, décisions et responsabilité des résultats" : region === "EN" ? "Execution, decisions and accountability for results" : "Umsetzung, Entscheidung und Ergebnisverantwortung" },
-                          { label: region === "IT" ? "Comunicazione e Relazioni" : region === "FR" ? "Communication et Relations" : region === "EN" ? "Intuitive" : "Intuitiv", color: "#F39200", bg: "rgba(243,146,0,0.05)", border: "rgba(243,146,0,0.12)", desc: region === "FR" ? "Collaboration et action adaptée au contexte" : region === "EN" ? "Collaboration and context-aware action" : "Zusammenarbeit und kontextbezogenes Handeln" },
-                          { label: region === "IT" ? "Struttura e Rigore" : region === "FR" ? "Structure et Rigueur" : region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", bg: "rgba(26,93,171,0.05)", border: "rgba(26,93,171,0.12)", desc: region === "FR" ? "Structure, planification et précision technique" : region === "EN" ? "Structure, planning and technical precision" : "Struktur, Planung und fachliche Präzision" },
+                          { label: region === "IT" ? "Ritmo e Decisione" : region === "FR" ? "Rythme et Décision" : region === "EN" ? "Impulsive" : "Impulsiv", color: "#C41E3A", bg: "rgba(196,30,58,0.05)", border: "rgba(196,30,58,0.12)", desc: region === "IT" ? "Attuazione, decisione e responsabilita' dei risultati" : region === "FR" ? "Exécution, décisions et responsabilité des résultats" : region === "EN" ? "Execution, decisions and accountability for results" : "Umsetzung, Entscheidung und Ergebnisverantwortung" },
+                          { label: region === "IT" ? "Comunicazione e Relazioni" : region === "FR" ? "Communication et Relations" : region === "EN" ? "Intuitive" : "Intuitiv", color: "#F39200", bg: "rgba(243,146,0,0.05)", border: "rgba(243,146,0,0.12)", desc: region === "IT" ? "Collaborazione e azione contestualizzata" : region === "FR" ? "Collaboration et action adaptée au contexte" : region === "EN" ? "Collaboration and context-aware action" : "Zusammenarbeit und kontextbezogenes Handeln" },
+                          { label: region === "IT" ? "Struttura e Rigore" : region === "FR" ? "Structure et Rigueur" : region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", bg: "rgba(26,93,171,0.05)", border: "rgba(26,93,171,0.12)", desc: region === "IT" ? "Struttura, pianificazione e precisione tecnica" : region === "FR" ? "Structure, planification et précision technique" : region === "EN" ? "Structure, planning and technical precision" : "Struktur, Planung und fachliche Präzision" },
                         ].map(d => (
                           <div key={d.label} style={{
                             background: d.bg,
@@ -3936,7 +4161,7 @@ export default function RollenDNA() {
                         ))}
                       </div>
 
-                      <p lang="de" style={{ fontSize: 14, color: "#48484A", lineHeight: 1.6, margin: "12px 0 0 0", ...reportTextStyle }}>{localizeText((region === "FR" ? roleRequirementText_FR : region === "EN" ? roleRequirementText_EN : roleRequirementText).outro)}</p>
+                      <p lang="de" style={{ fontSize: 14, color: "#48484A", lineHeight: 1.6, margin: "12px 0 0 0", ...reportTextStyle }}>{localizeText((region === "IT" ? roleRequirementText_IT : region === "FR" ? roleRequirementText_FR : region === "EN" ? roleRequirementText_EN : roleRequirementText).outro)}</p>
                     </div>
                   </>)}
 
@@ -3951,7 +4176,7 @@ export default function RollenDNA() {
                         background: "#FFFFFF",
                         border: "1px solid rgba(0,0,0,0.06)",
                       }} data-testid="box-biocheck-description-collapsed">
-                        <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0", display: "flex", alignItems: "center", gap: 6 }}><Lightbulb style={{ width: 15, height: 15, color: "#1D1D1F", flexShrink: 0 }} />{region === "FR" ? "Résultat de l'analyse" : region === "EN" ? "Result of the analysis" : "Ergebnis der Analyse"}</h3>
+                        <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0", display: "flex", alignItems: "center", gap: 6 }}><Lightbulb style={{ width: 15, height: 15, color: "#1D1D1F", flexShrink: 0 }} />{region === "IT" ? "Risultato dell'analisi" : region === "FR" ? "Résultat de l'analyse" : region === "EN" ? "Result of the analysis" : "Ergebnis der Analyse"}</h3>
                         <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: 0, ...reportTextStyle }} data-testid="text-biocheck-collapsed-body">
                           {localizeText([...rt.body, ...(isLeadershipRole ? [rt.leadership] : [])].join(" "))}
                         </p>
@@ -3962,10 +4187,10 @@ export default function RollenDNA() {
                   <div style={{ marginTop: 16 }}>
                     <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 10 : 16 }}>
                       {[
-                        { title: region === "FR" ? "Activités" : region === "EN" ? "Activities" : "Tätigkeiten", key: "haupttaetigkeiten", data: bioGramHaupt, icon: Briefcase },
-                        { title: region === "FR" ? "Compétences humaines" : region === "EN" ? "Human competences" : "Humankompetenzen", key: "humankompetenzen", data: bioGramNeben, icon: Heart },
-                        { title: region === "FR" ? "Conditions-cadres du poste" : region === "EN" ? "Role framework conditions" : "Rahmenbedingungen der Stelle", key: "rahmenbedingungen", data: bioGramRahmen, icon: Settings },
-                        ...(isLeadershipRole ? [{ title: region === "FR" ? "Compétences de management" : region === "EN" ? "Leadership competences" : "Führungskompetenzen", key: "fuehrungskompetenzen", data: bioGramFuehrung, icon: Shield }] : []),
+                        { title: region === "IT" ? "Attivita'" : region === "FR" ? "Activités" : region === "EN" ? "Activities" : "Tätigkeiten", key: "haupttaetigkeiten", data: bioGramHaupt, icon: Briefcase },
+                        { title: region === "IT" ? "Competenze umane" : region === "FR" ? "Compétences humaines" : region === "EN" ? "Human competences" : "Humankompetenzen", key: "humankompetenzen", data: bioGramNeben, icon: Heart },
+                        { title: region === "IT" ? "Condizioni quadro del ruolo" : region === "FR" ? "Conditions-cadres du poste" : region === "EN" ? "Role framework conditions" : "Rahmenbedingungen der Stelle", key: "rahmenbedingungen", data: bioGramRahmen, icon: Settings },
+                        ...(isLeadershipRole ? [{ title: region === "IT" ? "Competenze di management" : region === "FR" ? "Compétences de management" : region === "EN" ? "Leadership competences" : "Führungskompetenzen", key: "fuehrungskompetenzen", data: bioGramFuehrung, icon: Shield }] : []),
                       ].map((section) => (
                         <div
                           key={section.key}
@@ -3984,7 +4209,7 @@ export default function RollenDNA() {
                             </p>
                           </div>
                           {[
-                            { label: region === "FR" ? "Rythme et Décision" : region === "IT" ? "Ritmo e Decisione" : region === "FR" ? "Rythme et Décision" : region === "EN" ? "Impulsive" : "Impulsiv", color: "#C41E3A", value: section.data.imp },
+                            { label: region === "IT" ? "Ritmo e Decisione" : region === "FR" ? "Rythme et Décision" : region === "EN" ? "Impulsive" : "Impulsiv", color: "#C41E3A", value: section.data.imp },
                             { label: region === "IT" ? "Comunicazione e Relazioni" : region === "FR" ? "Communication et Relations" : region === "EN" ? "Intuitive" : "Intuitiv", color: "#F39200", value: section.data.int },
                             { label: region === "IT" ? "Struttura e Rigore" : region === "FR" ? "Structure et Rigueur" : region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", value: section.data.ana },
                           ].map((bar) => (

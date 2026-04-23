@@ -571,7 +571,7 @@ export default function SollIstBericht() {
       doc.save(`MatchCheck_${safeName}.pdf`);
     } catch (e) {
       console.error("PDF error:", e);
-      alert(region === "FR" ? "L'export PDF a échoué. Veuillez réessayer." : region === "EN" ? "PDF export failed. Please try again." : "PDF-Export fehlgeschlagen. Bitte versuche es erneut.");
+      alert(region === "IT" ? "L'esportazione PDF non e' riuscita. Riprova." : region === "FR" ? "L'export PDF a échoué. Veuillez réessayer." : region === "EN" ? "PDF export failed. Please try again." : "PDF-Export fehlgeschlagen. Bitte versuche es erneut.");
     } finally {
       if (clone && clone.parentNode) clone.parentNode.removeChild(clone);
       if (pdfBtn) pdfBtn.style.display = "";
@@ -587,16 +587,16 @@ export default function SollIstBericht() {
         <GlobalNav />
         <div className="mx-auto max-w-3xl px-6 py-20 text-center">
           <AlertTriangle className="mx-auto mb-4 h-12 w-12 text-amber-500" />
-          <h2 className="text-xl font-semibold text-slate-950 mb-3">{region === "FR" ? "Aucun ADN de poste disponible" : region === "EN" ? "No role DNA available" : "Keine Rollen-DNA vorhanden"}</h2>
+          <h2 className="text-xl font-semibold text-slate-950 mb-3">{region === "IT" ? "Nessuna DNA del ruolo disponibile" : region === "FR" ? "Aucun ADN de poste disponible" : region === "EN" ? "No role DNA available" : "Keine Rollen-DNA vorhanden"}</h2>
           <p className="text-sm text-slate-600 mb-6 leading-6">
-            {region === "FR" ? "Créez d'abord une analyse de poste pour générer le rapport cible/réel." : region === "EN" ? "Please first create a role analysis to generate the target/actual report." : "Bitte erstelle zuerst eine Stellenanalyse, um den Soll-Ist-Bericht generieren zu können."}
+            {region === "IT" ? "Crea prima un'analisi del ruolo per generare il rapporto target/reale." : region === "FR" ? "Créez d'abord une analyse de poste pour générer le rapport cible/réel." : region === "EN" ? "Please first create a role analysis to generate the target/actual report." : "Bitte erstelle zuerst eine Stellenanalyse, um den Soll-Ist-Bericht generieren zu können."}
           </p>
           <button
             onClick={() => setLocation("/rollen-dna")}
             className="inline-flex h-11 items-center gap-2 rounded-xl bg-blue-600 px-6 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 transition-colors"
             data-testid="button-go-to-rolle"
           >
-            {region === "FR" ? "Aller à l'analyse du poste" : region === "EN" ? "Go to role analysis" : "Zur Stellenanalyse"}
+            {region === "IT" ? "Vai all'analisi del ruolo" : region === "FR" ? "Aller à l'analyse du poste" : region === "EN" ? "Go to role analysis" : "Zur Stellenanalyse"}
           </button>
         </div>
       </div>
@@ -611,10 +611,12 @@ export default function SollIstBericht() {
           <div style={{ background: "rgba(255,255,255,0.78)", backdropFilter: "blur(40px)", borderRadius: 20, padding: "40px 32px", boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)", border: "1px solid rgba(0,0,0,0.04)" }}>
             <div style={{ width: 44, height: 44, margin: "0 auto 18px", border: "3px solid #E5E5E7", borderTopColor: "#0071E3", borderRadius: "50%", animation: "bio-spin 0.9s linear infinite" }} />
             <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }}>
-              {region === "FR" ? "Génération de l'analyse de compatibilité" : region === "EN" ? "Generating match analysis" : "MatchCheck wird erstellt"}
+              {region === "IT" ? "Generazione dell'analisi di compatibilita'" : region === "FR" ? "Génération de l'analyse de compatibilité" : region === "EN" ? "Generating match analysis" : "MatchCheck wird erstellt"}
             </h2>
             <p style={{ fontSize: 14, color: "#48484A", margin: 0, lineHeight: 1.6 }}>
-              {region === "FR"
+              {region === "IT"
+                ? "I testi vengono generati sulla base del profilo. Di solito ci vogliono 15-25 secondi."
+                : region === "FR"
                 ? "Les textes sont générés sur la base de ton profil. Cela prend généralement 15 à 25 secondes."
                 : region === "EN"
                 ? "We're writing the report based on your profile. This usually takes 15–25 seconds."
@@ -637,10 +639,10 @@ export default function SollIstBericht() {
             <div className="w-full mx-auto" style={{ maxWidth: 1100, padding: isMobile ? "0 12px" : "0 24px" }}>
               <div className="text-center">
                 <h1 style={{ fontSize: 24, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 2px", color: "#34C759" }} data-testid="text-matchcheck-title">
-                  {region === "FR" ? "Configurer l'analyse d'adéquation" : region === "EN" ? "Configure fit analysis" : "Passungsanalyse konfigurieren"}
+                  {region === "IT" ? "Configura l'analisi di compatibilita'" : region === "FR" ? "Configurer l'analyse d'adéquation" : region === "EN" ? "Configure fit analysis" : "Passungsanalyse konfigurieren"}
                 </h1>
                 <p style={{ fontSize: 14, color: "#48484A", fontWeight: 450, margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }} data-testid="text-matchcheck-subtitle">
-                  {region === "FR" ? "Comparez le profil du poste avec le profil de la personne pour analyser l'adéquation structurelle." : region === "EN" ? "Compare the role profile with the person profile to analyse structural fit for this position." : "Vergleiche das Stellenprofil mit dem Personenprofil, um die strukturelle Passung für diese Stelle zu analysieren."}
+                  {region === "IT" ? "Confronta il profilo del ruolo con il profilo della persona per analizzare la compatibilita' strutturale." : region === "FR" ? "Comparez le profil du poste avec le profil de la personne pour analyser l'adéquation structurelle." : region === "EN" ? "Compare the role profile with the person profile to analyse structural fit for this position." : "Vergleiche das Stellenprofil mit dem Personenprofil, um die strukturelle Passung für diese Stelle zu analysieren."}
                 </p>
               </div>
             </div>
@@ -665,7 +667,7 @@ export default function SollIstBericht() {
                   <SlidersHorizontal style={{ width: 15, height: 15, color: "#fff", strokeWidth: 2.5 }} />
                 </div>
                 <span style={{ fontSize: 18, fontWeight: 700, color: "#34C759" }}>
-                  {region === "FR" ? "Comparaison de profils : " : region === "EN" ? "Profile comparison: " : "Profilvergleich: "}<span style={{ fontWeight: 700, color: "#1D1D1F" }}>{roleName}</span>
+                  {region === "IT" ? "Confronto profili: " : region === "FR" ? "Comparaison de profils : " : region === "EN" ? "Profile comparison: " : "Profilvergleich: "}<span style={{ fontWeight: 700, color: "#1D1D1F" }}>{roleName}</span>
                 </span>
               </div>
               <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${profilvergleichOpen ? "rotate-180" : ""}`} />
@@ -674,7 +676,7 @@ export default function SollIstBericht() {
             {profilvergleichOpen && (<div style={{ padding: isMobile ? "0 14px 14px" : "0 32px 32px" }}>
             <div className="grid gap-6 grid-cols-1 sm:grid-cols-2">
               <div className="rounded-2xl border border-slate-200 bg-white p-6" data-testid="card-soll-profil">
-                <p className="text-base font-semibold text-slate-900 mb-6">{region === "FR" ? "Profil cible" : region === "EN" ? "Target profile" : "Soll-Profil"} <span className="font-normal text-slate-500">({region === "FR" ? "poste" : region === "EN" ? "role" : "Stelle"})</span></p>
+                <p className="text-base font-semibold text-slate-900 mb-6">{region === "IT" ? "Profilo target" : region === "FR" ? "Profil cible" : region === "EN" ? "Target profile" : "Soll-Profil"} <span className="font-normal text-slate-500">({region === "IT" ? "ruolo" : region === "FR" ? "poste" : region === "EN" ? "role" : "Stelle"})</span></p>
                 <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                   {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
                     const val = roleTriad[k];
@@ -684,7 +686,7 @@ export default function SollIstBericht() {
                     const isSmall = widthPct < 18;
                     return (
                       <div key={k} style={{ display: "flex", alignItems: "center", gap: 12, minHeight: 26 }} data-testid={`slider-row-role-${k}`}>
-                        <span style={{ fontSize: region === "FR" ? 11 : 14, color: "#48484A", width: region === "FR" ? 115 : 72, flexShrink: 0, lineHeight: "1.35" }}>
+                        <span style={{ fontSize: region === "FR" || region === "IT" ? 11 : 14, color: "#48484A", width: region === "FR" || region === "IT" ? 115 : 72, flexShrink: 0, lineHeight: "1.35" }}>
                           {labelComponent(k, region)}
                         </span>
                         <div style={{ flex: 1, position: "relative", height: 26 }}>
@@ -770,7 +772,7 @@ export default function SollIstBericht() {
               </div>
 
               <div className="rounded-2xl border border-slate-200 bg-white p-6" data-testid="card-ist-profil">
-                <p className="text-base font-semibold text-slate-900 mb-6">{region === "FR" ? "Profil réel" : region === "EN" ? "Actual profile" : "Ist-Profil"} <span className="font-normal text-slate-500">({region === "FR" ? "personne" : region === "EN" ? "person" : "Person"})</span></p>
+                <p className="text-base font-semibold text-slate-900 mb-6">{region === "IT" ? "Profilo reale" : region === "FR" ? "Profil réel" : region === "EN" ? "Actual profile" : "Ist-Profil"} <span className="font-normal text-slate-500">({region === "IT" ? "persona" : region === "FR" ? "personne" : region === "EN" ? "person" : "Person"})</span></p>
                 <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                   {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
                     const val = candTriad[k];
@@ -780,7 +782,7 @@ export default function SollIstBericht() {
                     const isSmall = widthPct < 18;
                     return (
                       <div key={k} style={{ display: "flex", alignItems: "center", gap: 12, minHeight: 26 }} data-testid={`slider-row-${k}`}>
-                        <span style={{ fontSize: region === "FR" ? 11 : 14, color: "#48484A", width: region === "FR" ? 115 : 72, flexShrink: 0, lineHeight: "1.35" }}>
+                        <span style={{ fontSize: region === "FR" || region === "IT" ? 11 : 14, color: "#48484A", width: region === "FR" || region === "IT" ? 115 : 72, flexShrink: 0, lineHeight: "1.35" }}>
                           {labelComponent(k, region)}
                         </span>
                         <div style={{ flex: 1, position: "relative", height: 26 }}>
@@ -975,14 +977,14 @@ export default function SollIstBericht() {
                       <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.3)" strokeWidth="2.5" />
                       <path d="M12 2a10 10 0 0 1 10 10" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
                     </svg>
-                    {region === "FR" ? "Génération en cours…" : region === "EN" ? "Generating…" : "Erstelle Bericht…"}
+                    {region === "IT" ? "Generazione in corso..." : region === "FR" ? "Génération en cours…" : region === "EN" ? "Generating…" : "Erstelle Bericht…"}
                     <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
                   </>
-                ) : (region === "FR" ? "Générer le rapport" : region === "EN" ? "Generate report" : "Bericht erstellen")}
+                ) : (region === "IT" ? "Genera il rapporto" : region === "FR" ? "Générer le rapport" : region === "EN" ? "Generate report" : "Bericht erstellen")}
               </button>
               {aiError && (
                 <p style={{ fontSize: 13, color: "#D64045", margin: "8px 0 0", width: "100%", textAlign: "center" }} data-testid="text-ai-error">
-                  {region === "FR" ? `Erreur : ${aiError}` : region === "EN" ? `Error: ${aiError}` : `Fehler: ${aiError}`}
+                  {region === "IT" ? `Errore: ${aiError}` : region === "FR" ? `Erreur : ${aiError}` : region === "EN" ? `Error: ${aiError}` : `Fehler: ${aiError}`}
                 </p>
               )}
             </div>
@@ -1101,7 +1103,7 @@ export default function SollIstBericht() {
                       <div style={{ padding: "14px 16px", borderRadius: 12, background: "rgba(0,0,0,0.02)" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
                           <div style={{ width: 10, height: 10, borderRadius: 5, background: devGaugeColor, flexShrink: 0 }} />
-                          <span style={{ fontSize: 14, fontWeight: 700, color: devGaugeColor }}>{region === "FR" ? "Effort de développement" : region === "EN" ? "Development effort" : "Entwicklungsaufwand"}: {region === "EN" ? (devScore === 3 ? "low" : devScore === 2 ? "medium" : "high") : region === "FR" ? (devScore === 3 ? "faible" : devScore === 2 ? "moyen" : "élevé") : (devScore === 3 ? "niedrig" : devScore === 2 ? "mittel" : "hoch")}</span>
+                          <span style={{ fontSize: 14, fontWeight: 700, color: devGaugeColor }}>{region === "IT" ? "Sforzo di sviluppo" : region === "FR" ? "Effort de développement" : region === "EN" ? "Development effort" : "Entwicklungsaufwand"}: {region === "EN" ? (devScore === 3 ? "low" : devScore === 2 ? "medium" : "high") : region === "IT" ? (devScore === 3 ? "basso" : devScore === 2 ? "medio" : "alto") : region === "FR" ? (devScore === 3 ? "faible" : devScore === 2 ? "moyen" : "élevé") : (devScore === 3 ? "niedrig" : devScore === 2 ? "mittel" : "hoch")}</span>
                         </div>
                         <div style={{ display: "flex", gap: 5 }}>
                           {Array.from({ length: 3 }).map((_, i) => {
@@ -1119,7 +1121,7 @@ export default function SollIstBericht() {
                       </div>
 
                       <div style={{ padding: "14px 16px", borderRadius: 12, background: "rgba(0,0,0,0.02)" }}>
-                        <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 12px" }}>{region === "FR" ? "Impact" : region === "EN" ? "Impact" : "Auswirkung"}</p>
+                        <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 12px" }}>{region === "IT" ? "Impatto" : region === "FR" ? "Impact" : region === "EN" ? "Impact" : "Auswirkung"}</p>
                         {auswirkungBullets.map((b, i) => (
                           <BulletItem key={i} text={b} color={bulletCol} />
                         ))}
@@ -1196,7 +1198,7 @@ export default function SollIstBericht() {
               data-testid="link-back-matchcheck"
             >
               <ChevronLeft style={{ width: 16, height: 16 }} />
-              {region === "FR" ? "Retour au MatchCheck" : region === "EN" ? "Back to MatchCheck" : "Zurück zum MatchCheck"}
+              {region === "IT" ? "Torna al MatchCheck" : region === "FR" ? "Retour au MatchCheck" : region === "EN" ? "Back to MatchCheck" : "Zurück zum MatchCheck"}
             </button>
             <div style={{ position: "relative", background: "#FFFFFF", borderRadius: 20, overflow: "hidden", boxShadow: "0 4px 40px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.03)" }} data-testid="print-report-card" data-bericht lang={region === "IT" ? "it" : region === "FR" ? "fr" : region === "EN" ? "en" : "de"}>
 
@@ -1225,14 +1227,14 @@ export default function SollIstBericht() {
                     }}
                     data-testid="button-print-soll-ist"
                     className="report-header-btn"
-                    title={region === "FR" ? "Dans la boîte de dialogue, sélectionnez « Enregistrer en PDF »" : region === "EN" ? "In the print dialog select 'Save as PDF'" : "Im Druckdialog 'Als PDF speichern' wählen"}
+                    title={region === "IT" ? "Nella finestra di dialogo di stampa seleziona 'Salva come PDF'" : region === "FR" ? "Dans la boîte de dialogue, sélectionnez « Enregistrer en PDF »" : region === "EN" ? "In the print dialog select 'Save as PDF'" : "Im Druckdialog 'Als PDF speichern' wählen"}
                   >
                     <Printer style={{ width: 15, height: 15 }} />
-                    <span>{region === "FR" ? "Imprimer" : region === "EN" ? "Print" : "Drucken"}</span>
+                    <span>{region === "IT" ? "Stampa" : region === "FR" ? "Imprimer" : region === "EN" ? "Print" : "Drucken"}</span>
                   </button>
                 </div>
 
-                <div className="report-kicker">{region === "FR" ? "ANALYSE D'ADÉQUATION" : region === "EN" ? "FIT ANALYSIS" : "PASSUNGSANALYSE"}</div>
+                <div className="report-kicker">{region === "IT" ? "ANALISI DI COMPATIBILITA'" : region === "FR" ? "ANALYSE D'ADÉQUATION" : region === "EN" ? "FIT ANALYSIS" : "PASSUNGSANALYSE"}</div>
                 <h1 className="report-title" data-testid="text-page-title">MatchCheck</h1>
                 <div className="report-subtitle">{result.roleName}</div>
 
@@ -1242,7 +1244,9 @@ export default function SollIstBericht() {
               {/* ─── EXECUTIVE DECISION CONTENT (weisser Hintergrund) ─── */}
               <div style={{ padding: "28px 44px 0" }}>
                 <p data-pdf-block style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 16px", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang={region === "IT" ? "it" : region === "FR" ? "fr" : region === "EN" ? "en" : "de"} data-testid="text-einleitung">
-                  {region === "FR"
+                  {region === "IT"
+                    ? "Questa analisi di compatibilita' mostra quanto bene una persona e un ruolo si allineano nella loro logica lavorativa. Rivela dove i pattern si sovrappongono, dove divergono e quale livello di sforzo di management o sviluppo aspettarsi nella pratica quotidiana."
+                    : region === "FR"
                     ? "Cette analyse d'adéquation montre dans quelle mesure une personne et un poste s'alignent dans leur logique de travail. Elle révèle où les schémas se recoupent, où ils divergent et quel niveau d'effort de management ou de développement attendre au quotidien."
                     : region === "EN"
                     ? "This fit analysis shows how well a person and a role align in their working logic. It reveals where patterns overlap, where they diverge, and what level of management or development effort to expect in daily practice."
@@ -1250,14 +1254,16 @@ export default function SollIstBericht() {
                 </p>
                 <div data-pdf-block style={{ background: "linear-gradient(135deg, rgba(255,59,48,0.06) 0%, rgba(255,59,48,0.03) 100%)", borderRadius: 10, padding: "16px 20px", border: "1px solid rgba(255,59,48,0.2)", marginBottom: 24 }}>
                   <p style={{ fontSize: 13, fontWeight: 700, color: "#FF3B30", lineHeight: 1.85, margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang={region === "IT" ? "it" : region === "FR" ? "fr" : region === "EN" ? "en" : "de"}>
-                    {region === "FR" ? REPORT_INTRO_DISCLAIMER_FR : region === "EN" ? REPORT_INTRO_DISCLAIMER_EN : REPORT_INTRO_DISCLAIMER}
+                    {region === "IT" ? REPORT_INTRO_DISCLAIMER_EN : region === "FR" ? REPORT_INTRO_DISCLAIMER_FR : region === "EN" ? REPORT_INTRO_DISCLAIMER_EN : REPORT_INTRO_DISCLAIMER}
                   </p>
                 </div>
-                <SectionHead num={1} title={region === "FR" ? "Évaluation globale" : region === "EN" ? "Overall assessment" : "Gesamtbewertung"} />
+                <SectionHead num={1} title={region === "IT" ? "Valutazione complessiva" : region === "FR" ? "Évaluation globale" : region === "EN" ? "Overall assessment" : "Gesamtbewertung"} />
                 {(() => {
                   const cCol = bioControlColor(result.controlIntensity);
                   const cLabel = region === "EN"
                     ? result.controlIntensity === "hoch" ? "High" : result.controlIntensity === "mittel" ? "Medium" : "Low"
+                    : region === "IT"
+                    ? result.controlIntensity === "hoch" ? "Alta" : result.controlIntensity === "mittel" ? "Media" : "Bassa"
                     : region === "FR"
                     ? result.controlIntensity === "hoch" ? "Élevée" : result.controlIntensity === "mittel" ? "Moyenne" : "Faible"
                     : result.controlIntensity === "hoch" ? "Hoch" : result.controlIntensity === "mittel" ? "Mittel" : "Gering";
@@ -1265,6 +1271,8 @@ export default function SollIstBericht() {
                   const devScore = devLevel === 1 ? 3 : devLevel === 2 ? 2 : 1;
                   const devLabel = region === "EN"
                     ? devScore === 3 ? "low" : devScore === 2 ? "medium" : "high"
+                    : region === "IT"
+                    ? devScore === 3 ? "basso" : devScore === 2 ? "medio" : "alto"
                     : region === "FR"
                     ? devScore === 3 ? "faible" : devScore === 2 ? "moyen" : "élevé"
                     : devScore === 3 ? "niedrig" : devScore === 2 ? "mittel" : "hoch";
@@ -1381,23 +1389,23 @@ export default function SollIstBericht() {
                       <div data-pdf-block style={{ marginBottom: 22 }} data-testid="section-systemstatus">
                         <div style={{ display: "flex", gap: 16, marginTop: 20, paddingTop: 18, borderTop: "1px solid rgba(0,0,0,0.06)" }}>
                           <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: `${fitCol}08`, border: `1px solid ${fitCol}25` }}>
-                            <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>{region === "FR" ? "Adéquation de base" : region === "EN" ? "Basic fit" : "Grundpassung"}</div>
+                            <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>{region === "IT" ? "Compatibilita' di base" : region === "FR" ? "Adéquation de base" : region === "EN" ? "Basic fit" : "Grundpassung"}</div>
                             <div style={{ fontSize: 17, fontWeight: 700, color: fitCol }} data-testid="status-grundpassung">{result.fitLabel}</div>
                           </div>
                           <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: `${cCol}08`, border: `1px solid ${cCol}25` }}>
-                            <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>{region === "FR" ? "Effort de management" : region === "EN" ? "Management effort" : "Führungsaufwand"}</div>
+                            <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>{region === "IT" ? "Sforzo di management" : region === "FR" ? "Effort de management" : region === "EN" ? "Management effort" : "Führungsaufwand"}</div>
                             <div style={{ fontSize: 17, fontWeight: 700, color: cCol }} data-testid="status-führungsaufwand">{cLabel}</div>
                           </div>
                         </div>
                         <div style={{ display: "flex", gap: 16, marginTop: 16 }}>
                           <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: `${gapCol}08`, border: `1px solid ${gapCol}25` }}>
-                            <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>{region === "FR" ? "Écart de profil" : region === "EN" ? "Profile deviation" : "Profilabweichung"}</div>
-                            <div style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", lineHeight: 1.5 }} data-testid="status-profilabweichung">{region === "FR" ? (result.gapLevel === "gering" ? "faible" : result.gapLevel === "mittel" ? "modéré" : "élevé") : region === "EN" ? (result.gapLevel === "gering" ? "low" : result.gapLevel === "mittel" ? "medium" : "high") : result.gapLevel}</div>
+                            <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>{region === "IT" ? "Scarto di profilo" : region === "FR" ? "Écart de profil" : region === "EN" ? "Profile deviation" : "Profilabweichung"}</div>
+                            <div style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", lineHeight: 1.5 }} data-testid="status-profilabweichung">{region === "IT" ? (result.gapLevel === "gering" ? "basso" : result.gapLevel === "mittel" ? "medio" : "alto") : region === "FR" ? (result.gapLevel === "gering" ? "faible" : result.gapLevel === "mittel" ? "modéré" : "élevé") : region === "EN" ? (result.gapLevel === "gering" ? "low" : result.gapLevel === "mittel" ? "medium" : "high") : result.gapLevel}</div>
                           </div>
                           <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: `${devCol}08`, border: `1px solid ${devCol}25` }}>
                             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
                               <div style={{ width: 10, height: 10, borderRadius: 5, background: devCol, flexShrink: 0 }} />
-                              <span style={{ fontSize: 14, fontWeight: 700, color: devCol }} data-testid="status-entwicklungsaufwand">{region === "FR" ? `Effort de développement : ${devLabel}` : region === "EN" ? `Development effort: ${devLabel}` : `Entwicklungsaufwand: ${devLabel}`}</span>
+                              <span style={{ fontSize: 14, fontWeight: 700, color: devCol }} data-testid="status-entwicklungsaufwand">{region === "IT" ? `Sforzo di sviluppo: ${devLabel}` : region === "FR" ? `Effort de développement : ${devLabel}` : region === "EN" ? `Development effort: ${devLabel}` : `Entwicklungsaufwand: ${devLabel}`}</span>
                             </div>
                             <div style={{ display: "flex", gap: 5 }}>
                               {Array.from({ length: 3 }).map((_, i) => {
@@ -1428,10 +1436,10 @@ export default function SollIstBericht() {
 
                         return (
                           <div data-pdf-block style={{ marginBottom: 22, padding: "20px 24px", borderRadius: 12, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.06)" }} data-testid="section-ueberblick">
-                            <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 16px", textAlign: "center" }}>{region === "FR" ? "Vue d'ensemble" : region === "EN" ? "Overview" : "Kurzübersicht"}</p>
+                            <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 16px", textAlign: "center" }}>{region === "IT" ? "Panoramica" : region === "FR" ? "Vue d'ensemble" : region === "EN" ? "Overview" : "Kurzübersicht"}</p>
                             <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "center", gap: 16 }}>
                               <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center" }}>
-                                <p style={{ fontSize: 12, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 10px" }}>{region === "FR" ? "Poste" : region === "EN" ? "Role" : "Stelle"}</p>
+                                <p style={{ fontSize: 12, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 10px" }}>{region === "IT" ? "Ruolo" : region === "FR" ? "Poste" : region === "EN" ? "Role" : "Stelle"}</p>
                                 <div style={{ display: "flex", flexDirection: "column", gap: 8, alignItems: "center" }}>
                                   {roleKeys.map(k => (
                                     <div key={k} style={{ padding: "10px 20px", borderRadius: 20, background: `${BAR_HEX[k]}14`, border: `1px solid ${BAR_HEX[k]}30` }}>
@@ -1444,7 +1452,7 @@ export default function SollIstBericht() {
                                 <span style={{ fontSize: 18, fontWeight: 700, color: matchColor, lineHeight: 1 }}>{matchSymbol}</span>
                               </div>
                               <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center" }}>
-                                <p style={{ fontSize: 12, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 10px" }}>{region === "FR" ? "Personne" : region === "EN" ? "Person" : "Person"}</p>
+                                <p style={{ fontSize: 12, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 10px" }}>{region === "IT" ? "Persona" : region === "FR" ? "Personne" : region === "EN" ? "Person" : "Person"}</p>
                                 <div style={{ display: "flex", flexDirection: "column", gap: 8, alignItems: "center" }}>
                                   {candKeys.map(k => (
                                     <div key={k} style={{ padding: "10px 20px", borderRadius: 20, background: `${BAR_HEX[k]}14`, border: `1px solid ${BAR_HEX[k]}30` }}>
@@ -1460,7 +1468,7 @@ export default function SollIstBericht() {
 
                       {/* AUSWIRKUNG IM ARBEITSALLTAG */}
                       <div data-pdf-block style={{ marginBottom: 22 }} data-testid="section-auswirkung">
-                        <SubHead num={1} title={region === "FR" ? "Impact sur le travail quotidien" : region === "EN" ? "Impact on daily work" : "Auswirkung im Arbeitsalltag"} color="#0F3A6E" />
+                        <SubHead num={1} title={region === "IT" ? "Impatto sul lavoro quotidiano" : region === "FR" ? "Impact sur le travail quotidien" : region === "EN" ? "Impact on daily work" : "Auswirkung im Arbeitsalltag"} color="#0F3A6E" />
                         <p style={{ margin: 0, fontSize: 14, lineHeight: 1.85, color: "#48484A", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang={region === "IT" ? "it" : region === "FR" ? "fr" : region === "EN" ? "en" : "de"}>
                           {result.dominanceShiftText.split(/\n\n+/)[0]}
                         </p>
@@ -1468,7 +1476,7 @@ export default function SollIstBericht() {
 
                       {/* MANAGEMENTKURZFAZIT */}
                       <div data-pdf-block style={{ marginBottom: 22 }} data-testid="section-fazit">
-                        <SubHead num={2} title={region === "FR" ? "Synthèse managériale" : region === "EN" ? "Management summary" : "Managementkurzfazit"} color="#0F3A6E" />
+                        <SubHead num={2} title={region === "IT" ? "Sintesi manageriale" : region === "FR" ? "Synthèse managériale" : region === "EN" ? "Management summary" : "Managementkurzfazit"} color="#0F3A6E" />
                         <p style={{ fontSize: 14, lineHeight: 1.85, color: "#48484A", margin: 0, textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang={region === "IT" ? "it" : region === "FR" ? "fr" : region === "EN" ? "en" : "de"} data-testid="text-summary-fazit">
                           {result.summaryText.split(/\n\n+/)[0]}
                         </p>
@@ -1479,7 +1487,7 @@ export default function SollIstBericht() {
                         <div data-pdf-block style={{ marginBottom: 0 }} data-testid="section-executive-bullets">
                           {result.executiveBullets.length > 0 && (
                             <div style={{ marginBottom: result.constellationRisks.length > 0 ? 14 : 0 }}>
-                              <SubHead num={3} title={region === "FR" ? "Pourquoi ce résultat" : region === "EN" ? "Why this result" : "Warum dieses Ergebnis"} color="#0F3A6E" />
+                              <SubHead num={3} title={region === "IT" ? "Perche' questo risultato" : region === "FR" ? "Pourquoi ce résultat" : region === "EN" ? "Why this result" : "Warum dieses Ergebnis"} color="#0F3A6E" />
                               {result.executiveBullets.map((b, i) => (
                                 <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
                                   <span style={{ width: 5, height: 5, borderRadius: 3, background: "#0F3A6E", flexShrink: 0 }} />
@@ -1490,7 +1498,7 @@ export default function SollIstBericht() {
                           )}
                           {result.constellationRisks.length > 0 && (
                             <div>
-                              <SubHead num={4} title={region === "FR" ? "Risques de cette configuration" : region === "EN" ? "Risks of this constellation" : "Risiken dieser Konstellation"} color="#0F3A6E" />
+                              <SubHead num={4} title={region === "IT" ? "Rischi di questa configurazione" : region === "FR" ? "Risques de cette configuration" : region === "EN" ? "Risks of this constellation" : "Risiken dieser Konstellation"} color="#0F3A6E" />
                               {result.constellationRisks.map((r, i) => (
                                 <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
                                   <span style={{ width: 5, height: 5, borderRadius: 3, background: "#0F3A6E", flexShrink: 0 }} />
@@ -1510,13 +1518,13 @@ export default function SollIstBericht() {
               <div style={{ padding: "36px 44px 48px" }}>
 
               <div data-pdf-block style={{ ...sep, borderBottom: "none" }} data-testid="section-comparison-bars">
-                <SectionHead num={2} title={region === "FR" ? "Comparaison des profils" : region === "EN" ? "Profile comparison" : "Vergleich der Profile"} />
+                <SectionHead num={2} title={region === "IT" ? "Confronto dei profili" : region === "FR" ? "Comparaison des profils" : region === "EN" ? "Profile comparison" : "Vergleich der Profile"} />
                 <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 20px", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang={region === "IT" ? "it" : region === "FR" ? "fr" : region === "EN" ? "en" : "de"}>
                   {biggestGapText(result.roleTriad, result.candTriad, region)}
                 </p>
                 <div className="grid gap-6 grid-cols-1 sm:grid-cols-2" style={{ marginBottom: 14 }}>
                   <div style={{ borderRadius: 16, border: "1px solid rgba(0,0,0,0.06)", background: "linear-gradient(135deg, #fafbfd, #f5f7fb)", padding: 24, boxShadow: "0 2px 8px rgba(0,0,0,0.02)" }}>
-                    <p style={{ fontSize: 15, fontWeight: 600, color: "#1D1D1F", margin: "0 0 20px" }}>{region === "FR" ? "Profil cible" : region === "EN" ? "Target profile" : "Soll-Profil"} <span style={{ fontWeight: 400, color: "#8E8E93" }}>({region === "FR" ? "poste" : region === "EN" ? "role" : "Stelle"})</span></p>
+                    <p style={{ fontSize: 15, fontWeight: 600, color: "#1D1D1F", margin: "0 0 20px" }}>{region === "IT" ? "Profilo target" : region === "FR" ? "Profil cible" : region === "EN" ? "Target profile" : "Soll-Profil"} <span style={{ fontWeight: 400, color: "#8E8E93" }}>({region === "IT" ? "ruolo" : region === "FR" ? "poste" : region === "EN" ? "role" : "Stelle"})</span></p>
                     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                       {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
                         const val = Math.round(roleTriad![k]);
@@ -1525,7 +1533,7 @@ export default function SollIstBericht() {
                         const isSmall = widthPct < 18;
                         return (
                           <div key={k} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                            <span style={{ fontSize: region === "FR" ? 11 : 14, color: "#48484A", width: region === "FR" ? 115 : 72, flexShrink: 0, lineHeight: "1.35" }}>{labelComponent(k, region)}</span>
+                            <span style={{ fontSize: region === "FR" || region === "IT" ? 11 : 14, color: "#48484A", width: region === "FR" || region === "IT" ? 115 : 72, flexShrink: 0, lineHeight: "1.35" }}>{labelComponent(k, region)}</span>
                             <div style={{ flex: 1, position: "relative", height: 28 }}>
                               <div style={{ position: "absolute", inset: 0, borderRadius: 14, background: "rgba(0,0,0,0.05)" }} />
                               <div className="bio-bar-animate" style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${Math.min(Math.max(widthPct, 4), 100)}%`, borderRadius: 14, background: `linear-gradient(90deg, ${hex}, ${hex}CC)`, display: "flex", alignItems: "center", paddingLeft: 10, minWidth: isSmall ? 8 : 50, boxShadow: `0 2px 8px ${hex}30`, transition: "width 800ms cubic-bezier(0.34, 1.56, 0.64, 1)" }}>
@@ -1541,7 +1549,7 @@ export default function SollIstBericht() {
                     </div>
                   </div>
                   <div style={{ borderRadius: 16, border: "1px solid rgba(0,0,0,0.06)", background: "linear-gradient(135deg, #fafbfd, #f5f7fb)", padding: 24, boxShadow: "0 2px 8px rgba(0,0,0,0.02)" }}>
-                    <p style={{ fontSize: 15, fontWeight: 600, color: "#1D1D1F", margin: "0 0 20px" }}>{region === "FR" ? "Profil réel" : region === "EN" ? "Actual profile" : "Ist-Profil"} <span style={{ fontWeight: 400, color: "#8E8E93" }}>({region === "FR" ? "personne" : region === "EN" ? "person" : "Person"})</span></p>
+                    <p style={{ fontSize: 15, fontWeight: 600, color: "#1D1D1F", margin: "0 0 20px" }}>{region === "IT" ? "Profilo reale" : region === "FR" ? "Profil réel" : region === "EN" ? "Actual profile" : "Ist-Profil"} <span style={{ fontWeight: 400, color: "#8E8E93" }}>({region === "IT" ? "persona" : region === "FR" ? "personne" : region === "EN" ? "person" : "Person"})</span></p>
                     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                       {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
                         const val = Math.round(candidateProfile[k]);
@@ -1550,7 +1558,7 @@ export default function SollIstBericht() {
                         const isSmall = widthPct < 18;
                         return (
                           <div key={k} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                            <span style={{ fontSize: region === "FR" ? 11 : 14, color: "#48484A", width: region === "FR" ? 115 : 72, flexShrink: 0, lineHeight: "1.35" }}>{labelComponent(k, region)}</span>
+                            <span style={{ fontSize: region === "FR" || region === "IT" ? 11 : 14, color: "#48484A", width: region === "FR" || region === "IT" ? 115 : 72, flexShrink: 0, lineHeight: "1.35" }}>{labelComponent(k, region)}</span>
                             <div style={{ flex: 1, position: "relative", height: 28 }}>
                               <div style={{ position: "absolute", inset: 0, borderRadius: 14, background: "rgba(0,0,0,0.05)" }} />
                               <div className="bio-bar-animate" style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${Math.min(Math.max(widthPct, 4), 100)}%`, borderRadius: 14, background: `linear-gradient(90deg, ${hex}, ${hex}CC)`, display: "flex", alignItems: "center", paddingLeft: 10, minWidth: isSmall ? 8 : 50, boxShadow: `0 2px 8px ${hex}30`, transition: "width 800ms cubic-bezier(0.34, 1.56, 0.64, 1)" }}>
@@ -1567,12 +1575,12 @@ export default function SollIstBericht() {
                   </div>
                 </div>
                 <div data-pdf-block style={{ marginTop: 20, padding: "18px 20px", borderRadius: 12, background: "#F8F9FA", border: "1px solid rgba(0,0,0,0.06)" }}>
-                  <p style={{ fontSize: 13, fontWeight: 600, color: "#48484A", margin: "0 0 12px" }}>{region === "FR" ? "Signification des composantes" : region === "EN" ? "Meaning of the components" : "Bedeutung der Komponenten"}</p>
+                  <p style={{ fontSize: 13, fontWeight: 600, color: "#48484A", margin: "0 0 12px" }}>{region === "IT" ? "Significato delle componenti" : region === "FR" ? "Signification des composantes" : region === "EN" ? "Meaning of the components" : "Bedeutung der Komponenten"}</p>
                   <div style={{ display: "flex", gap: 12 }}>
                     {([
-                      { key: "impulsiv", label: region === "FR" ? "Rythme et Décision" : region === "EN" ? "Action / Pace" : "Impulsiv", color: BAR_HEX.impulsiv, text: region === "FR" ? "Désigne l'action décisive, les priorités claires et l'exécution constante." : region === "EN" ? "Stands for decisive action, clear priorities and consistent execution." : "Steht für zügiges Handeln, klare Prioritäten und konsequente Umsetzung." },
-                      { key: "analytisch", label: region === "FR" ? "Structure et Rigueur" : region === "EN" ? "Structure / Analysis" : "Analytisch", color: BAR_HEX.analytisch, text: region === "FR" ? "Assure la structure, la rigueur et des processus traçables." : region === "EN" ? "Ensures structure, thoroughness, and traceable processes." : "Sichert Struktur, Sorgfalt und nachvollziehbare Abläufe." },
-                      { key: "intuitiv", label: region === "FR" ? "Communication et Relations" : region === "EN" ? "Collaboration / Communication" : "Intuitiv", color: BAR_HEX.intuitiv, text: region === "FR" ? "Favorise la compréhension des besoins de l'équipe et une collaboration efficace." : region === "EN" ? "Supports reading team needs and building effective collaboration." : "Unterstützt das Erkennen von Bedürfnissen und die passende Abstimmung im Team." },
+                      { key: "impulsiv", label: region === "IT" ? "Ritmo e Decisione" : region === "FR" ? "Rythme et Décision" : region === "EN" ? "Action / Pace" : "Impulsiv", color: BAR_HEX.impulsiv, text: region === "IT" ? "Indica azione decisa, priorita' chiare e attuazione coerente." : region === "FR" ? "Désigne l'action décisive, les priorités claires et l'exécution constante." : region === "EN" ? "Stands for decisive action, clear priorities and consistent execution." : "Steht für zügiges Handeln, klare Prioritäten und konsequente Umsetzung." },
+                      { key: "analytisch", label: region === "IT" ? "Struttura e Rigore" : region === "FR" ? "Structure et Rigueur" : region === "EN" ? "Structure / Analysis" : "Analytisch", color: BAR_HEX.analytisch, text: region === "IT" ? "Garantisce struttura, accuratezza e processi tracciabili." : region === "FR" ? "Assure la structure, la rigueur et des processus traçables." : region === "EN" ? "Ensures structure, thoroughness, and traceable processes." : "Sichert Struktur, Sorgfalt und nachvollziehbare Abläufe." },
+                      { key: "intuitiv", label: region === "IT" ? "Comunicazione e Relazioni" : region === "FR" ? "Communication et Relations" : region === "EN" ? "Collaboration / Communication" : "Intuitiv", color: BAR_HEX.intuitiv, text: region === "IT" ? "Supporta la comprensione dei bisogni del team e una collaborazione efficace." : region === "FR" ? "Favorise la compréhension des besoins de l'équipe et une collaboration efficace." : region === "EN" ? "Supports reading team needs and building effective collaboration." : "Unterstützt das Erkennen von Bedürfnissen und die passende Abstimmung im Team." },
                     ] as const).map(kb => (
                       <div key={kb.key} style={{ flex: 1, display: "flex", flexDirection: "column" }}>
                         <div style={{ flex: 1, padding: "14px 16px", borderRadius: 10, background: `linear-gradient(135deg, ${kb.color}12, ${kb.color}06)`, border: `1px solid ${kb.color}20`, display: "flex", flexDirection: "column" }}>
@@ -1590,7 +1598,7 @@ export default function SollIstBericht() {
               </div>
 
               <div data-pdf-block style={{ ...sep, borderBottom: "none" }} data-testid="section-impact-matrix">
-                <SectionHead num={3} title={region === "FR" ? "Impact du recrutement sur le travail quotidien" : region === "EN" ? "Impact of placement on daily work" : "Wirkung der Besetzung im Arbeitsalltag"} />
+                <SectionHead num={3} title={region === "IT" ? "Impatto della selezione sul lavoro quotidiano" : region === "FR" ? "Impact du recrutement sur le travail quotidien" : region === "EN" ? "Impact of placement on daily work" : "Wirkung der Besetzung im Arbeitsalltag"} />
                 <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
                   {result.impactAreas.map((area, areaIdx) => {
                     const sevCol = area.severity === "critical" ? "#FF3B30" : area.severity === "warning" ? "#FF9500" : "#34C759";
@@ -1598,7 +1606,13 @@ export default function SollIstBericht() {
                       <div key={area.id} data-testid={`impact-detail-${area.id}`} style={{ borderTop: areaIdx > 0 ? "1px solid rgba(0,0,0,0.06)" : "none" }}>
                         <div style={{ padding: "18px 0 16px" }}>
                           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 10 }}>
-                            <SubHead num={areaIdx + 1} title={region === "FR" ? (({
+                            <SubHead num={areaIdx + 1} title={region === "IT" ? (({
+                              "Entscheidungsverhalten": "Comportamento decisionale",
+                              "Arbeitsweise": "Stile lavorativo",
+                              "Führungswirkung": "Effetto di leadership",
+                              "Kommunikationsverhalten": "Comportamento comunicativo",
+                              "Wirkung auf Zusammenarbeit und Teamkultur": "Impatto sulla collaborazione e la cultura del team",
+                            } as Record<string, string>)[area.label] ?? area.label) : region === "FR" ? (({
                               "Entscheidungsverhalten": "Comportement décisionnel",
                               "Arbeitsweise": "Mode de travail",
                               "Führungswirkung": "Impact managérial",
@@ -1609,11 +1623,11 @@ export default function SollIstBericht() {
                           </div>
                           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
                             <div data-text-left style={{ background: "#FAFAFA", borderRadius: 10, padding: "12px 14px", border: "1px solid rgba(0,0,0,0.07)" }}>
-                              <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 6px" }}>{region === "FR" ? "Exigence du poste" : region === "EN" ? "Role requirement" : "Stellenanforderung"}</p>
+                              <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 6px" }}>{region === "IT" ? "Requisito del ruolo" : region === "FR" ? "Exigence du poste" : region === "EN" ? "Role requirement" : "Stellenanforderung"}</p>
                               <p style={{ fontSize: 14, lineHeight: 1.75, color: "#48484A", margin: 0, wordBreak: "break-word", overflowWrap: "break-word" }} lang={region === "IT" ? "it" : region === "FR" ? "fr" : region === "EN" ? "en" : "de"}>{area.roleNeed}</p>
                             </div>
                             <div data-text-left style={{ background: "#FAFAFA", borderRadius: 10, padding: "12px 14px", border: "1px solid rgba(0,0,0,0.07)" }}>
-                              <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 6px" }}>{region === "FR" ? "Personne" : region === "EN" ? "Person" : "Person"}</p>
+                              <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 6px" }}>{region === "IT" ? "Persona" : region === "FR" ? "Personne" : region === "EN" ? "Person" : "Person"}</p>
                               <p style={{ fontSize: 14, lineHeight: 1.75, color: "#48484A", margin: 0, wordBreak: "break-word", overflowWrap: "break-word" }} lang={region === "IT" ? "it" : region === "FR" ? "fr" : region === "EN" ? "en" : "de"}>{area.candidatePattern}</p>
                             </div>
                           </div>
@@ -1631,25 +1645,27 @@ export default function SollIstBericht() {
               </div>
 
               <div data-pdf-block style={{ ...sep, borderBottom: "none" }} data-testid="section-stress-behavior">
-                <SectionHead num={4} title={region === "FR" ? "Comportement sous pression" : region === "EN" ? "Behaviour under pressure" : "Verhalten unter Druck"} />
+                <SectionHead num={4} title={region === "IT" ? "Comportamento sotto pressione" : region === "FR" ? "Comportement sous pression" : region === "EN" ? "Behaviour under pressure" : "Verhalten unter Druck"} />
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                   <div style={{ padding: "16px 18px", borderRadius: 12, background: "#FF950008", border: "1px solid #FF950018", overflow: "visible" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
                       <AlertCircle style={{ width: 14, height: 14, color: "#FF9500", flexShrink: 0 }} />
-                      <p style={{ fontSize: 12, fontWeight: 700, color: "#FF9500", textTransform: "uppercase", letterSpacing: "0.05em", margin: 0 }}>{region === "FR" ? "Pression contrôlée" : region === "EN" ? "Controlled pressure" : "Kontrollierter Druck"}</p>
+                      <p style={{ fontSize: 12, fontWeight: 700, color: "#FF9500", textTransform: "uppercase", letterSpacing: "0.05em", margin: 0 }}>{region === "IT" ? "Pressione controllata" : region === "FR" ? "Pression contrôlée" : region === "EN" ? "Controlled pressure" : "Kontrollierter Druck"}</p>
                     </div>
                     <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, wordBreak: "break-word", overflowWrap: "break-word", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang={region === "IT" ? "it" : region === "FR" ? "fr" : region === "EN" ? "en" : "de"}>{result.stressBehavior.controlledPressure}</p>
                   </div>
                   <div style={{ padding: "16px 18px", borderRadius: 12, background: "#FF3B3008", border: "1px solid #FF3B3018", overflow: "visible" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
                       <AlertTriangle style={{ width: 14, height: 14, color: "#FF3B30", flexShrink: 0 }} />
-                      <p style={{ fontSize: 12, fontWeight: 700, color: "#FF3B30", textTransform: "uppercase", letterSpacing: "0.05em", margin: 0 }}>{region === "FR" ? "Stress incontrôlé" : region === "EN" ? "Uncontrolled stress" : "Unkontrollierter Stress"}</p>
+                      <p style={{ fontSize: 12, fontWeight: 700, color: "#FF3B30", textTransform: "uppercase", letterSpacing: "0.05em", margin: 0 }}>{region === "IT" ? "Stress incontrollato" : region === "FR" ? "Stress incontrôlé" : region === "EN" ? "Uncontrolled stress" : "Unkontrollierter Stress"}</p>
                     </div>
                     <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: 0, wordBreak: "break-word", overflowWrap: "break-word", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang={region === "IT" ? "it" : region === "FR" ? "fr" : region === "EN" ? "en" : "de"}>{result.stressBehavior.uncontrolledStress}</p>
                   </div>
                 </div>
                 <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "14px 0 0", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any} lang={region === "IT" ? "it" : region === "FR" ? "fr" : region === "EN" ? "en" : "de"}>
-                  {region === "FR"
+                  {region === "IT"
+                    ? "Sotto una pressione crescente, questi schemi di comportamento tendono ad intensificarsi, creando rischi per il coordinamento, la leadership e la collaborazione."
+                    : region === "FR"
                     ? "Sous une pression croissante, ces schémas de comportement tendent à s'intensifier et font apparaitre des risques pour la coordination, le management et la collaboration."
                     : region === "EN"
                     ? "Under increasing work pressure, these behavioural patterns tend to intensify — creating risks for coordination, leadership, and teamwork."
@@ -1658,7 +1674,7 @@ export default function SollIstBericht() {
               </div>
 
               <div data-pdf-block style={{ ...sep, borderBottom: "none" }} data-testid="section-risk-timeline">
-                <SectionHead num={5} title={region === "FR" ? "Prévision des risques" : region === "EN" ? "Risk forecast" : "Risikoprognose"} />
+                <SectionHead num={5} title={region === "IT" ? "Previsione dei rischi" : region === "FR" ? "Prévision des risques" : region === "EN" ? "Risk forecast" : "Risikoprognose"} />
                 <div style={{ position: "relative", paddingLeft: 28 }}>
                   <div style={{ position: "absolute", left: 9, top: 8, bottom: 8, width: 2, background: "rgba(0,0,0,0.08)", borderRadius: 1 }} />
                   <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
@@ -1732,7 +1748,7 @@ export default function SollIstBericht() {
 
                 return (
                   <div data-pdf-block style={{ ...sep, borderBottom: "none" }} data-testid="section-development">
-                    <SectionHead num={6} title={region === "FR" ? "Évaluation globale" : region === "EN" ? "Overall assessment" : "Gesamtbewertung"} />
+                    <SectionHead num={6} title={region === "IT" ? "Valutazione complessiva" : region === "FR" ? "Évaluation globale" : region === "EN" ? "Overall assessment" : "Gesamtbewertung"} />
 
                     <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 14 }}>
                       <div style={{ width: 16, height: 16, borderRadius: 8, background: rFitColor, flexShrink: 0, boxShadow: `0 0 0 3px ${rFitColor}20` }} />
@@ -1753,7 +1769,7 @@ export default function SollIstBericht() {
 
               {result.integrationsplan && (
                 <div data-pdf-block style={{ ...sep, borderBottom: "none" }} data-testid="section-integrationsplan">
-                  <SectionHead num={7} title={region === "FR" ? "Plan d'intégration sur 30 jours" : region === "EN" ? "30-day integration plan" : "30-Tage-Integrationsplan"} />
+                  <SectionHead num={7} title={region === "IT" ? "Piano di integrazione a 30 giorni" : region === "FR" ? "Plan d'intégration sur 30 jours" : region === "EN" ? "30-day integration plan" : "30-Tage-Integrationsplan"} />
                   <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
                     {result.integrationsplan.map(phase => {
                       const phaseCol = phase.num === 1 ? "#0071E3" : phase.num === 2 ? "#F39200" : "#34C759";
@@ -1768,7 +1784,7 @@ export default function SollIstBericht() {
                           </div>
                           <div style={{ padding: "16px 20px" }}>
                             <p style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", margin: "0 0 14px", lineHeight: 1.7 }}>
-                              <span style={{ fontWeight: 700 }}>{region === "FR" ? "Objectif : " : region === "EN" ? "Goal: " : "Ziel: "}</span>{phase.ziel}
+                              <span style={{ fontWeight: 700 }}>{region === "IT" ? "Obiettivo: " : region === "FR" ? "Objectif : " : region === "EN" ? "Goal: " : "Ziel: "}</span>{phase.ziel}
                             </p>
 
                             <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 16 }}>
@@ -1781,7 +1797,7 @@ export default function SollIstBericht() {
                             </div>
 
                             <div style={{ padding: "14px 16px", borderRadius: 10, background: `${phaseCol}06`, borderLeft: `4px solid ${phaseCol}` }}>
-                              <p style={{ fontSize: 11, fontWeight: 700, color: phaseCol, textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 6px" }}>{region === "FR" ? "Ce qui compte" : region === "EN" ? "What matters" : "Worauf es ankommt"}</p>
+                              <p style={{ fontSize: 11, fontWeight: 700, color: phaseCol, textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 6px" }}>{region === "IT" ? "Cosa conta" : region === "FR" ? "Ce qui compte" : region === "EN" ? "What matters" : "Worauf es ankommt"}</p>
                               <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: "0 0 8px", hyphens: "auto", WebkitHyphens: "auto" } as any} lang={region === "IT" ? "it" : region === "FR" ? "fr" : region === "EN" ? "en" : "de"}>{phase.fokus.intro}</p>
                               <ul style={{ margin: 0, paddingLeft: 0, listStyle: "none" }}>
                                 {phase.fokus.bullets.map((b, bi) => (
@@ -1803,7 +1819,7 @@ export default function SollIstBericht() {
 
               <div style={{ marginTop: 48, paddingTop: 20, borderTop: "1px solid rgba(0,0,0,0.06)", textAlign: "center" }}>
                 <span style={{ fontSize: 11, color: "#C0C0C5" }}>
-                  © {new Date().getFullYear()} bioLogic Talent Navigator · {region === "FR" ? "Analyse d'adéquation" : region === "EN" ? "Fit Analysis" : "Passungsanalyse"} · {region === "FR" ? "Établi le" : region === "EN" ? "Created" : "Erstellt am"} {new Date().toLocaleDateString(region === "FR" ? "fr-FR" : region === "EN" ? "en-GB" : "de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })}
+                  © {new Date().getFullYear()} bioLogic Talent Navigator · {region === "IT" ? "Analisi di compatibilita'" : region === "FR" ? "Analyse d'adéquation" : region === "EN" ? "Fit Analysis" : "Passungsanalyse"} · {region === "IT" ? "Creato il" : region === "FR" ? "Établi le" : region === "EN" ? "Created" : "Erstellt am"} {new Date().toLocaleDateString(region === "IT" ? "it-IT" : region === "FR" ? "fr-FR" : region === "EN" ? "en-GB" : "de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })}
                 </span>
               </div>
 
@@ -1816,7 +1832,7 @@ export default function SollIstBericht() {
                 style={{ display: "inline-flex", alignItems: "center", gap: 8, height: 40, padding: "0 20px", borderRadius: 14, border: "1px solid rgba(0,0,0,0.08)", background: "#FFF", fontSize: 14, fontWeight: 600, color: "#6E6E73", cursor: "pointer" }}
                 data-testid="button-reconfigure"
               >
-                {region === "FR" ? "Reconfigurer" : region === "EN" ? "Reconfigure" : "Profil anpassen"}
+                {region === "IT" ? "Riconfigura" : region === "FR" ? "Reconfigurer" : region === "EN" ? "Reconfigure" : "Profil anpassen"}
               </button>
             </div>
           </div>

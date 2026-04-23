@@ -12,6 +12,17 @@ Key capabilities include:
 -   **Teamdynamik (Team Dynamics)**: A dashboard providing 13 deterministic system variants for team-person constellations, with steering levers and stress simulation.
 -   **KI-Coach (AI Coach)**: A conversational AI for leadership, HR, and assessment, featuring context-aware interactions and structured interview guide generation.
 
+## Localization
+
+The platform supports four languages via the region switcher (DE/CH/AT/EN/FR/IT):
+- **German (DE/CH/AT)**: Default language across all UI, engines, and reports.
+- **English (EN)**: Full support across all pages, engines, and reports.
+- **French (FR)**: Full support across all pages, engines, and reports.
+- **Italian (IT)**: Full support across all pages, engines, and reports.
+  - Component labels: "Ritmo e Decisione" (impulsiv), "Comunicazione e Relazioni" (intuitiv), "Struttura e Rigore" (analytisch)
+  - UI: informal "tu" form; Report narratives: formal third-person
+  - No em-dashes, no percentage symbols in IT narratives
+
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
