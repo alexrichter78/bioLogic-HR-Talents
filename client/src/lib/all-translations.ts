@@ -42,6 +42,7 @@ export const ALL_TRANSLATIONS: TranslationEntry[] = [
   { section: "Sprachregion", key: "region.AT", de: "Österreich", en: "Austria", fr: "Autriche", it: "Austria" },
   { section: "Sprachregion", key: "region.EN", de: "English", en: "English", fr: "Anglais", it: "Inglese" },
   { section: "Sprachregion", key: "region.FR", de: "Français", en: "Français", fr: "Français", it: "Francese" },
+  { section: "Sprachregion", key: "region.IT", de: "Italiano", en: "Italiano", fr: "Italiano", it: "Italiano" },
 
   // ─── LOGIN ───────────────────────────────────────────────────────────────
   { section: "Login", key: "login.title", de: "Willkommen zurück", en: "Welcome back", fr: "Bienvenue", it: "Bentornato" },
