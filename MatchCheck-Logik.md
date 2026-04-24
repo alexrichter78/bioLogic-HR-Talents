@@ -1,5 +1,10 @@
 # MatchCheck – Vollständige Soll-Ist-Logik
 
+> Stand: April 2026
+> Dateien: `client/src/lib/soll-ist-engine.ts`, `client/src/lib/jobcheck-engine.ts`, `client/src/lib/matchcheck-texts.ts`, `client/src/pages/soll-ist-bericht.tsx`
+>
+> **Hinweis:** Die ältere, vereinfachte Version dieses Dokuments (`MatchCheck_Berechnungslogik.md`) ist überholt und wird nicht mehr aktualisiert. Das vorliegende Dokument ist die massgebliche Referenz.
+
 ## Überblick
 
 Der MatchCheck vergleicht ein **Soll-Profil** (Stelle) mit einem **Ist-Profil** (Person).
@@ -589,6 +594,23 @@ Stufen: 0–2 = LOW, 3–5 = MEDIUM, ≥ 6 = HIGH
 
 ---
 
+## Lokalisierung
+
+Der MatchCheck unterstützt vollständig sechs Sprachregionen. Alle UI-Texte in `soll-ist-bericht.tsx` sind über `useUI()`-Keys aus der Datenbank konfigurierbar (editierbar über `/ubersetzung`):
+
+| Region | Sprache | Besonderheiten |
+|--------|---------|----------------|
+| **DE** | Deutsch | Standarddeutsch mit ß |
+| **CH** | Deutsch | ss statt ß, Schweizer Begriffe |
+| **AT** | Deutsch | Österreichische Formulierungen |
+| **EN** | Englisch | Alle Labels und Beschriftungen auf Englisch |
+| **FR** | Französisch | Alle Labels und Beschriftungen auf Französisch |
+| **IT** | Italienisch | Alle Labels und Beschriftungen auf Italienisch |
+
+Der **KI-generierte Passungsbericht** (`/api/generate-soll-ist-narrative`) erscheint ebenfalls in der Sprache der eingestellten Region. Schreibregeln für DE und EN sind in `Entscheidungsbericht-Logik.md` (Abschnitt 18) dokumentiert.
+
+---
+
 ## Dateien
 
 | Datei | Inhalt |
@@ -596,8 +618,8 @@ Stufen: 0–2 = LOW, 3–5 = MEDIUM, ≥ 6 = HIGH
 | `client/src/lib/jobcheck-engine.ts` | `getVariantMeta()`, `getPairRelations()`, `getStructureFromPairs()`, `computeCoreFit()`, `koRuleTriggered()`, `calcControlIntensity()`, `buildRoleAnalysisFromState()` |
 | `client/src/lib/soll-ist-engine.ts` | `computeSollIst()` — orchestriert KO + Engine + Berichtsaufbau |
 | `client/src/lib/matchcheck-texts.ts` | `buildMatchTexts()` — Textgenerierung für alle Berichtssektionen inkl. Integrationsplan |
-| `client/src/pages/soll-ist-bericht.tsx` | UI-Komponente mit Slidern, Slider-Sync, Berichtsdarstellung |
-| `client/src/lib/pdf-direct-builder.ts` | PDF-Export des Soll-Ist-Berichts |
+| `client/src/pages/soll-ist-bericht.tsx` | UI-Komponente mit Slidern, Slider-Sync, Berichtsdarstellung; alle Texte via `useUI()`-Keys i18n-fähig |
+| `client/src/lib/pdf-direct-builder.ts` | Programmatischer PDF-Export des Soll-Ist-Berichts (hochauflösend, keine Canvas-Umwandlung) |
 | `tests/matchcheck-runner.ts` | Test-Runner für alle 13 Varianten + Grenzfälle |
 | `tests/text-consistency-runner.ts` | 169 Cross-Variant-Tests (13×13 Matrix) + Konsistenz-Checks |
 

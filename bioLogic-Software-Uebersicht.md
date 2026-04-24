@@ -1,5 +1,7 @@
 # bioLogic HR Talents -- Software-Übersicht
 
+> Stand: April 2026
+
 ## Was ist bioLogic HR Talents?
 
 bioLogic HR Talents ist eine webbasierte HR-Plattform für **Präzision in Besetzung und Teamstruktur**. Die Software hilft Führungskräften, HR-Verantwortlichen und Beratern dabei, Stellenprofile systematisch zu analysieren, Kandidaten fundiert zu bewerten und Teamstrukturen gezielt zu optimieren.
@@ -20,72 +22,125 @@ Aus diesen drei Prägungen ergibt sich ein individuelles Profil -- die sogenannt
 
 ### 1. Rollen-DNA -- Das Stellenprofil definieren
 
-Der Einstiegspunkt jeder Analyse. In einem geführten Wizard wird eine Stelle Schritt für Schritt beschrieben:
+Der Einstiegspunkt jeder Analyse. In einem geführten **3-Schritt-Wizard** wird eine Stelle systematisch beschrieben:
 
-- **Beruf und Branche** auswählen
-- **Tätigkeiten** zuordnen und gewichten (impulsiv, intuitiv, analytisch)
-- **Rollenkontext** und **Erfolgsfokus** festlegen
+1. **Tätigkeiten** -- Welche Aufgaben prägen die Stelle (Haupttätigkeiten, Nebentätigkeiten, Führungstätigkeiten)?
+2. **Humankompetenzen** -- Welche zwischenmenschlichen Fähigkeiten sind gefordert?
+3. **Führungskompetenzen** -- Welche Art von Führung ist verlangt (fachlich, koordinierend, disziplinarisch)?
 
-Am Ende steht die **Rollen-DNA**: ein Prozentwert-Dreiklang (z.B. 45% Impulsiv / 30% Intuitiv / 25% Analytisch), der die strukturellen Anforderungen der Stelle präzise beschreibt.
+Jede Tätigkeit wird mit einer Gewichtung versehen (Niedrig / Mittel / Hoch) und einem bioLogic-Anteil (impulsiv / intuitiv / analytisch) zugeordnet. Daraus entsteht die **Rollen-DNA**: ein Prozentwert-Dreiklang (z.B. 45% Impulsiv / 30% Intuitiv / 25% Analytisch).
 
-**Ergebnis:** Ein vollständiger **Strukturbericht** mit Verhaltensanalyse (Alltag, Belastung, Stress), Teamwirkung, Spannungsfeldern und Fehlbesetzungsrisiken.
+**Ergebnis:** Ein vollständiger **KI-generierter Strukturbericht** mit:
+- Verhaltensanalyse (Alltag, Belastung, Stress, Entscheidungsverhalten)
+- Teamwirkung und Spannungsfelder
+- Führungstypbeschreibung und -anforderungen
+- Fehlbesetzungsrisiken und Fazit
+
+**PDF-Export:** Der Strukturbericht kann als vollständiges PDF exportiert werden.
 
 ---
 
-### 2. bioLogic JobCheck -- Kandidaten bewerten
+### 2. JobCheck -- Kandidaten bewerten (Entscheidungsbericht)
 
 Ist die Rollen-DNA definiert, kann ein Kandidat dagegen geprüft werden:
 
 - **Kandidatenprofil** eingeben (Schieberegler oder Testwerte)
 - **Automatische Passungsanalyse** mit klarem Ergebnis:
-  - **Geeignet** -- Strukturelle Übereinstimmung
-  - **Bedingt geeignet** -- Abweichungen, die steuerbar sind
-  - **Kritisch** -- Wesentliche Diskrepanz zwischen Rolle und Person
+  - **Geeignet** -- Strukturelle Übereinstimmung, Abweichung ≤ 15 %
+  - **Bedingt geeignet** -- Steuerbare Abweichungen, 15–25 %
+  - **Nicht geeignet** -- Wesentliche Diskrepanz zwischen Rolle und Person, > 25 %
 - **Detaillierte Auswertung** über verschiedene Arbeitsbereiche (Alltag, Belastung, Druck)
-- **Entscheidungsbericht** mit Handlungsempfehlungen für die Führungskraft
+- **KI-generierter Entscheidungsbericht** mit:
+  - Rollencharakter und Gesamtprofil
+  - Rahmenbedingungen und Erfolgsmessung
+  - Führungskontext und Wirkungshebel
+  - Kompetenzanalyse, Spannungsfelder und Risikoabschätzung
+  - Fazit mit Besetzungsempfehlung
+- **Interviewfragen** automatisch generiert, zugeschnitten auf die erkannten Abweichungen
 
-**Besonderheit:** Das System generiert automatisch **Interviewfragen und Beobachtungspunkte**, die genau auf die erkannten Abweichungen zugeschnitten sind.
+**Modell:** GPT-4.1 (Temperature 0.7, JSON-Format)
 
 ---
 
-### 3. TeamCheck -- Integration ins Team prüfen
+### 3. MatchCheck -- Soll-Ist-Vergleich (Passungsbericht)
+
+Der MatchCheck vergleicht ein Kandidatenprofil (Ist) direkt und tiefer gehend mit der Rollen-DNA (Soll):
+
+- **Gap-Analyse** mit Abstandsberechnung auf Komponentenebene (Impulsiv / Intuitiv / Analytisch)
+- **Fit-Status:** SUITABLE / CONDITIONAL / NOT_SUITABLE mit Steuerungsintensität (NIEDRIG / MITTEL / HOCH)
+- **Systemwirkung** -- wie wirkt die Abweichung im Alltag konkret aus?
+- **KI-generierter Passungsbericht** mit:
+  - Executive Summary und Bewertungsmatrix
+  - Konstellationsrisiken (kurz-, mittel-, langfristig)
+  - Dominanzverschiebungsanalyse
+  - Entwicklungsprognose und 90-Tage-Integrationsplan
+- **Kritisch-Bereich-Identifikation** -- welche Kompetenzdimension belastet die Zusammenarbeit am stärksten?
+
+**PDF-Export:** Vollständig programmatisch generierter, hochauflösender Passungsbericht.
+
+---
+
+### 4. TeamCheck -- Integration ins Team prüfen
 
 Bevor ein Kandidat eingestellt wird, analysiert der TeamCheck die Auswirkungen auf das bestehende Team:
 
 - **Teamprofil** eingeben (Durchschnittswerte des Teams)
-- **Integrationsbewertung** mit Ampelsystem (Grün / Gelb / Rot)
-- **Systemwirkung** erkennen: Verstärkt die Person das Team, ergänzt sie es oder bringt sie Spannung?
-- **Prognose** für die ersten Monate mit Warnsignalen und Leitfragen
-- **Führungshinweise** mit konkreten Steuerungshebeln für die Teamleitung
-
-**Ergebnis:** Eine fundierte Einschätzung, ob und wie die Person ins Team passt -- inklusive Handlungsempfehlungen für Onboarding und Führung.
-
----
-
-### 4. Teamdynamik -- Das Team verstehen
-
-Ein Dashboard zur Analyse bestehender Teams mit 13 Systemvarianten:
-
-- **CEO-, HR- und Teamleitungs-Perspektive** wählbar
-- **6 Steuerungshebel** zur Simulation von Maßnahmen
-- **Stresssimulation** -- wie verändert sich die Teamdynamik unter Druck?
-- **Führungskontext-Karte** für die Analyse der Leitungsrolle im Team
+- **Integrationsbewertung** mit Ampelsystem:
+  - **Grün (Stabil)** -- Kandidat passt ohne erhöhten Steuerungsaufwand
+  - **Gelb (Steuerbar)** -- Benachbarte Konstellation, Begleitung empfohlen
+  - **Rot (Spannungsfeld)** -- Gegensätzliche Konstellation, aktive Steuerung nötig
+- **Systemwirkung:** Verstärkt die Person das Team (VERSTÄRKUNG), ergänzt sie es (ERGÄNZUNG), bringt sie Spannung (REIBUNG) oder transformiert sie die Dynamik (TRANSFORMATION)?
+- **Distribution Gap** und **Dominance Clash** als quantitative Kennzahlen
+- **Shift-Analyse** mit Kategorie-Beschreibung und Empfehlungen
+- **PDF-Export** des Team-Berichts
 
 ---
 
 ### 5. Louis -- Der KI-Coach
 
-Ein KI-gestützter Sparringspartner für Führungskräfte und HR-Verantwortliche:
+Ein KI-gestützter Sparringspartner für Führungskräfte und HR-Verantwortliche, der als **Mensch mit 20 Jahren HR-Erfahrung** auftritt -- nicht als Chatbot:
 
-- **Themenfelder:** Führung, Recruiting, Teamkonflikte, Kommunikation, Onboarding, Marketing
-- **Kontextbewusst:** Louis kennt die aktuellen Analysedaten (Rollen-DNA, JobCheck, Teamdynamik) und bezieht sie in seine Antworten ein
+- **Themenfelder:** Führung, Recruiting, Teamkonflikte, Kommunikation, Onboarding, Employer Branding
+- **Kontextbewusst:** Louis kennt die aktuellen Analysedaten (Rollen-DNA, JobCheck, MatchCheck, TeamCheck) und bezieht sie in seine Antworten ein
 - **Spezial-Modi:**
-  - Gesprächsleitfäden generieren
-  - Stellenanzeigen erstellen
-  - Interview-Vorbereitung
-  - Konfliktlösung mit Rollenspiel-Simulation
-- **Dokumenten-Upload:** PDF-Dokumente hochladen und von Louis analysieren lassen
-- **Wissensbasis:** Hinterlegt mit über 50 Fachartikeln, Praxisfällen und Checklisten der bioLogic-Methodik
+  - Standard-Coaching: direkte, praxisnahe Antworten
+  - Rollenspiel-Simulation: schwierige Gespräche vorbereiten
+  - Kreativer Modus: Stellenanzeigen und Kommunikationsmaterial mit bioLogic-Sprache erstellen
+- **Tools:**
+  - **Web-Suche:** Aktuelle Arbeitsmarktdaten und Studien recherchieren
+  - **Bildgenerierung:** Professionelle Stockfotos für Stellenanzeigen erstellen (DALL-E)
+  - **Dokumenten-Upload:** PDFs und Bilder hochladen und analysieren lassen
+- **Wissensbasis:** Über 50 Fachartikel, Praxisfälle und Checklisten der bioLogic-Methodik
+- **Themenkomprimierung:** Bei langen Gesprächen (> 10 Nachrichten) wird die Gesprächshistorie automatisch komprimiert
+
+**Modell:** Claude Sonnet (Anthropic, via Replit-Integration)
+
+---
+
+## Administration
+
+### Admin-Bereich (/admin)
+
+Für Administratoren und Subadmins steht ein vollständiger Verwaltungsbereich zur Verfügung:
+
+| Bereich | Funktion |
+|---------|----------|
+| **Benutzerverwaltung** | Benutzer anlegen, Rollen (user / subadmin / admin) vergeben, KI-Limits setzen |
+| **Organisationsverwaltung** | Firmenaccounts und AI-Quoten verwalten |
+| **Wissensbasis** | Knowledge-Dokumente für Louis pflegen |
+| **System-Prompt** | Louis' Verhalten anpassen |
+| **Golden Answers** | Hochwertige Referenzantworten pflegen |
+| **Feedback** | Nutzer-Feedback zu Louis einsehen |
+
+### Übersetzungsverwaltung (/ubersetzung)
+
+Die **Übersetzungsseite** ermöglicht es Administratoren, alle Oberflächentexte der Plattform direkt im Browser zu bearbeiten:
+
+- **Inline-Editing:** Jeder Übersetzungsschlüssel kann per Klick bearbeitet werden
+- **4 Sprachen:** DE, EN, FR, IT (vollständig unterstützt)
+- **Datenbank-Overrides:** Geänderte Texte werden in der Datenbank gespeichert und haben Vorrang vor den Code-Defaults
+- **CSV-Export:** Alle Übersetzungen können als CSV exportiert werden
+- **Live-Sync:** Lokale Keys werden beim Laden automatisch mit der Datenbank synchronisiert
 
 ---
 
@@ -104,42 +159,50 @@ Ein KI-gestützter Sparringspartner für Führungskräfte und HR-Verantwortliche
 ## Was macht bioLogic HR Talents besonders?
 
 1. **Strukturell, nicht subjektiv** -- Analysen basieren auf einem klaren Modell, nicht auf Bauchgefühl
-2. **Durchgängiger Prozess** -- Von der Stellendefinition über die Kandidatenbewertung bis zur Teamintegration
+2. **Durchgängiger Prozess** -- Von der Stellendefinition über die Kandidatenbewertung und den Soll-Ist-Vergleich bis zur Teamintegration
 3. **KI-gestützt** -- Intelligente Berichte, Empfehlungen und ein persönlicher Coach
 4. **Sofort einsetzbar** -- Webbasiert, kein Download, kein Training nötig
-5. **Deutschsprachig** -- Vollständig auf Deutsch, mit Unterstützung für Deutschland, Österreich und die Schweiz
-6. **Datenschutz** -- Alle Analysen laufen gesichert, Login-geschützt und organisationsgebunden
+5. **Mehrsprachig** -- Vollständig in 6 Sprachregionen (DE, CH, AT, EN, FR, IT)
+6. **Editierbar** -- Alle Oberflächentexte über die Übersetzungsverwaltung anpassbar
+7. **Datenschutz** -- Alle Analysen laufen gesichert, Login-geschützt und organisationsgebunden
 
 ---
 
 ## Der typische Workflow
 
 ```
-Rollen-DNA     -->     JobCheck     -->     TeamCheck     -->     Entscheidung
-(Stelle          (Kandidat            (Team-                (Bericht +
- definieren)      bewerten)            Integration)          Empfehlung)
-                                                     |
-                                                     v
-                                              Louis (KI-Coach)
-                                        (Begleitung durch den
-                                         gesamten Prozess)
+Rollen-DNA    -->    JobCheck    -->    MatchCheck    -->    TeamCheck    -->    Entscheidung
+(Stelle               (Kandidat          (Soll-Ist-           (Team-              (Bericht +
+ definieren)           bewerten)          Vergleich)            Integration)         Empfehlung)
+                                                                          |
+                                                                          v
+                                                                   Louis (KI-Coach)
+                                                              (Begleitung durch den
+                                                               gesamten Prozess)
 ```
 
-**Schritt 1:** Stelle analysieren und Rollen-DNA erstellen
-**Schritt 2:** Kandidat gegen die Rollen-DNA prüfen (JobCheck)
-**Schritt 3:** Auswirkung auf das Team simulieren (TeamCheck)
-**Schritt 4:** Entscheidungsbericht erstellen und Interviewfragen generieren
+**Schritt 1:** Stelle analysieren und Rollen-DNA erstellen (Strukturbericht + PDF)
+**Schritt 2:** Kandidat gegen die Rollen-DNA prüfen (JobCheck / Entscheidungsbericht)
+**Schritt 3:** Tiefgehenden Soll-Ist-Vergleich erstellen (MatchCheck / Passungsbericht + PDF)
+**Schritt 4:** Auswirkung auf das Team simulieren (TeamCheck + PDF)
 **Begleitend:** Louis als KI-Coach für Rückfragen, Gesprächsvorbereitung und Strategieberatung
 
 ---
 
 ## Regionale Anpassung
 
-Die Software unterstützt drei Regionen mit angepasster Sprachausgabe:
+Die Software unterstützt **6 Sprachregionen** mit vollständig angepasster Sprachausgabe:
 
-- **Deutschland** -- Standarddeutsch mit ß
-- **Schweiz** -- Schweizer Schreibweise (ss statt ß, landesspezifische Begriffe)
-- **Österreich** -- Österreichische Begriffe und Formulierungen
+| Region | Sprachausgabe | Besonderheiten |
+|--------|---------------|----------------|
+| **DE** | Deutsch | Standarddeutsch mit ß |
+| **CH** | Deutsch | Schweizer Schreibweise (ss statt ß), landesspezifische Begriffe |
+| **AT** | Deutsch | Österreichische Formulierungen und Begriffe |
+| **EN** | Englisch | Vollständig englischsprachig, inkl. bioLogic-Termini auf Englisch |
+| **FR** | Französisch | Vollständig französischsprachig |
+| **IT** | Italienisch | Vollständig italienischsprachig |
+
+Alle Oberflächentexte sind über die Übersetzungsverwaltung (`/ubersetzung`) anpassbar. KI-generierte Berichte (Entscheidungsbericht, Passungsbericht) erscheinen ebenfalls in der jeweiligen Sprache des Nutzers.
 
 ---
 

@@ -25,6 +25,12 @@
 16. [Rollenspezifische Terminologie](#16-rollenspezifische-terminologie)
 17. [Konstellationstexte](#17-konstellationstexte)
 18. [KI-Schreibregeln (JobCheck & MatchCheck)](#18-ki-schreibregeln-jobcheck--matchcheck)
+    - 18.1 Regeln – Deutsch (DE/CH/AT)
+    - 18.2 Regeln – Englisch (EN)
+    - 18.3 Regeln – Französisch (FR)
+    - 18.4 Regeln – Italienisch (IT)
+    - 18.5 Geltungsbereich je Report
+    - 18.6 Checkliste vor jeder Prompt-Änderung
 
 ---
 
@@ -853,7 +859,93 @@ Wenn über Verhältnisse zwischen den drei Schwerpunkten gesprochen wird:
 
 ---
 
-### 18.3 Geltungsbereich je Report
+### 18.3 Regeln – Französisch (FR)
+
+#### Interdit
+
+| Règle | Faux | Correct |
+|-------|------|---------|
+| **Pas de chiffres ni de pourcentages** dans le texte de sortie | "La composante impulsive est à 40 %" | "le rythme et la décision sont clairement au premier plan" |
+| | "un écart de 3 points" | "légèrement en tête", "nettement plus élevé" |
+| **Pas de jargon de modèle** (interne bioLogic) | "impulsif", "intuitif", "analytique" | "Rythme et Décision", "Communication et Relations", "Structure et Rigueur" |
+| | "composante", "triade", "classe de profil", "gap" | description en langage clair |
+| **Pas de tirets cadratins** (– ou —) dans le texte courant | "agit vite — parfois trop" | séparer en deux phrases |
+| **Pas de voix passive** | "il convient de s'assurer que …" | "celui qui occupe ce poste s'assure que …" |
+| **Pas d'avertissements** dans le corps du rapport | "à comprendre sans jugement de valeur" | mentionné séparément dans le rapport |
+| **Pas de formules creuses** | "dans le cadre d'une approche globale" | phrase directe avec une affirmation concrète |
+
+#### Obligatoire : vocabulaire d'intensité qualitatif
+
+| Relation | Vocabulaire (exemples) |
+|----------|------------------------|
+| Dominance claire | "clairement au premier plan", "nettement dominant", "marque indubitablement le rôle" |
+| Dominance modérée | "nettement en tête", "clairement plus fort", "sensiblement plus marqué" |
+| Légère tendance | "légèrement en tête", "tendance perceptible", "juste devant" |
+| Pratiquement à égalité | "pratiquement à égalité", "très proches", "de force comparable" |
+| Secondaire | "présent de manière perceptible", "accompagne clairement le profil dominant" |
+| En retrait | "en arrière-plan", "clairement secondaire", "joue un rôle de soutien" |
+
+#### Trois axes – Labels clairs (FR)
+
+| Interne bioLogic | Label dans le rapport |
+|------------------|-----------------------|
+| Impulsiv | **Rythme et Décision** |
+| Intuitiv | **Communication et Relations** |
+| Analytisch | **Structure et Rigueur** |
+
+#### Tonalité
+
+- Phrases courtes. Voix active. Pas de langage de coaching ni de superlatifs ("vraiment", "extrêmement").
+- Chaque section : affirmation clé en premier → brève justification → une implication concrète.
+- Référence concrète au titre du poste, aux tâches nommées, au contexte — jamais de généralités.
+- Pas de répétition entre les sections.
+
+---
+
+### 18.4 Regeln – Italienisch (IT)
+
+#### Vietato
+
+| Regola | Sbagliato | Corretto |
+|--------|-----------|----------|
+| **Nessun numero né percentuale** nel testo prodotto | "La componente impulsiva è al 40 %" | "il ritmo e la decisione sono chiaramente in primo piano" |
+| | "una differenza di 3 punti" | "leggermente avanti", "notevolmente più elevato" |
+| **Nessun gergo di modello** (interno a bioLogic) | "impulsivo", "intuitivo", "analitico" | "Ritmo e Decisione", "Comunicazione e Relazioni", "Struttura e Rigore" |
+| | "componente", "triade", "classe di profilo", "gap" | descrizione in linguaggio chiaro |
+| **Nessun trattino em** (– o —) nel testo corrente | "agisce rapidamente — a volte troppo" | separare in due frasi |
+| **Nessun passivo** | "dovrebbe essere garantito che …" | "chi ricopre questo ruolo garantisce che …" |
+| **Nessun disclaimer** nel corpo del rapporto | "da intendere senza giudizio di valore" | indicato separatamente nel rapporto |
+| **Nessuna formula vuota** | "nell'ambito di un approccio olistico" | frase diretta con affermazione concreta |
+
+#### Obbligatorio: vocabolario di intensità qualitativo
+
+| Relazione | Vocabolario (esempi) |
+|-----------|----------------------|
+| Dominanza chiara | "chiaramente in primo piano", "nettamente dominante", "segna inequivocabilmente il ruolo" |
+| Dominanza moderata | "chiaramente in testa", "sensibilmente più forte", "marcatamente più prominente" |
+| Leggera tendenza | "leggermente in testa", "tendenza percettibile", "appena davanti" |
+| Praticamente in parità | "praticamente in parità", "molto simili", "di forza comparabile" |
+| Secondario | "presente in modo percettibile", "accompagna chiaramente il profilo dominante" |
+| In secondo piano | "in secondo piano", "chiaramente secondario", "svolge un ruolo di supporto" |
+
+#### Tre assi – Label chiari (IT)
+
+| Interno bioLogic | Label nel rapporto |
+|------------------|--------------------|
+| Impulsiv | **Ritmo e Decisione** |
+| Intuitiv | **Comunicazione e Relazioni** |
+| Analytisch | **Struttura e Rigore** |
+
+#### Tono
+
+- Frasi brevi. Voce attiva. Nessun linguaggio da coaching né superlativi ("davvero", "estremamente").
+- Ogni sezione: affermazione chiave prima → breve giustificazione → un'implicazione concreta.
+- Riferimento concreto al titolo del ruolo, ai compiti nominati, al contesto — mai generico.
+- Nessuna ripetizione tra le sezioni.
+
+---
+
+### 18.5 Geltungsbereich je Report
 
 | Report | Endpunkt | Regeln gelten für |
 |--------|----------|-------------------|
@@ -864,15 +956,15 @@ Wenn über Verhältnisse zwischen den drei Schwerpunkten gesprochen wird:
 
 ---
 
-### 18.4 Checkliste vor jeder Prompt-Änderung
+### 18.6 Checkliste vor jeder Prompt-Änderung
 
 Bevor ein System- oder User-Prompt in diesen Endpunkten geändert wird, sicherstellen:
 
 - [ ] Verbot von Prozentzahlen und Zahlenwerten im Text vorhanden?
 - [ ] Verbot der Modellbegriffe (impulsiv/intuitiv/analytisch/Komponente/Triade) vorhanden?
-- [ ] Klartext-Labels definiert (DE: Tempo/Kommunikation/Struktur — EN: Pace/Communication/Structure)?
+- [ ] Klartext-Labels definiert (DE: Tempo/Kommunikation/Struktur — EN: Pace/Communication/Structure — FR: Rythme/Communication/Structure — IT: Ritmo/Comunicazione/Struttura)?
 - [ ] Qualitative Intensitätsvokabeln als Beispiele angegeben?
-- [ ] Verbot von Gedankenstrichen (DE) / em-dashes (EN) vorhanden?
-- [ ] Kein Passiv (DE) / Active voice (EN) verlangt?
+- [ ] Verbot von Gedankenstrichen (DE/FR/IT) / em-dashes (EN) vorhanden?
+- [ ] Kein Passiv (alle Sprachen) / Active voice verlangt?
 - [ ] Verbot von Disclaimern im Berichtstext vorhanden?
 - [ ] Hinweis im User-Prompt: Zahlen sind nur Kontext, nicht für den Text übernehmen?
