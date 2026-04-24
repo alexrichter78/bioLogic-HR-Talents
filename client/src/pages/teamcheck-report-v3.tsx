@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { useLocation } from "wouter";
 import GlobalNav from "@/components/global-nav";
 import { useRegion, localizeDeep } from "@/lib/region";
+import { useUI } from "@/lib/ui-texts";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
   computeTeamCheckV3,
@@ -124,6 +125,7 @@ export default function TeamCheckReportV3() {
   const [, navigate] = useLocation();
   const isMobile = useIsMobile();
   const { region } = useRegion();
+  const ui = useUI();
   const [result, setResult] = useState<TeamCheckV3Result | null>(null);
   const [input, setInput] = useState<TeamCheckV3Input | null>(null);
   const [pdfBusy, setPdfBusy] = useState(false);
@@ -431,17 +433,17 @@ export default function TeamCheckReportV3() {
                   <div style={{ padding: "18px 22px", borderRadius: 14, background: "linear-gradient(135deg, #f8f9fb, #f1f3f8)", border: "1px solid rgba(0,0,0,0.05)" }}>
                     <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 14px" }}>Teamprofil</p>
                     <div style={{ display: "grid", gap: 10 }}>
-                      <BarRow label={region === "FR" ? "Orienté action" : region === "EN" ? "Action-oriented" : "Impulsiv"} value={Math.round(result.teamProfile.impulsiv)} color={COMP_HEX.impulsiv} />
-                      <BarRow label={region === "FR" ? "Relationnel" : region === "EN" ? "Relational" : "Intuitiv"} value={Math.round(result.teamProfile.intuitiv)} color={COMP_HEX.intuitiv} />
-                      <BarRow label={region === "FR" ? "Analytique" : region === "EN" ? "Analytical" : "Analytisch"} value={Math.round(result.teamProfile.analytisch)} color={COMP_HEX.analytisch} />
+                      <BarRow label={ui.general.labelImpulsiv} value={Math.round(result.teamProfile.impulsiv)} color={COMP_HEX.impulsiv} />
+                      <BarRow label={ui.general.labelIntuitiv} value={Math.round(result.teamProfile.intuitiv)} color={COMP_HEX.intuitiv} />
+                      <BarRow label={ui.general.labelAnalytisch} value={Math.round(result.teamProfile.analytisch)} color={COMP_HEX.analytisch} />
                     </div>
                   </div>
                   <div style={{ padding: "18px 22px", borderRadius: 14, background: "linear-gradient(135deg, #f8f9fb, #f1f3f8)", border: "1px solid rgba(0,0,0,0.05)" }}>
                     <p style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 14px" }}>Person</p>
                     <div style={{ display: "grid", gap: 10 }}>
-                      <BarRow label={region === "FR" ? "Orienté action" : region === "EN" ? "Action-oriented" : "Impulsiv"} value={Math.round(result.personProfile.impulsiv)} color={COMP_HEX.impulsiv} />
-                      <BarRow label={region === "FR" ? "Relationnel" : region === "EN" ? "Relational" : "Intuitiv"} value={Math.round(result.personProfile.intuitiv)} color={COMP_HEX.intuitiv} />
-                      <BarRow label={region === "FR" ? "Analytique" : region === "EN" ? "Analytical" : "Analytisch"} value={Math.round(result.personProfile.analytisch)} color={COMP_HEX.analytisch} />
+                      <BarRow label={ui.general.labelImpulsiv} value={Math.round(result.personProfile.impulsiv)} color={COMP_HEX.impulsiv} />
+                      <BarRow label={ui.general.labelIntuitiv} value={Math.round(result.personProfile.intuitiv)} color={COMP_HEX.intuitiv} />
+                      <BarRow label={ui.general.labelAnalytisch} value={Math.round(result.personProfile.analytisch)} color={COMP_HEX.analytisch} />
                     </div>
                   </div>
                 </div>
