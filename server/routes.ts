@@ -4491,7 +4491,10 @@ Persönlichkeit, Typ, Mindset, Potenzial entfalten, wertschätzend, ganzheitlich
       let knowledgeContext = "";
       try {
         const userMessages = messages.filter((m: any) => m.role === "user");
-        const searchTerms = userMessages.slice(-3).map((m: any) => m.content || "").join(" ");
+        const lastMsg = userMessages[userMessages.length - 1]?.content || "";
+        const meaningfulWords = lastMsg.split(/\s+/).filter((w: string) => w.length > 3).length;
+        const contextWindow = meaningfulWords < 4 ? 6 : 3;
+        const searchTerms = userMessages.slice(-contextWindow).map((m: any) => m.content || "").join(" ");
         const relevantDocs = await storage.searchKnowledgeDocuments(searchTerms);
         if (relevantDocs.length > 0) {
           knowledgeContext = "\n\nWISSENSBASIS (nutze diese Inhalte als Grundlage für deine Antwort – kombiniere Wissen aus mehreren Dokumenten wenn die Frage mehrere Themen berührt):\n" +

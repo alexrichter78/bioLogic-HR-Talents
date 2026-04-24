@@ -327,7 +327,7 @@ export class DatabaseStorage implements IStorage {
     });
 
     const results = scored
-      .filter(item => item.score > 0)
+      .filter(item => item.score > 4)
       .sort((a, b) => b.score - a.score);
 
     if (matchedCategories.size > 1) {
