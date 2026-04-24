@@ -1247,6 +1247,46 @@ export async function registerRoutes(
     });
   });
 
+  // ─── TRANSLATIONS ────────────────────────────────────────────────────────
+  app.get("/api/translations", requireAuth, async (_req, res) => {
+    try {
+      const all = await storage.listTranslations();
+      res.json(all);
+    } catch (err) {
+      res.status(500).json({ error: "Failed to load translations" });
+    }
+  });
+
+  app.post("/api/translations/seed", requireAdmin, async (req, res) => {
+    try {
+      const entries: { key: string; section: string; de: string; en: string; fr: string; it: string }[] = req.body;
+      if (!Array.isArray(entries)) return res.status(400).json({ error: "Expected array" });
+      const count = await storage.countTranslations();
+      if (count > 0) return res.json({ seeded: false, message: "Already seeded" });
+      for (const e of entries) {
+        await storage.upsertTranslation(e.key, e.section, e.de, e.en, e.fr, e.it);
+      }
+      res.json({ seeded: true, count: entries.length });
+    } catch (err) {
+      res.status(500).json({ error: "Seed failed" });
+    }
+  });
+
+  app.patch("/api/translations/:key", requireAdmin, async (req, res) => {
+    try {
+      const key = decodeURIComponent(req.params.key);
+      const { lang, value } = req.body;
+      if (!["de", "en", "fr", "it"].includes(lang)) {
+        return res.status(400).json({ error: "Invalid lang" });
+      }
+      const updated = await storage.updateTranslationField(key, lang, value ?? "");
+      if (!updated) return res.status(404).json({ error: "Key not found" });
+      res.json(updated);
+    } catch (err) {
+      res.status(500).json({ error: "Update failed" });
+    }
+  });
+
   app.get("/api/admin/users", requireAdmin, async (_req, res) => {
     const allUsers = await storage.listUsers();
     const allSubs = await storage.listSubscriptions();

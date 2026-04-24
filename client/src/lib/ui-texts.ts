@@ -1,4 +1,5 @@
 import { useRegion } from "./region";
+import { useTranslationContext } from "./translations-context";
 
 type UILang = "de" | "en" | "fr" | "it";
 
@@ -757,10 +758,34 @@ export type UIDict = typeof UI.de;
 
 export function useUI(): UIDict {
   const { region } = useRegion();
-  if (region === "EN") return UI.en as unknown as UIDict;
-  if (region === "FR") return UI.fr as unknown as UIDict;
-  if (region === "IT") return UI.it as unknown as UIDict;
-  return UI.de;
+  const { translations, isLoaded } = useTranslationContext();
+
+  const lang: UILang = region === "EN" ? "en" : region === "FR" ? "fr" : region === "IT" ? "it" : "de";
+  const base = region === "EN" ? UI.en : region === "FR" ? UI.fr : region === "IT" ? UI.it : UI.de;
+
+  if (!isLoaded || translations.size === 0) return base as unknown as UIDict;
+
+  const result: any = {};
+  for (const sectionKey of Object.keys(base)) {
+    const section = (base as any)[sectionKey];
+    if (typeof section === "object" && section !== null && !Array.isArray(section)) {
+      result[sectionKey] = { ...section };
+    } else {
+      result[sectionKey] = section;
+    }
+  }
+
+  for (const [key, entry] of translations) {
+    const parts = key.split(".");
+    if (parts.length !== 2) continue;
+    const [sectionName, fieldName] = parts;
+    const dbValue = entry[lang];
+    if (dbValue && result[sectionName] && typeof result[sectionName][fieldName] === "string") {
+      result[sectionName][fieldName] = dbValue;
+    }
+  }
+
+  return result as UIDict;
 }
 
 export function getUI(region: string): UIDict {

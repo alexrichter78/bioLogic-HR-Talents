@@ -3,6 +3,19 @@ import { pgTable, pgEnum, text, varchar, boolean, timestamp, serial, integer, js
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
+export const translations = pgTable("translations", {
+  key: text("key").primaryKey(),
+  section: text("section").notNull().default(""),
+  de: text("de").notNull().default(""),
+  en: text("en").notNull().default(""),
+  fr: text("fr").notNull().default(""),
+  it: text("it").notNull().default(""),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export type Translation = typeof translations.$inferSelect;
+export type InsertTranslation = typeof translations.$inferInsert;
+
 export const usageEventTypeEnum = pgEnum("usage_event_type", [
   "ki_coach",
   "rollendna",

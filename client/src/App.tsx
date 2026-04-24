@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/lib/auth";
 import { RegionProvider } from "@/lib/region";
+import { TranslationProvider } from "@/lib/translations-context";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import Login from "@/pages/login";
@@ -106,10 +107,12 @@ function App() {
       <TooltipProvider>
         <AuthProvider>
           <RegionProvider>
-            <Toaster />
-            <AppRoutes />
-            <StatusFooter />
-            <HelpBot />
+            <TranslationProvider>
+              <Toaster />
+              <AppRoutes />
+              <StatusFooter />
+              <HelpBot />
+            </TranslationProvider>
           </RegionProvider>
         </AuthProvider>
       </TooltipProvider>

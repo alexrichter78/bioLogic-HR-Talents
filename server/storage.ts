@@ -2,7 +2,7 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import { eq, and, gte, sql } from "drizzle-orm";
 import pkg from "pg";
 const { Pool } = pkg;
-import { users, subscriptions, passwordResetTokens, coachFeedback, knowledgeDocuments, goldenAnswers, coachTopics, organizations, usageEvents, coachConversations, type User, type InsertUser, type Subscription, type InsertSubscription, type PasswordResetToken, type CoachFeedback, type InsertCoachFeedback, type KnowledgeDocument, type InsertKnowledgeDocument, type GoldenAnswer, type CoachTopic, type Organization, type InsertOrganization, type UsageEvent, type InsertUsageEvent, type CoachConversation } from "@shared/schema";
+import { users, subscriptions, passwordResetTokens, coachFeedback, knowledgeDocuments, goldenAnswers, coachTopics, organizations, usageEvents, coachConversations, translations, type User, type InsertUser, type Subscription, type InsertSubscription, type PasswordResetToken, type CoachFeedback, type InsertCoachFeedback, type KnowledgeDocument, type InsertKnowledgeDocument, type GoldenAnswer, type CoachTopic, type Organization, type InsertOrganization, type UsageEvent, type InsertUsageEvent, type CoachConversation, type Translation } from "@shared/schema";
 import { desc } from "drizzle-orm";
 
 const pool = new Pool({
@@ -73,6 +73,11 @@ export interface IStorage {
   createCoachConversation(userId: number, title: string, messages: unknown): Promise<CoachConversation>;
   updateCoachConversation(id: number, userId: number, data: { title?: string; messages?: unknown }): Promise<CoachConversation | undefined>;
   deleteCoachConversation(id: number, userId: number): Promise<void>;
+
+  listTranslations(): Promise<Translation[]>;
+  upsertTranslation(key: string, section: string, de: string, en: string, fr: string, it: string): Promise<Translation>;
+  updateTranslationField(key: string, lang: "de" | "en" | "fr" | "it", value: string): Promise<Translation | undefined>;
+  countTranslations(): Promise<number>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -544,6 +549,38 @@ export class DatabaseStorage implements IStorage {
     await db
       .delete(coachConversations)
       .where(and(eq(coachConversations.id, id), eq(coachConversations.userId, userId)));
+  }
+
+  async listTranslations(): Promise<Translation[]> {
+    return await db.select().from(translations).orderBy(translations.section, translations.key);
+  }
+
+  async upsertTranslation(key: string, section: string, de: string, en: string, fr: string, it: string): Promise<Translation> {
+    const [row] = await db
+      .insert(translations)
+      .values({ key, section, de, en, fr, it, updatedAt: new Date() })
+      .onConflictDoUpdate({
+        target: translations.key,
+        set: { section, de, en, fr, it, updatedAt: new Date() },
+      })
+      .returning();
+    return row;
+  }
+
+  async updateTranslationField(key: string, lang: "de" | "en" | "fr" | "it", value: string): Promise<Translation | undefined> {
+    const updateData: any = { updatedAt: new Date() };
+    updateData[lang] = value;
+    const [row] = await db
+      .update(translations)
+      .set(updateData)
+      .where(eq(translations.key, key))
+      .returning();
+    return row;
+  }
+
+  async countTranslations(): Promise<number> {
+    const [result] = await db.select({ count: sql<number>`count(*)::int` }).from(translations);
+    return result?.count ?? 0;
   }
 }
 
