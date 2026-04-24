@@ -1464,9 +1464,10 @@ function SectionNumber({ num, isComplete }: { num: number; isComplete: boolean }
   );
 }
 
-function MiniProgressBar({ filled, total, region }: { filled: number; total: number; region?: string }) {
+function MiniProgressBar({ filled, total }: { filled: number; total: number; region?: string }) {
   const pct = (filled / total) * 100;
-  const ofWord = region === "EN" ? "of" : region === "IT" ? "di" : region === "FR" ? "sur" : "von";
+  const ui = useUI();
+  const ofWord = ui.rollendna.ofWord;
   return (
     <div data-testid="mini-progress" style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 32 }}>
       <div style={{
@@ -2490,7 +2491,7 @@ export default function RollenDNA() {
         >
           <div className="flex items-center justify-between mb-4">
             <h4 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F" }}>
-              {region === "IT" ? "Definizione della responsabilita' di management" : region === "FR" ? "Définition de la responsabilité de management" : region === "EN" ? "Definition: Leadership responsibility" : "Definition Führungsverantwortung"}
+              {ui.rollendna.leadershipRespDef}
             </h4>
             <button
               onClick={() => setShowFuehrungInfo(false)}
@@ -2501,36 +2502,15 @@ export default function RollenDNA() {
             </button>
           </div>
           <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.6, marginBottom: 16 }}>
-            {region === "IT"
-              ? "Classifica il ruolo in base alla responsabilita' gerarchica e sul personale reale, non in base al titolo. Cio' che conta e' il potere decisionale formale e la responsabilita' dei risultati associati al ruolo."
-              : region === "FR"
-              ? "Classe ce poste selon la responsabilité hiérarchique et du personnel réelle, et non selon le titre. Ce qui compte, c'est le pouvoir décisionnel formel et la responsabilité des résultats associés au poste."
-              : region === "EN"
-              ? "Please classify the role according to actual reporting authority and personnel responsibility, not the job title. What matters is the formal decision-making authority and accountability for results associated with the role."
-              : "Bitte ordne die Stelle nach der tatsächlichen Weisungs- und Personalverantwortung ein, nicht nach dem Jobtitel. Entscheidend ist, welche formale Entscheidungsmacht und Ergebnisverantwortung mit der Stelle verbunden sind."}
+            {ui.rollendna.fuehrungDefBody}
           </p>
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            {(region === "IT" ? [
-              { label: "Nessuna", desc: "Nessuna responsabilita' gerarchica o di coordinamento." },
-              { label: "Coordinamento", desc: "Coordina la collaborazione senza responsabilita' gerarchica o sul personale formale." },
-              { label: "Leadership tecnica", desc: "Guida sul piano professionale (qualita', standard, priorita') senza decisioni sul personale." },
-              { label: "Management con responsabilita' sul personale", desc: "Responsabilita' per i collaboratori, inclusi obiettivi, sviluppo, decisioni e KPI di risultato." },
-            ] : region === "FR" ? [
-              { label: "Aucune", desc: "Aucune responsabilité hiérarchique ou de pilotage." },
-              { label: "Coordination", desc: "Pilote la collaboration, sans responsabilité hiérarchique ou du personnel formelle." },
-              { label: "Management technique", desc: "Dirige sur le plan professionnel (qualité, standards, priorités), sans décisions de personnel." },
-              { label: "Management avec responsabilité du personnel", desc: "Responsabilité pour les collaborateurs, y compris objectifs, développement, décisions et KPIs de résultats." },
-            ] : region === "EN" ? [
-              { label: "None", desc: "No reporting or steering responsibility." },
-              { label: "Coordination", desc: "Steers collaboration without formal reporting or personnel authority." },
-              { label: "Technical leadership", desc: "Leads on technical matters (quality, standards, priorities) without personnel decisions." },
-              { label: "Leadership with personnel responsibility", desc: "Responsible for employees including goals, development, decisions and performance KPIs." },
-            ] : [
-              { label: "Keine", desc: "Keine Weisungs- oder Steuerungsverantwortung." },
-              { label: "Koordination", desc: "Steuert Zusammenarbeit, aber ohne formale Weisungs- oder Personalverantwortung." },
-              { label: "Fachliche Führung", desc: "Führt fachlich (Qualität, Standards, Prioritäten), aber ohne Personalentscheidungen." },
-              { label: "Führung mit Personalverantwortung", desc: "Verantwortung für Mitarbeitende inkl. Ziele, Entwicklung, Entscheidungen und Ergebnis-KPIs." },
-            ]).map(item => (
+            {[
+              { label: ui.rollendna.fuehrungTypeLabelNone, desc: ui.rollendna.fuehrungTypeDescNone },
+              { label: ui.rollendna.fuehrungTypeLabelCoord, desc: ui.rollendna.fuehrungTypeDescCoord },
+              { label: ui.rollendna.fuehrungTypeLabelTech, desc: ui.rollendna.fuehrungTypeDescTech },
+              { label: ui.rollendna.fuehrungTypeLabelFull, desc: ui.rollendna.fuehrungTypeDescFull },
+            ].map(item => (
               <div key={item.label}>
                 <span style={{ fontSize: 13, fontWeight: 600, color: "#1D1D1F" }}>{item.label}: </span>
                 <span style={{ fontSize: 14, color: "#48484A", lineHeight: 1.5 }}>{item.desc}</span>
@@ -2539,31 +2519,11 @@ export default function RollenDNA() {
           </div>
           <div style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid rgba(0,0,0,0.06)" }}>
             <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", lineHeight: 1.6 }}>
-              {region === "IT" ? (
-                <>
-                  In caso di dubbio, poniti la seguente domanda guida:<br />
-                  Il ruolo ha responsabilita' formale di fissazione degli obiettivi e valutazione per i collaboratori?<br />
-                  Se si', si tratta in linea di principio di management con responsabilita' sul personale.
+              <>
+                  {ui.rollendna.guidingQIntro}<br />
+                  {ui.rollendna.guidingQQuestion}<br />
+                  {ui.rollendna.guidingQConclusion}
                 </>
-              ) : region === "FR" ? (
-                <>
-                  En cas de doute, pose-toi la question suivante :<br />
-                  Ce poste a-t-il une responsabilité formelle d'entretien d'évaluation et de fixation d'objectifs pour des collaborateurs ?<br />
-                  Si oui, il s'agit en principe d'un management avec responsabilité du personnel.
-                </>
-              ) : region === "EN" ? (
-                <>
-                  If in doubt, use the following guiding question:<br />
-                  Does the role have formal target-setting and appraisal responsibility for employees?<br />
-                  If yes, it is generally leadership with personnel responsibility.
-                </>
-              ) : (
-                <>
-                  Im Zweifel orientiere dich bitte an folgender Leitfrage:<br />
-                  Hat die Stelle formale Zielvereinbarungs- und Beurteilungsverantwortung für Mitarbeitende?<br />
-                  Wenn ja, liegt in der Regel Führung mit Personalverantwortung vor.
-                </>
-              )}
             </p>
           </div>
         </div>
@@ -2596,7 +2556,7 @@ export default function RollenDNA() {
                   {ui.rollendna.defineProfile}
                 </h1>
                 <p style={{ fontSize: 14, color: "#48484A", fontWeight: 450, margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }} data-testid="text-rollen-dna-subtitle">
-                  {region === "IT" ? "Acquisisci i requisiti e la logica lavorativa del ruolo come base per il rapporto decisionale, l'analisi di compatibilita' e il TeamCheck." : region === "FR" ? "Capturez les exigences et la logique de travail du poste pour servir de base au rapport de décision, à l'analyse d'adéquation et au TeamCheck." : region === "EN" ? "Capture the requirements and working logic of the position as a basis for the decision report, fit analysis and TeamCheck." : "Erfasse die Anforderungen und Arbeitslogik der Stelle als Grundlage für den Entscheidungsbericht, die Passungsanalyse sowie den TeamCheck."}
+                  {ui.rollendna.roleSetupIntro}
                 </p>
               </div>
 
@@ -2616,24 +2576,12 @@ export default function RollenDNA() {
                     <div style={{ width: 28, height: 28, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, background: "rgba(0,0,0,0.06)", color: "#AEAEB2" }}>3</div>
                   </div>
                   <h2 style={{ fontSize: 28, fontWeight: 700, color: "#34C759", letterSpacing: "-0.02em", margin: "0 0 8px" }} data-testid="text-step-1-title">
-                    {region === "IT" ? "Quale ruolo vuoi analizzare?" : region === "FR" ? "Quel poste souhaites-tu analyser ?" : region === "EN" ? "Which role do you want to analyse?" : "Welche Stelle möchtest du analysieren?"}
+                    {ui.rollendna.whichRole}
                   </h2>
                   <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.6, margin: "0 0 28px" }}>
-                    {region === "IT"
-                      ? "Inserisci il titolo o la denominazione del ruolo, es. Direttore Vendite, HR Business Partner o Project Manager IT."
-                      : region === "FR"
-                      ? "Indique le titre ou la désignation du poste, p.ex. « Directeur commercial », « HR Business Partner » ou « Chef de projet IT »."
-                      : region === "EN"
-                        ? `Enter the job title or role name, e.g. "Sales Director", "HR Business Partner" or "IT Project Manager".`
-                        : "Gib die Berufsbezeichnung oder Stellenbezeichnung ein, z.B. Vertriebsleiter, HR Business Partner oder Projektmanager IT."}
+                    {ui.rollendna.whichRoleDesc1}
                     <br />
-                    {region === "IT"
-                      ? "Nessun suggerimento? Scrivi semplicemente il ruolo e lo riconosceremo automaticamente."
-                      : region === "FR"
-                      ? "Aucune suggestion ? Tu peux simplement décrire le poste et nous le reconnaissons automatiquement."
-                      : region === "EN"
-                        ? "No matching suggestion? Simply type the role and we will recognise it automatically."
-                        : "Kein passender Vorschlag? Einfach ausschreiben – wir erkennen die Stelle automatisch."}
+                    {ui.rollendna.whichRoleDesc2}
                   </p>
 
                   <div className="mb-0" style={{ zIndex: 100 }} data-testid="input-beruf-wrapper">
@@ -2643,7 +2591,7 @@ export default function RollenDNA() {
                         ref={inputRef}
                         type="text"
                         autoComplete="off"
-                        placeholder={region === "IT" ? "es. Key Account Manager, Responsabile Produzione, ..." : region === "FR" ? "p.ex. Responsable grands comptes, Chef d'équipe production, ..." : region === "EN" ? "e.g. Key Account Manager, Production Team Lead, ..." : "z.B. Key Account Manager, Teamleiter Produktion, ..."}
+                        placeholder={ui.rollendna.rolePlaceholder}
                         value={beruf}
                         onChange={(e) => {
                           setBeruf(e.target.value);
@@ -2761,14 +2709,14 @@ export default function RollenDNA() {
 
 
                     <div style={{ marginTop: 28 }}>
-                      <p style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", margin: "0 0 6px" }}>{region === "IT" ? "Informazioni aggiuntive (opzionale)" : region === "FR" ? "Informations complémentaires (optionnel)" : region === "EN" ? "Optional additions" : "Optionale Ergänzungen"}</p>
+                      <p style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", margin: "0 0 6px" }}>{ui.rollendna.optionalAdditions}</p>
                       <p style={{ fontSize: 13, color: "#6E6E73", margin: "0 0 12px" }}>
-                        {region === "IT" ? "Cosa rende questo ruolo speciale nella tua azienda? Piu' e' specifico, piu' l'analisi sara' precisa." : region === "FR" ? "Qu'est-ce qui rend ce poste particulier dans ton entreprise ? Plus c'est concret, plus l'analyse est précise." : region === "EN" ? "What makes this role special in your organisation? The more specific, the more accurate the analysis." : "Was macht diese Stelle in deinem Unternehmen besonders? Je konkreter, desto genauer die Analyse."}
+                        {ui.rollendna.whatMakesSpecial}
                       </p>
                       <textarea
                         value={zusatzInfo}
                         onChange={(e) => setZusatzInfo(e.target.value)}
-                        placeholder={region === "IT" ? "es. Focus Key Account, alta quota trasferte, modello a turni, settore pharma, ..." : region === "FR" ? "p.ex. Accent Key Account, déplacements fréquents, travail posté, secteur pharma, ..." : region === "EN" ? "e.g. Key Account focus, high travel share, shift model, pharma industry, ..." : "z.B. Schwerpunkt Key Account, hoher Reiseanteil, Schichtmodell, Branche Pharma, ..."}
+                        placeholder={ui.rollendna.specialPlaceholder}
                         className="w-full border border-border/40 focus:border-primary/40 rounded-lg px-3 py-2 text-sm resize-none placeholder:text-muted-foreground/40 focus:outline-none focus:ring-1 focus:ring-primary/20 transition-all"
                         style={{ background: "rgba(255, 248, 225, 0.5)" }}
                         rows={2}
@@ -2777,9 +2725,9 @@ export default function RollenDNA() {
                     </div>
 
                     <div style={{ marginTop: 32, borderTop: "1px solid rgba(0,0,0,0.06)", paddingTop: 24 }}>
-                      <p style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", margin: "0 0 2px" }}>{region === "IT" ? "Mercato del lavoro" : region === "FR" ? "Marché de l'emploi" : region === "EN" ? "Job market" : "Arbeitsmarkt"}</p>
+                      <p style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", margin: "0 0 2px" }}>{ui.rollendna.jobMarket}</p>
                       <p style={{ fontSize: 13, color: "#6E6E73", margin: "0 0 8px" }}>
-                        {region === "IT" ? "I suggerimenti vengono mostrati per i paesi attivi. Clicca per attivare o disattivare." : region === "FR" ? "Les suggestions s'affichent pour les pays actifs. Clique pour activer ou désactiver." : region === "EN" ? "Suggestions are shown for the active countries. Click to enable or disable." : "Vorschläge werden für die aktiven Länder angezeigt. Zum Ein- oder Ausschalten einfach klicken."}
+                        {ui.rollendna.countryHint}
                       </p>
                       <div className="flex items-center gap-2 flex-wrap" data-testid="land-filter">
                         {([
@@ -2860,10 +2808,10 @@ export default function RollenDNA() {
                     <div style={{ width: 28, height: 28, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, background: "rgba(0,0,0,0.06)", color: "#AEAEB2" }}>3</div>
                   </div>
                   <h2 style={{ fontSize: 28, fontWeight: 700, color: "#34C759", letterSpacing: "-0.02em" }} className="dark:text-foreground/90" data-testid="text-step-2-title">
-                    {region === "IT" ? "Condizioni quadro del ruolo" : region === "FR" ? "Conditions-cadres du poste" : region === "EN" ? "Role framework conditions" : "Rahmenbedingungen der Stelle"}
+                    {ui.rollendna.frameworkConditions}
                   </h2>
                   <p style={{ fontSize: 14, color: "#48484A", marginTop: 6 }}>
-                    {region === "IT" ? "Definisci le caratteristiche di base di questo ruolo. I dati aiutano a determinare la logica strutturale del ruolo." : region === "FR" ? "Définissez les caractéristiques de base de ce poste. Les informations aident à déterminer la logique structurelle du rôle." : region === "EN" ? "Define the basic characteristics of this role. The details help determine the structural role logic." : "Definiere die grundlegenden Merkmale dieser Stelle. Die Angaben helfen dabei, die strukturelle Stellenlogik zu bestimmen."}
+                    {ui.rollendna.frameworkConditionsDesc}
                   </p>
                 </div>
 
@@ -2887,14 +2835,14 @@ export default function RollenDNA() {
                         <div className="flex items-center gap-3">
                           <Layers style={{ width: 20, height: 20, color: "#34C759", strokeWidth: 1.5 }} />
                           <h3 style={{ fontSize: 22, fontWeight: 600, color: "#34C759" }} className="dark:text-foreground/90">
-                            {region === "IT" ? "Tipo di compiti" : region === "FR" ? "Type de tâches" : region === "EN" ? "Type of tasks" : "Art der Aufgaben"}
+                            {ui.rollendna.taskType}
                           </h3>
                         </div>
                         <p style={{ fontSize: 14, color: "#6E6E73", marginTop: 6, paddingLeft: 32 }}>
                           {getRegionOptions(region).subtitles.aufgabencharakter}
                         </p>
                         <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", marginTop: 4, paddingLeft: 32 }}>
-                          {region === "IT" ? "(Seleziona un'opzione)" : region === "FR" ? "(Sélectionnez une option)" : region === "EN" ? "(Please select one option)" : "(Bitte ein Feld auswählen)"}
+                          {ui.rollendna.selectOne}
                         </p>
                         <div style={{ marginTop: 20 }}>
                           <DescriptiveOptionGroup
@@ -2915,14 +2863,14 @@ export default function RollenDNA() {
                         <div className="flex items-center gap-3">
                           <Activity style={{ width: 20, height: 20, color: "#34C759", strokeWidth: 1.5 }} />
                           <h3 style={{ fontSize: 22, fontWeight: 600, color: "#34C759" }} className="dark:text-foreground/90">
-                            {region === "IT" ? "Stile lavorativo del ruolo" : region === "FR" ? "Style de travail du poste" : region === "EN" ? "Working style of the role" : "Arbeitsweise der Stelle"}
+                            {ui.rollendna.workingStyleRole}
                           </h3>
                         </div>
                         <p style={{ fontSize: 14, color: "#6E6E73", marginTop: 6, paddingLeft: 32 }}>
                           {getRegionOptions(region).subtitles.arbeitslogik}
                         </p>
                         <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", marginTop: 4, paddingLeft: 32 }}>
-                          {region === "IT" ? "(Seleziona un'opzione)" : region === "FR" ? "(Sélectionnez une option)" : region === "EN" ? "(Please select one option)" : "(Bitte ein Feld auswählen)"}
+                          {ui.rollendna.selectOne}
                         </p>
                         <div style={{ marginTop: 20 }}>
                           <DescriptiveOptionGroup
@@ -2943,14 +2891,14 @@ export default function RollenDNA() {
                         <div className="flex items-center gap-3">
                           <Target style={{ width: 20, height: 20, color: "#34C759", strokeWidth: 1.5 }} />
                           <h3 style={{ fontSize: 22, fontWeight: 600, color: "#34C759" }} className="dark:text-foreground/90">
-                            {region === "IT" ? "Focus di successo" : region === "FR" ? "Priorité de réussite" : region === "EN" ? "Success focus" : "Erfolgsfokus"}
+                            {ui.rollendna.successFocusLabel}
                           </h3>
                         </div>
                         <p style={{ fontSize: 14, color: "#6E6E73", marginTop: 6, paddingLeft: 32 }}>
                           {getRegionOptions(region).subtitles.erfolgsfokus}
                         </p>
                         <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", marginTop: 4, paddingLeft: 32 }}>
-                          {region === "IT" ? "(Seleziona due opzioni)" : region === "FR" ? "(Sélectionnez deux options)" : region === "EN" ? "(Please select two options)" : "(Bitte zwei Felder auswählen)"}
+                          {ui.rollendna.selectTwo}
                         </p>
                         <div style={{ marginTop: 20 }}>
                           <DescriptiveOptionGroupIndexed
@@ -2971,14 +2919,14 @@ export default function RollenDNA() {
                         <div className="flex items-center gap-3">
                           <Users style={{ width: 20, height: 20, color: "#34C759", strokeWidth: 1.5 }} />
                           <h3 style={{ fontSize: 22, fontWeight: 600, color: "#34C759" }} className="dark:text-foreground/90">
-                            {region === "IT" ? "Responsabilita' di management" : region === "FR" ? "Responsabilité de management" : region === "EN" ? "Leadership responsibility" : "Führungsverantwortung"}
+                            {ui.rollendna.leadershipResp}
                           </h3>
                         </div>
                         <p style={{ fontSize: 14, color: "#6E6E73", marginTop: 6, paddingLeft: 32 }}>
                           {getRegionOptions(region).subtitles.fuehrung}
                         </p>
                         <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", marginTop: 4, paddingLeft: 32 }}>
-                          {region === "IT" ? "(Seleziona un'opzione)" : region === "FR" ? "(Sélectionnez une option)" : region === "EN" ? "(Please select one option)" : "(Bitte ein Feld auswählen)"}
+                          {ui.rollendna.selectOne}
                         </p>
                         <div style={{ marginTop: 20 }}>
                           <DescriptiveOptionGroup
@@ -3062,26 +3010,20 @@ export default function RollenDNA() {
             ) : !allCollapsed && currentStep > 2 ? (
               <CollapsedStep
                 step={2}
-                title={region === "IT" ? "Condizioni quadro del ruolo" : region === "FR" ? "Conditions-cadres du poste" : region === "EN" ? "Role framework conditions" : "Rahmenbedingungen der Stelle"}
-                summary={region === "IT" ? "Caratteristiche di base di questo ruolo / titolo." : region === "FR" ? "Caractéristiques de base de ce poste / titre." : region === "EN" ? "Basic characteristics of this role / title." : "Grundlegende Merkmale dieser Stelle / Bezeichnung."}
+                title={ui.rollendna.frameworkConditions}
+                summary={ui.rollendna.basicChars}
                 onEdit={() => goToStep(2)}
                 icon={Settings}
               />
             ) : (
-              <LockedStep step={2} title={region === "IT" ? "Condizioni quadro del ruolo" : region === "FR" ? "Conditions-cadres du poste" : region === "EN" ? "Role framework conditions" : "Rahmenbedingungen der Stelle"} />
+              <LockedStep step={2} title={ui.rollendna.frameworkConditions} />
             )}
 
             {allCollapsed ? null : currentStep >= 4 && taetigkeiten.length > 0 ? (
               <CollapsedStep
                 step={3}
-                title={region === "IT" ? "Compiti e competenze" : region === "FR" ? "Tâches et compétences" : region === "EN" ? "Tasks & competencies" : "Tätigkeiten & Kompetenzen"}
-                summary={region === "IT"
-                  ? `${taetigkeiten.filter(t => t.kategorie === "haupt").length} compiti · ${taetigkeiten.filter(t => t.kategorie === "neben").length} competenze umane${taetigkeiten.filter(t => t.kategorie === "fuehrung").length > 0 ? ` · ${taetigkeiten.filter(t => t.kategorie === "fuehrung").length} management` : ""}`
-                  : region === "FR"
-                  ? `${taetigkeiten.filter(t => t.kategorie === "haupt").length} activités · ${taetigkeiten.filter(t => t.kategorie === "neben").length} compétences humaines${taetigkeiten.filter(t => t.kategorie === "fuehrung").length > 0 ? ` · ${taetigkeiten.filter(t => t.kategorie === "fuehrung").length} management` : ""}`
-                  : region === "EN"
-                    ? `${taetigkeiten.filter(t => t.kategorie === "haupt").length} tasks · ${taetigkeiten.filter(t => t.kategorie === "neben").length} human skills${taetigkeiten.filter(t => t.kategorie === "fuehrung").length > 0 ? ` · ${taetigkeiten.filter(t => t.kategorie === "fuehrung").length} leadership` : ""}`
-                    : `${taetigkeiten.filter(t => t.kategorie === "haupt").length} Tätigkeiten · ${taetigkeiten.filter(t => t.kategorie === "neben").length} Humankompetenzen${taetigkeiten.filter(t => t.kategorie === "fuehrung").length > 0 ? ` · ${taetigkeiten.filter(t => t.kategorie === "fuehrung").length} Führung` : ""}`}
+                title={ui.rollendna.tasksAndCompetences}
+                summary={`${taetigkeiten.filter(t => t.kategorie === "haupt").length} ${ui.rollendna.tasks} · ${taetigkeiten.filter(t => t.kategorie === "neben").length} ${ui.rollendna.humanCompetences}${taetigkeiten.filter(t => t.kategorie === "fuehrung").length > 0 ? ` · ${taetigkeiten.filter(t => t.kategorie === "fuehrung").length} ${ui.rollendna.leadershipCompetences}` : ""}`}
                 onEdit={() => goToStep(3)}
                 icon={Layers}
               />
@@ -3095,17 +3037,17 @@ export default function RollenDNA() {
                       <div style={{ width: 28, height: 28, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, background: "#34C759", color: "#fff" }}>3</div>
                     </div>
                     <h2 style={{ fontSize: 28, fontWeight: 700, color: "#34C759", letterSpacing: "-0.02em" }} className="dark:text-foreground/90" data-testid="text-step-3-title">
-                      {region === "IT" ? "Compiti e competenze" : region === "FR" ? "Tâches et compétences" : region === "EN" ? "Tasks & competencies" : "Tätigkeiten & Kompetenzen"}
+                      {ui.rollendna.tasksAndCompetences}
                     </h2>
                     <p style={{ fontSize: 14, color: "#48484A", marginTop: 4 }}>
-                      {region === "IT" ? "Definisci la struttura concreta di questo ruolo." : region === "FR" ? "Définissez la structure concrète de ce poste." : region === "EN" ? "Shape the concrete structure of this role." : "Forme die konkrete Struktur dieser Stelle."}
+                      {ui.rollendna.shapeConcreteStructure}
                     </p>
                   </div>
                   <div style={{ textAlign: "right", fontSize: 14, color: "#48484A", lineHeight: 1.8 }}>
-                    <div>{region === "IT" ? "Compiti" : region === "FR" ? "Tâches" : region === "EN" ? "Tasks" : "Tätigkeiten"} <span style={{ fontWeight: 600, color: "#1D1D1F" }}>{hauptCount} / 15</span></div>
-                    <div>{region === "IT" ? "Competenze umane" : region === "FR" ? "Compétences humaines" : region === "EN" ? "Human competences" : "Humankompetenzen"} <span style={{ fontWeight: 600, color: "#1D1D1F" }}>{nebenCount} / 10</span></div>
+                    <div>{ui.rollendna.tasks} <span style={{ fontWeight: 600, color: "#1D1D1F" }}>{hauptCount} / 15</span></div>
+                    <div>{ui.rollendna.humanCompetences} <span style={{ fontWeight: 600, color: "#1D1D1F" }}>{nebenCount} / 10</span></div>
                     {fuehrung !== "Keine" && (
-                      <div>{region === "IT" ? "Competenze di management" : region === "FR" ? "Compétences de management" : region === "EN" ? "Leadership competences" : "Führungskompetenzen"} <span style={{ fontWeight: 600, color: "#1D1D1F" }}>{fuehrungCount} / 10</span></div>
+                      <div>{ui.rollendna.leadershipCompetences} <span style={{ fontWeight: 600, color: "#1D1D1F" }}>{fuehrungCount} / 10</span></div>
                     )}
                   </div>
                 </div>
@@ -3127,22 +3069,10 @@ export default function RollenDNA() {
                     <span style={{ fontSize: 20 }}>🌐</span>
                     <div style={{ flex: 1 }}>
                       <div style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", marginBottom: 2 }} className="dark:text-foreground">
-                        {region === "IT"
-                          ? "I compiti sono stati generati in un'altra lingua"
-                          : region === "FR"
-                          ? "Les tâches ont été générées dans une autre langue"
-                          : region === "EN"
-                          ? "Tasks were generated in a different language"
-                          : "Tätigkeiten wurden in einer anderen Sprache generiert"}
+                        {ui.rollendna.bannerTitle}
                       </div>
                       <div style={{ fontSize: 13, color: "#48484A" }} className="dark:text-muted-foreground">
-                        {region === "IT"
-                          ? "Rigenera tramite IA per ottenere denominazioni italiane semanticamente corrette, non una semplice traduzione."
-                          : region === "FR"
-                          ? "Régénérer via l'IA pour obtenir des intitulés en français sémantiquement corrects — pas une simple traduction."
-                          : region === "EN"
-                          ? "Regenerate via AI to get semantically correct English task names — not just a translation."
-                          : "Über KI neu generieren für inhaltlich korrekte Bezeichnungen — keine reine Übersetzung."}
+                        {ui.rollendna.bannerBody}
                       </div>
                     </div>
                     <button
@@ -3161,7 +3091,7 @@ export default function RollenDNA() {
                         flexShrink: 0,
                       }}
                     >
-                      {region === "IT" ? "Rigenera in italiano" : region === "FR" ? "Régénérer en français" : region === "EN" ? "Regenerate in English" : "Neu generieren auf Deutsch"}
+                      {ui.rollendna.regenerate}
                     </button>
                   </div>
                 )}
@@ -3189,9 +3119,9 @@ export default function RollenDNA() {
                     data-testid="tabs-taetigkeiten"
                   >
                     {([
-                      { key: "haupt" as TaetigkeitKategorie, label: region === "IT" ? "Compiti" : region === "FR" ? "Tâches" : region === "EN" ? "Tasks" : "Tätigkeiten", count: hauptCount },
-                      { key: "neben" as TaetigkeitKategorie, label: region === "IT" ? "Competenze umane" : region === "FR" ? "Compétences humaines" : region === "EN" ? "Human competences" : "Humankompetenzen", count: nebenCount },
-                      ...(fuehrung !== "Keine" ? [{ key: "fuehrung" as TaetigkeitKategorie, label: region === "IT" ? "Competenze di management" : region === "FR" ? "Compétences de management" : region === "EN" ? "Leadership competences" : "Führungskompetenzen", count: fuehrungCount }] : []),
+                      { key: "haupt" as TaetigkeitKategorie, label: ui.rollendna.tasks, count: hauptCount },
+                      { key: "neben" as TaetigkeitKategorie, label: ui.rollendna.humanCompetences, count: nebenCount },
+                      ...(fuehrung !== "Keine" ? [{ key: "fuehrung" as TaetigkeitKategorie, label: ui.rollendna.leadershipCompetences, count: fuehrungCount }] : []),
                     ]).map(tab => {
                       const isActive = activeTab === tab.key;
                       return (
@@ -3253,16 +3183,16 @@ export default function RollenDNA() {
                           margin: "0 auto 16px",
                         }} />
                         <p style={{ fontSize: 15, color: "#0071E3", fontWeight: 500 }}>
-                          {region === "IT" ? `L'IA sta creando il profilo del ruolo per "${beruf}"` : region === "FR" ? `L'IA crée le profil de poste pour « ${beruf} »` : region === "EN" ? `AI is creating role profile for "${beruf}"` : `KI erstellt Stellenprofil für „${beruf}"`}
+                          {ui.rollendna.aiCreatingFor.replace("{beruf}", beruf)}
                         </p>
                         <p style={{ fontSize: 13, color: "#6E6E73", marginTop: 4, marginBottom: 20 }}>
-                          {region === "IT" ? "Potrebbero volerci alcuni secondi." : region === "FR" ? "Cela peut prendre quelques secondes." : region === "EN" ? "This may take a few seconds." : "Das kann einige Sekunden dauern."}
+                          {ui.rollendna.mayTakeFewSeconds}
                         </p>
                         <div style={{ display: "inline-flex", flexDirection: "column", gap: 10, textAlign: "left" }}>
                           {[
-                            { label: region === "IT" ? "I compiti vengono creati" : region === "FR" ? "Les tâches sont en cours de création" : region === "EN" ? "Tasks are being created" : "Tätigkeiten werden erstellt", step: 0 },
-                            { label: region === "IT" ? "Le competenze umane vengono identificate" : region === "FR" ? "Les compétences humaines sont en cours d'identification" : region === "EN" ? "Human competences are being identified" : "Humankompetenzen werden ermittelt", step: 1 },
-                            { label: region === "IT" ? "Le competenze di management vengono analizzate" : region === "FR" ? "Les compétences de management sont en cours d'analyse" : region === "EN" ? "Leadership competences are being analysed" : "Führungskompetenzen werden analysiert", step: 2 },
+                            { label: ui.rollendna.tasksBeingCreated, step: 0 },
+                            { label: ui.rollendna.humanCompBeingIdentified, step: 1 },
+                            { label: ui.rollendna.leadershipCompBeingAnalysed, step: 2 },
                           ].map((item) => {
                             const done = generatingStep > item.step;
                             const active = generatingStep === item.step;
@@ -3322,7 +3252,7 @@ export default function RollenDNA() {
                     ) : filteredTaetigkeiten.length === 0 ? (
                       <div className="text-center py-12">
                         <p style={{ fontSize: 15, color: "#6E6E73" }}>
-                          {region === "IT" ? <>Nessun {activeTab === "haupt" ? "compito" : activeTab === "neben" ? "competenza umana" : "competenza di management"} aggiunto per ora.</> : region === "FR" ? <>Aucune {activeTab === "haupt" ? "tâche" : activeTab === "neben" ? "compétence humaine" : "compétence de management"} ajoutée pour l'instant.</> : region === "EN" ? <>No {activeTab === "haupt" ? "tasks" : activeTab === "neben" ? "human competences" : "leadership competences"} added yet.</> : <>Noch keine {activeTab === "haupt" ? "Tätigkeiten" : activeTab === "neben" ? "Humankompetenzen" : "Führungskompetenzen"} hinzugefügt.</>}
+                          {activeTab === "haupt" ? ui.rollendna.emptyHaupt : activeTab === "neben" ? ui.rollendna.emptyNeben : ui.rollendna.emptyFuehrung}
                         </p>
                       </div>
                     ) : (
@@ -3407,7 +3337,7 @@ export default function RollenDNA() {
                               </div>
 
                               <div style={{ marginTop: 14, display: "grid", gridTemplateColumns: "max-content auto", rowGap: 10, columnGap: 8, alignItems: "center" }}>
-                                  <span style={{ fontSize: 12, fontWeight: 500, color: "#48484A", textTransform: "uppercase", letterSpacing: "0.5px", whiteSpace: "nowrap" }}>{region === "IT" ? "Ponderazione" : region === "FR" ? "Pondération" : region === "EN" ? "Weighting" : "Gewichtung"}</span>
+                                  <span style={{ fontSize: 12, fontWeight: 500, color: "#48484A", textTransform: "uppercase", letterSpacing: "0.5px", whiteSpace: "nowrap" }}>{ui.rollendna.weighting}</span>
                                   <div style={{ display: "flex", gap: 6 }}>
                                     {NIVEAU_OPTIONS.map(n => (
                                       <button
@@ -3433,12 +3363,12 @@ export default function RollenDNA() {
                                         data-testid={`niveau-${t.id}-${n.toLowerCase()}`}
                                       >
                                         {t.niveau === n && <Check style={{ width: 10, height: 10 }} />}
-                                        {region === "IT" ? { Niedrig: "Basso", Mittel: "Medio", Hoch: "Alto" }[n] ?? n : region === "FR" ? { Niedrig: "Bas", Mittel: "Moyen", Hoch: "Élevé" }[n] ?? n : region === "EN" ? { Niedrig: "Low", Mittel: "Medium", Hoch: "High" }[n] : n}
+                                        {{ Niedrig: ui.rollendna.levelLow, Mittel: ui.rollendna.levelMedium, Hoch: ui.rollendna.levelHigh }[n] ?? n}
                                       </button>
                                     ))}
                                   </div>
 
-                                  <span style={{ fontSize: 12, fontWeight: 500, color: "#48484A", textTransform: "uppercase", letterSpacing: "0.5px", whiteSpace: "nowrap" }}>{region === "IT" ? "Focus" : region === "FR" ? "Priorité" : region === "EN" ? "Focus" : "Schwerpunkt"}</span>
+                                  <span style={{ fontSize: 12, fontWeight: 500, color: "#48484A", textTransform: "uppercase", letterSpacing: "0.5px", whiteSpace: "nowrap" }}>{ui.rollendna.focus}</span>
                                   <div style={{ display: "flex", gap: 6 }}>
                                     {KOMPETENZ_OPTIONS.map(k => (
                                       <button
@@ -3462,7 +3392,7 @@ export default function RollenDNA() {
                                         }}
                                         data-testid={`kompetenz-${t.id}-${k.toLowerCase()}`}
                                       >
-                                        {region === "IT" ? { Impulsiv: "Orientato all'azione", Intuitiv: "Relazionale", Analytisch: "Analitico" }[k] ?? k : region === "FR" ? { Impulsiv: "Orienté action", Intuitiv: "Relationnel", Analytisch: "Analytique" }[k] ?? k : region === "EN" ? { Impulsiv: "Action-oriented", Intuitiv: "Relational", Analytisch: "Analytical" }[k] : k}
+                                        {{ Impulsiv: ui.general.labelImpulsiv, Intuitiv: ui.general.labelIntuitiv, Analytisch: ui.general.labelAnalytisch }[k] ?? k}
                                       </button>
                                     ))}
                                   </div>
@@ -3512,7 +3442,7 @@ export default function RollenDNA() {
                         data-testid="button-taetigkeit-hinzufuegen"
                       >
                         <Plus style={{ width: 16, height: 16 }} />
-                        Neue Tätigkeit hinzufügen
+                        {ui.rollendna.addActivity}
                       </button>
                     </div>
                   ) : null}
@@ -3520,8 +3450,8 @@ export default function RollenDNA() {
                   {!isGenerating && (
                     <p style={{ fontSize: 12, color: "#AEAEB2", textAlign: "center", marginTop: 16 }}>
                       {currentTabCount >= currentTabMax
-                        ? region === "IT" ? `Massimo di ${currentTabMax} raggiunto` : region === "FR" ? `Maximum de ${currentTabMax} atteint` : region === "EN" ? `Maximum of ${currentTabMax} reached` : `Maximum von ${currentTabMax} erreicht`
-                        : region === "IT" ? `Max. ${currentTabMax} ${activeTab === "haupt" ? "compiti" : activeTab === "neben" ? "competenze umane" : "competenze di management"}` : region === "FR" ? `Max. ${currentTabMax} ${activeTab === "haupt" ? "tâches" : activeTab === "neben" ? "compétences humaines" : "compétences de management"}` : region === "EN" ? `Max. ${currentTabMax} ${activeTab === "haupt" ? "tasks" : activeTab === "neben" ? "human competences" : "leadership competences"}` : `Maximal ${currentTabMax} ${activeTab === "haupt" ? "Tätigkeiten" : activeTab === "neben" ? "Humankompetenzen" : "Führungskompetenzen"}`
+                        ? ui.rollendna.maxReached.replace("{n}", String(currentTabMax))
+                        : activeTab === "haupt" ? ui.rollendna.maxHintHaupt.replace("{n}", String(currentTabMax)) : activeTab === "neben" ? ui.rollendna.maxHintNeben.replace("{n}", String(currentTabMax)) : ui.rollendna.maxHintFuehrung.replace("{n}", String(currentTabMax))
                       }
                     </p>
                   )}
@@ -3581,7 +3511,7 @@ export default function RollenDNA() {
                           localStorage.setItem("rollenDnaCompleted", "true");
                         }}
                       >
-                        {region === "IT" ? "Alla definizione del ruolo" : region === "FR" ? "Vers la définition du poste" : region === "EN" ? "To role definition" : "zur Stellendefinition"}
+                        {ui.rollendna.toRoleDefinition}
                         <ChevronRight className="w-5 h-5" />
                       </Button>
                     );
@@ -3626,8 +3556,8 @@ export default function RollenDNA() {
                         <FileText style={{ width: 15, height: 15, color: "#FFF", strokeWidth: 2.2 }} />
                       </div>
                       <span style={{ color: "#1D1D1F", display: "flex", alignItems: "baseline", gap: 6 }}>
-                        <span style={{ fontSize: 18, fontWeight: 700, flexShrink: 0, color: "#34C759" }}>{region === "IT" ? "Profilo del ruolo:" : region === "FR" ? "Profil du poste :" : region === "EN" ? "Job profile:" : "Kurzprofil der Stelle:"}</span>
-                        <span style={{ fontSize: 18, fontWeight: 700 }}>{beruf}{fuehrung && fuehrung !== "Keine" ? "" + (region === "IT" ? " con responsabilita' di management" : region === "FR" ? " avec responsabilité de management" : region === "EN" ? " with leadership responsibility" : " mit Führungsverantwortung") : ""}</span>
+                        <span style={{ fontSize: 18, fontWeight: 700, flexShrink: 0, color: "#34C759" }}>{ui.rollendna.jobProfile}</span>
+                        <span style={{ fontSize: 18, fontWeight: 700 }}>{beruf}{fuehrung && fuehrung !== "Keine" ? ui.rollendna.withLeadership : ""}</span>
                       </span>
                     </div>
                     <ChevronDown style={{
@@ -3652,7 +3582,7 @@ export default function RollenDNA() {
                         background: "#FFFFFF",
                         border: "1px solid rgba(0,0,0,0.06)",
                       }} data-testid="card-grundprinzip">
-                        <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0", display: "flex", alignItems: "center", gap: 6 }}><Info style={{ width: 15, height: 15, color: "#1D1D1F", flexShrink: 0 }} />{(region === "IT" ? analysisPrincipleText_IT : region === "FR" ? analysisPrincipleText_FR : region === "EN" ? analysisPrincipleText_EN : analysisPrincipleText).title}</h3>
+                        <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0", display: "flex", alignItems: "center", gap: 6 }}><Info style={{ width: 15, height: 15, color: "#1D1D1F", flexShrink: 0 }} />{ui.rollendna.analysisPrincipleTitle}</h3>
                         <p lang="de" style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: 0, ...reportTextStyle }}>{localizeText((region === "IT" ? analysisPrincipleText_IT : region === "FR" ? analysisPrincipleText_FR : region === "EN" ? analysisPrincipleText_EN : analysisPrincipleText).body.join(" "))}</p>
                       </div>
 
@@ -3670,9 +3600,9 @@ export default function RollenDNA() {
 
                         <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 10 }}>
                           {[
-                            { label: region === "IT" ? "Orientato all'azione" : region === "FR" ? "Orienté action" : region === "EN" ? "Action-oriented" : "Impulsiv", color: "#C41E3A", bg: "rgba(196,30,58,0.05)", border: "rgba(196,30,58,0.12)", desc: region === "IT" ? "Attuazione, decisione e responsabilita' dei risultati" : region === "FR" ? "Exécution, décisions et responsabilité des résultats" : region === "EN" ? "Execution, decisions and accountability for results" : "Umsetzung, Entscheidung und Ergebnisverantwortung" },
-                            { label: region === "IT" ? "Relazionale" : region === "FR" ? "Relationnel" : region === "EN" ? "Relational" : "Intuitiv", color: "#F39200", bg: "rgba(243,146,0,0.05)", border: "rgba(243,146,0,0.12)", desc: region === "IT" ? "Collaborazione e azione contestualizzata" : region === "FR" ? "Collaboration et action adaptée au contexte" : region === "EN" ? "Collaboration and context-aware action" : "Zusammenarbeit und kontextbezogenes Handeln" },
-                            { label: region === "IT" ? "Analitico" : region === "FR" ? "Analytique" : region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", bg: "rgba(26,93,171,0.05)", border: "rgba(26,93,171,0.12)", desc: region === "IT" ? "Struttura, pianificazione e precisione tecnica" : region === "FR" ? "Structure, planification et précision technique" : region === "EN" ? "Structure, planning and technical precision" : "Struktur, Planung und fachliche Präzision" },
+                            { label: ui.general.labelImpulsiv, color: "#C41E3A", bg: "rgba(196,30,58,0.05)", border: "rgba(196,30,58,0.12)", desc: ui.rollendna.executionDecisions },
+                            { label: ui.general.labelIntuitiv, color: "#F39200", bg: "rgba(243,146,0,0.05)", border: "rgba(243,146,0,0.12)", desc: ui.rollendna.collaborationContextual },
+                            { label: ui.general.labelAnalytisch, color: "#1A5DAB", bg: "rgba(26,93,171,0.05)", border: "rgba(26,93,171,0.12)", desc: ui.rollendna.structurePlanning },
                           ].map(d => (
                             <div key={d.label} style={{
                               background: d.bg,
@@ -3700,7 +3630,7 @@ export default function RollenDNA() {
                           background: "#FFFFFF",
                           border: "1px solid rgba(0,0,0,0.06)",
                         }} data-testid="box-biocheck-description">
-                          <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0", display: "flex", alignItems: "center", gap: 6 }}><Lightbulb style={{ width: 15, height: 15, color: "#1D1D1F", flexShrink: 0 }} />{region === "IT" ? "Risultato dell'analisi" : region === "FR" ? "Résultat de l'analyse" : region === "EN" ? "Result of the analysis" : "Ergebnis der Analyse"}</h3>
+                          <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0", display: "flex", alignItems: "center", gap: 6 }}><Lightbulb style={{ width: 15, height: 15, color: "#1D1D1F", flexShrink: 0 }} />{ui.rollendna.analysisResult}</h3>
                           <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: 0, ...reportTextStyle }} data-testid="text-biocheck-body">
                             {localizeText([...rt.body, ...(isLeadershipRole ? [rt.leadership] : [])].join(" "))}
                           </p>
@@ -3710,10 +3640,10 @@ export default function RollenDNA() {
 
                     <div style={{ marginTop: 16, display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 10 : 16 }}>
                       {[
-                        { title: region === "IT" ? "Attivita'" : region === "FR" ? "Activités" : region === "EN" ? "Activities" : "Tätigkeiten", key: "haupttaetigkeiten", data: bioGramHaupt, icon: Briefcase },
-                        { title: region === "IT" ? "Competenze umane" : region === "FR" ? "Compétences humaines" : region === "EN" ? "Human competences" : "Humankompetenzen", key: "humankompetenzen", data: bioGramNeben, icon: Heart },
-                        { title: region === "IT" ? "Condizioni quadro del ruolo" : region === "FR" ? "Conditions-cadres du poste" : region === "EN" ? "Role framework conditions" : "Rahmenbedingungen der Stelle", key: "rahmenbedingungen", data: bioGramRahmen, icon: Settings },
-                        ...(isLeadershipRole ? [{ title: region === "IT" ? "Competenze di management" : region === "FR" ? "Compétences de management" : region === "EN" ? "Leadership competences" : "Führungskompetenzen", key: "fuehrungskompetenzen", data: bioGramFuehrung, icon: Shield }] : []),
+                        { title: ui.rollendna.tasks, key: "haupttaetigkeiten", data: bioGramHaupt, icon: Briefcase },
+                        { title: ui.rollendna.humanCompetences, key: "humankompetenzen", data: bioGramNeben, icon: Heart },
+                        { title: ui.rollendna.frameworkConditions, key: "rahmenbedingungen", data: bioGramRahmen, icon: Settings },
+                        ...(isLeadershipRole ? [{ title: ui.rollendna.leadershipCompetences, key: "fuehrungskompetenzen", data: bioGramFuehrung, icon: Shield }] : []),
                       ].map((section) => (
                         <div
                           key={section.key}
@@ -3732,9 +3662,9 @@ export default function RollenDNA() {
                             </p>
                           </div>
                           {[
-                            { label: region === "IT" ? "Orientato all'azione" : region === "FR" ? "Orienté action" : region === "EN" ? "Action-oriented" : "Impulsiv", color: "#C41E3A", value: section.data.imp },
-                            { label: region === "IT" ? "Relazionale" : region === "FR" ? "Relationnel" : region === "EN" ? "Relational" : "Intuitiv", color: "#F39200", value: section.data.int },
-                            { label: region === "IT" ? "Analitico" : region === "FR" ? "Analytique" : region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", value: section.data.ana },
+                            { label: ui.general.labelImpulsiv, color: "#C41E3A", value: section.data.imp },
+                            { label: ui.general.labelIntuitiv, color: "#F39200", value: section.data.int },
+                            { label: ui.general.labelAnalytisch, color: "#1A5DAB", value: section.data.ana },
                           ].map((bar) => (
                             <div
                               key={bar.label}
@@ -3813,14 +3743,14 @@ export default function RollenDNA() {
                       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
                         <BarChart3 style={{ width: 16, height: 16, color: "#6E6E73", strokeWidth: 1.8 }} />
                         <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>
-                          {region === "IT" ? "Profilo complessivo dei requisiti del ruolo" : region === "FR" ? "Profil global des exigences du poste" : region === "EN" ? "Overall role requirements profile" : "Gesamtprofil der Stellenanforderung"}
+                          {ui.rollendna.gesamtprofilStelle}
                         </p>
                       </div>
                       {(() => {
                         const bars = [
-                          { label: region === "IT" ? "Orientato all'azione" : region === "FR" ? "Orienté action" : region === "EN" ? "Action-oriented" : "Impulsiv", color: "#C41E3A", value: bioGramGesamt.imp },
-                          { label: region === "IT" ? "Relazionale" : region === "FR" ? "Relationnel" : region === "EN" ? "Relational" : "Intuitiv", color: "#F39200", value: bioGramGesamt.int },
-                          { label: region === "IT" ? "Analitico" : region === "FR" ? "Analytique" : region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", value: bioGramGesamt.ana },
+                          { label: ui.general.labelImpulsiv, color: "#C41E3A", value: bioGramGesamt.imp },
+                          { label: ui.general.labelIntuitiv, color: "#F39200", value: bioGramGesamt.int },
+                          { label: ui.general.labelAnalytisch, color: "#1A5DAB", value: bioGramGesamt.ana },
                         ];
                         return (
                           <div style={{ background: "#F0F0F2", borderRadius: 16, padding: "16px 18px", display: "flex", flexDirection: "column", gap: 14 }}>
@@ -3856,7 +3786,7 @@ export default function RollenDNA() {
                 </div>
               </div>
             ) : (
-              <LockedStep step={3} title={region === "IT" ? "Compiti e competenze" : region === "FR" ? "Tâches et compétences" : region === "EN" ? "Tasks & competencies" : "Tätigkeiten & Kompetenzen"} />
+              <LockedStep step={3} title={ui.rollendna.tasksAndCompetences} />
             )}
 
             {allCollapsed && (
@@ -3895,8 +3825,8 @@ export default function RollenDNA() {
                       <Briefcase style={{ width: 15, height: 15, color: "#FFF", strokeWidth: 2.2 }} />
                     </div>
                     <span style={{ color: "#1D1D1F", display: "flex", alignItems: "baseline", gap: 6 }}>
-                      <span style={{ fontSize: 18, fontWeight: 700, flexShrink: 0, color: "#34C759" }}>{region === "IT" ? "Definizione del ruolo:" : region === "FR" ? "Définition du poste :" : region === "EN" ? "Role definition:" : "Stellendefinition:"}</span>
-                      <span style={{ fontSize: 18, fontWeight: 700 }}>{beruf}{fuehrung && fuehrung !== "Keine" ? (region === "IT" ? " con responsabilita' di management" : region === "FR" ? " avec responsabilité de management" : region === "EN" ? " with leadership responsibility" : " mit Führungsverantwortung") : ""}</span>
+                      <span style={{ fontSize: 18, fontWeight: 700, flexShrink: 0, color: "#34C759" }}>{ui.rollendna.roleDefinition}</span>
+                      <span style={{ fontSize: 18, fontWeight: 700 }}>{beruf}{fuehrung && fuehrung !== "Keine" ? ui.rollendna.withLeadership : ""}</span>
                     </span>
                   </div>
                   <div className="flex items-center gap-3">
@@ -3934,10 +3864,10 @@ export default function RollenDNA() {
                 <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 10 }} data-testid="dna-summary-grid">
                   {(() => { const _ro = getRegionOptions(region); return [
                     { icon: Briefcase, label: ui.rollendna.jobLabel, value: beruf },
-                    { icon: LayoutGrid, label: region === "IT" ? "Struttura dei compiti" : region === "FR" ? "Structure des tâches" : region === "EN" ? "Task structure" : "Aufgabenstruktur", value: _ro.aufgaben.find(o => o.value === aufgabencharakter)?.label || aufgabencharakter },
-                    { icon: Wrench, label: region === "IT" ? "Stile lavorativo" : region === "FR" ? "Style de travail" : region === "EN" ? "Working style" : "Arbeitsweise", value: _ro.arbeit.find(o => o.value === arbeitslogik)?.label || arbeitslogik },
-                    { icon: Target, label: region === "IT" ? "Focus di successo" : region === "FR" ? "Priorité de réussite" : region === "EN" ? "Success focus" : "Erfolgsfokus", value: erfolgsfokusIndices.map(i => _ro.erfolg[i]?.label).filter(Boolean).join(", ") },
-                    { icon: UserCheck, label: region === "IT" ? "Management" : region === "FR" ? "Management" : region === "EN" ? "Leadership" : "Führung", value: _ro.fuehrung.find(o => o.value === fuehrung)?.label || fuehrung },
+                    { icon: LayoutGrid, label: ui.rollendna.taskStructure, value: _ro.aufgaben.find(o => o.value === aufgabencharakter)?.label || aufgabencharakter },
+                    { icon: Wrench, label: ui.rollendna.workingStyleLabel, value: _ro.arbeit.find(o => o.value === arbeitslogik)?.label || arbeitslogik },
+                    { icon: Target, label: ui.rollendna.successFocusLabel, value: erfolgsfokusIndices.map(i => _ro.erfolg[i]?.label).filter(Boolean).join(", ") },
+                    { icon: UserCheck, label: ui.rollendna.managementLabel, value: _ro.fuehrung.find(o => o.value === fuehrung)?.label || fuehrung },
                   ]; })().map(card => (
                     <div
                       key={card.label}
@@ -3967,12 +3897,12 @@ export default function RollenDNA() {
                   >
                     <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 3 }}>
                       <Hash style={{ width: 14, height: 14, color: "#8E8E93", flexShrink: 0 }} />
-                      <span style={{ fontSize: 14, fontWeight: 650, color: "#1D1D1F" }}>{region === "IT" ? "Numero di compiti e competenze" : region === "FR" ? "Nombre de tâches et compétences" : region === "EN" ? "Tasks / competency count" : "Tätigkeits-/Kompetenzanzahl"}</span>
+                      <span style={{ fontSize: 14, fontWeight: 650, color: "#1D1D1F" }}>{ui.rollendna.taskCompetencyCount}</span>
                     </div>
                     <div style={{ display: "flex", gap: 12, paddingLeft: 21, flexWrap: "wrap" }}>
-                      <span style={{ fontSize: 14, color: "#48484A" }}><strong style={{ color: "#1D1D1F" }}>{hauptCount}</strong> {region === "IT" ? "compiti" : region === "FR" ? "tâches" : region === "EN" ? "tasks" : "Tätigkeiten"}</span>
-                      <span style={{ fontSize: 14, color: "#48484A" }}><strong style={{ color: "#1D1D1F" }}>{nebenCount}</strong> {region === "IT" ? "competenze umane" : region === "FR" ? "compétences humaines" : region === "EN" ? "human skills" : "Humankompetenzen"}</span>
-                      {fuehrung !== "Keine" && <span style={{ fontSize: 14, color: "#48484A" }}><strong style={{ color: "#1D1D1F" }}>{fuehrungCount}</strong> {region === "IT" ? "management" : region === "FR" ? "management" : region === "EN" ? "leadership" : "Führung"}</span>}
+                      <span style={{ fontSize: 14, color: "#48484A" }}><strong style={{ color: "#1D1D1F" }}>{hauptCount}</strong> {ui.rollendna.tasks}</span>
+                      <span style={{ fontSize: 14, color: "#48484A" }}><strong style={{ color: "#1D1D1F" }}>{nebenCount}</strong> {ui.rollendna.humanCompetences}</span>
+                      {fuehrung !== "Keine" && <span style={{ fontSize: 14, color: "#48484A" }}><strong style={{ color: "#1D1D1F" }}>{fuehrungCount}</strong> {ui.rollendna.managementLabel}</span>}
                     </div>
                   </div>
                 </div>
@@ -4079,7 +4009,7 @@ export default function RollenDNA() {
                     data-testid="button-entscheidungsbericht"
                   >
                     <FileText className="w-4 h-4" />
-                    {region === "IT" ? "Genera il rapporto decisionale" : region === "FR" ? "Générer le rapport de décision" : region === "EN" ? "Generate decision report" : "Entscheidungsbericht erstellen"}
+                    {ui.rollendna.generateDecisionReport}
                   </button>
                 </div>
                   </>
@@ -4124,8 +4054,8 @@ export default function RollenDNA() {
                       <Lightbulb style={{ width: 15, height: 15, color: "#FFF", strokeWidth: 2.2 }} />
                     </div>
                     <span style={{ color: "#1D1D1F", display: "flex", alignItems: "baseline", gap: 6 }}>
-                      <span style={{ fontSize: 18, fontWeight: 700, flexShrink: 0, color: "#34C759" }}>{region === "IT" ? "Profilo del ruolo:" : region === "FR" ? "Profil du poste :" : region === "EN" ? "Job profile:" : "Kurzprofil der Stelle:"}</span>
-                      <span style={{ fontSize: 18, fontWeight: 700 }}>{beruf}{fuehrung && fuehrung !== "Keine" ? "" + (region === "IT" ? " con responsabilita' di management" : region === "FR" ? " avec responsabilité de management" : region === "EN" ? " with leadership responsibility" : " mit Führungsverantwortung") : ""}</span>
+                      <span style={{ fontSize: 18, fontWeight: 700, flexShrink: 0, color: "#34C759" }}>{ui.rollendna.jobProfile}</span>
+                      <span style={{ fontSize: 18, fontWeight: 700 }}>{beruf}{fuehrung && fuehrung !== "Keine" ? ui.rollendna.withLeadership : ""}</span>
                     </span>
                   </div>
                   <ChevronDown style={{
@@ -4150,7 +4080,7 @@ export default function RollenDNA() {
                       background: "#FFFFFF",
                       border: "1px solid rgba(0,0,0,0.06)",
                     }} data-testid="card-grundprinzip-collapsed">
-                      <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0", display: "flex", alignItems: "center", gap: 6 }}><Info style={{ width: 15, height: 15, color: "#1D1D1F", flexShrink: 0 }} />{(region === "IT" ? analysisPrincipleText_IT : region === "FR" ? analysisPrincipleText_FR : region === "EN" ? analysisPrincipleText_EN : analysisPrincipleText).title}</h3>
+                      <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0", display: "flex", alignItems: "center", gap: 6 }}><Info style={{ width: 15, height: 15, color: "#1D1D1F", flexShrink: 0 }} />{ui.rollendna.analysisPrincipleTitle}</h3>
                       <p lang="de" style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: 0, ...reportTextStyle }}>{localizeText((region === "IT" ? analysisPrincipleText_IT : region === "FR" ? analysisPrincipleText_FR : region === "EN" ? analysisPrincipleText_EN : analysisPrincipleText).body.join(" "))}</p>
                     </div>
 
@@ -4168,9 +4098,9 @@ export default function RollenDNA() {
 
                       <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 10 }}>
                         {[
-                          { label: region === "IT" ? "Orientato all'azione" : region === "FR" ? "Orienté action" : region === "EN" ? "Action-oriented" : "Impulsiv", color: "#C41E3A", bg: "rgba(196,30,58,0.05)", border: "rgba(196,30,58,0.12)", desc: region === "IT" ? "Attuazione, decisione e responsabilita' dei risultati" : region === "FR" ? "Exécution, décisions et responsabilité des résultats" : region === "EN" ? "Execution, decisions and accountability for results" : "Umsetzung, Entscheidung und Ergebnisverantwortung" },
-                          { label: region === "IT" ? "Relazionale" : region === "FR" ? "Relationnel" : region === "EN" ? "Relational" : "Intuitiv", color: "#F39200", bg: "rgba(243,146,0,0.05)", border: "rgba(243,146,0,0.12)", desc: region === "IT" ? "Collaborazione e azione contestualizzata" : region === "FR" ? "Collaboration et action adaptée au contexte" : region === "EN" ? "Collaboration and context-aware action" : "Zusammenarbeit und kontextbezogenes Handeln" },
-                          { label: region === "IT" ? "Analitico" : region === "FR" ? "Analytique" : region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", bg: "rgba(26,93,171,0.05)", border: "rgba(26,93,171,0.12)", desc: region === "IT" ? "Struttura, pianificazione e precisione tecnica" : region === "FR" ? "Structure, planification et précision technique" : region === "EN" ? "Structure, planning and technical precision" : "Struktur, Planung und fachliche Präzision" },
+                          { label: ui.general.labelImpulsiv, color: "#C41E3A", bg: "rgba(196,30,58,0.05)", border: "rgba(196,30,58,0.12)", desc: ui.rollendna.executionDecisions },
+                          { label: ui.general.labelIntuitiv, color: "#F39200", bg: "rgba(243,146,0,0.05)", border: "rgba(243,146,0,0.12)", desc: ui.rollendna.collaborationContextual },
+                          { label: ui.general.labelAnalytisch, color: "#1A5DAB", bg: "rgba(26,93,171,0.05)", border: "rgba(26,93,171,0.12)", desc: ui.rollendna.structurePlanning },
                         ].map(d => (
                           <div key={d.label} style={{
                             background: d.bg,
@@ -4199,7 +4129,7 @@ export default function RollenDNA() {
                         background: "#FFFFFF",
                         border: "1px solid rgba(0,0,0,0.06)",
                       }} data-testid="box-biocheck-description-collapsed">
-                        <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0", display: "flex", alignItems: "center", gap: 6 }}><Lightbulb style={{ width: 15, height: 15, color: "#1D1D1F", flexShrink: 0 }} />{region === "IT" ? "Risultato dell'analisi" : region === "FR" ? "Résultat de l'analyse" : region === "EN" ? "Result of the analysis" : "Ergebnis der Analyse"}</h3>
+                        <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0", display: "flex", alignItems: "center", gap: 6 }}><Lightbulb style={{ width: 15, height: 15, color: "#1D1D1F", flexShrink: 0 }} />{ui.rollendna.analysisResult}</h3>
                         <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: 0, ...reportTextStyle }} data-testid="text-biocheck-collapsed-body">
                           {localizeText([...rt.body, ...(isLeadershipRole ? [rt.leadership] : [])].join(" "))}
                         </p>
@@ -4210,10 +4140,10 @@ export default function RollenDNA() {
                   <div style={{ marginTop: 16 }}>
                     <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 10 : 16 }}>
                       {[
-                        { title: region === "IT" ? "Attivita'" : region === "FR" ? "Activités" : region === "EN" ? "Activities" : "Tätigkeiten", key: "haupttaetigkeiten", data: bioGramHaupt, icon: Briefcase },
-                        { title: region === "IT" ? "Competenze umane" : region === "FR" ? "Compétences humaines" : region === "EN" ? "Human competences" : "Humankompetenzen", key: "humankompetenzen", data: bioGramNeben, icon: Heart },
-                        { title: region === "IT" ? "Condizioni quadro del ruolo" : region === "FR" ? "Conditions-cadres du poste" : region === "EN" ? "Role framework conditions" : "Rahmenbedingungen der Stelle", key: "rahmenbedingungen", data: bioGramRahmen, icon: Settings },
-                        ...(isLeadershipRole ? [{ title: region === "IT" ? "Competenze di management" : region === "FR" ? "Compétences de management" : region === "EN" ? "Leadership competences" : "Führungskompetenzen", key: "fuehrungskompetenzen", data: bioGramFuehrung, icon: Shield }] : []),
+                        { title: ui.rollendna.tasks, key: "haupttaetigkeiten", data: bioGramHaupt, icon: Briefcase },
+                        { title: ui.rollendna.humanCompetences, key: "humankompetenzen", data: bioGramNeben, icon: Heart },
+                        { title: ui.rollendna.frameworkConditions, key: "rahmenbedingungen", data: bioGramRahmen, icon: Settings },
+                        ...(isLeadershipRole ? [{ title: ui.rollendna.leadershipCompetences, key: "fuehrungskompetenzen", data: bioGramFuehrung, icon: Shield }] : []),
                       ].map((section) => (
                         <div
                           key={section.key}
@@ -4232,9 +4162,9 @@ export default function RollenDNA() {
                             </p>
                           </div>
                           {[
-                            { label: region === "IT" ? "Orientato all'azione" : region === "FR" ? "Orienté action" : region === "EN" ? "Action-oriented" : "Impulsiv", color: "#C41E3A", value: section.data.imp },
-                            { label: region === "IT" ? "Relazionale" : region === "FR" ? "Relationnel" : region === "EN" ? "Relational" : "Intuitiv", color: "#F39200", value: section.data.int },
-                            { label: region === "IT" ? "Analitico" : region === "FR" ? "Analytique" : region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", value: section.data.ana },
+                            { label: ui.general.labelImpulsiv, color: "#C41E3A", value: section.data.imp },
+                            { label: ui.general.labelIntuitiv, color: "#F39200", value: section.data.int },
+                            { label: ui.general.labelAnalytisch, color: "#1A5DAB", value: section.data.ana },
                           ].map((bar) => (
                             <div
                               key={bar.label}
@@ -4313,14 +4243,14 @@ export default function RollenDNA() {
                       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
                         <BarChart3 style={{ width: 16, height: 16, color: "#6E6E73", strokeWidth: 1.8 }} />
                         <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>
-                          {region === "IT" ? "Profilo complessivo dei requisiti del ruolo" : region === "FR" ? "Profil global des exigences du poste" : region === "EN" ? "Overall role requirements profile" : "Gesamtprofil der Stellenanforderung"}
+                          {ui.rollendna.gesamtprofilStelle}
                         </p>
                       </div>
                       {(() => {
                         const bars = [
-                          { label: region === "IT" ? "Orientato all'azione" : region === "FR" ? "Orienté action" : region === "EN" ? "Action-oriented" : "Impulsiv", color: "#C41E3A", value: bioGramGesamt.imp },
-                          { label: region === "IT" ? "Relazionale" : region === "FR" ? "Relationnel" : region === "EN" ? "Relational" : "Intuitiv", color: "#F39200", value: bioGramGesamt.int },
-                          { label: region === "IT" ? "Analitico" : region === "FR" ? "Analytique" : region === "EN" ? "Analytical" : "Analytisch", color: "#1A5DAB", value: bioGramGesamt.ana },
+                          { label: ui.general.labelImpulsiv, color: "#C41E3A", value: bioGramGesamt.imp },
+                          { label: ui.general.labelIntuitiv, color: "#F39200", value: bioGramGesamt.int },
+                          { label: ui.general.labelAnalytisch, color: "#1A5DAB", value: bioGramGesamt.ana },
                         ];
                         return (
                           <div style={{ background: "#F0F0F2", borderRadius: 16, padding: "16px 18px", display: "flex", flexDirection: "column", gap: 14 }}>

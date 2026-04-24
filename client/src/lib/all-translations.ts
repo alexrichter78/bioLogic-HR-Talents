@@ -592,6 +592,7 @@ export const ALL_TRANSLATIONS: TranslationEntry[] = [
   { section: "Rollen-DNA", key: "rollendna.taskCompetencyCount", de: "Tätigkeits-/Kompetenzanzahl", en: "Tasks / competency count", fr: "Nombre de tâches et compétences", it: "Numero di compiti e competenze" },
   { section: "Rollen-DNA", key: "rollendna.generateDecisionReport", de: "Entscheidungsbericht erstellen", en: "Generate decision report", fr: "Générer le rapport de décision", it: "Genera il rapporto decisionale" },
   { section: "Rollen-DNA", key: "rollendna.jobLabel", de: "Stelle", en: "Position", fr: "Poste", it: "Posizione" },
+  { section: "Rollen-DNA", key: "rollendna.addActivity", de: "Neue Tätigkeit hinzufügen", en: "Add new task", fr: "Ajouter une nouvelle activité", it: "Aggiungi una nuova attività" },
   // ─── TEAMDYNAMIK (additions) ──────────────────────────────────────────────
   { section: "TeamDynamik", key: "teamdyn.profileMax67", de: "Profil (max. 67 % pro Komponente)", en: "Profile (max. 67% per component)", fr: "Profil (max. 67 % par composante)", it: "Profilo (max. 67% per componente)" },
   // ─── JOBCHECK (additions) ─────────────────────────────────────────────────
