@@ -628,7 +628,7 @@ export default function JobCheck() {
                 style={{ position: "absolute", top: 16, right: 16, height: 36, padding: "0 14px", borderRadius: 10, border: "1px solid rgba(0,0,0,0.08)", background: "rgba(0,0,0,0.03)", color: "#1D1D1F", display: "flex", alignItems: "center", justifyContent: "center", gap: 7, fontSize: 13, fontWeight: 600, cursor: "pointer", transition: "all 0.15s ease", zIndex: 2 }}
               >
                 <Printer style={{ width: 14, height: 14 }} />
-                <span>{jc.printButton}</span>
+                <span>{jc.printBtn}</span>
               </button>
 
               {dnaSummary && (
@@ -684,9 +684,9 @@ export default function JobCheck() {
                   <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", marginBottom: 14 }}>{jc.sollHeader}</p>
                   {roleProfile && (
                     <SoftBar region={region} items={[
-                      { label: jc.labelImpulsiv, value: roleProfile.impulsiv, color: COLORS.imp },
-                      { label: jc.labelIntuitiv, value: roleProfile.intuitiv, color: COLORS.int },
-                      { label: jc.labelAnalytisch, value: roleProfile.analytisch, color: COLORS.ana },
+                      { label: ui.general.labelImpulsiv, value: roleProfile.impulsiv, color: COLORS.imp },
+                      { label: ui.general.labelIntuitiv, value: roleProfile.intuitiv, color: COLORS.int },
+                      { label: ui.general.labelAnalytisch, value: roleProfile.analytisch, color: COLORS.ana },
                     ]} />
                   )}
                   <div style={{ marginTop: 10 }}>
@@ -705,9 +705,9 @@ export default function JobCheck() {
                   <p style={{ fontSize: 14, color: "#48484A", marginBottom: 16 }}>{jc.istDescription}</p>
 
                   <div style={{ background: "#F0F0F2", borderRadius: 16, padding: "16px 18px", display: "flex", flexDirection: "column", gap: 14 }}>
-                    <BarSlider label={jc.labelImpulsiv} value={candImp} color={COLORS.imp} onChange={setCandImp} region={region} />
-                    <BarSlider label={jc.labelIntuitiv} value={candInt} color={COLORS.int} onChange={setCandInt} region={region} />
-                    <BarSlider label={jc.labelAnalytisch} value={candAna} color={COLORS.ana} onChange={setCandAna} region={region} />
+                    <BarSlider label={ui.general.labelImpulsiv} value={candImp} color={COLORS.imp} onChange={setCandImp} region={region} />
+                    <BarSlider label={ui.general.labelIntuitiv} value={candInt} color={COLORS.int} onChange={setCandInt} region={region} />
+                    <BarSlider label={ui.general.labelAnalytisch} value={candAna} color={COLORS.ana} onChange={setCandAna} region={region} />
                   </div>
                   <p style={{ fontSize: 11, color: "#6E6E73", marginTop: 8, textAlign: "center" }}>{jc.normalizedNote}</p>
                   {(() => {

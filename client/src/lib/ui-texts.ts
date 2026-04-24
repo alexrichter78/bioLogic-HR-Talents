@@ -219,6 +219,8 @@ export const UI = {
       calloutSameDomModerate: "Beide Profile sind {rk}-geprägt. Die Grundrichtung stimmt, die Ausprägung liegt jedoch unter dem, was die Stelle braucht. Mit gezielter Führung steuerbar.",
       calloutSameDomHigh: "Beide Profile sind {rk}-geprägt, aber die geforderte Ausprägung fehlt deutlich. Qualität und stabile Abläufe sind gefährdet.",
       calloutMismatch: "Die Stelle braucht eine {rk}-Arbeitsweise, die Person arbeitet {ck}-geprägt. Die zentrale Arbeitslogik der Stelle wird grundlegend verschoben.",
+      printTooltip: "Im Druckdialog 'Als PDF speichern' wählen",
+      printBtn: "Drucken",
 },
     teamcheckReport: {
       loadingTitle: "TeamCheck wird erstellt",
@@ -1042,6 +1044,8 @@ export const UI = {
       calloutSameDomModerate: "Both profiles share a {rk} orientation. The direction aligns, but intensity is below what the role requires. Manageable with targeted leadership.",
       calloutSameDomHigh: "Both profiles share a {rk} orientation, but required intensity is clearly missing. Quality and stable processes are at risk.",
       calloutMismatch: "The role requires a {rk} working style; the person operates with a {ck} orientation. The core working logic of the role is fundamentally misaligned.",
+      printTooltip: "In the print dialog select 'Save as PDF'",
+      printBtn: "Print",
 },
     teamcheckReport: {
       loadingTitle: "Generating team analysis",
@@ -1865,6 +1869,8 @@ export const UI = {
       calloutSameDomModerate: "Les deux profils partagent une orientation « {rk} ». La direction fondamentale est juste, mais l'intensité est inférieure à ce que le poste requiert. Pilotable avec un management ciblé.",
       calloutSameDomHigh: "Les deux profils partagent une orientation « {rk} », mais l'intensité requise fait clairement défaut. La qualité et la régularité des processus sont menacées.",
       calloutMismatch: "Le poste exige une orientation « {rk} », la personne travaille avec une orientation « {ck} ». La logique de travail centrale du poste est fondamentalement déplacée.",
+      printTooltip: "Dans la boîte de dialogue d'impression, sélectionner « Enregistrer en PDF »",
+      printBtn: "Imprimer",
 },
     teamcheckReport: {
       loadingTitle: "Génération de l'analyse d'équipe",
@@ -2688,6 +2694,8 @@ export const UI = {
       calloutSameDomModerate: "Entrambi i profili condividono un orientamento {rk}. La direzione è allineata, ma l'intensità è inferiore a quanto richiede il ruolo. Gestibile con una leadership mirata.",
       calloutSameDomHigh: "Entrambi i profili condividono un orientamento {rk}, ma l'intensità richiesta manca chiaramente. Qualità e processi stabili sono a rischio.",
       calloutMismatch: "Il ruolo richiede uno stile di lavoro {rk}; la persona opera con un orientamento {ck}. La logica di lavoro centrale del ruolo è fondamentalmente disallineata.",
+      printTooltip: "Nella finestra di stampa selezionare 'Salva come PDF'",
+      printBtn: "Stampa",
 },
     teamcheckReport: {
       loadingTitle: "Creazione dell'analisi del team",

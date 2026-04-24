@@ -749,7 +749,7 @@ export default function Teamdynamik() {
               }
 
               const detail = detailTeammitglied[tlKey];
-              const variant = getSystemVariant(teamProfile, personProfile, result.dominanceTeam, result.dominancePerson, _r);
+              const variant = getSystemVariant(teamProfile, personProfile, result.dominanceTeam, result.dominancePerson, region);
               return (
                 <div style={{ display: "flex", borderRadius: 14, overflow: "hidden", background: "#fff", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 4px rgba(0,0,0,0.04)", marginTop: 12 }} data-testid="detail-block">
                   <div style={{ width: 4, flexShrink: 0, background: tl.fill }} />
