@@ -1,9 +1,11 @@
 import { ArrowLeft } from "lucide-react";
 import logoPath from "@assets/Logo_bioLogic_1774652440525.gif";
 import { useLocalizedText, useRegion } from "@/lib/region";
+import { useUI } from "@/lib/ui-texts";
 
 export default function Impressum() {
   const t = useLocalizedText();
+  const ui = useUI();
   const { region } = useRegion();
   const en = region === "EN";
   const fr = region === "FR";
@@ -30,7 +32,7 @@ export default function Impressum() {
             style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 14, fontWeight: 600, color: "#3B82F6", background: "none", border: "none", cursor: "pointer", padding: 0 }}
           >
             <ArrowLeft style={{ width: 16, height: 16 }} />
-            {en ? "Back" : fr ? "Retour" : it ? "Indietro" : t("Zurück")}
+            {ui.general.back}
           </button>
         </div>
 

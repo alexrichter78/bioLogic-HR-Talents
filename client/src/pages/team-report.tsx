@@ -928,14 +928,14 @@ export default function TeamReport() {
   const tone = result ? passungTone(result.gesamtpassung) : passungTone("geeignet");
 
   const istProfileArr = [
-    { label: region === "IT" ? "Orientato all'azione" : region === "FR" ? "Orienté action" : region === "EN" ? "Action-oriented" : "Impulsiv", short: "Umsetzung", value: istProfile.impulsiv, color: BAR_CSS.impulsiv },
-    { label: region === "IT" ? "Relazionale" : region === "FR" ? "Relationnel" : region === "EN" ? "Relational" : "Intuitiv", short: "Zusammenarbeit", value: istProfile.intuitiv, color: BAR_CSS.intuitiv },
-    { label: region === "IT" ? "Analitico" : region === "FR" ? "Analytique" : region === "EN" ? "Analytical" : "Analytisch", short: "Struktur", value: istProfile.analytisch, color: BAR_CSS.analytisch },
+    { label: ui.general.labelImpulsiv, short: "Umsetzung", value: istProfile.impulsiv, color: BAR_CSS.impulsiv },
+    { label: ui.general.labelIntuitiv, short: "Zusammenarbeit", value: istProfile.intuitiv, color: BAR_CSS.intuitiv },
+    { label: ui.general.labelAnalytisch, short: "Struktur", value: istProfile.analytisch, color: BAR_CSS.analytisch },
   ];
   const teamProfileArr = [
-    { label: region === "IT" ? "Orientato all'azione" : region === "FR" ? "Orienté action" : region === "EN" ? "Action-oriented" : "Impulsiv", short: "Umsetzung", value: teamProfileN.impulsiv, color: BAR_CSS.impulsiv },
-    { label: region === "IT" ? "Relazionale" : region === "FR" ? "Relationnel" : region === "EN" ? "Relational" : "Intuitiv", short: "Zusammenarbeit", value: teamProfileN.intuitiv, color: BAR_CSS.intuitiv },
-    { label: region === "IT" ? "Analitico" : region === "FR" ? "Analytique" : region === "EN" ? "Analytical" : "Analytisch", short: "Struktur", value: teamProfileN.analytisch, color: BAR_CSS.analytisch },
+    { label: ui.general.labelImpulsiv, short: "Umsetzung", value: teamProfileN.impulsiv, color: BAR_CSS.impulsiv },
+    { label: ui.general.labelIntuitiv, short: "Zusammenarbeit", value: teamProfileN.intuitiv, color: BAR_CSS.intuitiv },
+    { label: ui.general.labelAnalytisch, short: "Struktur", value: teamProfileN.analytisch, color: BAR_CSS.analytisch },
   ];
 
   const deltas: { label: string; team: number; ist: number; delta: string; deltaTone: string }[] = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
@@ -958,7 +958,7 @@ export default function TeamReport() {
           <div className="w-full mx-auto" style={{ maxWidth: 1100, padding: isMobile ? "0 12px" : "0 24px" }}>
             <div className="text-center">
               <h1 style={{ fontSize: 24, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 2px", color: "#34C759" }} data-testid="text-teamreport-title">
-                {region === "IT" ? "Analizza la struttura del team" : region === "FR" ? "Analyser la structure d'équipe" : region === "EN" ? "Analyse team structure" : "Teamstruktur analysieren"}
+                {ui.teamreport.analyseTeam}
               </h1>
               <p style={{ fontSize: 14, color: "#48484A", fontWeight: 450, margin: 0 }} data-testid="text-teamreport-subtitle">
                 {region === "IT" ? "Analizza la composizione del team e individua gli effetti sistemici, le logiche decisionali e le potenziali zone di tensione." : region === "FR" ? "Analyse la composition de l'équipe et identifie les effets systémiques, les logiques de décision et les zones de tension potentielles." : region === "EN" ? "Analyse the composition of the team and identify systemic effects, decision logics and potential tensions." : "Analysiere die Zusammensetzung des Teams und erkenne systemische Wirkungen, Entscheidungslogiken und mögliche Spannungsfelder."}
@@ -990,7 +990,7 @@ export default function TeamReport() {
                 <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 12, alignItems: "center", marginBottom: 18 }}>
                   <div>
                     <label style={{ fontSize: 12, fontWeight: 600, color: "#3A3A3C", letterSpacing: "0.04em", textTransform: "uppercase" as const }}>
-                      {region === "IT" ? "Ruolo / Titolo" : region === "FR" ? "Poste / Titre" : region === "EN" ? "Role / title" : "Stelle / Bezeichnung"}
+                      {ui.teamreport.roleTitle2}
                     </label>
                     <div style={{ display: "flex", gap: 6, alignItems: "center", marginTop: 6 }}>
                       <input
@@ -1012,19 +1012,19 @@ export default function TeamReport() {
                           onClick={() => setRoleName("")}
                           data-testid="button-clear-role-name"
                           style={{ background: "none", border: "none", cursor: "pointer", fontSize: 17, color: "#8E8E93", padding: "0 2px", lineHeight: 1 }}
-                          title={region === "IT" ? "Rimuovi" : region === "FR" ? "Supprimer" : region === "EN" ? "Remove" : "Entfernen"}
+                          title={ui.teamreport.remove}
                         >{"\u00D7"}</button>
                       )}
                     </div>
                   </div>
                   <div>
                     <label style={{ fontSize: 12, fontWeight: 600, color: "#3A3A3C", letterSpacing: "0.04em", textTransform: "uppercase" as const }}>
-                      {region === "IT" ? "Posizione" : region === "FR" ? "Position" : region === "EN" ? "Position" : "Rolle"}
+                      {ui.teamreport.positionLabel}
                     </label>
                     <div style={{ display: "flex", gap: 8, marginTop: 6 }}>
                       {([
-                        { value: "teammitglied" as const, label: region === "IT" ? "Membro del team" : region === "FR" ? "Membre d'équipe" : region === "EN" ? "Team member" : "Teammitglied" },
-                        { value: "fuehrung" as const, label: region === "IT" ? "Manager" : region === "FR" ? "Manager" : region === "EN" ? "Manager" : "Führungskraft" },
+                        { value: "teammitglied" as const, label: ui.teamreport.teamMemberLabel },
+                        { value: "fuehrung" as const, label: ui.teamreport.managerLabel },
                       ]).map(opt => {
                         const active = roleTypeForCard === opt.value;
                         return (
@@ -1056,17 +1056,17 @@ export default function TeamReport() {
 
                 <div style={{ borderTop: "1px solid rgba(0,0,0,0.06)", paddingTop: 14 }}>
                   <label style={{ fontSize: 12, fontWeight: 600, color: "#3A3A3C", letterSpacing: "0.04em", textTransform: "uppercase" as const }}>
-                    {region === "IT" ? "Obiettivo del team" : region === "FR" ? "Objectif d'équipe" : region === "EN" ? "Team goal" : "Teamziel"} <span style={{ fontWeight: 400, textTransform: "none" as const, letterSpacing: 0 }}>(optional)</span>
+                    {ui.teamreport.teamGoal} <span style={{ fontWeight: 400, textTransform: "none" as const, letterSpacing: 0 }}>(optional)</span>
                   </label>
                   <p style={{ fontSize: 12, color: "#3A3A3C", margin: "4px 0 0", lineHeight: 1.5 }}>
-                    {region === "IT" ? "Di cosa ha piu' bisogno il team in questo momento?" : region === "FR" ? "De quoi l'équipe a-t-elle le plus besoin en ce moment ?" : region === "EN" ? "What does the team need most right now?" : "Was braucht das Team aktuell am meisten?"}
+                    {ui.teamreport.teamNeedsQuestion}
                   </p>
                   <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
                     {([
-                      { value: "" as typeof teamGoal, label: region === "IT" ? "Nessuno" : region === "FR" ? "Aucun" : region === "EN" ? "None" : "Keins", icon: null },
-                      { value: "umsetzung" as typeof teamGoal, label: region === "IT" ? "Attuazione" : region === "FR" ? "Exécution" : region === "EN" ? "Delivery" : "Umsetzung", icon: Rocket },
-                      { value: "analyse" as typeof teamGoal, label: region === "IT" ? "Analisi" : region === "FR" ? "Analyse" : region === "EN" ? "Analysis" : "Analyse", icon: BarChart3 },
-                      { value: "zusammenarbeit" as typeof teamGoal, label: region === "IT" ? "Collaborazione" : region === "FR" ? "Collaboration" : region === "EN" ? "Collaboration" : "Zusammenarbeit", icon: Handshake },
+                      { value: "" as typeof teamGoal, label: ui.teamreport.none, icon: null },
+                      { value: "umsetzung" as typeof teamGoal, label: ui.teamreport.delivery, icon: Rocket },
+                      { value: "analyse" as typeof teamGoal, label: ui.teamreport.analysis, icon: BarChart3 },
+                      { value: "zusammenarbeit" as typeof teamGoal, label: ui.teamreport.collaboration2, icon: Handshake },
                     ]).map(opt => {
                       const active = teamGoal === opt.value;
                       const Icon = opt.icon;
@@ -1122,9 +1122,9 @@ export default function TeamReport() {
           {configOpen && (
             <div style={{ padding: isMobile ? "0 14px 14px" : "0 32px 28px" }}>
               <div className="grid gap-6 grid-cols-1 sm:grid-cols-2">
-                <SliderGroup title={<>{region === "IT" ? "Profilo reale" : region === "FR" ? "Profil actuel" : region === "EN" ? "Actual profile" : "Ist-Profil"} <span style={{ fontWeight: 400, color: "#8E8E93" }}>({region === "IT" ? "persona" : region === "FR" ? "personne" : region === "EN" ? "person" : "Person"})</span></>} triad={istTriad}
+                <SliderGroup title={<>{ui.teamreport.actualProfileLabel} <span style={{ fontWeight: 400, color: "#8E8E93" }}>({ui.teamreport.personLabel})</span></>} triad={istTriad}
                   onTriadChange={updateIstTriad} testIdPrefix="ist" />
-                <SliderGroup title={<>{region === "IT" ? "Profilo del team" : region === "FR" ? "Profil d'équipe" : region === "EN" ? "Team profile" : "Teamprofil"} <span style={{ fontWeight: 400, color: "#8E8E93" }}>({region === "IT" ? "team" : region === "FR" ? "équipe" : region === "EN" ? "team" : "Team"})</span></>} triad={teamTriad}
+                <SliderGroup title={<>{ui.teamreport.teamProfileLabel} <span style={{ fontWeight: 400, color: "#8E8E93" }}>({ui.teamreport.teamLabel})</span></>} triad={teamTriad}
                   onTriadChange={updateTeamTriad} testIdPrefix="team" />
               </div>
               <div className="mt-6 flex items-center justify-end">
@@ -1196,7 +1196,7 @@ export default function TeamReport() {
                   onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-1px)"; (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 6px 20px rgba(0,113,227,0.35)"; }}
                   onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = "translateY(0)"; (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 4px 16px rgba(0,113,227,0.3)"; }}
                   data-testid="button-generate-report">
-                    {region === "IT" ? "Genera il rapporto" : region === "FR" ? "Générer le rapport" : region === "EN" ? "Generate report" : "Bericht erstellen"}
+                    {ui.teamreport.generateReportBtn}
                   </button>
                 </div>
             </div>
@@ -1346,17 +1346,17 @@ export default function TeamReport() {
 
                       const resultCards: ResultCard[] = isFK
                         ? [
-                            { title: region === "IT" ? "Impatto sistemico" : region === "FR" ? "Impact systémique" : region === "EN" ? "System impact" : "Systemwirkung", label: translateEngineValue(la.systemImpact.label, region), text: la.systemImpact.text!, colors: variantToColors(la.systemImpact.variant), testId: "v4-card-system-impact" },
-                            { title: region === "IT" ? "Sforzo di integrazione" : region === "FR" ? "Effort d'intégration" : region === "EN" ? "Integration effort" : "Integrationsaufwand", label: translateEngineValue(la.integrationEffort.label, region), text: la.integrationEffort.text!, colors: variantToColors(la.integrationEffort.variant), testId: "v4-card-integration-effort" },
+                            { title: ui.teamreport.systemImpact, label: translateEngineValue(la.systemImpact.label, region), text: la.systemImpact.text!, colors: variantToColors(la.systemImpact.variant), testId: "v4-card-system-impact" },
+                            { title: ui.teamreport.integrationEffort, label: translateEngineValue(la.integrationEffort.label, region), text: la.integrationEffort.text!, colors: variantToColors(la.integrationEffort.variant), testId: "v4-card-integration-effort" },
                             ...(la.teamGoalImpact.selectedGoal && la.teamGoalImpact.label !== "Kein Ziel gewählt"
-                              ? [{ title: region === "IT" ? "Impatto sull'obiettivo del team" : region === "FR" ? "Impact sur l'objectif d'équipe" : region === "EN" ? "Impact on team goal" : "Wirkung aufs Teamziel", label: translateEngineValue(la.teamGoalImpact.label, region), text: la.teamGoalImpact.reasons[0] || la.teamGoalImpact.text!, colors: variantToColors(la.teamGoalImpact.variant), testId: "v4-card-goal-impact" }]
+                              ? [{ title: ui.teamreport.teamGoalImpact, label: translateEngineValue(la.teamGoalImpact.label, region), text: la.teamGoalImpact.reasons[0] || la.teamGoalImpact.text!, colors: variantToColors(la.teamGoalImpact.variant), testId: "v4-card-goal-impact" }]
                               : []),
                           ]
                         : [
-                            { title: region === "IT" ? "Compatibilita' con il team" : region === "FR" ? "Adéquation d'équipe" : region === "EN" ? "Team fit" : "Teampassung", label: badgeLabels[teamFit], text: teamText, colors: tColors, testId: "v4-card-team" },
-                            { title: region === "IT" ? "Sforzo di integrazione" : region === "FR" ? "Effort d'intégration" : region === "EN" ? "Integration effort" : "Integrationsaufwand", label: bLabel, text: bDesc, colors: bBg, testId: "v4-card-integration" },
+                            { title: ui.teamreport.teamFitLabel, label: badgeLabels[teamFit], text: teamText, colors: tColors, testId: "v4-card-team" },
+                            { title: ui.teamreport.integrationEffort, label: bLabel, text: bDesc, colors: bBg, testId: "v4-card-integration" },
                             ...(fColors
-                              ? [{ title: region === "IT" ? "Compatibilita' con l'obiettivo funzionale" : region === "FR" ? "Adéquation à l'objectif fonctionnel" : region === "EN" ? "Fit to functional goal" : "Passung zum Funktionsziel", label: badgeLabels[funcFit], text: funcText, colors: fColors, testId: "v4-card-func" }]
+                              ? [{ title: ui.teamreport.functionalGoalFit, label: badgeLabels[funcFit], text: funcText, colors: fColors, testId: "v4-card-func" }]
                               : []),
                           ];
 

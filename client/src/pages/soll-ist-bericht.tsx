@@ -1232,7 +1232,7 @@ export default function SollIstBericht() {
                     title={region === "IT" ? "Nella finestra di dialogo di stampa seleziona 'Salva come PDF'" : region === "FR" ? "Dans la boîte de dialogue, sélectionnez « Enregistrer en PDF »" : region === "EN" ? "In the print dialog select 'Save as PDF'" : "Im Druckdialog 'Als PDF speichern' wählen"}
                   >
                     <Printer style={{ width: 15, height: 15 }} />
-                    <span>{ui.matchcheck.print}</span>
+                    <span>{ui.general.print}</span>
                   </button>
                 </div>
 

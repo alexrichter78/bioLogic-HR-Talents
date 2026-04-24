@@ -355,8 +355,8 @@ function CalloutBox({ text, color, icon: Icon }: { text: string; color: string; 
 function StatusBadge({ status }: { status: "geeignet" | "bedingt" | "kritisch" }) {
   const { region } = useRegion();
   const config = {
-    geeignet: { icon: CircleCheck, color: "#34C759", bg: "rgba(52,199,89,0.08)", label: region === "FR" ? "Adapté" : region === "EN" ? "Suitable" : "Geeignet" },
-    bedingt: { icon: CircleMinus, color: "#FF9500", bg: "rgba(255,149,0,0.08)", label: region === "FR" ? "Partiellement adapté" : region === "EN" ? "Conditionally suitable" : "Bedingt geeignet" },
+    geeignet: { icon: CircleCheck, color: "#34C759", bg: "rgba(52,199,89,0.08)", label: ui.general.geeignet },
+    bedingt: { icon: CircleMinus, color: "#FF9500", bg: "rgba(255,149,0,0.08)", label: ui.general.bedingtGeeignet },
     kritisch: { icon: CircleAlert, color: "#C41E3A", bg: "rgba(196,30,58,0.08)", label: region === "FR" ? "Critique" : region === "EN" ? "Critical" : "Kritisch" },
   }[status];
   const Icon = config.icon;
@@ -785,7 +785,7 @@ export default function JobCheck() {
                         </div>
                       ); })()}
                       <div>
-                        <p style={{ fontSize: 11, fontWeight: 700, color: fitColor(engine.overallFit), textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 2px" }}>{region === "FR" ? "Évaluation globale" : region === "EN" ? "Overall rating" : "Gesamteinstufung"}</p>
+                        <p style={{ fontSize: 11, fontWeight: 700, color: fitColor(engine.overallFit), textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 2px" }}>{ui.teamreport.overallAssessment}</p>
                         <p style={{ fontSize: 18, fontWeight: 750, color: "#1D1D1F", margin: 0 }}>
                           {region === "FR"
                             ? engine.overallFit === "SUITABLE" ? "Adapté" : engine.overallFit === "CONDITIONAL" ? "Partiellement adapté" : "Non adapté"
@@ -813,22 +813,22 @@ export default function JobCheck() {
                       }}>
                         <Target style={{ width: 16, height: 16, color: "#FFF", strokeWidth: 2.2 }} />
                       </div>
-                      <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>{region === "FR" ? "Comparaison des profils" : region === "EN" ? "Profile comparison" : "Vergleich der Profile"}</span>
+                      <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>{ui.jobcheck.profileComparisonTitle}</span>
                     </div>
                     <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.6, marginBottom: 16, hyphens: "auto", textAlign: "justify" } as React.CSSProperties} lang="de">
                       Diese Auswertung beschreibt die Wirklogik einer Stelle. Die Anforderungen werden den drei Arbeitsbereichen{" "}
-                      <span style={{ fontWeight: 700, color: COLORS.imp }}>{region === "IT" ? "Orientato all'azione" : region === "FR" ? "Orienté action" : region === "EN" ? "Action-oriented" : "Impulsiv"}</span>,{" "}
-                      <span style={{ fontWeight: 700, color: COLORS.int }}>{region === "IT" ? "Relazionale" : region === "FR" ? "Relationnel" : region === "EN" ? "Relational" : "Intuitiv"}</span>{region === "FR" ? " et " : region === "EN" ? " and " : " und "}
-                      <span style={{ fontWeight: 700, color: COLORS.ana }}>{region === "IT" ? "Analitico" : region === "FR" ? "Analytique" : region === "EN" ? "Analytical" : "Analytisch"}</span>{region === "FR" ? "." : region === "EN" ? "." : " zugeordnet."}
+                      <span style={{ fontWeight: 700, color: COLORS.imp }}>{ui.general.labelImpulsiv}</span>,{" "}
+                      <span style={{ fontWeight: 700, color: COLORS.int }}>{ui.general.labelIntuitiv}</span>{region === "FR" ? " et " : region === "EN" ? " and " : " und "}
+                      <span style={{ fontWeight: 700, color: COLORS.ana }}>{ui.general.labelAnalytisch}</span>{region === "FR" ? "." : region === "EN" ? "." : " zugeordnet."}
                       So wird erkennbar, welche Form von Wirksamkeit die Stelle bestimmt.
                     </p>
                     {roleProfile && (() => {
                       const r = roleProfile;
                       const c = snapshotCand;
                       const dims: { key: ComponentKey; label: string; color: string }[] = [
-                        { key: "impulsiv", label: region === "IT" ? "Orientato all'azione" : region === "FR" ? "Orienté action" : region === "EN" ? "Action-oriented" : "Impulsiv", color: COLORS.imp },
-                        { key: "intuitiv", label: region === "IT" ? "Relazionale" : region === "FR" ? "Relationnel" : region === "EN" ? "Relational" : "Intuitiv", color: COLORS.int },
-                        { key: "analytisch", label: region === "IT" ? "Analitico" : region === "FR" ? "Analytique" : region === "EN" ? "Analytical" : "Analytisch", color: COLORS.ana },
+                        { key: "impulsiv", label: ui.general.labelImpulsiv, color: COLORS.imp },
+                        { key: "intuitiv", label: ui.general.labelIntuitiv, color: COLORS.int },
+                        { key: "analytisch", label: ui.general.labelAnalytisch, color: COLORS.ana },
                       ];
                       return (
                         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
@@ -848,10 +848,10 @@ export default function JobCheck() {
                                   <div style={{ position: "absolute", top: 0, left: 0, height: "50%", width: `${(Math.min(sollVal, 67) / 67) * 100}%`, background: `${d.color}40`, borderRadius: "8px 8px 0 0", transition: "width 0.4s ease" }} />
                                   <div style={{ position: "absolute", bottom: 0, left: 0, height: "50%", width: `${(Math.min(istVal, 67) / 67) * 100}%`, background: d.color, borderRadius: "0 0 8px 8px", transition: "width 0.4s ease" }} />
                                   <div style={{ position: "absolute", top: 0, left: 8, height: "50%", display: "flex", alignItems: "center" }}>
-                                    <span style={{ fontSize: 10, fontWeight: 700, color: "#1D1D1F" }}>{region === "FR" ? "Cible" : region === "EN" ? "Target" : "Soll"} {sollVal}%</span>
+                                    <span style={{ fontSize: 10, fontWeight: 700, color: "#1D1D1F" }}>{ui.jobcheck.sollHeader} {sollVal}%</span>
                                   </div>
                                   <div style={{ position: "absolute", bottom: 0, left: 8, height: "50%", display: "flex", alignItems: "center" }}>
-                                    <span style={{ fontSize: 10, fontWeight: 700, color: "#fff" }}>{region === "FR" ? "Réel" : region === "EN" ? "Actual" : "Ist"} {istVal}%</span>
+                                    <span style={{ fontSize: 10, fontWeight: 700, color: "#fff" }}>{ui.jobcheck.istHeader} {istVal}%</span>
                                   </div>
                                 </div>
                               </div>
@@ -863,7 +863,7 @@ export default function JobCheck() {
 
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginTop: 20, marginBottom: 14 }}>
                       <div style={{ padding: "12px 14px", borderRadius: 14, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)", textAlign: "center" }}>
-                        <p style={{ fontSize: 10, fontWeight: 700, color: "#6E6E73", textTransform: "uppercase", margin: "0 0 4px" }}>{region === "FR" ? "Intensité de pilotage" : region === "EN" ? "Management effort" : "Führungsaufwand"}</p>
+                        <p style={{ fontSize: 10, fontWeight: 700, color: "#6E6E73", textTransform: "uppercase", margin: "0 0 4px" }}>{ui.matchcheck.managementEffort}</p>
                         <p style={{ fontSize: 16, fontWeight: 750, color: controlColor(engine.controlIntensity), margin: 0 }}>
                           {region === "FR"
                             ? engine.controlIntensity === "LOW" ? "Faible" : engine.controlIntensity === "MEDIUM" ? "Modérée" : "Élevée"
@@ -873,7 +873,7 @@ export default function JobCheck() {
                         </p>
                       </div>
                       <div style={{ padding: "12px 14px", borderRadius: 14, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)", textAlign: "center" }}>
-                        <p style={{ fontSize: 10, fontWeight: 700, color: "#6E6E73", textTransform: "uppercase", margin: "0 0 4px" }}>{region === "FR" ? "Écart" : region === "EN" ? "Deviation" : "Abweichung"}</p>
+                        <p style={{ fontSize: 10, fontWeight: 700, color: "#6E6E73", textTransform: "uppercase", margin: "0 0 4px" }}>{ui.jobcheck.deviationLabel}</p>
                         <p style={{ fontSize: 16, fontWeight: 750, color: "#1D1D1F", margin: 0 }}>
                           {region === "FR"
                             ? engine.mismatchScore <= 8 ? "Faible" : engine.mismatchScore <= 15 ? "Modéré" : "Élevé"
@@ -888,11 +888,11 @@ export default function JobCheck() {
                     <CalloutBox text={engine.keyReason} color={fitColor(engine.overallFit)} icon={Lightbulb} />
 
                     <div style={{ marginTop: 20 }}>
-                      <p style={{ fontSize: 14, fontWeight: 600, color: "#48484A", margin: "0 0 14px", letterSpacing: "0.02em" }}>{region === "FR" ? "Signification des composantes" : region === "EN" ? "Meaning of the components" : "Bedeutung der Komponenten"}</p>
+                      <p style={{ fontSize: 14, fontWeight: 600, color: "#48484A", margin: "0 0 14px", letterSpacing: "0.02em" }}>{ui.teamreport.dimMeaning}</p>
                       {[
-                        { label: region === "IT" ? "Relazionale" : region === "FR" ? "Relationnel" : region === "EN" ? "Relational" : "Intuitiv", color: COLORS.int, desc: region === "FR" ? "Sentir ce dont les interlocuteurs ou l'équipe ont besoin et adapter la communication en conséquence." : region === "EN" ? "Sensing what conversation partners or the team need and adapting communication accordingly." : region === "IT" ? "Percepire ciò di cui interlocutori o il team hanno bisogno e adattare la comunicazione di conseguenza." : "Erkennen, was Gesprächspartner oder Team brauchen und Kommunikation darauf abstimmen." },
-                        { label: region === "IT" ? "Orientato all'azione" : region === "FR" ? "Orienté action" : region === "EN" ? "Action-oriented" : "Impulsiv", color: COLORS.imp, desc: region === "FR" ? "Faire avancer les tâches rapidement, fixer les priorités et produire des résultats." : region === "EN" ? "Driving tasks forward quickly, setting priorities and delivering results." : region === "IT" ? "Portare avanti i compiti rapidamente, stabilire priorità e ottenere risultati." : "Aufgaben schnell vorantreiben, Prioritäten setzen und Ergebnisse liefern." },
-                        { label: region === "IT" ? "Analitico" : region === "FR" ? "Analytique" : region === "EN" ? "Analytical" : "Analytisch", color: COLORS.ana, desc: region === "FR" ? "Créer des structures, organiser les processus et préparer les décisions de façon transparente." : region === "EN" ? "Creating structures, organising processes and preparing decisions transparently." : region === "IT" ? "Creare strutture, organizzare i processi e preparare le decisioni in modo trasparente." : "Strukturen schaffen, Abläufe organisieren und Entscheidungen nachvollziehbar vorbereiten." },
+                        { label: ui.general.labelIntuitiv, color: COLORS.int, desc: region === "FR" ? "Sentir ce dont les interlocuteurs ou l'équipe ont besoin et adapter la communication en conséquence." : region === "EN" ? "Sensing what conversation partners or the team need and adapting communication accordingly." : region === "IT" ? "Percepire ciò di cui interlocutori o il team hanno bisogno e adattare la comunicazione di conseguenza." : "Erkennen, was Gesprächspartner oder Team brauchen und Kommunikation darauf abstimmen." },
+                        { label: ui.general.labelImpulsiv, color: COLORS.imp, desc: region === "FR" ? "Faire avancer les tâches rapidement, fixer les priorités et produire des résultats." : region === "EN" ? "Driving tasks forward quickly, setting priorities and delivering results." : region === "IT" ? "Portare avanti i compiti rapidamente, stabilire priorità e ottenere risultati." : "Aufgaben schnell vorantreiben, Prioritäten setzen und Ergebnisse liefern." },
+                        { label: ui.general.labelAnalytisch, color: COLORS.ana, desc: region === "FR" ? "Créer des structures, organiser les processus et préparer les décisions de façon transparente." : region === "EN" ? "Creating structures, organising processes and preparing decisions transparently." : region === "IT" ? "Creare strutture, organizzare i processi e preparare le decisioni in modo trasparente." : "Strukturen schaffen, Abläufe organisieren und Entscheidungen nachvollziehbar vorbereiten." },
                       ].map((d, i) => (
                         <div key={d.label} style={{ marginBottom: i < 2 ? 14 : 0 }}>
                           <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
@@ -935,7 +935,7 @@ export default function JobCheck() {
                         ? `The person shows no clear dominant focus. The role requires a clear ${lc(rk)} orientation. Without a dominant focus, the foundation for setting priorities and deciding consistently is missing.`
                         : `Die Person zeigt keinen erkennbaren Schwerpunkt. Die Stelle braucht eine klare ${lc(rk)}-Ausrichtung. Ohne klaren Schwerpunkt fehlt die Grundlage, um Prioritäten gezielt zu setzen und konsequent zu entscheiden.`;
                       calloutColor = "#FF3B30";
-                      sectionTitle = region === "FR" ? "Répartition égale" : region === "EN" ? "Equal distribution" : "Gleichverteilung";
+                      sectionTitle = ui.jobcheck.equalDistribution;
                     } else if (dualConflict) {
                       const c2k = engine.candDominance.top2.key;
                       const c2L = lc(c2k);
@@ -955,7 +955,7 @@ export default function JobCheck() {
                           : `Die Person arbeitet ${lc(ck)}-/${c2L}-geprägt. Die für die Stelle entscheidende ${lc(rk)}-Arbeitsweise fehlt. Entscheidungen und Prioritäten sind kritisch betroffen.`;
                         calloutColor = "#FF3B30";
                       }
-                      sectionTitle = region === "FR" ? "Double dominance" : region === "EN" ? "Dual dominance" : "Doppeldominanz";
+                      sectionTitle = ui.jobcheck.dualDominance;
                     } else if (sameDom && intensityDiff <= 5) {
                       calloutText = region === "FR"
                         ? `Les deux profils partagent une orientation « ${lc(rk)} ». Les modes de travail et les priorités reflètent de façon stable les exigences du poste.`
@@ -963,7 +963,7 @@ export default function JobCheck() {
                         ? `Both profiles have a ${lc(rk)} orientation, with nearly identical intensity. Working style and priorities stably reflect the role requirements.`
                         : `Beide Profile sind ${lc(rk)}-geprägt, die Ausprägung ist nahezu gleichauf. Arbeitsweise und Prioritäten bilden die Stellenanforderung stabil ab.`;
                       calloutColor = "#34C759";
-                      sectionTitle = region === "FR" ? "Comparaison des profils" : region === "EN" ? "Profile comparison" : "Profilvergleich";
+                      sectionTitle = ui.jobcheck.profileComparison2;
                     } else if (sameDom && intensityDiff <= 15) {
                       calloutText = region === "FR"
                         ? `Les deux profils partagent une orientation « ${lc(rk)} ». La direction fondamentale est juste, mais l'intensité est inférieure à ce que le poste requiert. Pilotable avec un management ciblé.`
@@ -971,7 +971,7 @@ export default function JobCheck() {
                         ? `Both profiles share a ${lc(rk)} orientation. The direction aligns, but intensity is below what the role requires. Manageable with targeted leadership.`
                         : `Beide Profile sind ${lc(rk)}-geprägt. Die Grundrichtung stimmt, die Ausprägung liegt jedoch unter dem, was die Stelle braucht. Mit gezielter Führung steuerbar.`;
                       calloutColor = "#FF9500";
-                      sectionTitle = region === "FR" ? "Comparaison des profils" : region === "EN" ? "Profile comparison" : "Profilvergleich";
+                      sectionTitle = ui.jobcheck.profileComparison2;
                     } else if (sameDom) {
                       calloutText = region === "FR"
                         ? `Les deux profils partagent une orientation « ${lc(rk)} », mais l'intensité requise fait clairement défaut. La qualité et la régularité des processus sont menacées.`
@@ -979,7 +979,7 @@ export default function JobCheck() {
                         ? `Both profiles share a ${lc(rk)} orientation, but required intensity is clearly missing. Quality and stable processes are at risk.`
                         : `Beide Profile sind ${lc(rk)}-geprägt, aber die geforderte Ausprägung fehlt deutlich. Qualität und stabile Abläufe sind gefährdet.`;
                       calloutColor = "#FF3B30";
-                      sectionTitle = region === "FR" ? "Comparaison des profils" : region === "EN" ? "Profile comparison" : "Profilvergleich";
+                      sectionTitle = ui.jobcheck.profileComparison2;
                     } else {
                       calloutText = region === "FR"
                         ? `Le poste exige une orientation « ${lc(rk)} », la personne travaille avec une orientation « ${lc(ck)} ». La logique de travail centrale du poste est fondamentalement déplacée.`
@@ -987,7 +987,7 @@ export default function JobCheck() {
                         ? `The role requires a ${lc(rk)} working style; the person operates with a ${lc(ck)} orientation. The core working logic of the role is fundamentally misaligned.`
                         : `Die Stelle braucht eine ${lc(rk)}-Arbeitsweise, die Person arbeitet ${lc(ck)}-geprägt. Die zentrale Arbeitslogik der Stelle wird grundlegend verschoben.`;
                       calloutColor = "#FF3B30";
-                      sectionTitle = region === "FR" ? "Divergence poste-personne" : region === "EN" ? "Role-person mismatch" : "Unterschied zwischen Stelle und Person";
+                      sectionTitle = ui.jobcheck.roleMismatch;
                     }
 
                     return (
@@ -1012,7 +1012,7 @@ export default function JobCheck() {
                           background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)",
                         }}>
                           <div style={{ textAlign: "center" }}>
-                            <p style={{ fontSize: 11, fontWeight: 700, color: "#6E6E73", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>{region === "FR" ? "Cible" : region === "EN" ? "Target" : "Soll"}</p>
+                            <p style={{ fontSize: 11, fontWeight: 700, color: "#6E6E73", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>{ui.jobcheck.sollHeader}</p>
                             <div style={{ padding: "6px 16px", borderRadius: 10, background: `${rc}12`, border: `1px solid ${rc}25` }}>
                               <span style={{ fontSize: 15, fontWeight: 700, color: rc }}>{lc(rk)}</span>
                               <span style={{ fontSize: 12, fontWeight: 600, color: rc, opacity: 0.7, marginLeft: 4 }}>{roleVal}%</span>
@@ -1028,7 +1028,7 @@ export default function JobCheck() {
                             <ChevronRight style={{ width: 20, height: 20, color: "#FF3B30" }} />
                           )}
                           <div style={{ textAlign: "center" }}>
-                            <p style={{ fontSize: 11, fontWeight: 700, color: "#6E6E73", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>{region === "FR" ? "Réel" : region === "EN" ? "Actual" : "Ist"}</p>
+                            <p style={{ fontSize: 11, fontWeight: 700, color: "#6E6E73", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 4px" }}>{ui.jobcheck.istHeader}</p>
                             {isEqualDist ? (
                               <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                                 {[engine.candDominance.top1, engine.candDominance.top2, engine.candDominance.top3].map((comp) => {
@@ -1070,7 +1070,7 @@ export default function JobCheck() {
                             border: `1px solid ${intensityDiff <= 5 ? "rgba(52,199,89,0.15)" : intensityDiff <= 15 ? "rgba(255,149,0,0.15)" : "rgba(255,59,48,0.15)"}`,
                           }}>
                             <span style={{ fontSize: 12, fontWeight: 600, color: intensityDiff <= 5 ? "#34C759" : intensityDiff <= 15 ? "#FF9500" : "#FF3B30" }}>
-                              {intensityDiff <= 5 ? (region === "FR" ? "Profils quasi identiques" : region === "EN" ? "Profile nearly identical" : "Ausprägung nahezu identisch") : intensityDiff <= 15 ? (region === "FR" ? "Écart notable" : region === "EN" ? "Noticeable deviation" : "Spürbare Abweichung") : (region === "FR" ? "Écart significatif" : region === "EN" ? "Significant deviation" : "Deutliche Abweichung")}
+                              {intensityDiff <= 5 ? ui.jobcheck.nearlyIdentical : intensityDiff <= 15 ? ui.jobcheck.noticeableDeviation : ui.jobcheck.significantDeviation}
                             </span>
                           </div>
                         )}
@@ -1154,7 +1154,7 @@ export default function JobCheck() {
                       <div style={{ width: 30, height: 30, borderRadius: 10, flexShrink: 0, background: "rgba(196,30,58,0.10)", display: "flex", alignItems: "center", justifyContent: "center", marginRight: 10 }}>
                         <Shield style={{ width: 14, height: 14, color: "#C41E3A", strokeWidth: 2 }} />
                       </div>
-                      <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>{region === "FR" ? "Prévision des risques" : region === "EN" ? "Risk forecast" : "Risikoprognose"}</span>
+                      <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>{ui.teamreport.riskForecast}</span>
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                       {[
@@ -1187,7 +1187,7 @@ export default function JobCheck() {
                     </div>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 14 }}>
                       <div style={{ padding: "14px 16px", borderRadius: 14, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)", textAlign: "center" }}>
-                        <p style={{ fontSize: 10, fontWeight: 700, color: "#6E6E73", textTransform: "uppercase", margin: "0 0 4px" }}>{region === "FR" ? "Probabilité" : region === "EN" ? "Probability" : "Wahrscheinlichkeit"}</p>
+                        <p style={{ fontSize: 10, fontWeight: 700, color: "#6E6E73", textTransform: "uppercase", margin: "0 0 4px" }}>{ui.jobcheck.probability}</p>
                         <p style={{ fontSize: 18, fontWeight: 750, color: engine.development.likelihood === "hoch" ? "#34C759" : engine.development.likelihood === "mittel" ? "#FF9500" : "#C41E3A", margin: 0 }}>
                           {engine.development.likelihood.charAt(0).toUpperCase() + engine.development.likelihood.slice(1)}
                         </p>
@@ -1231,7 +1231,7 @@ export default function JobCheck() {
                       <div style={{ width: 30, height: 30, borderRadius: 10, flexShrink: 0, background: "rgba(0,113,227,0.10)", display: "flex", alignItems: "center", justifyContent: "center", marginRight: 10 }}>
                         <Award style={{ width: 14, height: 14, color: "#0071E3", strokeWidth: 2 }} />
                       </div>
-                      <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>{region === "FR" ? "Évaluation globale" : region === "EN" ? "Overall assessment" : "Gesamtbewertung"}</span>
+                      <span style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F" }}>{ui.teamreport.overallAssessment}</span>
                     </div>
                     <div style={{ fontSize: 28, fontWeight: 800, color: fitColor(engine.overallFit), margin: "20px 0 0", letterSpacing: "-0.02em" }} data-testid="jc-gesamt-label">
                       {region === "FR"
@@ -1253,7 +1253,7 @@ export default function JobCheck() {
                         </div>
                       </div>
                       <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: `${controlColor(engine.controlIntensity)}08`, border: `1px solid ${controlColor(engine.controlIntensity)}25` }}>
-                        <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>{region === "FR" ? "Intensité de pilotage" : region === "EN" ? "Management effort" : "Führungsaufwand"}</div>
+                        <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>{ui.matchcheck.managementEffort}</div>
                         <div style={{ fontSize: 17, fontWeight: 700, color: controlColor(engine.controlIntensity) }} data-testid="jc-fuehrungsaufwand">
                           {region === "FR"
                             ? engine.controlIntensity === "LOW" ? "Faible" : engine.controlIntensity === "MEDIUM" ? "Modérée" : "Élevée"

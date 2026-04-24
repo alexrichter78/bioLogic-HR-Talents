@@ -472,7 +472,7 @@ export default function Rollenprofil() {
       doc.save(`Stellenprofil_${safeName}.pdf`);
     } catch (e) {
       console.error("PDF error:", e);
-      alert(ui.rollenprofil.pdfExportFail);
+      alert(ui.general.pdfExportFail);
     } finally {
       if (clone && clone.parentNode) clone.parentNode.removeChild(clone);
       if (pdfBtn) pdfBtn.style.display = "";

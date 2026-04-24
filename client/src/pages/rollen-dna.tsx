@@ -1683,7 +1683,7 @@ function SummaryBar({ beruf, fuehrung, erfolgsfokusIndices, aufgabencharakter, a
 
   const aufgText = aufgabenSatz[aufgabencharakter] || (isEN ? "combines various task areas" : isIT ? "unisce diversi settori di compiti" : isFR ? "associe différents domaines de tâches" : "verbindet verschiedene Aufgabenbereiche");
   const arbText = arbeitsSatz[arbeitslogik] || (isEN ? "different working styles" : isIT ? "una combinazione di diversi stili lavorativi" : isFR ? "une combinaison de différents styles de travail" : "unterschiedliche Arbeitsweisen");
-  const fokusTeile = (fokusLabels as string[]).map(l => fokusKurz[l] || l.toLowerCase()).filter(Boolean);
+  const fokusTeile = (fokusLabels as string[]).map(l => l && (fokusKurz[l] || l.toLowerCase())).filter(Boolean);
   let fokusSatz = "";
   if (isEN) {
     if (fokusTeile.length === 1) fokusSatz = `The success of this role shows above all in ${fokusTeile[0]}.`;
