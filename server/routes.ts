@@ -579,7 +579,7 @@ PROFILTYPEN:
 - Balanced: alle drei Bereiche nahezu gleich (Differenz <3%). Vielseitig einsetzbar, aber ohne klares Profil. Risiko: "kann alles ein bisschen, aber nichts richtig gut". Stärke: Brückenbauer zwischen verschiedenen Prägungen.
 
 SOLL-IST-VERGLEICH (JobCheck):
-- Vergleicht Rollen-DNA (Soll) mit Personenprofil (Ist).
+- Vergleicht Rollenprofil / Stellenanalyse (Soll) mit Personenprofil (Ist).
 - Gleiche Dominanz = geringstes Risiko. Gegensätzliche Dominanz = höchstes Risiko.
 - Steuerungsintensität: NIEDRIG (gute Passung), MITTEL (Begleitung nötig), HOCH (aktive Steuerung).
 - Fit-Status: SUITABLE (≤15% Abweichung), CONDITIONAL (15-25%), CRITICAL (>25%).
@@ -705,7 +705,7 @@ ANALYTISCHE (BLAUE) PERSONEN ANSPRECHEN:
 - Was vermeiden: Zu emotionale Sprache, vage Beschreibungen, Übertreibungen, unstrukturierte Fließtexte.
 
 STELLENANZEIGEN-AUFBAU nach bioLogic:
-1. Stellenanalyse durchführen: Welches bioLogic-Profil braucht die Rolle tatsächlich? (aus der Rollen-DNA)
+1. Stellenanalyse durchführen: Welches bioLogic-Profil braucht die Rolle tatsächlich? (aus dem Rollenprofil / der Stellenanalyse)
 2. Zielgruppen-Ansprache: Wort- und Bildsprache auf das gewünschte Profil abstimmen.
 3. Authentizität: Die Anzeige muss zur tatsächlichen Rolle und Unternehmenskultur passen – keine Versprechen, die nicht eingehalten werden.
 4. Kanäle: Menschen mit unterschiedlichen Prägungen nutzen unterschiedliche Plattformen und reagieren auf unterschiedliche Formate.

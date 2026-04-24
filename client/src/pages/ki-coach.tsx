@@ -192,7 +192,7 @@ const EXAMPLE_PROMPTS_DE: PromptCategory[] = [
     requiresAnalysis: true,
     prompts: [
       "Schau dir die analysierte Stelle an und sag mir: Welche bioLogic-Typen passen am besten auf diese Rolle?",
-      "Basierend auf der Rollen-DNA: Welche Art von Kandidat ergänzt das Anforderungsprofil am besten?",
+      "Basierend auf dem analysierten Stellenprofil: Welche Art von Kandidat ergänzt das Anforderungsprofil am besten?",
       "Analysiere das Stellenprofil: Welche Stärken braucht der Stelleninhaber und wo liegen typische Risiken?",
       "Wie würde ein rotdominanter Kandidat auf diese Stelle wirken? Was sollte man bei der Besetzung beachten?",
       "Welche typischen Besetzungsfehler passieren bei diesem Stellenprofil, ohne dass man es merkt?",
@@ -203,10 +203,10 @@ const EXAMPLE_PROMPTS_DE: PromptCategory[] = [
     requiresAnalysis: true,
     prompts: [
       "Erstelle mir einen kompletten Interview-Leitfaden für die analysierte Stelle. Mit Einstieg, Kernfragen, bioLogic-spezifischen Beobachtungspunkten und Bewertungskriterien.",
-      "Generiere einen strukturierten Gesprächsleitfaden für ein Erstgespräch mit einem Kandidaten für diese Rolle. Berücksichtige die Rollen-DNA.",
+      "Generiere einen strukturierten Gesprächsleitfaden für ein Erstgespräch mit einem Kandidaten für diese Rolle. Berücksichtige das analysierte Stellenprofil.",
       "Erstelle mir einen Onboarding-Gesprächsleitfaden für die ersten 90 Tage basierend auf dem Stellenprofil.",
       "Erstelle einen Feedbackgespräch-Leitfaden, der auf das bioLogic-Profil der Stelle zugeschnitten ist.",
-      "Generiere einen Leitfaden für ein Probezeitgespräch basierend auf der Rollen-DNA und den Anforderungen.",
+      "Generiere einen Leitfaden für ein Probezeitgespräch basierend auf dem Stellenprofil und den Anforderungen.",
     ],
   },
   {
@@ -313,7 +313,7 @@ const EXAMPLE_PROMPTS_EN: PromptCategory[] = [
     requiresAnalysis: true,
     prompts: [
       "Look at the analysed role and tell me: which bioLogic types fit this role best?",
-      "Based on the role DNA: what kind of candidate best complements the requirements profile?",
+      "Based on the analysed role profile: what kind of candidate best complements the requirements?",
       "Analyse the role profile: what strengths does the role holder need and where are the typical risks?",
       "How would a red-dominant candidate fit this role? What should be considered when filling it?",
       "What typical hiring mistakes happen with this role profile without anyone noticing?",
@@ -324,10 +324,10 @@ const EXAMPLE_PROMPTS_EN: PromptCategory[] = [
     requiresAnalysis: true,
     prompts: [
       "Create a complete interview guide for the analysed role. With opener, core questions, bioLogic-specific observation points and evaluation criteria.",
-      "Generate a structured guide for a first conversation with a candidate for this role. Take the role DNA into account.",
+      "Generate a structured guide for a first conversation with a candidate for this role. Take the analysed role profile into account.",
       "Create an onboarding conversation guide for the first 90 days based on the role profile.",
       "Create a feedback conversation guide tailored to the bioLogic profile of the role.",
-      "Generate a guide for a probation-period review based on the role DNA and requirements.",
+      "Generate a guide for a probation-period review based on the role profile and requirements.",
     ],
   },
   {
@@ -510,7 +510,7 @@ const EXAMPLE_PROMPTS_IT: PromptCategory[] = [
     requiresAnalysis: true,
     prompts: [
       "Guarda la posizione analizzata e dimmi: quali tipi bioLogic sono più adatti a questo ruolo?",
-      "Basandoti sul DNA del ruolo: che tipo di candidato completa meglio il profilo dei requisiti?",
+      "Basandoti sul profilo del ruolo analizzato: che tipo di candidato completa meglio il profilo dei requisiti?",
       "Analizza il profilo del ruolo: quali punti di forza deve avere chi ricopre questa posizione e dove si trovano i rischi tipici?",
       "Come si comporterebbe un candidato dominato da Orientato all'azione in questo ruolo? Cosa considerare nella selezione?",
       "Quali errori di selezione tipici accadono per questo profilo di ruolo senza che nessuno se ne accorga?",
@@ -521,10 +521,10 @@ const EXAMPLE_PROMPTS_IT: PromptCategory[] = [
     requiresAnalysis: true,
     prompts: [
       "Crea una guida completa al colloquio per la posizione analizzata. Con apertura, domande chiave, punti di osservazione bioLogic specifici e criteri di valutazione.",
-      "Genera una guida strutturata per un primo colloquio con un candidato per questo ruolo. Tieni conto del DNA del ruolo.",
+      "Genera una guida strutturata per un primo colloquio con un candidato per questo ruolo. Tieni conto del profilo del ruolo analizzato.",
       "Crea una guida al colloquio di onboarding per i primi 90 giorni basandoti sul profilo del ruolo.",
       "Crea una guida al colloquio di feedback calibrata sul profilo bioLogic del ruolo.",
-      "Genera una guida per un colloquio di periodo di prova basandoti sul DNA del ruolo e sui requisiti.",
+      "Genera una guida per un colloquio di periodo di prova basandoti sul profilo del ruolo e sui requisiti.",
     ],
   },
   {
