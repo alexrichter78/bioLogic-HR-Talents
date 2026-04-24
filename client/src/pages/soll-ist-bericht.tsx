@@ -4,6 +4,7 @@ import { AlertTriangle, Download, Loader2, ChevronLeft, ChevronDown, SlidersHori
 import GlobalNav from "@/components/global-nav";
 import { useLocalizedText, localizeDeep, useRegion } from "@/lib/region";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useUI } from "@/lib/ui-texts";
 import { dominanceModeOf, labelComponent, buildRoleAnalysisFromState } from "@/lib/jobcheck-engine";
 import { computeSollIst, mapFuehrungsArt } from "@/lib/soll-ist-engine";
 import type { Triad, ComponentKey, RoleAnalysis } from "@/lib/jobcheck-engine";
@@ -230,6 +231,7 @@ export default function SollIstBericht() {
   const isMobile = useIsMobile();
   const t = useLocalizedText();
   const { region } = useRegion();
+  const ui = useUI();
   const [candidateName, setCandidateName] = useState("");
   const [candTriad, setCandTriad] = useState<{impulsiv: number; intuitiv: number; analytisch: number}>({ impulsiv: 33, intuitiv: 34, analytisch: 33 });
 
@@ -587,7 +589,7 @@ export default function SollIstBericht() {
         <GlobalNav />
         <div className="mx-auto max-w-3xl px-6 py-20 text-center">
           <AlertTriangle className="mx-auto mb-4 h-12 w-12 text-amber-500" />
-          <h2 className="text-xl font-semibold text-slate-950 mb-3">{region === "IT" ? "Nessuna DNA del ruolo disponibile" : region === "FR" ? "Aucun ADN de poste disponible" : region === "EN" ? "No role DNA available" : "Keine Rollen-DNA vorhanden"}</h2>
+          <h2 className="text-xl font-semibold text-slate-950 mb-3">{ui.matchcheck.noRoleDNA}</h2>
           <p className="text-sm text-slate-600 mb-6 leading-6">
             {region === "IT" ? "Crea prima un'analisi del ruolo per generare il rapporto target/reale." : region === "FR" ? "Créez d'abord une analyse de poste pour générer le rapport cible/réel." : region === "EN" ? "Please first create a role analysis to generate the target/actual report." : "Bitte erstelle zuerst eine Stellenanalyse, um den Soll-Ist-Bericht generieren zu können."}
           </p>
@@ -611,7 +613,7 @@ export default function SollIstBericht() {
           <div style={{ background: "rgba(255,255,255,0.78)", backdropFilter: "blur(40px)", borderRadius: 20, padding: "40px 32px", boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)", border: "1px solid rgba(0,0,0,0.04)" }}>
             <div style={{ width: 44, height: 44, margin: "0 auto 18px", border: "3px solid #E5E5E7", borderTopColor: "#0071E3", borderRadius: "50%", animation: "bio-spin 0.9s linear infinite" }} />
             <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }}>
-              {region === "IT" ? "Generazione dell'analisi di compatibilita'" : region === "FR" ? "Génération de l'analyse de compatibilité" : region === "EN" ? "Generating match analysis" : "MatchCheck wird erstellt"}
+              {ui.matchcheck.generatingMatch}
             </h2>
             <p style={{ fontSize: 14, color: "#48484A", margin: 0, lineHeight: 1.6 }}>
               {region === "IT"
@@ -639,7 +641,7 @@ export default function SollIstBericht() {
             <div className="w-full mx-auto" style={{ maxWidth: 1100, padding: isMobile ? "0 12px" : "0 24px" }}>
               <div className="text-center">
                 <h1 style={{ fontSize: 24, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 2px", color: "#34C759" }} data-testid="text-matchcheck-title">
-                  {region === "IT" ? "Configura l'analisi di compatibilita'" : region === "FR" ? "Configurer l'analyse d'adéquation" : region === "EN" ? "Configure fit analysis" : "Passungsanalyse konfigurieren"}
+                  {ui.matchcheck.configureMatch}
                 </h1>
                 <p style={{ fontSize: 14, color: "#48484A", fontWeight: 450, margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }} data-testid="text-matchcheck-subtitle">
                   {region === "IT" ? "Confronta il profilo del ruolo con il profilo della persona per analizzare la compatibilita' strutturale." : region === "FR" ? "Comparez le profil du poste avec le profil de la personne pour analyser l'adéquation structurelle." : region === "EN" ? "Compare the role profile with the person profile to analyse structural fit for this position." : "Vergleiche das Stellenprofil mit dem Personenprofil, um die strukturelle Passung für diese Stelle zu analysieren."}
@@ -667,7 +669,7 @@ export default function SollIstBericht() {
                   <SlidersHorizontal style={{ width: 15, height: 15, color: "#fff", strokeWidth: 2.5 }} />
                 </div>
                 <span style={{ fontSize: 18, fontWeight: 700, color: "#34C759" }}>
-                  {region === "IT" ? "Confronto profili: " : region === "FR" ? "Comparaison de profils : " : region === "EN" ? "Profile comparison: " : "Profilvergleich: "}<span style={{ fontWeight: 700, color: "#1D1D1F" }}>{roleName}</span>
+                  {ui.matchcheck.profileComparison}<span style={{ fontWeight: 700, color: "#1D1D1F" }}>{roleName}</span>
                 </span>
               </div>
               <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${profilvergleichOpen ? "rotate-180" : ""}`} />
@@ -676,7 +678,7 @@ export default function SollIstBericht() {
             {profilvergleichOpen && (<div style={{ padding: isMobile ? "0 14px 14px" : "0 32px 32px" }}>
             <div className="grid gap-6 grid-cols-1 sm:grid-cols-2">
               <div className="rounded-2xl border border-slate-200 bg-white p-6" data-testid="card-soll-profil">
-                <p className="text-base font-semibold text-slate-900 mb-6">{region === "IT" ? "Profilo target" : region === "FR" ? "Profil cible" : region === "EN" ? "Target profile" : "Soll-Profil"} <span className="font-normal text-slate-500">({region === "IT" ? "ruolo" : region === "FR" ? "poste" : region === "EN" ? "role" : "Stelle"})</span></p>
+                <p className="text-base font-semibold text-slate-900 mb-6">{ui.matchcheck.targetProfile} <span className="font-normal text-slate-500">({ui.matchcheck.role})</span></p>
                 <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                   {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
                     const val = roleTriad[k];
@@ -772,7 +774,7 @@ export default function SollIstBericht() {
               </div>
 
               <div className="rounded-2xl border border-slate-200 bg-white p-6" data-testid="card-ist-profil">
-                <p className="text-base font-semibold text-slate-900 mb-6">{region === "IT" ? "Profilo reale" : region === "FR" ? "Profil réel" : region === "EN" ? "Actual profile" : "Ist-Profil"} <span className="font-normal text-slate-500">({region === "IT" ? "persona" : region === "FR" ? "personne" : region === "EN" ? "person" : "Person"})</span></p>
+                <p className="text-base font-semibold text-slate-900 mb-6">{ui.matchcheck.actualProfile} <span className="font-normal text-slate-500">({ui.matchcheck.person})</span></p>
                 <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                   {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
                     const val = candTriad[k];
@@ -977,10 +979,10 @@ export default function SollIstBericht() {
                       <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.3)" strokeWidth="2.5" />
                       <path d="M12 2a10 10 0 0 1 10 10" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
                     </svg>
-                    {region === "IT" ? "Generazione in corso..." : region === "FR" ? "Génération en cours…" : region === "EN" ? "Generating…" : "Erstelle Bericht…"}
+                    {ui.matchcheck.generating}
                     <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
                   </>
-                ) : (region === "IT" ? "Genera il rapporto" : region === "FR" ? "Générer le rapport" : region === "EN" ? "Generate report" : "Bericht erstellen")}
+                ) : ui.matchcheck.generateReport}
               </button>
               {aiError && (
                 <p style={{ fontSize: 13, color: "#D64045", margin: "8px 0 0", width: "100%", textAlign: "center" }} data-testid="text-ai-error">
@@ -1198,7 +1200,7 @@ export default function SollIstBericht() {
               data-testid="link-back-matchcheck"
             >
               <ChevronLeft style={{ width: 16, height: 16 }} />
-              {region === "IT" ? "Torna al MatchCheck" : region === "FR" ? "Retour au MatchCheck" : region === "EN" ? "Back to MatchCheck" : "Zurück zum MatchCheck"}
+              {ui.matchcheck.backToMatchCheck}
             </button>
             <div style={{ position: "relative", background: "#FFFFFF", borderRadius: 20, overflow: "hidden", boxShadow: "0 4px 40px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.03)" }} data-testid="print-report-card" data-bericht lang={region === "IT" ? "it" : region === "FR" ? "fr" : region === "EN" ? "en" : "de"}>
 
@@ -1230,11 +1232,11 @@ export default function SollIstBericht() {
                     title={region === "IT" ? "Nella finestra di dialogo di stampa seleziona 'Salva come PDF'" : region === "FR" ? "Dans la boîte de dialogue, sélectionnez « Enregistrer en PDF »" : region === "EN" ? "In the print dialog select 'Save as PDF'" : "Im Druckdialog 'Als PDF speichern' wählen"}
                   >
                     <Printer style={{ width: 15, height: 15 }} />
-                    <span>{region === "IT" ? "Stampa" : region === "FR" ? "Imprimer" : region === "EN" ? "Print" : "Drucken"}</span>
+                    <span>{ui.matchcheck.print}</span>
                   </button>
                 </div>
 
-                <div className="report-kicker">{region === "IT" ? "ANALISI DI COMPATIBILITA'" : region === "FR" ? "ANALYSE D'ADÉQUATION" : region === "EN" ? "FIT ANALYSIS" : "PASSUNGSANALYSE"}</div>
+                <div className="report-kicker">{ui.matchcheck.kicker}</div>
                 <h1 className="report-title" data-testid="text-page-title">MatchCheck</h1>
                 <div className="report-subtitle">{result.roleName}</div>
 

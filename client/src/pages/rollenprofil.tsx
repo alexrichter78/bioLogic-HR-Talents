@@ -6,6 +6,7 @@ import { AlertTriangle, Sun, Gauge, Flame, Printer } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useRegion, useLocalizedText } from "@/lib/region";
+import { useUI } from "@/lib/ui-texts";
 import { BERUFE } from "@/data/berufe";
 import logoSrc from "@assets/LOGO_bio_1773853681939.png";
 import { generateJobCheckRoleReport, getForbiddenPhrases, type SuccessFocusKey, type ComponentKey, type JobCheckReportTexts } from "@/lib/entscheidungsbericht-engine";
@@ -252,6 +253,7 @@ export default function Rollenprofil() {
   const [, setLocation] = useLocation();
   const { region } = useRegion();
   const t = useLocalizedText();
+  const ui = useUI();
   const L = REPORT_LABELS[region === "IT" ? "it" : region === "FR" ? "fr" : region === "EN" ? "en" : "de"];
   const isMobile = useIsMobile();
   const [data, setData] = useState<ReportData | null>(null);
@@ -470,7 +472,7 @@ export default function Rollenprofil() {
       doc.save(`Stellenprofil_${safeName}.pdf`);
     } catch (e) {
       console.error("PDF error:", e);
-      alert(region === "FR" ? "L'export PDF a échoué. Veuillez réessayer." : region === "EN" ? "PDF export failed. Please try again." : "PDF-Export fehlgeschlagen. Bitte versuche es erneut.");
+      alert(ui.rollenprofil.pdfExportFail);
     } finally {
       if (clone && clone.parentNode) clone.parentNode.removeChild(clone);
       if (pdfBtn) pdfBtn.style.display = "";

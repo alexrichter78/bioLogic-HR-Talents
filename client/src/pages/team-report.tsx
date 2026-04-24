@@ -4,6 +4,7 @@ import { AlertTriangle, Download, Check, CheckCircle2, Users, ChevronDown, Zap, 
 import GlobalNav from "@/components/global-nav";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useLocalizedText, localizeDeep, useRegion, translateEngineValue } from "@/lib/region";
+import { useUI } from "@/lib/ui-texts";
 import { normalizeTriad, dominanceModeOf, dominanceLabel, labelComponent } from "@/lib/jobcheck-engine";
 import { computeTeamReport } from "@/lib/team-report-engine";
 import { constellationLabel, constellationLabelEN, detectConstellation } from "@/lib/soll-ist-engine";
@@ -555,6 +556,7 @@ export default function TeamReport() {
   const isMobile = useIsMobile();
   const t = useLocalizedText();
   const { region } = useRegion();
+  const ui = useUI();
 
   const [istTriad, setIstTriad] = useState(() => {
     try { const s = sessionStorage.getItem("tc_istTriad"); if (s) return JSON.parse(s); } catch {}

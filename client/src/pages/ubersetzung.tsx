@@ -1,8 +1,9 @@
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { useLocation } from "wouter";
 import { Search, ArrowLeft, Download, Check, Loader2 } from "lucide-react";
 import { useTranslationContext, type DbTranslation } from "@/lib/translations-context";
 import { ALL_TRANSLATIONS } from "@/lib/all-translations";
+import { apiRequest } from "@/lib/queryClient";
 
 const LANG_COLS = ["DE", "EN", "FR", "IT"] as const;
 type Lang = "de" | "en" | "fr" | "it";
@@ -14,6 +15,10 @@ export default function Ubersetzung() {
   const [search, setSearch] = useState("");
   const [selectedSection, setSelectedSection] = useState<string>("Alle");
   const { translations, isLoaded, updateField } = useTranslationContext();
+
+  useEffect(() => {
+    apiRequest("POST", "/api/translations/sync", ALL_TRANSLATIONS).catch(() => {});
+  }, []);
 
   const allEntries: DbTranslation[] = isLoaded && translations.size > 0
     ? ALL_TRANSLATIONS.map(s => translations.get(s.key) ?? { key: s.key, section: s.section, de: s.de, en: s.en, fr: s.fr, it: s.it, updatedAt: "" })

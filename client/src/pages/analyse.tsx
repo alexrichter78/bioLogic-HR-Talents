@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import GlobalNav from "@/components/global-nav";
 import { useAuth } from "@/lib/auth";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useRegion } from "@/lib/region";
+import { useUI } from "@/lib/ui-texts";
 
 const DEFAULT_BEREICH1 = `IMPULSIV = Handlungs- und Umsetzungskompetenz (MACHEN & DURCHSETZEN)
 
@@ -95,8 +95,7 @@ export default function Analyse() {
   const { user } = useAuth();
   const [, setLocation] = useLocation();
   const isMobile = useIsMobile();
-  const { region } = useRegion();
-  const en = region === "EN";
+  const ui = useUI();
 
   useEffect(() => {
     if (user && user.role !== "admin") {
@@ -164,14 +163,14 @@ export default function Analyse() {
               style={{ fontSize: 24, fontWeight: 700, color: "#1D1D1F", letterSpacing: "-0.02em", margin: "0 0 8px" }}
               data-testid="text-analyse-title"
             >
-              {en ? "Master data (analysis helper)" : "Stammdaten (Analysehilfe)"}
+              {ui.analyse.title}
             </h1>
           </div>
 
           <div className="flex flex-col gap-6">
             <div style={cardStyle}>
               <label style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", marginBottom: 8, display: "block" }} data-testid="label-bereich1">
-                {en ? "Action-oriented data" : "Impulsive Daten"}
+                {ui.analyse.bereich1Label}
               </label>
               <textarea
                 value={bereich1}
@@ -186,7 +185,7 @@ export default function Analyse() {
 
             <div style={cardStyle}>
               <label style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", marginBottom: 8, display: "block" }} data-testid="label-bereich2">
-                {en ? "Relational data" : "Intuitive Daten"}
+                {ui.analyse.bereich2Label}
               </label>
               <textarea
                 value={bereich2}
@@ -201,7 +200,7 @@ export default function Analyse() {
 
             <div style={cardStyle}>
               <label style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", marginBottom: 8, display: "block" }} data-testid="label-bereich3">
-                {en ? "Analytical data" : "Analytische Daten"}
+                {ui.analyse.bereich3Label}
               </label>
               <textarea
                 value={bereich3}
@@ -253,7 +252,7 @@ export default function Analyse() {
                 }}
                 data-testid="button-save-bereiche"
               >
-                {saved ? "Gespeichert" : "Bereiche speichern"}
+                {saved ? ui.analyse.saved : ui.analyse.save}
               </button>
             </div>
           </div>

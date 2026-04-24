@@ -5,6 +5,7 @@ import { useAuth } from "@/lib/auth";
 import { useLocation } from "wouter";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useRegion } from "@/lib/region";
+import { useUI } from "@/lib/ui-texts";
 import imgKompaktkurs from "@assets/Kompaktkurs_main_1776155971409.png";
 import imgLeadership from "@assets/68_1776155971408.png";
 import imgRecruiting from "@assets/69_1776155971408.png";
@@ -24,11 +25,7 @@ function createEmptyParticipant(): Participant {
 }
 
 function KursWidgetInner({ isMobile }: { isMobile: boolean }) {
-  const { region } = useRegion();
-  const en = region === "EN";
-  const fr = region === "FR";
-  const it = region === "IT";
-  const _t = (de: string, enStr: string, frStr: string, itStr?: string) => it && itStr ? itStr : en ? enStr : fr ? frStr : de;
+  const ui = useUI();
   const modules = [
     { img: imgKompaktkurs, title: "bioLogic Kompaktkurs" },
     { img: imgLeadership, title: "bioLogic Leadership" },
@@ -40,7 +37,7 @@ function KursWidgetInner({ isMobile }: { isMobile: boolean }) {
     <div data-testid="widget-kursmodule">
       <div style={{ textAlign: "center", marginBottom: 20 }}>
         <h2 style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", margin: "0 0 12px", letterSpacing: "-0.02em" }}>
-          {_t("Einführung in die bioLogic", "Introduction to bioLogic", "Introduction à la bioLogic", "Introduzione alla bioLogic")}
+          {ui.kurs.intro}
         </h2>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 12, justifyContent: "center" }}>
           <div style={{
@@ -49,7 +46,7 @@ function KursWidgetInner({ isMobile }: { isMobile: boolean }) {
             background: "rgba(0,113,227,0.06)",
           }}>
             <BookOpen style={{ width: 15, height: 15, color: "#0071E3" }} />
-            <span style={{ fontSize: 13, fontWeight: 600, color: "#0071E3" }}>{_t("3 Module mit 15 Lektionen", "3 modules with 15 lessons", "3 modules avec 15 leçons", "3 moduli con 15 lezioni")}</span>
+            <span style={{ fontSize: 13, fontWeight: 600, color: "#0071E3" }}>{ui.kurs.modules}</span>
           </div>
           <div style={{
             display: "flex", alignItems: "center", gap: 8,
@@ -57,7 +54,7 @@ function KursWidgetInner({ isMobile }: { isMobile: boolean }) {
             background: "rgba(0,113,227,0.06)",
           }}>
             <PlayCircle style={{ width: 15, height: 15, color: "#0071E3" }} />
-            <span style={{ fontSize: 13, fontWeight: 600, color: "#0071E3" }}>{_t("3 Stunden Video-Material", "3 hours of video material", "3 heures de vidéos", "3 ore di materiale video")}</span>
+            <span style={{ fontSize: 13, fontWeight: 600, color: "#0071E3" }}>{ui.kurs.video}</span>
           </div>
         </div>
       </div>
@@ -111,6 +108,7 @@ export default function Kurs() {
   const fr = region === "FR";
   const it = region === "IT";
   const _t = (de: string, enStr: string, frStr: string, itStr?: string) => it && itStr ? itStr : en ? enStr : fr ? frStr : de;
+  const ui = useUI();
   const [participants, setParticipants] = useState<Participant[]>([createEmptyParticipant()]);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -144,9 +142,9 @@ export default function Kurs() {
             border: "1px solid rgba(0,0,0,0.04)",
           }}>
             <Lock style={{ width: 40, height: 40, color: "#8E8E93", marginBottom: 16 }} />
-            <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }} data-testid="text-no-access">{_t("Kein Zugang", "No access", "Accès refusé", "Nessun accesso")}</h2>
+            <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }} data-testid="text-no-access">{ui.kurs.noAccess}</h2>
             <p style={{ fontSize: 14, color: "#48484A", maxWidth: 400, margin: "0 auto 24px" }}>
-              {_t("Der Kursbereich ist für dein Konto nicht freigeschaltet. Bitte wende dich an deinen Administrator.", "The course area is not unlocked for your account. Please contact your administrator.", "Le module de cours n'est pas activé pour ton compte. Contacte ton administrateur.", "L'area corsi non è attivata per il tuo account. Contatta il tuo amministratore.")}
+              {ui.kurs.noAccessDesc}
             </p>
             <button
               onClick={() => setLocation("/")}
@@ -158,7 +156,7 @@ export default function Kurs() {
                 boxShadow: "0 2px 8px rgba(0,113,227,0.25)",
               }}
             >
-              {_t("Zurück zur Startseite", "Back to home", "Retour à l'accueil", "Torna alla home")}
+              {ui.kurs.backHome}
             </button>
           </div>
         </div>
@@ -196,9 +194,9 @@ export default function Kurs() {
             boxShadow: "0 8px 30px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.5)",
             border: "1px solid rgba(0,0,0,0.04)", textAlign: "center",
           }} data-testid="card-coming-soon">
-            <p style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }}>{_t("Inhalte in Vorbereitung", "Content in preparation", "Contenu en préparation", "Contenuti in preparazione")}</p>
+            <p style={{ fontSize: 17, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }}>{ui.kurs.comingSoon}</p>
             <p style={{ fontSize: 14, color: "#6E6E73", margin: 0, maxWidth: 500, marginLeft: "auto", marginRight: "auto" }}>
-              {_t("Die Kursmodule werden in Kürze freigeschaltet und erscheinen hier automatisch, sobald sie verfügbar sind.", "The course modules will be unlocked shortly and appear here automatically as soon as they are available.", "Les modules de cours seront activés prochainement et apparaîtront ici automatiquement dès qu'ils seront disponibles.", "I moduli del corso saranno disponibili a breve e appariranno qui automaticamente non appena saranno disponibili.")}
+              {ui.kurs.comingSoonDesc}
             </p>
           </div>
         </div>
@@ -290,10 +288,10 @@ export default function Kurs() {
           <div className="w-full mx-auto" style={{ maxWidth: 1100, padding: isMobile ? "0 12px" : "0 24px" }}>
             <div className="text-center">
               <h1 style={{ fontSize: 24, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 2px", color: "#1D1D1F" }} data-testid="text-kurs-title">
-                {_t("Kurszugänge freischalten", "Unlock course access", "Activer les accès aux cours", "Attivare accessi al corso")}
+                {ui.kurs.title}
               </h1>
               <p style={{ fontSize: 13, color: "#6E6E73", fontWeight: 450, margin: 0 }}>
-                {_t("Hier kannst du mehrere Personen für den bioLogic-Kursbereich freischalten. Füge alle Teilnehmer hinzu und starte die Freischaltung gesammelt.", "Unlock the bioLogic course area for multiple people. Add all participants and start the unlock in one go.", "Tu peux activer l'accès au module de cours bioLogic pour plusieurs personnes. Ajoute tous les participants et lance l'activation en une seule fois.", "Puoi attivare l'area corsi bioLogic per più persone. Aggiungi tutti i partecipanti e avvia l'attivazione in un'unica volta.")}
+                {ui.kurs.subtitle}
               </p>
             </div>
           </div>
@@ -320,7 +318,7 @@ export default function Kurs() {
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
               <GraduationCap style={{ width: 22, height: 22, color: "#0071E3", flexShrink: 0 }} />
               <span style={{ fontSize: 20, fontWeight: 700, color: "#1D1D1F" }}>
-                {_t("Kurszugänge freischalten", "Unlock course access", "Activer les accès aux cours", "Attivare accessi al corso")}
+                {ui.kurs.title}
               </span>
             </div>
             <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${cardOpen ? "rotate-180" : ""}`} />
@@ -345,9 +343,9 @@ export default function Kurs() {
               }}>
                 <CheckCircle2 style={{ width: 28, height: 28, color: "#FFF" }} />
               </div>
-              <p style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }}>{_t("Zugänge freigeschaltet", "Access unlocked", "Accès activés", "Accessi attivati")}</p>
+              <p style={{ fontSize: 18, fontWeight: 700, color: "#1D1D1F", margin: "0 0 8px" }}>{ui.kurs.successTitle}</p>
               <p style={{ fontSize: 14, color: "#6E6E73", margin: "0 0 24px", maxWidth: 400, marginLeft: "auto", marginRight: "auto" }}>
-                {_t("Die Teilnehmer wurden erfolgreich für den Kursbereich verarbeitet.", "The participants have been successfully processed for the course area.", "Les participants ont été enregistrés avec succès pour le module de cours.", "I partecipanti sono stati elaborati con successo per l'area corsi.")}
+                {ui.kurs.successDesc}
               </p>
 
               {results.length > 0 && (
@@ -382,7 +380,7 @@ export default function Kurs() {
                   boxShadow: "0 2px 8px rgba(0,113,227,0.25)",
                 }}
               >
-                {_t("Weitere Teilnehmer freischalten", "Unlock more participants", "Activer d'autres participants", "Attivare altri partecipanti")}
+                {ui.kurs.unlockMore}
               </button>
             </div>
           ) : (
@@ -407,9 +405,9 @@ export default function Kurs() {
                     borderBottom: "1px solid rgba(0,0,0,0.06)", background: "rgba(0,0,0,0.02)",
                   }}>
                     <span />
-                    <span style={{ ...labelStyle, paddingLeft: 14 }}>{_t("Vorname", "First name", "Prénom", "Nome")}</span>
-                    <span style={{ ...labelStyle, paddingLeft: 14 }}>{_t("Nachname", "Last name", "Nom de famille", "Cognome")}</span>
-                    <span style={{ ...labelStyle, paddingLeft: 14 }}>{_t("E-Mail-Adresse", "Email address", "Adresse e-mail", "Indirizzo e-mail")}</span>
+                    <span style={{ ...labelStyle, paddingLeft: 14 }}>{ui.kurs.firstName}</span>
+                    <span style={{ ...labelStyle, paddingLeft: 14 }}>{ui.kurs.lastName}</span>
+                    <span style={{ ...labelStyle, paddingLeft: 14 }}>{ui.kurs.email}</span>
                     <span />
                   </div>
                 )}
@@ -461,24 +459,24 @@ export default function Kurs() {
                       </div>
                     )}
 
-                    {isMobile && <label style={labelStyle}>{_t("Vorname", "First name", "Prénom", "Nome")}</label>}
+                    {isMobile && <label style={labelStyle}>{ui.kurs.firstName}</label>}
                     <input type="text" value={p.firstName} onChange={e => updateParticipant(p.id, "firstName", e.target.value)}
-                      placeholder={_t("Vorname", "First name", "Prénom", "Nome")} style={inputStyle} required
-                      onInvalid={e => { const el = e.target as HTMLInputElement; el.setCustomValidity(_t("Füllen Sie dieses Feld aus.", "Please fill in this field.", "Veuillez remplir ce champ.", "Compilare questo campo.")); }}
+                      placeholder={ui.kurs.firstName} style={inputStyle} required
+                      onInvalid={e => { const el = e.target as HTMLInputElement; el.setCustomValidity(ui.login.emailRequired); }}
                       onInput={e => (e.target as HTMLInputElement).setCustomValidity("")}
                       data-testid={`input-firstname-${p.id}`} />
 
-                    {isMobile && <label style={labelStyle}>{_t("Nachname", "Last name", "Nom de famille", "Cognome")}</label>}
+                    {isMobile && <label style={labelStyle}>{ui.kurs.lastName}</label>}
                     <input type="text" value={p.lastName} onChange={e => updateParticipant(p.id, "lastName", e.target.value)}
-                      placeholder={_t("Nachname", "Last name", "Nom de famille", "Cognome")} style={inputStyle} required
-                      onInvalid={e => { const el = e.target as HTMLInputElement; el.setCustomValidity(_t("Füllen Sie dieses Feld aus.", "Please fill in this field.", "Veuillez remplir ce champ.", "Compilare questo campo.")); }}
+                      placeholder={ui.kurs.lastName} style={inputStyle} required
+                      onInvalid={e => { const el = e.target as HTMLInputElement; el.setCustomValidity(ui.login.emailRequired); }}
                       onInput={e => (e.target as HTMLInputElement).setCustomValidity("")}
                       data-testid={`input-lastname-${p.id}`} />
 
-                    {isMobile && <label style={labelStyle}>{_t("E-Mail-Adresse", "Email address", "Adresse e-mail", "Indirizzo e-mail")}</label>}
+                    {isMobile && <label style={labelStyle}>{ui.kurs.email}</label>}
                     <input type="email" value={p.email} onChange={e => updateParticipant(p.id, "email", e.target.value)}
-                      placeholder={_t("E-Mail-Adresse", "Email address", "Adresse e-mail", "Indirizzo e-mail")} style={inputStyle} required
-                      onInvalid={e => { const el = e.target as HTMLInputElement; if (el.validity.valueMissing) { el.setCustomValidity(_t("Füllen Sie dieses Feld aus.", "Please fill in this field.", "Veuillez remplir ce champ.", "Compilare questo campo.")); } else if (el.validity.typeMismatch) { el.setCustomValidity(_t("Geben Sie eine gültige E-Mail-Adresse ein.", "Please enter a valid email address.", "Veuillez saisir une adresse e-mail valide.", "Inserire un indirizzo e-mail valido.")); } else { el.setCustomValidity(""); } }}
+                      placeholder={ui.kurs.email} style={inputStyle} required
+                      onInvalid={e => { const el = e.target as HTMLInputElement; if (el.validity.valueMissing) { el.setCustomValidity(ui.login.emailRequired); } else if (el.validity.typeMismatch) { el.setCustomValidity(ui.login.emailInvalid); } else { el.setCustomValidity(""); } }}
                       onInput={e => (e.target as HTMLInputElement).setCustomValidity("")}
                       data-testid={`input-email-${p.id}`} />
 
@@ -509,7 +507,7 @@ export default function Kurs() {
                   }}
                 >
                   <Plus style={{ width: 16, height: 16 }} />
-                  {_t("Teilnehmer hinzufügen", "Add participant", "Ajouter un participant", "Aggiungi partecipante")}
+                  {ui.kurs.addParticipant}
                 </button>
 
                 <button
@@ -527,7 +525,7 @@ export default function Kurs() {
                   }}
                 >
                   <Send style={{ width: 16, height: 16 }} />
-                  {submitting ? _t("Wird freigeschaltet…", "Unlocking…", "Activation en cours…", "Attivazione in corso…") : _t("Zugänge freischalten", "Unlock access", "Activer les accès", "Attivare accessi")}
+                  {submitting ? ui.kurs.unlocking : ui.kurs.unlockAccess}
                 </button>
               </div>
             </form>

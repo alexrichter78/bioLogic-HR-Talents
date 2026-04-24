@@ -75,6 +75,7 @@ export interface IStorage {
   deleteCoachConversation(id: number, userId: number): Promise<void>;
 
   listTranslations(): Promise<Translation[]>;
+  insertTranslationIfMissing(key: string, section: string, de: string, en: string, fr: string, it: string): Promise<boolean>;
   upsertTranslation(key: string, section: string, de: string, en: string, fr: string, it: string): Promise<Translation>;
   updateTranslationField(key: string, lang: "de" | "en" | "fr" | "it", value: string): Promise<Translation | undefined>;
   countTranslations(): Promise<number>;
@@ -553,6 +554,15 @@ export class DatabaseStorage implements IStorage {
 
   async listTranslations(): Promise<Translation[]> {
     return await db.select().from(translations).orderBy(translations.section, translations.key);
+  }
+
+  async insertTranslationIfMissing(key: string, section: string, de: string, en: string, fr: string, it: string): Promise<boolean> {
+    const result = await db
+      .insert(translations)
+      .values({ key, section, de, en, fr, it, updatedAt: new Date() })
+      .onConflictDoNothing()
+      .returning();
+    return result.length > 0;
   }
 
   async upsertTranslation(key: string, section: string, de: string, en: string, fr: string, it: string): Promise<Translation> {

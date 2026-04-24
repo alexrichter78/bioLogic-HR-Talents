@@ -8,6 +8,7 @@ import GlobalNav from "@/components/global-nav";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useRegion, useLocalizedText, localizeDeep } from "@/lib/region";
 import { hyphenateText } from "@/lib/hyphenate";
+import { useUI } from "@/lib/ui-texts";
 import {
   type Triad, type ComponentKey,
   computeTeamDynamics, getDefaultLevers, getMatrixCellById, getViewContent,
@@ -326,6 +327,7 @@ export default function Teamdynamik() {
   const { region } = useRegion();
   const t = useLocalizedText();
   const isMobile = useIsMobile();
+  const ui = useUI();
   const fr = region === "FR";
   const en = region === "EN";
   const it = region === "IT";
@@ -466,14 +468,14 @@ export default function Teamdynamik() {
         <GlassCard style={{ marginBottom: 20 }} data-testid="tab-analyse">
           <div style={{ textAlign: "center", marginBottom: 28 }}>
             <p style={{ fontSize: 11, fontWeight: 600, color: "#0071E3", letterSpacing: "0.06em", textTransform: "uppercase", margin: "0 0 4px" }}>bioLogic TeamCheck</p>
-            <h1 style={{ fontSize: 24, fontWeight: 700, color: "#34C759", margin: 0, letterSpacing: "-0.02em" }} data-testid="text-page-title">{region === "IT" ? "Analisi del team" : region === "FR" ? "Analyse d'équipe" : region === "EN" ? "Team analysis" : "Teamanalyse"}</h1>
+            <h1 style={{ fontSize: 24, fontWeight: 700, color: "#34C759", margin: 0, letterSpacing: "-0.02em" }} data-testid="text-page-title">{ui.teamdyn.pageTitle}</h1>
           </div>
 
           {sollProfile && (
             <div style={{ marginBottom: 20, padding: "16px 20px", borderRadius: 14, background: "rgba(0,0,0,0.02)", border: "1px solid rgba(0,0,0,0.04)" }} data-testid="soll-profile-card">
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
                 <BarChart3 style={{ width: 16, height: 16, color: "#6E6E73" }} />
-                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{region === "IT" ? "Profilo complessivo del ruolo" : region === "FR" ? "Profil global du poste" : region === "EN" ? "Overall role profile" : "Gesamtprofil der Stellenanforderung"}</p>
+                <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>{ui.teamdyn.overallProfile}</p>
               </div>
               <ReadOnlyBars triad={sollProfile} />
               <p style={{ fontSize: 11, color: "#8E8E93", marginTop: 8, textAlign: "center" }}>{region === "IT" ? "Profilo target dalla DNA del ruolo (sola lettura)" : region === "FR" ? "Profil cible issu de la DNA du poste (lecture seule)" : region === "EN" ? "Target profile from role DNA (read-only)" : "Soll-Profil aus Rollen-DNA (nicht editierbar)"}</p>
@@ -482,7 +484,7 @@ export default function Teamdynamik() {
 
           <div style={{ display: "flex", gap: 24, marginBottom: 24, flexWrap: "wrap" }}>
             <div style={{ flex: 1, minWidth: 280 }}>
-              <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", marginBottom: 14 }} data-testid="label-person">{isLeading ? (region === "IT" ? "Nuovo manager" : region === "FR" ? "Nouveau manager" : region === "EN" ? "New leader" : "Neue Führungskraft") : (region === "IT" ? "Nuovo membro del team" : region === "FR" ? "Nouveau membre de l'équipe" : region === "EN" ? "New team member" : "Neues Teammitglied")}</p>
+              <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", marginBottom: 14 }} data-testid="label-person">{isLeading ? ui.teamdyn.newLeader : ui.teamdyn.newMember}</p>
               <BarSliders triad={personProfile} onChange={setPersonProfile} />
               <p style={{ fontSize: 11, color: "#8E8E93", marginTop: 8, textAlign: "center" }}>{region === "IT" ? "Profilo reale dal confronto target/reale" : region === "FR" ? "Profil réel issu de la comparaison cible/réel" : region === "EN" ? "Actual profile from target–actual comparison" : "Istprofil aus Soll-Ist-Vergleich"}</p>
             </div>

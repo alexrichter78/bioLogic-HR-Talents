@@ -364,6 +364,14 @@ export const ALL_TRANSLATIONS: TranslationEntry[] = [
   { section: "TeamDynamik", key: "teamdyn.steeringNote", de: "Normale Steuerung ausreichend", en: "Standard steering sufficient", fr: "Pilotage normal suffisant", it: "Gestione normale sufficiente" },
   { section: "TeamDynamik", key: "teamdyn.steeringSituative", de: "Situative Steuerung empfehlenswert", en: "Situational steering recommended", fr: "Pilotage situationnel recommandé", it: "Gestione situazionale consigliata" },
   { section: "TeamDynamik", key: "teamdyn.steeringActive", de: "Aktive Steuerung erforderlich", en: "Active steering required", fr: "Pilotage actif requis", it: "Gestione attiva richiesta" },
+
+  // ─── ANALYSE (Admin) ──────────────────────────────────────────────────────
+  { section: "Analyse", key: "analyse.title", de: "Stammdaten (Analysehilfe)", en: "Master data (analysis helper)", fr: "Données de base (aide à l'analyse)", it: "Dati di base (aiuto all'analisi)" },
+  { section: "Analyse", key: "analyse.bereich1Label", de: "Impulsive Daten", en: "Action-oriented data", fr: "Données orientées action", it: "Dati orientati all'azione" },
+  { section: "Analyse", key: "analyse.bereich2Label", de: "Intuitive Daten", en: "Relational data", fr: "Données relationnelles", it: "Dati relazionali" },
+  { section: "Analyse", key: "analyse.bereich3Label", de: "Analytische Daten", en: "Analytical data", fr: "Données analytiques", it: "Dati analitici" },
+  { section: "Analyse", key: "analyse.saved", de: "Gespeichert", en: "Saved", fr: "Enregistré", it: "Salvato" },
+  { section: "Analyse", key: "analyse.save", de: "Bereiche speichern", en: "Save sections", fr: "Enregistrer les sections", it: "Salva sezioni" },
 ];
 
 export const SECTIONS = Array.from(new Set(ALL_TRANSLATIONS.map(e => e.section)));

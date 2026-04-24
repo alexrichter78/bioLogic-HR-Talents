@@ -9,6 +9,7 @@ import GlobalNav from "@/components/global-nav";
 import { BERUFE, type BerufLand } from "@/data/berufe";
 import { useRegion, localizeStr } from "@/lib/region";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useUI } from "@/lib/ui-texts";
 
 type KompetenzTyp = "Impulsiv" | "Intuitiv" | "Analytisch";
 type Niveau = "Niedrig" | "Mittel" | "Hoch";
@@ -1116,7 +1117,7 @@ function CollapsedStep({
   onEdit: () => void;
   icon?: React.ComponentType<{ style?: React.CSSProperties; strokeWidth?: number }>;
 }) {
-  const { region } = useRegion();
+  const ui = useUI();
   return (
     <div
       className="flex items-center gap-4 px-5 py-4 rounded-xl bg-white/40 dark:bg-card/40 backdrop-blur-sm border border-card-border cursor-pointer hover:bg-white/60 dark:hover:bg-card/50 transition-all duration-200"
@@ -1144,7 +1145,7 @@ function CollapsedStep({
         data-testid={`button-edit-step-${step}`}
       >
         <Pencil style={{ width: 13, height: 13 }} />
-        {region === "IT" ? "Modifica" : region === "FR" ? "Modifier" : region === "EN" ? "Edit" : "Bearbeiten"}
+        {ui.general.edit}
       </button>
       <ChevronDown className="w-4 h-4 text-muted-foreground/40 flex-shrink-0" />
     </div>
@@ -1879,6 +1880,7 @@ export default function RollenDNA() {
   const { region } = useRegion();
   const localizeText = (text: string) => localizeStr(text, region);
   const isMobile = useIsMobile();
+  const ui = useUI();
   const saved = useRef(loadSavedState());
 
   useEffect(() => { window.scrollTo(0, 0); }, []);
@@ -2591,7 +2593,7 @@ export default function RollenDNA() {
             <div className="w-full mx-auto" style={{ maxWidth: 1100, padding: isMobile ? "0 12px" : "0 24px" }}>
               <div className="text-center">
                 <h1 style={{ fontSize: 24, fontWeight: 700, letterSpacing: "-0.02em", margin: "0 0 2px", color: "#34C759" }} data-testid="text-rollen-dna-title">
-                  {region === "IT" ? "Definisci il profilo del ruolo" : region === "FR" ? "Définir le profil du poste" : region === "EN" ? "Define role profile" : "Stellenprofil definieren"}
+                  {ui.rollendna.defineProfile}
                 </h1>
                 <p style={{ fontSize: 14, color: "#48484A", fontWeight: 450, margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }} data-testid="text-rollen-dna-subtitle">
                   {region === "IT" ? "Acquisisci i requisiti e la logica lavorativa del ruolo come base per il rapporto decisionale, l'analisi di compatibilita' e il TeamCheck." : region === "FR" ? "Capturez les exigences et la logique de travail du poste pour servir de base au rapport de décision, à l'analyse d'adéquation et au TeamCheck." : region === "EN" ? "Capture the requirements and working logic of the position as a basis for the decision report, fit analysis and TeamCheck." : "Erfasse die Anforderungen und Arbeitslogik der Stelle als Grundlage für den Entscheidungsbericht, die Passungsanalyse sowie den TeamCheck."}
@@ -2833,7 +2835,7 @@ export default function RollenDNA() {
                       }}
                       data-testid="button-step-1-weiter"
                     >
-                      {editingFromOverview ? (region === "IT" ? "Applica" : region === "FR" ? "Appliquer" : region === "EN" ? "Apply" : "Übernehmen") : (region === "IT" ? "Analizza il ruolo" : region === "FR" ? "Analyser le poste" : region === "EN" ? "Analyse role" : "Stelle analysieren")}
+                      {editingFromOverview ? ui.rollendna.apply : ui.rollendna.analyseRole}
                       <ArrowRight className="w-4 h-4" />
                     </Button>
                   </div>
@@ -2842,7 +2844,7 @@ export default function RollenDNA() {
             ) : (
               <CollapsedStep
                 step={1}
-                title={region === "IT" ? "Ruolo / Titolo selezionato" : region === "FR" ? "Poste / Titre sélectionné" : region === "EN" ? "Selected role / title" : "Ausgewählte Stelle / Bezeichnung"}
+                title={ui.rollendna.roleTitle}
                 summary={beruf}
                 onEdit={() => goToStep(1)}
                 icon={Briefcase}
@@ -3032,7 +3034,7 @@ export default function RollenDNA() {
                       data-testid="button-step-2-zurueck"
                     >
                       <ArrowLeft className="w-5 h-5" />
-                      {region === "IT" ? "Indietro" : region === "FR" ? "Retour" : region === "EN" ? "Back" : "Zurück"}
+                      {ui.general.back}
                     </Button>
                     <Button
                       disabled={!step2Valid}
@@ -3051,7 +3053,7 @@ export default function RollenDNA() {
                       className="gap-2"
                       data-testid="button-step-2-weiter"
                     >
-                      {editingFromOverview ? (region === "IT" ? "Applica" : region === "FR" ? "Appliquer" : region === "EN" ? "Apply" : "Übernehmen") : (region === "IT" ? "Avanti" : region === "FR" ? "Suivant" : region === "EN" ? "Next" : "Weiter")}
+                      {editingFromOverview ? ui.rollendna.apply : ui.general.next}
                       <ArrowRight className="w-5 h-5" />
                     </Button>
                   </div>
@@ -3661,7 +3663,7 @@ export default function RollenDNA() {
                         background: "#FFFFFF",
                         border: "1px solid rgba(0,0,0,0.06)",
                       }} data-testid="card-anforderungsprofil">
-                        <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0", display: "flex", alignItems: "center", gap: 6 }}><ClipboardList style={{ width: 15, height: 15, color: "#1D1D1F", flexShrink: 0 }} />{region === "IT" ? "Profilo dei requisiti del ruolo" : region === "FR" ? "Profil d'exigences du poste" : region === "EN" ? "Requirements profile of the role" : "Anforderungsprofil der Stelle"}</h3>
+                        <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0", display: "flex", alignItems: "center", gap: 6 }}><ClipboardList style={{ width: 15, height: 15, color: "#1D1D1F", flexShrink: 0 }} />{ui.rollendna.requirementsProfile}</h3>
                         <p lang="de" style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: "0 0 14px 0", ...reportTextStyle }}>
                           {localizeText((region === "IT" ? roleRequirementText_IT : region === "FR" ? roleRequirementText_FR : region === "EN" ? roleRequirementText_EN : roleRequirementText).intro.join(" "))}
                         </p>
@@ -3914,7 +3916,7 @@ export default function RollenDNA() {
                       data-testid="button-summary-edit"
                     >
                       <Pencil style={{ width: 14, height: 14 }} />
-                      {region === "IT" ? "Modifica" : region === "FR" ? "Modifier" : region === "EN" ? "Edit" : "Bearbeiten"}
+                      {ui.general.edit}
                     </span>
                     <ChevronDown style={{
                       width: 18,
@@ -3931,7 +3933,7 @@ export default function RollenDNA() {
                 
                 <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 10 }} data-testid="dna-summary-grid">
                   {(() => { const _ro = getRegionOptions(region); return [
-                    { icon: Briefcase, label: region === "IT" ? "Ruolo / Titolo" : region === "FR" ? "Poste / Titre" : region === "EN" ? "Role / title" : "Stelle / Bezeichnung", value: beruf },
+                    { icon: Briefcase, label: ui.rollendna.jobLabel, value: beruf },
                     { icon: LayoutGrid, label: region === "IT" ? "Struttura dei compiti" : region === "FR" ? "Structure des tâches" : region === "EN" ? "Task structure" : "Aufgabenstruktur", value: _ro.aufgaben.find(o => o.value === aufgabencharakter)?.label || aufgabencharakter },
                     { icon: Wrench, label: region === "IT" ? "Stile lavorativo" : region === "FR" ? "Style de travail" : region === "EN" ? "Working style" : "Arbeitsweise", value: _ro.arbeit.find(o => o.value === arbeitslogik)?.label || arbeitslogik },
                     { icon: Target, label: region === "IT" ? "Focus di successo" : region === "FR" ? "Priorité de réussite" : region === "EN" ? "Success focus" : "Erfolgsfokus", value: erfolgsfokusIndices.map(i => _ro.erfolg[i]?.label).filter(Boolean).join(", ") },
@@ -4010,7 +4012,7 @@ export default function RollenDNA() {
                     data-testid="button-rolle-bearbeiten"
                   >
                     <RefreshCw className="w-4 h-4" />
-                    {region === "IT" ? "Modifica il profilo del ruolo" : region === "FR" ? "Modifier le profil du poste" : region === "EN" ? "Edit role profile" : "Stellenprofil ändern"}
+                    {ui.rollendna.editRoleProfile}
                   </button>
                   <button
                     onClick={handleSave}
@@ -4042,7 +4044,7 @@ export default function RollenDNA() {
                     data-testid="button-profil-speichern"
                   >
                     <Save className="w-4 h-4" />
-                    {region === "IT" ? "Salva il profilo del ruolo" : region === "FR" ? "Enregistrer le profil du poste" : region === "EN" ? "Save role profile" : "Stellenprofil speichern"}
+                    {ui.rollendna.saveRoleProfile}
                   </button>
                   <button
                     onClick={() => setLocation("/bericht")}
@@ -4159,7 +4161,7 @@ export default function RollenDNA() {
                       background: "#FFFFFF",
                       border: "1px solid rgba(0,0,0,0.06)",
                     }} data-testid="card-anforderungsprofil-collapsed">
-                      <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0", display: "flex", alignItems: "center", gap: 6 }}><ClipboardList style={{ width: 15, height: 15, color: "#1D1D1F", flexShrink: 0 }} />{region === "IT" ? "Profilo dei requisiti del ruolo" : region === "FR" ? "Profil d'exigences du poste" : region === "EN" ? "Requirements profile of the role" : "Anforderungsprofil der Stelle"}</h3>
+                      <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: "0 0 10px 0", display: "flex", alignItems: "center", gap: 6 }}><ClipboardList style={{ width: 15, height: 15, color: "#1D1D1F", flexShrink: 0 }} />{ui.rollendna.requirementsProfile}</h3>
                       <p lang="de" style={{ fontSize: 14, color: "#48484A", lineHeight: 1.7, margin: "0 0 14px 0", ...reportTextStyle }}>
                         {localizeText((region === "IT" ? roleRequirementText_IT : region === "FR" ? roleRequirementText_FR : region === "EN" ? roleRequirementText_EN : roleRequirementText).intro.join(" "))}
                       </p>

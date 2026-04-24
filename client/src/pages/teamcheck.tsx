@@ -8,6 +8,7 @@ import {
 import GlobalNav from "@/components/global-nav";
 import { useLocalizedText, useRegion, localizeDeep } from "@/lib/region";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useUI } from "@/lib/ui-texts";
 import { hyphenateText } from "@/lib/hyphenate";
 import {
   computeTeamCheckV4,
@@ -282,6 +283,7 @@ export default function TeamCheck() {
   const isMobile = useIsMobile();
   const t = useLocalizedText();
   const { region } = useRegion();
+  const ui = useUI();
   const [soll, setSoll] = useState<Triad>({ impulsiv: 33, intuitiv: 34, analytisch: 33 });
   const [kandidat, setKandidat] = useState<Triad>({ impulsiv: 33, intuitiv: 34, analytisch: 33 });
   const [team, setTeam] = useState<Triad>({ impulsiv: 30, intuitiv: 50, analytisch: 20 });

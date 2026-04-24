@@ -1272,6 +1272,21 @@ export async function registerRoutes(
     }
   });
 
+  app.post("/api/translations/sync", requireAdmin, async (req, res) => {
+    try {
+      const entries: { key: string; section: string; de: string; en: string; fr: string; it: string }[] = req.body;
+      if (!Array.isArray(entries)) return res.status(400).json({ error: "Expected array" });
+      let inserted = 0;
+      for (const e of entries) {
+        const added = await storage.insertTranslationIfMissing(e.key, e.section, e.de, e.en, e.fr, e.it);
+        if (added) inserted++;
+      }
+      res.json({ synced: true, inserted, total: entries.length });
+    } catch (err) {
+      res.status(500).json({ error: "Sync failed" });
+    }
+  });
+
   app.patch("/api/translations/:key", requireAdmin, async (req, res) => {
     try {
       const key = decodeURIComponent(req.params.key);
