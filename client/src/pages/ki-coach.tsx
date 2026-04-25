@@ -350,6 +350,26 @@ const EXAMPLE_PROMPTS_FR: PromptCategory[] = [
     ],
   },
   {
+    category: "Tester et affiner ses formulations",
+    prompts: [
+      "Je dirais à mon collaborateur très orienté Relationnel : 'Tu arrives en retard depuis des semaines, ça énerve toute l'équipe.' – Qu'est-ce qui cloche et comment reformuler ?",
+      "Vérifie cette phrase pour un entretien délicat avec une personne très orientée Analytique : 'J'ai l'impression que tu ne t'impliques pas assez.' – Quel effet ça produit ?",
+      "Comment une personne avec une forte composante Orienté action réagirait-elle à cette phrase : 'On pourrait peut-être discuter du réalisme de la deadline ?'",
+      "Je veux dire à mon équipe : 'Dorénavant, quiconque arrive en retard devra s'expliquer.' – Quel effet ça a sur les différents profils ?",
+      "Propose-moi trois amorces différentes pour un entretien de recadrage avec une personne très orientée Relationnel – je choisirai ensuite la meilleure.",
+    ],
+  },
+  {
+    category: "Jeux de rôle et entraînement",
+    prompts: [
+      "Entraîne-toi avec moi à une négociation salariale. Mon interlocuteur a une forte composante Orienté action et est très exigeant. Joue son rôle et donne-moi un retour après chaque échange.",
+      "Mon collaborateur orienté Relationnel arrive sans cesse en retard. Moi, j'ai une forte composante Orienté action. Jouons la scène ensemble – tu es le collaborateur.",
+      "Simule un entretien de recrutement avec moi. Je suis le recruteur, le candidat a une forte composante Relationnel. Réagis comme un vrai candidat.",
+      "Entraîne-toi avec moi à un entretien de feedback. Je dois dire à un collaborateur de longue date très orienté Analytique qu'il doit évoluer. Tu joues son rôle.",
+      "Je veux demander une augmentation à mon responsable avec une forte composante Orienté action. Jouons la scène – tu es mon responsable.",
+    ],
+  },
+  {
     category: "Leadership et management",
     prompts: [
       "Comment déléguer efficacement à quelqu'un avec une forte composante Relationnel ?",
@@ -380,12 +400,13 @@ const EXAMPLE_PROMPTS_FR: PromptCategory[] = [
     ],
   },
   {
-    category: "Recrutement et offres d'emploi",
+    category: "Accompagnement à l'intégration",
     prompts: [
-      "Je cherche un responsable commercial avec une forte composante Orienté action. Quel message et quelle tonalité pour l'offre d'emploi ?",
-      "Notre annonce pour un RH business partner n'attire que des profils Analytique. Comment la reformuler ?",
-      "Donne-moi 5 formulations concrètes pour une offre d'emploi de chef de projet avec un profil mixte Orienté action / Relationnel.",
-      "Quelles erreurs typiques font les entreprises dans leurs offres d'emploi en matière d'adéquation des profils ?",
+      "Un nouveau collaborateur avec une forte composante Orienté action rejoint mon équipe très orientée Analytique. Qu'est-ce que je dois surveiller durant les 90 premiers jours ?",
+      "Nous avons recruté un nouveau manager très orienté Relationnel. L'équipe est majoritairement Orienté action. Comment réussir l'intégration ?",
+      "Un expert très orienté Analytique rejoint une équipe créative avec un profil Orienté action/Relationnel. Quels sont les pièges à éviter ?",
+      "Je prends la tête d'une équipe que je ne connais pas encore. Comment identifier rapidement les profils bioLogic de chaque membre ?",
+      "Trois nouveaux collaborateurs arrivent en même temps avec des profils très différents. Comment organiser leur intégration sans les perdre ?",
     ],
   },
   {
@@ -398,12 +419,34 @@ const EXAMPLE_PROMPTS_FR: PromptCategory[] = [
     ],
   },
   {
+    category: "Recrutement et offres d'emploi",
+    prompts: [
+      "Je cherche un responsable commercial avec une forte composante Orienté action. Quel message et quelle tonalité pour l'offre d'emploi ?",
+      "Notre annonce pour un RH business partner n'attire que des profils Analytique. Comment la reformuler ?",
+      "Donne-moi 5 formulations concrètes pour une offre d'emploi de chef de projet avec un profil mixte Orienté action / Relationnel.",
+      "Quelles erreurs typiques font les entreprises dans leurs offres d'emploi en matière d'adéquation des profils ?",
+    ],
+  },
+  {
     category: "Données de contexte",
     requiresAnalysis: true,
     prompts: [
       "Regarde le poste analysé et dis-moi : quels profils bioLogic correspondent le mieux à ce rôle ?",
       "D'après le DNA du poste : quel type de candidat complète le mieux le profil d'exigences ?",
       "Quels points forts doit avoir le titulaire du poste et où sont les risques typiques ?",
+      "Comment un candidat très orienté Orienté action s'inscrirait-il dans ce rôle ? Qu'est-ce qu'il faut anticiper ?",
+      "Quelles erreurs de recrutement typiques passe-t-on à côté avec ce profil de poste ?",
+    ],
+  },
+  {
+    category: "Générer des guides d'entretien",
+    requiresAnalysis: true,
+    prompts: [
+      "Crée un guide d'entretien complet pour le poste analysé. Avec une introduction, des questions clés, des points d'observation spécifiques bioLogic et des critères d'évaluation.",
+      "Génère un guide structuré pour un premier entretien avec un candidat pour ce rôle. Tiens compte du profil de poste analysé.",
+      "Crée un guide d'entretien d'intégration pour les 90 premiers jours, basé sur le profil du poste.",
+      "Crée un guide d'entretien de feedback adapté au profil bioLogic du poste.",
+      "Génère un guide pour un entretien de fin de période d'essai, basé sur le profil et les exigences du poste.",
     ],
   },
   {
