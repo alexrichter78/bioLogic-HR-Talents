@@ -46,7 +46,7 @@ export default function Impressum() {
                 <h2 style={h2Style}>Information according to § 5 TMG</h2>
                 <p style={pStyle}>foresMind® GmbH<br />Sonnenhang 4<br />87674 Ruderatshofen<br />Germany</p>
                 <h2 style={h2Style}>Represented by the Managing Directors</h2>
-                <p style={pStyle}>Alexander Richter, Wolfgang Drexler</p>
+                <p style={pStyle}>Wolfgang Drexler</p>
                 <h2 style={h2Style}>Contact</h2>
                 <p style={pStyle}>Phone: +49 (0)8343 / 338 998 – 1<br />Email: info@foresmind.de</p>
                 <h2 style={h2Style}>Commercial Register</h2>
@@ -54,7 +54,7 @@ export default function Impressum() {
                 <h2 style={h2Style}>VAT Identification Number</h2>
                 <p style={pStyle}>VAT identification number in accordance with § 27 a of the German VAT Act:<br />DE292672216</p>
                 <h2 style={h2Style}>Responsible for content pursuant to § 55 para. 2 RStV</h2>
-                <p style={pStyle}>Alexander Richter<br />foresMind® GmbH<br />Sonnenhang 4<br />87674 Ruderatshofen</p>
+                <p style={pStyle}>foresMind® GmbH<br />Sonnenhang 4<br />87674 Ruderatshofen</p>
                 <h2 style={h2Style}>Liability for Content</h2>
                 <p style={pStyle}>As a service provider, we are responsible for our own content on these pages in accordance with § 7 para. 1 TMG under the general laws. According to §§ 8 to 10 TMG, we are not obligated to monitor transmitted or stored third-party information or to investigate circumstances that indicate illegal activity. Obligations to remove or block the use of information under general laws remain unaffected. Liability in this regard is only possible from the time of knowledge of a specific legal violation. Upon becoming aware of any such infringements, we will remove this content immediately.</p>
                 <h2 style={h2Style}>Liability for Links</h2>
@@ -75,7 +75,7 @@ export default function Impressum() {
                 <h2 style={h2Style}>Informations conformément à l'article 5 TMG</h2>
                 <p style={pStyle}>foresMind® GmbH<br />Sonnenhang 4<br />87674 Ruderatshofen<br />Allemagne</p>
                 <h2 style={h2Style}>Représenté par les gérants</h2>
-                <p style={pStyle}>Alexander Richter, Wolfgang Drexler</p>
+                <p style={pStyle}>Wolfgang Drexler</p>
                 <h2 style={h2Style}>Contact</h2>
                 <p style={pStyle}>Téléphone : +49 (0)8343 / 338 998 – 1<br />E-mail : info@foresmind.de</p>
                 <h2 style={h2Style}>Registre du commerce</h2>
@@ -83,7 +83,7 @@ export default function Impressum() {
                 <h2 style={h2Style}>Numéro d'identification TVA</h2>
                 <p style={pStyle}>Numéro d'identification TVA conformément à l'article 27 a de la loi allemande sur la TVA :<br />DE292672216</p>
                 <h2 style={h2Style}>Responsable du contenu conformément à l'article 55 al. 2 RStV</h2>
-                <p style={pStyle}>Alexander Richter<br />foresMind® GmbH<br />Sonnenhang 4<br />87674 Ruderatshofen</p>
+                <p style={pStyle}>foresMind® GmbH<br />Sonnenhang 4<br />87674 Ruderatshofen</p>
                 <h2 style={h2Style}>Responsabilité pour le contenu</h2>
                 <p style={pStyle}>En tant que prestataire de services, nous sommes responsables de nos propres contenus sur ces pages conformément à l'article 7 al. 1 TMG selon les lois générales. Conformément aux articles 8 à 10 TMG, nous ne sommes pas tenus de surveiller les informations transmises ou stockées par des tiers ni de rechercher des circonstances indiquant une activité illégale. Les obligations de supprimer ou de bloquer l'utilisation d'informations en vertu des lois générales restent inaffectées. Une responsabilité n'est possible qu'à partir du moment où la connaissance d'une violation légale spécifique existe. Dès que nous en aurons connaissance, nous supprimerons immédiatement ces contenus.</p>
                 <h2 style={h2Style}>Responsabilité pour les liens</h2>
@@ -104,7 +104,7 @@ export default function Impressum() {
                 <h2 style={h2Style}>Informazioni ai sensi del § 5 TMG</h2>
                 <p style={pStyle}>foresMind® GmbH<br />Sonnenhang 4<br />87674 Ruderatshofen<br />Germania</p>
                 <h2 style={h2Style}>Rappresentato dai soci gerenti</h2>
-                <p style={pStyle}>Alexander Richter, Wolfgang Drexler</p>
+                <p style={pStyle}>Wolfgang Drexler</p>
                 <h2 style={h2Style}>Contatti</h2>
                 <p style={pStyle}>Telefono: +49 (0)8343 / 338 998 – 1<br />E-mail: info@foresmind.de</p>
                 <h2 style={h2Style}>Iscrizione al registro delle imprese</h2>
@@ -112,7 +112,7 @@ export default function Impressum() {
                 <h2 style={h2Style}>Partita IVA</h2>
                 <p style={pStyle}>Numero di identificazione IVA ai sensi del § 27 a della legge tedesca sull'IVA:<br />DE292672216</p>
                 <h2 style={h2Style}>Responsabile dei contenuti ai sensi del § 55 par. 2 RStV</h2>
-                <p style={pStyle}>Alexander Richter<br />foresMind® GmbH<br />Sonnenhang 4<br />87674 Ruderatshofen</p>
+                <p style={pStyle}>foresMind® GmbH<br />Sonnenhang 4<br />87674 Ruderatshofen</p>
                 <h2 style={h2Style}>Responsabilità per i contenuti</h2>
                 <p style={pStyle}>In qualità di fornitore di servizi, siamo responsabili dei nostri contenuti su queste pagine ai sensi del § 7 par. 1 TMG secondo le leggi generali. Ai sensi dei §§ 8–10 TMG non siamo obbligati a monitorare le informazioni trasmesse o memorizzate di terzi, né a cercare circostanze che indichino un'attività illegale. Gli obblighi di rimuovere o bloccare l'uso di informazioni ai sensi delle leggi generali rimangono impregiudicati. Una responsabilità è possibile solo dal momento in cui si ha conoscenza di una specifica violazione legale. Non appena venissimo a conoscenza di tali violazioni, rimuoveremo immediatamente questi contenuti.</p>
                 <h2 style={h2Style}>Responsabilità per i link</h2>
@@ -140,7 +140,7 @@ export default function Impressum() {
                 </p>
 
                 <h2 style={h2Style}>{t("Vertreten durch die Geschäftsführer")}</h2>
-                <p style={pStyle}>Alexander Richter, Wolfgang Drexler</p>
+                <p style={pStyle}>Wolfgang Drexler</p>
 
                 <h2 style={h2Style}>Kontakt</h2>
                 <p style={pStyle}>
@@ -163,7 +163,6 @@ export default function Impressum() {
 
                 <h2 style={h2Style}>{t("Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV")}</h2>
                 <p style={pStyle}>
-                  Alexander Richter<br />
                   foresMind® GmbH<br />
                   Sonnenhang 4<br />
                   87674 Ruderatshofen
