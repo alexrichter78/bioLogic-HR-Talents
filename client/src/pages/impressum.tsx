@@ -46,7 +46,7 @@ export default function Impressum() {
                 <h2 style={h2Style}>Information according to § 5 TMG</h2>
                 <p style={pStyle}>foresMind® GmbH<br />Sonnenhang 4<br />87674 Ruderatshofen<br />Germany</p>
                 <h2 style={h2Style}>Represented by the Managing Directors</h2>
-                <p style={pStyle}>Wolfgang Drexler</p>
+                <p style={pStyle}>Alexander Richter, Wolfgang Drexler</p>
                 <h2 style={h2Style}>Contact</h2>
                 <p style={pStyle}>Phone: +49 (0)8343 / 338 998 – 1<br />Email: info@foresmind.de</p>
                 <h2 style={h2Style}>Commercial Register</h2>
@@ -75,7 +75,7 @@ export default function Impressum() {
                 <h2 style={h2Style}>Informations conformément à l'article 5 TMG</h2>
                 <p style={pStyle}>foresMind® GmbH<br />Sonnenhang 4<br />87674 Ruderatshofen<br />Allemagne</p>
                 <h2 style={h2Style}>Représenté par les gérants</h2>
-                <p style={pStyle}>Wolfgang Drexler</p>
+                <p style={pStyle}>Alexander Richter, Wolfgang Drexler</p>
                 <h2 style={h2Style}>Contact</h2>
                 <p style={pStyle}>Téléphone : +49 (0)8343 / 338 998 – 1<br />E-mail : info@foresmind.de</p>
                 <h2 style={h2Style}>Registre du commerce</h2>
@@ -104,7 +104,7 @@ export default function Impressum() {
                 <h2 style={h2Style}>Informazioni ai sensi del § 5 TMG</h2>
                 <p style={pStyle}>foresMind® GmbH<br />Sonnenhang 4<br />87674 Ruderatshofen<br />Germania</p>
                 <h2 style={h2Style}>Rappresentato dai soci gerenti</h2>
-                <p style={pStyle}>Wolfgang Drexler</p>
+                <p style={pStyle}>Alexander Richter, Wolfgang Drexler</p>
                 <h2 style={h2Style}>Contatti</h2>
                 <p style={pStyle}>Telefono: +49 (0)8343 / 338 998 – 1<br />E-mail: info@foresmind.de</p>
                 <h2 style={h2Style}>Iscrizione al registro delle imprese</h2>
@@ -140,7 +140,7 @@ export default function Impressum() {
                 </p>
 
                 <h2 style={h2Style}>{t("Vertreten durch die Geschäftsführer")}</h2>
-                <p style={pStyle}>Wolfgang Drexler</p>
+                <p style={pStyle}>Alexander Richter, Wolfgang Drexler</p>
 
                 <h2 style={h2Style}>Kontakt</h2>
                 <p style={pStyle}>
