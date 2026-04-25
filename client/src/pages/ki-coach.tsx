@@ -1103,6 +1103,7 @@ export default function KICoach() {
     return new Date(iso).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "2-digit" });
   }, []);
 
+  const [showTips, setShowTips] = useState(false);
   const [showPrompts, setShowPrompts] = useState(false);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const [promptSearch, setPromptSearch] = useState("");
@@ -2184,6 +2185,52 @@ export default function KICoach() {
               textAlign: "center",
             }}>
               <p style={{ fontSize: 14, color: "#48484A", margin: 0, fontWeight: 600, lineHeight: 1.65 }} data-testid="text-input-desc">{ui.coach.inputDesc}</p>
+            </div>
+
+            <div style={{ padding: isMobile ? "8px 10px 0" : "8px 28px 0" }}>
+              <button
+                type="button"
+                onClick={() => setShowTips(v => !v)}
+                data-testid="button-coach-tips"
+                style={{
+                  display: "inline-flex", alignItems: "center", gap: 6,
+                  fontSize: 12.5, fontWeight: 600, color: showTips ? "#0071E3" : "#6B7280",
+                  background: showTips ? "rgba(0,113,227,0.07)" : "rgba(0,0,0,0.04)",
+                  border: "none", borderRadius: 8, padding: "5px 12px",
+                  cursor: "pointer", transition: "all 0.15s ease",
+                }}
+              >
+                <span style={{ fontSize: 14 }}>💡</span>
+                {ui.coach.tipsTitle}
+                {showTips
+                  ? <ChevronUp style={{ width: 12, height: 12 }} />
+                  : <ChevronDown style={{ width: 12, height: 12 }} />}
+              </button>
+
+              {showTips && (
+                <div
+                  data-testid="panel-coach-tips"
+                  style={{
+                    marginTop: 8, borderRadius: 12,
+                    background: "rgba(0,113,227,0.04)",
+                    border: "1px solid rgba(0,113,227,0.10)",
+                    padding: "12px 16px",
+                    display: "flex", flexDirection: "column", gap: 8,
+                  }}
+                >
+                  {[...ui.coach.tips].map((tip, i) => (
+                    <div key={i} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+                      <span style={{
+                        flexShrink: 0, width: 20, height: 20, borderRadius: "50%",
+                        background: "rgba(0,113,227,0.12)", color: "#0071E3",
+                        fontSize: 11, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center",
+                        marginTop: 1,
+                      }}>{i + 1}</span>
+                      <span style={{ fontSize: 13, color: "#3A3A3C", lineHeight: 1.55 }}>{tip}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
             <div style={{
               padding: isMobile ? "12px 10px 0" : "12px 28px 0",
