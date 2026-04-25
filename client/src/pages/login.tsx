@@ -1,19 +1,83 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useAuth } from "@/lib/auth";
 import { useRegion, type Region } from "@/lib/region";
 import { useUI } from "@/lib/ui-texts";
-import { Lock, User, Eye, EyeOff, AlertCircle, ArrowLeft, Mail, CheckCircle } from "lucide-react";
+import { Lock, User, Eye, EyeOff, AlertCircle, ArrowLeft, Mail, CheckCircle, ChevronDown } from "lucide-react";
 import logoPath from "@assets/Logo_bioLogic_1774652440525.gif";
 
 const FLAG_OPTIONS: { value: Region; label: string; flag: JSX.Element }[] = [
   { value: "DE", label: "DE", flag: <svg viewBox="0 0 20 14" style={{ width: 20, height: 14, borderRadius: 2, overflow: "hidden", display: "block" }}><rect y="0" width="20" height="4.67" fill="#000"/><rect y="4.67" width="20" height="4.67" fill="#D00"/><rect y="9.33" width="20" height="4.67" fill="#FFCE00"/></svg> },
   { value: "CH", label: "CH", flag: <svg viewBox="0 0 20 14" style={{ width: 20, height: 14, borderRadius: 2, overflow: "hidden", display: "block" }}><rect width="20" height="14" fill="#D52B1E"/><rect x="8" y="2.5" width="4" height="9" fill="#FFF"/><rect x="5.5" y="5" width="9" height="4" fill="#FFF"/></svg> },
   { value: "AT", label: "AT", flag: <svg viewBox="0 0 20 14" style={{ width: 20, height: 14, borderRadius: 2, overflow: "hidden", display: "block" }}><rect y="0" width="20" height="4.67" fill="#ED2939"/><rect y="4.67" width="20" height="4.67" fill="#FFF"/><rect y="9.33" width="20" height="4.67" fill="#ED2939"/></svg> },
-  { value: "EN", label: "EN", flag: <svg viewBox="0 0 20 14" style={{ width: 20, height: 14, borderRadius: 2, overflow: "hidden", display: "block" }}><rect width="20" height="14" fill="#012169"/><polygon points="0,0 20,14 20,11.5 2.5,0" fill="#FFF"/><polygon points="20,0 0,14 0,11.5 17.5,0" fill="#FFF"/><polygon points="0,0 20,14 20,12.6 1.4,0" fill="#C8102E"/><polygon points="20,0 0,14 0,12.6 18.6,0" fill="#C8102E"/><polygon points="0,0 20,14 20,14 0,0" fill="none"/><rect x="8" y="0" width="4" height="14" fill="#FFF"/><rect x="0" y="5" width="20" height="4" fill="#FFF"/><rect x="9" y="0" width="2" height="14" fill="#C8102E"/><rect x="0" y="6" width="20" height="2" fill="#C8102E"/></svg> },
+  { value: "EN", label: "EN", flag: <svg viewBox="0 0 20 14" style={{ width: 20, height: 14, borderRadius: 2, overflow: "hidden", display: "block" }}><rect width="20" height="14" fill="#012169"/><polygon points="0,0 20,14 20,11.5 2.5,0" fill="#FFF"/><polygon points="20,0 0,14 0,11.5 17.5,0" fill="#FFF"/><polygon points="0,0 20,14 20,12.6 1.4,0" fill="#C8102E"/><polygon points="20,0 0,14 0,12.6 18.6,0" fill="#C8102E"/><rect x="8" y="0" width="4" height="14" fill="#FFF"/><rect x="0" y="5" width="20" height="4" fill="#FFF"/><rect x="9" y="0" width="2" height="14" fill="#C8102E"/><rect x="0" y="6" width="20" height="2" fill="#C8102E"/></svg> },
   { value: "FR", label: "FR", flag: <svg viewBox="0 0 20 14" style={{ width: 20, height: 14, borderRadius: 2, overflow: "hidden", display: "block" }}><rect width="6.67" height="14" fill="#002395"/><rect x="6.67" width="6.67" height="14" fill="#FFF"/><rect x="13.33" width="6.67" height="14" fill="#ED2939"/></svg> },
   { value: "IT", label: "IT", flag: <svg viewBox="0 0 20 14" style={{ width: 20, height: 14, borderRadius: 2, overflow: "hidden", display: "block" }}><rect width="6.67" height="14" fill="#009246"/><rect x="6.67" width="6.67" height="14" fill="#FFF"/><rect x="13.33" width="6.67" height="14" fill="#CE2B37"/></svg> },
 ];
+
+function RegionDropdown({ region, setRegion }: { region: Region; setRegion: (r: Region) => void }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const current = FLAG_OPTIONS.find(o => o.value === region) ?? FLAG_OPTIONS[0];
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
+  return (
+    <div ref={ref} style={{ position: "relative" }}>
+      <button
+        type="button"
+        onClick={() => setOpen(o => !o)}
+        data-testid="button-region-dropdown"
+        style={{
+          display: "inline-flex", alignItems: "center", gap: 6,
+          padding: "5px 10px 5px 8px", borderRadius: 8,
+          border: "1.5px solid #E5E7EB", background: "#F9FAFB",
+          cursor: "pointer", transition: "all 0.15s ease",
+        }}
+      >
+        {current.flag}
+        <span style={{ fontSize: 12, fontWeight: 600, color: "#374151", letterSpacing: "0.03em" }}>{current.label}</span>
+        <ChevronDown style={{ width: 13, height: 13, color: "#9CA3AF", transform: open ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.15s ease" }} />
+      </button>
+
+      {open && (
+        <div style={{
+          position: "absolute", top: "calc(100% + 6px)", left: 0, zIndex: 100,
+          background: "#fff", borderRadius: 12, border: "1px solid #E5E7EB",
+          boxShadow: "0 4px 16px rgba(0,0,0,0.10)", padding: "6px",
+          display: "flex", flexDirection: "column", gap: 2, minWidth: 90,
+        }}>
+          {FLAG_OPTIONS.map(opt => (
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => { setRegion(opt.value); setOpen(false); }}
+              data-testid={`login-region-${opt.value.toLowerCase()}`}
+              style={{
+                display: "flex", alignItems: "center", gap: 8,
+                padding: "6px 10px", borderRadius: 7, border: "none",
+                cursor: "pointer", textAlign: "left",
+                background: region === opt.value ? "rgba(0,113,227,0.08)" : "transparent",
+                transition: "background 0.12s ease",
+              }}
+              onMouseEnter={e => { if (region !== opt.value) e.currentTarget.style.background = "#F3F4F6"; }}
+              onMouseLeave={e => { e.currentTarget.style.background = region === opt.value ? "rgba(0,113,227,0.08)" : "transparent"; }}
+            >
+              {opt.flag}
+              <span style={{ fontSize: 12, fontWeight: 600, color: region === opt.value ? "#0071E3" : "#374151", letterSpacing: "0.03em" }}>{opt.label}</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function Login() {
   const { login } = useAuth();
@@ -147,7 +211,8 @@ export default function Login() {
                   </button>
                 </form>
 
-                <div style={{ textAlign: "center" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <RegionDropdown region={region} setRegion={setRegion} />
                   <button
                     onClick={() => { setShowReset(false); setResetError(""); }}
                     data-testid="button-back-to-login-form"
@@ -161,27 +226,7 @@ export default function Login() {
             )}
           </div>
 
-          <div style={{ display: "flex", justifyContent: "center", gap: 8, marginTop: 16, marginBottom: 4 }}>
-            {FLAG_OPTIONS.map(opt => (
-              <button
-                key={opt.value}
-                onClick={() => setRegion(opt.value)}
-                data-testid={`login-region-${opt.value.toLowerCase()}`}
-                title={opt.label}
-                style={{
-                  display: "inline-flex", flexDirection: "column", alignItems: "center", gap: 3,
-                  padding: "5px 8px", borderRadius: 8, border: "none", cursor: "pointer",
-                  background: region === opt.value ? "rgba(0,113,227,0.1)" : "transparent",
-                  boxShadow: region === opt.value ? "0 0 0 1.5px rgba(0,113,227,0.3)" : "none",
-                  transition: "all 0.15s ease",
-                }}
-              >
-                {opt.flag}
-                <span style={{ fontSize: 10, fontWeight: 600, color: region === opt.value ? "#0071E3" : "#9CA3AF", letterSpacing: "0.04em" }}>{opt.label}</span>
-              </button>
-            ))}
-          </div>
-          <div style={{ display: "flex", justifyContent: "center", gap: 20, marginTop: 12 }}>
+          <div style={{ display: "flex", justifyContent: "center", gap: 20, marginTop: 16 }}>
             <a href="/impressum" data-testid="link-impressum-reset" className="footer-link">{ui.login.imprint}</a>
             <a href="/datenschutz" data-testid="link-datenschutz-reset" className="footer-link">{ui.login.privacy}</a>
             <a href="/disclaimer" data-testid="link-disclaimer-reset" className="footer-link">{ui.login.disclaimer}</a>
@@ -259,7 +304,8 @@ export default function Login() {
               </div>
             </div>
 
-            <div style={{ textAlign: "right", marginBottom: 24 }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
+              <RegionDropdown region={region} setRegion={setRegion} />
               <button
                 type="button"
                 onClick={() => setShowReset(true)}
@@ -298,32 +344,12 @@ export default function Login() {
           </form>
         </div>
 
-        <div style={{ display: "flex", justifyContent: "center", gap: 8, marginTop: 16, marginBottom: 4 }}>
-          {FLAG_OPTIONS.map(opt => (
-            <button
-              key={opt.value}
-              onClick={() => setRegion(opt.value)}
-              data-testid={`login-region-${opt.value.toLowerCase()}`}
-              title={opt.label}
-              style={{
-                display: "inline-flex", flexDirection: "column", alignItems: "center", gap: 3,
-                padding: "5px 8px", borderRadius: 8, border: "none", cursor: "pointer",
-                background: region === opt.value ? "rgba(0,113,227,0.1)" : "transparent",
-                boxShadow: region === opt.value ? "0 0 0 1.5px rgba(0,113,227,0.3)" : "none",
-                transition: "all 0.15s ease",
-              }}
-            >
-              {opt.flag}
-              <span style={{ fontSize: 10, fontWeight: 600, color: region === opt.value ? "#0071E3" : "#9CA3AF", letterSpacing: "0.04em" }}>{opt.label}</span>
-            </button>
-          ))}
-        </div>
-        <div style={{ display: "flex", justifyContent: "center", gap: 20, marginTop: 12 }}>
+        <div style={{ display: "flex", justifyContent: "center", gap: 20, marginTop: 16 }}>
           <a href="/impressum" data-testid="link-impressum" className="footer-link">{ui.login.imprint}</a>
           <a href="/datenschutz" data-testid="link-datenschutz" className="footer-link">{ui.login.privacy}</a>
           <a href="/disclaimer" data-testid="link-disclaimer" className="footer-link">{ui.login.disclaimer}</a>
         </div>
       </div>
-      </div>
+    </div>
   );
 }
