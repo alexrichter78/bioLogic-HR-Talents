@@ -1076,6 +1076,106 @@ export default function SollIstBericht() {
                         </div>
                       </div>
 
+                      {(() => {
+                        const pn = ui.matchcheck.passungsnaehe;
+                        const cMax = Math.max(
+                          Math.abs(effective.roleTriad.impulsiv - effective.candTriad.impulsiv),
+                          Math.abs(effective.roleTriad.intuitiv - effective.candTriad.intuitiv),
+                          Math.abs(effective.roleTriad.analytisch - effective.candTriad.analytisch),
+                        );
+                        const visual = getVisualFitPoint({
+                          fitRating: effective.fitRating,
+                          structureType: effective.structureRelation.type,
+                          maxDiff: cMax,
+                          totalGap: effective.totalGap,
+                        });
+                        const ZONE_COLORS_S = {
+                          GEEIGNET: BIO_COLORS.geeignet,
+                          BEDINGT: BIO_COLORS.bedingt,
+                          NICHT_GEEIGNET: BIO_COLORS.nichtGeeignet,
+                        } as const;
+                        const ZONE_LABELS_S = {
+                          GEEIGNET: pn.zoneGeeignet,
+                          BEDINGT: pn.zoneBedingt,
+                          NICHT_GEEIGNET: pn.zoneNicht,
+                        } as const;
+                        const captionMapS: Record<typeof visual.captionKey, string> = {
+                          perfect: pn.cap_perfect,
+                          veryGood: pn.cap_veryGood,
+                          good: pn.cap_good,
+                          borderlineGeeignet: pn.cap_borderlineGeeignet,
+                          veryCloseToGeeignet: pn.cap_veryCloseToGeeignet,
+                          clearlyConditional: pn.cap_clearlyConditional,
+                          conditionalWithEffort: pn.cap_conditionalWithEffort,
+                          borderlineNotSuitable: pn.cap_borderlineNotSuitable,
+                          narrowlyNotSuitable: pn.cap_narrowlyNotSuitable,
+                          clearMismatch: pn.cap_clearMismatch,
+                          strongMismatch: pn.cap_strongMismatch,
+                          extremeMismatch: pn.cap_extremeMismatch,
+                        };
+                        const markerCol = ZONE_COLORS_S[visual.zone];
+                        const dotSizeS = isMobile ? 10 : 13;
+                        const dotGapS = isMobile ? 5 : 7;
+                        const zonesS: Array<{ key: keyof typeof ZONE_COLORS_S; from: number }> = [
+                          { key: "GEEIGNET", from: 1 },
+                          { key: "BEDINGT", from: 5 },
+                          { key: "NICHT_GEEIGNET", from: 9 },
+                        ];
+                        return (
+                          <div style={{ gridColumn: "1 / -1", padding: "14px 16px", borderRadius: 12, background: "rgba(0,0,0,0.02)" }} data-testid="section-summary-passungsnaehe">
+                            <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12, flexWrap: "wrap", marginBottom: 10 }}>
+                              <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>{pn.title}</span>
+                              <span style={{ fontSize: 12, fontWeight: 700, color: markerCol }}>{visual.point} {pn.labelOf}</span>
+                            </div>
+                            <div style={{ display: "flex", gap: isMobile ? 5 : 8, alignItems: "stretch" }}>
+                              {zonesS.map((z) => {
+                                const zCol = ZONE_COLORS_S[z.key];
+                                const isActiveZone = visual.zone === z.key;
+                                return (
+                                  <div
+                                    key={z.key}
+                                    style={{
+                                      flex: 1,
+                                      padding: isMobile ? "7px 5px" : "8px 10px",
+                                      borderRadius: 8,
+                                      background: isActiveZone ? `${zCol}10` : "rgba(255,255,255,0.6)",
+                                      border: isActiveZone ? `1px solid ${zCol}40` : "1px solid rgba(0,0,0,0.05)",
+                                    }}
+                                  >
+                                    <div style={{ fontSize: isMobile ? 9 : 10, fontWeight: 700, color: zCol, textTransform: "uppercase", letterSpacing: "0.05em", textAlign: "center", marginBottom: 6, lineHeight: 1.2 }}>
+                                      {ZONE_LABELS_S[z.key]}
+                                    </div>
+                                    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: dotGapS }}>
+                                      {[z.from, z.from + 1, z.from + 2, z.from + 3].map((p) => {
+                                        const isActive = visual.point === p;
+                                        return (
+                                          <div
+                                            key={p}
+                                            style={{
+                                              width: dotSizeS,
+                                              height: dotSizeS,
+                                              borderRadius: "50%",
+                                              background: isActive ? zCol : "transparent",
+                                              border: isActive ? `2px solid ${zCol}` : `1.5px solid ${zCol}55`,
+                                              boxShadow: isActive ? `0 0 0 2.5px ${zCol}25` : "none",
+                                              flexShrink: 0,
+                                              transition: "all 0.2s ease",
+                                            }}
+                                          />
+                                        );
+                                      })}
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                            <div style={{ marginTop: 10, fontSize: 12.5, color: markerCol, fontWeight: 600 }}>
+                              {pn.captionPrefix} <span style={{ color: markerCol }}>{captionMapS[visual.captionKey]}</span>
+                            </div>
+                          </div>
+                        );
+                      })()}
+
                       <div style={{ padding: "14px 16px", borderRadius: 12, background: "rgba(0,0,0,0.02)" }}>
                         <p style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F", margin: "0 0 12px" }}>{kritischLabel}</p>
                         {kritischBullets.map((b, i) => (
