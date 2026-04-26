@@ -3,9 +3,9 @@ import type { FitRating, StructureRelationType } from "./soll-ist-engine";
 export type PassungsnaeheZone = "GEEIGNET" | "BEDINGT" | "NICHT_GEEIGNET";
 
 export type PassungsnaehePoint =
-  | 1 | 2 | 3 | 4
-  | 5 | 6 | 7 | 8
-  | 9 | 10 | 11 | 12;
+  | 1 | 2 | 3
+  | 4 | 5 | 6
+  | 7 | 8 | 9;
 
 export type PassungsnaeheInput = {
   fitRating: FitRating;
@@ -20,37 +20,31 @@ export type PassungsnaeheResult = {
   captionKey:
     | "perfect"
     | "veryGood"
-    | "good"
     | "borderlineGeeignet"
     | "veryCloseToGeeignet"
     | "clearlyConditional"
-    | "conditionalWithEffort"
     | "borderlineNotSuitable"
     | "narrowlyNotSuitable"
     | "clearMismatch"
-    | "strongMismatch"
     | "extremeMismatch";
 };
 
 const CAPTIONS: Record<PassungsnaehePoint, PassungsnaeheResult["captionKey"]> = {
   1: "perfect",
   2: "veryGood",
-  3: "good",
-  4: "borderlineGeeignet",
-  5: "veryCloseToGeeignet",
-  6: "clearlyConditional",
-  7: "conditionalWithEffort",
-  8: "borderlineNotSuitable",
-  9: "narrowlyNotSuitable",
-  10: "clearMismatch",
-  11: "strongMismatch",
-  12: "extremeMismatch",
+  3: "borderlineGeeignet",
+  4: "veryCloseToGeeignet",
+  5: "clearlyConditional",
+  6: "borderlineNotSuitable",
+  7: "narrowlyNotSuitable",
+  8: "clearMismatch",
+  9: "extremeMismatch",
 };
 
 const ZONE_OF: Record<PassungsnaehePoint, PassungsnaeheZone> = {
-  1: "GEEIGNET", 2: "GEEIGNET", 3: "GEEIGNET", 4: "GEEIGNET",
-  5: "BEDINGT", 6: "BEDINGT", 7: "BEDINGT", 8: "BEDINGT",
-  9: "NICHT_GEEIGNET", 10: "NICHT_GEEIGNET", 11: "NICHT_GEEIGNET", 12: "NICHT_GEEIGNET",
+  1: "GEEIGNET", 2: "GEEIGNET", 3: "GEEIGNET",
+  4: "BEDINGT", 5: "BEDINGT", 6: "BEDINGT",
+  7: "NICHT_GEEIGNET", 8: "NICHT_GEEIGNET", 9: "NICHT_GEEIGNET",
 };
 
 export function getVisualFitPoint(input: PassungsnaeheInput): PassungsnaeheResult {
@@ -62,37 +56,31 @@ export function getVisualFitPoint(input: PassungsnaeheInput): PassungsnaeheResul
 
   if (fitRating === "GEEIGNET") {
     if (md === 0 && tg <= 1) point = 1;
-    else if (md <= 1) point = 2;
-    else if (md <= 3) point = 3;
-    else point = 4;
+    else if (md <= 2) point = 2;
+    else point = 3;
   } else if (fitRating === "BEDINGT") {
     if (structureType === "SOFT_CONFLICT") {
-      if (md === 0) point = 5;
-      else if (md <= 1) point = 6;
-      else if (md <= 3) point = 7;
-      else point = 8;
+      if (md === 0) point = 4;
+      else if (md <= 3) point = 5;
+      else point = 6;
     } else if (structureType === "EXACT") {
-      if (md <= 6) point = 5;
-      else if (md <= 7) point = 6;
-      else if (md <= 9) point = 7;
-      else point = 8;
+      if (md <= 7) point = 4;
+      else if (md <= 9) point = 5;
+      else point = 6;
     } else {
-      if (md <= 5) point = 5;
-      else if (md <= 7) point = 6;
-      else if (md <= 9) point = 7;
-      else point = 8;
+      if (md <= 5) point = 4;
+      else if (md <= 8) point = 5;
+      else point = 6;
     }
   } else {
     if (structureType === "HARD_CONFLICT") {
-      if (md <= 12) point = 9;
-      else if (md <= 22) point = 10;
-      else if (md <= 35) point = 11;
-      else point = 12;
+      if (md <= 15) point = 7;
+      else if (md <= 30) point = 8;
+      else point = 9;
     } else {
-      if (md <= 15) point = 9;
-      else if (md <= 22) point = 10;
-      else if (md <= 35) point = 11;
-      else point = 12;
+      if (md <= 18) point = 7;
+      else if (md <= 30) point = 8;
+      else point = 9;
     }
   }
 

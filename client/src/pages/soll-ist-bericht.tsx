@@ -1102,24 +1102,21 @@ export default function SollIstBericht() {
                         const captionMapS: Record<typeof visual.captionKey, string> = {
                           perfect: pn.cap_perfect,
                           veryGood: pn.cap_veryGood,
-                          good: pn.cap_good,
                           borderlineGeeignet: pn.cap_borderlineGeeignet,
                           veryCloseToGeeignet: pn.cap_veryCloseToGeeignet,
                           clearlyConditional: pn.cap_clearlyConditional,
-                          conditionalWithEffort: pn.cap_conditionalWithEffort,
                           borderlineNotSuitable: pn.cap_borderlineNotSuitable,
                           narrowlyNotSuitable: pn.cap_narrowlyNotSuitable,
                           clearMismatch: pn.cap_clearMismatch,
-                          strongMismatch: pn.cap_strongMismatch,
                           extremeMismatch: pn.cap_extremeMismatch,
                         };
                         const markerCol = ZONE_COLORS_S[visual.zone];
-                        const dotSizeS = isMobile ? 10 : 13;
-                        const dotGapS = isMobile ? 5 : 7;
+                        const dotSizeS = isMobile ? 11 : 14;
+                        const dotGapS = isMobile ? 6 : 9;
                         const zonesS: Array<{ key: keyof typeof ZONE_COLORS_S; from: number }> = [
                           { key: "GEEIGNET", from: 1 },
-                          { key: "BEDINGT", from: 5 },
-                          { key: "NICHT_GEEIGNET", from: 9 },
+                          { key: "BEDINGT", from: 4 },
+                          { key: "NICHT_GEEIGNET", from: 7 },
                         ];
                         return (
                           <div style={{ gridColumn: "1 / -1", padding: "14px 16px", borderRadius: 12, background: "rgba(0,0,0,0.02)" }} data-testid="section-summary-passungsnaehe">
@@ -1146,7 +1143,7 @@ export default function SollIstBericht() {
                                       {ZONE_LABELS_S[z.key]}
                                     </div>
                                     <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: dotGapS }}>
-                                      {[z.from, z.from + 1, z.from + 2, z.from + 3].map((p) => {
+                                      {[z.from, z.from + 1, z.from + 2].map((p) => {
                                         const isActive = visual.point === p;
                                         return (
                                           <div
@@ -1409,25 +1406,22 @@ export default function SollIstBericht() {
                         const captionMap: Record<typeof visual.captionKey, string> = {
                           perfect: pn.cap_perfect,
                           veryGood: pn.cap_veryGood,
-                          good: pn.cap_good,
                           borderlineGeeignet: pn.cap_borderlineGeeignet,
                           veryCloseToGeeignet: pn.cap_veryCloseToGeeignet,
                           clearlyConditional: pn.cap_clearlyConditional,
-                          conditionalWithEffort: pn.cap_conditionalWithEffort,
                           borderlineNotSuitable: pn.cap_borderlineNotSuitable,
                           narrowlyNotSuitable: pn.cap_narrowlyNotSuitable,
                           clearMismatch: pn.cap_clearMismatch,
-                          strongMismatch: pn.cap_strongMismatch,
                           extremeMismatch: pn.cap_extremeMismatch,
                         };
                         const markerColor = ZONE_COLORS[visual.zone];
-                        const dotSize = isMobile ? 11 : 14;
-                        const dotGap = isMobile ? 6 : 8;
+                        const dotSize = isMobile ? 12 : 16;
+                        const dotGap = isMobile ? 8 : 12;
                         const zonePad = isMobile ? "8px 6px" : "10px 12px";
                         const zones: Array<{ key: keyof typeof ZONE_COLORS; from: number; to: number }> = [
-                          { key: "GEEIGNET", from: 1, to: 4 },
-                          { key: "BEDINGT", from: 5, to: 8 },
-                          { key: "NICHT_GEEIGNET", from: 9, to: 12 },
+                          { key: "GEEIGNET", from: 1, to: 3 },
+                          { key: "BEDINGT", from: 4, to: 6 },
+                          { key: "NICHT_GEEIGNET", from: 7, to: 9 },
                         ];
                         return (
                           <div
@@ -1468,7 +1462,7 @@ export default function SollIstBericht() {
                                       {ZONE_LABELS[z.key]}
                                     </div>
                                     <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: dotGap }}>
-                                      {[z.from, z.from + 1, z.from + 2, z.from + 3].map((p) => {
+                                      {[z.from, z.from + 1, z.from + 2].map((p) => {
                                         const isActive = visual.point === p;
                                         return (
                                           <div
