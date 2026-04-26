@@ -7,6 +7,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useUI } from "@/lib/ui-texts";
 import { dominanceModeOf, labelComponent, buildRoleAnalysisFromState } from "@/lib/jobcheck-engine";
 import { computeSollIst, mapFuehrungsArt } from "@/lib/soll-ist-engine";
+import { getVisualFitPoint } from "@/lib/passungsnaehe";
 import type { Triad, ComponentKey, RoleAnalysis } from "@/lib/jobcheck-engine";
 import type { SollIstResult, Severity, FuehrungsArt } from "@/lib/soll-ist-engine";
 import logoPath from "@assets/LOGO_bio_1773853681939.png";
@@ -1280,6 +1281,127 @@ export default function SollIstBericht() {
                           </div>
                         </div>
                       </div>
+
+                      {/* PASSUNGSNÄHE – 12-Punkte-Feinanzeige (rein visuell) */}
+                      {(() => {
+                        const pn = ui.matchcheck.passungsnaehe;
+                        const computedMaxDiff = Math.max(
+                          Math.abs(result.roleTriad.impulsiv - result.candTriad.impulsiv),
+                          Math.abs(result.roleTriad.intuitiv - result.candTriad.intuitiv),
+                          Math.abs(result.roleTriad.analytisch - result.candTriad.analytisch),
+                        );
+                        const visual = getVisualFitPoint({
+                          fitRating: result.fitRating,
+                          structureType: result.structureRelation.type,
+                          maxDiff: computedMaxDiff,
+                          totalGap: result.totalGap,
+                        });
+                        const ZONE_COLORS = {
+                          GEEIGNET: BIO_COLORS.geeignet,
+                          BEDINGT: BIO_COLORS.bedingt,
+                          NICHT_GEEIGNET: BIO_COLORS.nichtGeeignet,
+                        } as const;
+                        const ZONE_LABELS = {
+                          GEEIGNET: pn.zoneGeeignet,
+                          BEDINGT: pn.zoneBedingt,
+                          NICHT_GEEIGNET: pn.zoneNicht,
+                        } as const;
+                        const captionMap: Record<typeof visual.captionKey, string> = {
+                          perfect: pn.cap_perfect,
+                          veryGood: pn.cap_veryGood,
+                          good: pn.cap_good,
+                          borderlineGeeignet: pn.cap_borderlineGeeignet,
+                          veryCloseToGeeignet: pn.cap_veryCloseToGeeignet,
+                          clearlyConditional: pn.cap_clearlyConditional,
+                          conditionalWithEffort: pn.cap_conditionalWithEffort,
+                          borderlineNotSuitable: pn.cap_borderlineNotSuitable,
+                          narrowlyNotSuitable: pn.cap_narrowlyNotSuitable,
+                          clearMismatch: pn.cap_clearMismatch,
+                          strongMismatch: pn.cap_strongMismatch,
+                          extremeMismatch: pn.cap_extremeMismatch,
+                        };
+                        const markerColor = ZONE_COLORS[visual.zone];
+                        const dotSize = isMobile ? 11 : 14;
+                        const dotGap = isMobile ? 6 : 8;
+                        const zonePad = isMobile ? "8px 6px" : "10px 12px";
+                        const zones: Array<{ key: keyof typeof ZONE_COLORS; from: number; to: number }> = [
+                          { key: "GEEIGNET", from: 1, to: 4 },
+                          { key: "BEDINGT", from: 5, to: 8 },
+                          { key: "NICHT_GEEIGNET", from: 9, to: 12 },
+                        ];
+                        return (
+                          <div
+                            data-pdf-block
+                            data-testid="section-passungsnaehe"
+                            style={{
+                              marginBottom: 22,
+                              padding: isMobile ? "16px 16px" : "18px 22px",
+                              borderRadius: 12,
+                              background: "#FFFFFF",
+                              border: "1px solid rgba(0,0,0,0.06)",
+                              boxShadow: "0 1px 4px rgba(0,0,0,0.03)",
+                            }}
+                          >
+                            <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12, flexWrap: "wrap", marginBottom: 6 }}>
+                              <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }} data-testid="text-passungsnaehe-title">{pn.title}</span>
+                              <span style={{ fontSize: 12, fontWeight: 700, color: markerColor }} data-testid="text-passungsnaehe-point">
+                                {visual.point} {pn.labelOf}
+                              </span>
+                            </div>
+                            <p style={{ fontSize: 12, color: "#6E6E73", lineHeight: 1.55, margin: "0 0 14px" }}>{pn.intro}</p>
+                            <div style={{ display: "flex", gap: isMobile ? 6 : 10, alignItems: "stretch" }}>
+                              {zones.map((z, zi) => {
+                                const zCol = ZONE_COLORS[z.key];
+                                return (
+                                  <div
+                                    key={z.key}
+                                    style={{
+                                      flex: 1,
+                                      padding: zonePad,
+                                      borderRadius: 8,
+                                      background: visual.zone === z.key ? `${zCol}10` : "rgba(0,0,0,0.025)",
+                                      border: visual.zone === z.key ? `1px solid ${zCol}40` : "1px solid rgba(0,0,0,0.06)",
+                                      transition: "all 0.2s ease",
+                                    }}
+                                  >
+                                    <div style={{ fontSize: isMobile ? 9.5 : 10.5, fontWeight: 700, color: zCol, textTransform: "uppercase", letterSpacing: "0.05em", textAlign: "center", marginBottom: 8, lineHeight: 1.2 }}>
+                                      {ZONE_LABELS[z.key]}
+                                    </div>
+                                    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: dotGap }}>
+                                      {[z.from, z.from + 1, z.from + 2, z.from + 3].map((p) => {
+                                        const isActive = visual.point === p;
+                                        return (
+                                          <div
+                                            key={p}
+                                            data-testid={`dot-passungsnaehe-${p}`}
+                                            data-active={isActive ? "true" : "false"}
+                                            style={{
+                                              width: dotSize,
+                                              height: dotSize,
+                                              borderRadius: "50%",
+                                              background: isActive ? zCol : "transparent",
+                                              border: isActive ? `2px solid ${zCol}` : `1.5px solid ${zCol}55`,
+                                              boxShadow: isActive ? `0 0 0 3px ${zCol}25` : "none",
+                                              flexShrink: 0,
+                                              transition: "all 0.2s ease",
+                                            }}
+                                          />
+                                        );
+                                      })}
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                            <div style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                              <span style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.05em" }}>{pn.captionPrefix}</span>
+                              <span style={{ fontSize: 13, fontWeight: 600, color: markerColor }} data-testid="text-passungsnaehe-caption">
+                                {captionMap[visual.captionKey]}
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      })()}
 
                       {/* KURZÜBERSICHT – Rolle vs Person */}
                       {(() => {
