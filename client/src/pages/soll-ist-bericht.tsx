@@ -1099,17 +1099,6 @@ export default function SollIstBericht() {
                           BEDINGT: pn.zoneBedingt,
                           NICHT_GEEIGNET: pn.zoneNicht,
                         } as const;
-                        const captionMapS: Record<typeof visual.captionKey, string> = {
-                          perfect: pn.cap_perfect,
-                          veryGood: pn.cap_veryGood,
-                          borderlineGeeignet: pn.cap_borderlineGeeignet,
-                          veryCloseToGeeignet: pn.cap_veryCloseToGeeignet,
-                          clearlyConditional: pn.cap_clearlyConditional,
-                          borderlineNotSuitable: pn.cap_borderlineNotSuitable,
-                          narrowlyNotSuitable: pn.cap_narrowlyNotSuitable,
-                          clearMismatch: pn.cap_clearMismatch,
-                          extremeMismatch: pn.cap_extremeMismatch,
-                        };
                         const markerCol = ZONE_COLORS_S[visual.zone];
                         const greenCol = ZONE_COLORS_S.GEEIGNET;
                         const yellowCol = ZONE_COLORS_S.BEDINGT;
@@ -1119,10 +1108,6 @@ export default function SollIstBericht() {
                         const trackHeightS = isMobile ? 8 : 10;
                         return (
                           <div style={{ gridColumn: "1 / -1", padding: "14px 16px", borderRadius: 12, background: "rgba(0,0,0,0.02)" }} data-testid="section-summary-passungsnaehe">
-                            <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12, flexWrap: "wrap", marginBottom: 10 }}>
-                              <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>{pn.title}</span>
-                              <span style={{ fontSize: 12, fontWeight: 700, color: markerCol }}>{visual.point} {pn.labelOf}</span>
-                            </div>
                             <div style={{ display: "flex", gap: 0, marginBottom: 6 }}>
                               <div style={{ flex: 1, fontSize: isMobile ? 9 : 10, fontWeight: 700, color: greenCol, textTransform: "uppercase", letterSpacing: "0.05em", textAlign: "center", lineHeight: 1.2 }}>{ZONE_LABELS_S.GEEIGNET}</div>
                               <div style={{ flex: 1, fontSize: isMobile ? 9 : 10, fontWeight: 700, color: yellowCol, textTransform: "uppercase", letterSpacing: "0.05em", textAlign: "center", lineHeight: 1.2 }}>{ZONE_LABELS_S.BEDINGT}</div>
@@ -1153,9 +1138,6 @@ export default function SollIstBericht() {
                                   }}
                                 />
                               </div>
-                            </div>
-                            <div style={{ marginTop: 10, fontSize: 12.5, color: markerCol, fontWeight: 600 }}>
-                              {pn.captionPrefix} <span style={{ color: markerCol }}>{captionMapS[visual.captionKey]}</span>
                             </div>
                           </div>
                         );
@@ -1391,17 +1373,6 @@ export default function SollIstBericht() {
                           BEDINGT: pn.zoneBedingt,
                           NICHT_GEEIGNET: pn.zoneNicht,
                         } as const;
-                        const captionMap: Record<typeof visual.captionKey, string> = {
-                          perfect: pn.cap_perfect,
-                          veryGood: pn.cap_veryGood,
-                          borderlineGeeignet: pn.cap_borderlineGeeignet,
-                          veryCloseToGeeignet: pn.cap_veryCloseToGeeignet,
-                          clearlyConditional: pn.cap_clearlyConditional,
-                          borderlineNotSuitable: pn.cap_borderlineNotSuitable,
-                          narrowlyNotSuitable: pn.cap_narrowlyNotSuitable,
-                          clearMismatch: pn.cap_clearMismatch,
-                          extremeMismatch: pn.cap_extremeMismatch,
-                        };
                         const markerColor = ZONE_COLORS[visual.zone];
                         const greenColR = ZONE_COLORS.GEEIGNET;
                         const yellowColR = ZONE_COLORS.BEDINGT;
@@ -1422,13 +1393,6 @@ export default function SollIstBericht() {
                               boxShadow: "0 1px 4px rgba(0,0,0,0.03)",
                             }}
                           >
-                            <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12, flexWrap: "wrap", marginBottom: 6 }}>
-                              <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }} data-testid="text-passungsnaehe-title">{pn.title}</span>
-                              <span style={{ fontSize: 12, fontWeight: 700, color: markerColor }} data-testid="text-passungsnaehe-point">
-                                {visual.point} {pn.labelOf}
-                              </span>
-                            </div>
-                            <p style={{ fontSize: 12, color: "#6E6E73", lineHeight: 1.55, margin: "0 0 14px" }}>{pn.intro}</p>
                             <div style={{ display: "flex", gap: 0, marginBottom: 8 }}>
                               <div style={{ flex: 1, fontSize: isMobile ? 9.5 : 10.5, fontWeight: 700, color: greenColR, textTransform: "uppercase", letterSpacing: "0.05em", textAlign: "center", lineHeight: 1.2 }}>{ZONE_LABELS.GEEIGNET}</div>
                               <div style={{ flex: 1, fontSize: isMobile ? 9.5 : 10.5, fontWeight: 700, color: yellowColR, textTransform: "uppercase", letterSpacing: "0.05em", textAlign: "center", lineHeight: 1.2 }}>{ZONE_LABELS.BEDINGT}</div>
@@ -1459,12 +1423,6 @@ export default function SollIstBericht() {
                                   }}
                                 />
                               </div>
-                            </div>
-                            <div style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-                              <span style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.05em" }}>{pn.captionPrefix}</span>
-                              <span style={{ fontSize: 13, fontWeight: 600, color: markerColor }} data-testid="text-passungsnaehe-caption">
-                                {captionMap[visual.captionKey]}
-                              </span>
                             </div>
                           </div>
                         );
