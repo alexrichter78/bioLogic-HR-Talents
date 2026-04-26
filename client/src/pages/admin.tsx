@@ -674,7 +674,10 @@ export default function Admin() {
     <div className="page-gradient-bg" style={{ fontFamily: "Inter, Arial, Helvetica, sans-serif" }}>
       <GlobalNav />
       <div style={{ maxWidth: 900, margin: "0 auto", padding: isMobile ? "64px 12px 80px" : "80px 20px 48px" }}>
-        <div style={{ display: "flex", gap: 4, marginBottom: 20, background: "rgba(0,0,0,0.03)", borderRadius: 12, padding: 4 }}>
+        <div style={isMobile
+          ? { display: "flex", gap: 4, marginBottom: 20, background: "rgba(0,0,0,0.03)", borderRadius: 12, padding: 4, overflowX: "auto", flexWrap: "nowrap", WebkitOverflowScrolling: "touch" }
+          : { display: "flex", gap: 4, marginBottom: 20, background: "rgba(0,0,0,0.03)", borderRadius: 12, padding: 4 }
+        }>
           {[
             { id: "users" as const, label: "Benutzer", icon: Users },
             { id: "orgs" as const, label: "Organisationen", icon: Building2 },
@@ -688,12 +691,13 @@ export default function Admin() {
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               style={{
-                flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                flex: isMobile ? "0 0 auto" : 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
                 padding: "10px 12px", borderRadius: 10, border: "none", fontSize: 13, fontWeight: 600,
                 background: activeTab === tab.id ? "#fff" : "transparent",
                 color: activeTab === tab.id ? "#1D1D1F" : "#8E8E93",
                 cursor: "pointer", transition: "all 150ms ease",
                 boxShadow: activeTab === tab.id ? "0 1px 4px rgba(0,0,0,0.08)" : "none",
+                ...(isMobile ? { whiteSpace: "nowrap" as const } : {}),
               }}
               data-testid={`tab-${tab.id}`}
             >
@@ -705,7 +709,7 @@ export default function Admin() {
 
         {activeTab === "users" && (
         <>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: isMobile ? "flex-start" : "center", marginBottom: 24, flexDirection: isMobile ? "column" : "row", gap: isMobile ? 12 : 0 }}>
           <div>
             <h1 style={{ fontSize: 24, fontWeight: 700, color: "#1D1D1F", margin: "0 0 4px", display: "flex", alignItems: "center", gap: 10 }} data-testid="text-admin-title">
               <Shield style={{ width: 24, height: 24, color: "#1A5DAB" }} />
@@ -713,7 +717,10 @@ export default function Admin() {
             </h1>
             <p style={{ fontSize: 14, color: "#6E6E73", margin: 0 }}>{users.length} Benutzer registriert{search && filteredUsers.length !== users.length ? ` · ${filteredUsers.length} angezeigt` : ""}</p>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div style={isMobile
+            ? { display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", width: "100%" }
+            : { display: "flex", alignItems: "center", gap: 8 }
+          }>
             <button onClick={() => setLocation("/analyse")} data-testid="button-stammdaten" title="Stammdaten" style={{ display: "flex", alignItems: "center", gap: 6, padding: "10px 18px", borderRadius: 10, border: "1px solid rgba(0,0,0,0.1)", background: "#fff", color: "#1D1D1F", fontSize: 14, fontWeight: 600, cursor: "pointer", transition: "all 200ms ease" }}>
               <Database style={{ width: 16, height: 16 }} />
               Stammdaten
@@ -781,7 +788,7 @@ export default function Admin() {
               const isExpired = u.subscription ? new Date(u.subscription.accessUntil) < new Date() : true;
               const subActive = u.subscription?.status === "active" && !isExpired;
               return (
-                <div key={u.id} style={{ background: "#fff", borderRadius: 14, padding: "16px 20px", border: "1px solid rgba(0,0,0,0.05)", display: "flex", alignItems: "center", gap: 16, boxShadow: "0 1px 4px rgba(0,0,0,0.02)" }} data-testid={`admin-user-row-${u.id}`}>
+                <div key={u.id} style={{ background: "#fff", borderRadius: 14, padding: isMobile ? "12px 14px" : "16px 20px", border: "1px solid rgba(0,0,0,0.05)", display: "flex", alignItems: isMobile ? "flex-start" : "center", gap: isMobile ? 10 : 16, boxShadow: "0 1px 4px rgba(0,0,0,0.02)", flexWrap: isMobile ? "wrap" : "nowrap" }} data-testid={`admin-user-row-${u.id}`}>
                   <div style={{ width: 36, height: 36, borderRadius: 10, background: u.role === "admin" ? "linear-gradient(135deg, #1A5DAB, #0071E3)" : u.role === "subadmin" ? "linear-gradient(135deg, #AF52DE, #DA70D6)" : "linear-gradient(135deg, #E5E5EA, #D1D1D6)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                     {u.role === "admin" ? <Shield style={{ width: 16, height: 16, color: "#fff" }} /> : u.role === "subadmin" ? <Building2 style={{ width: 16, height: 16, color: "#fff" }} /> : <Users style={{ width: 16, height: 16, color: "#636366" }} />}
                   </div>
@@ -799,7 +806,7 @@ export default function Admin() {
                       <span style={{ fontSize: 11, padding: "1px 6px", borderRadius: 4, background: u.aiRequestsUsed >= u.aiRequestLimit ? "rgba(255,59,48,0.08)" : "rgba(52,199,89,0.08)", color: u.aiRequestsUsed >= u.aiRequestLimit ? "#FF3B30" : "#34C759", fontWeight: 500 }}>KI: {u.aiRequestsUsed}/{u.aiRequestLimit}</span>
                     </div>
                   </div>
-                  <div style={{ textAlign: "right", minWidth: 120 }}>
+                  <div style={{ textAlign: isMobile ? "left" : "right", minWidth: isMobile ? 0 : 120, marginLeft: isMobile ? 46 : 0 }}>
                     {u.subscription ? (
                       <>
                         <div style={{ display: "flex", alignItems: "center", gap: 4, justifyContent: "flex-end", marginBottom: 2 }}>

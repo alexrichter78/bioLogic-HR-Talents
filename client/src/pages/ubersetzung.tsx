@@ -1,6 +1,7 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import { useLocation } from "wouter";
 import { Search, ArrowLeft, Download, Check, Loader2 } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { useTranslationContext, type DbTranslation } from "@/lib/translations-context";
 import { ALL_TRANSLATIONS } from "@/lib/all-translations";
 import { apiRequest } from "@/lib/queryClient";
@@ -15,6 +16,7 @@ export default function Ubersetzung() {
   const [search, setSearch] = useState("");
   const [selectedSection, setSelectedSection] = useState<string>("Alle");
   const { translations, isLoaded, updateField } = useTranslationContext();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     apiRequest("POST", "/api/translations/sync", ALL_TRANSLATIONS).catch(() => {});
@@ -70,8 +72,11 @@ export default function Ubersetzung() {
     <div style={{ minHeight: "100vh", background: "#F5F5F7", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}>
       {/* Header */}
       <div style={{ background: "#FFFFFF", borderBottom: "1px solid rgba(0,0,0,0.08)", position: "sticky", top: 0, zIndex: 10 }}>
-        <div style={{ maxWidth: 1400, margin: "0 auto", padding: "0 24px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 16, height: 56 }}>
+        <div style={{ maxWidth: 1400, margin: "0 auto", padding: "0 24px" }} className="mobile-px-12">
+          <div style={isMobile
+            ? { display: "flex", alignItems: "center", gap: 8, minHeight: 56, paddingTop: 8, paddingBottom: 8, flexWrap: "wrap" }
+            : { display: "flex", alignItems: "center", gap: 16, height: 56 }
+          }>
             <button
               onClick={() => setLocation("/admin")}
               data-testid="button-back-to-admin"
@@ -114,7 +119,7 @@ export default function Ubersetzung() {
       </div>
 
       {/* Info banner */}
-      <div style={{ background: "#EFF6FF", borderBottom: "1px solid #DBEAFE", padding: "8px 24px" }}>
+      <div style={{ background: "#EFF6FF", borderBottom: "1px solid #DBEAFE", padding: "8px 24px" }} className="mobile-px-12">
         <div style={{ maxWidth: 1400, margin: "0 auto", fontSize: 12, color: "#1D4ED8" }}>
           💡 <strong>Direkt bearbeitbar:</strong> Klicke auf einen Text in DE / EN / FR / IT — ändere ihn und drücke Enter oder verlasse das Feld. Die Änderung wird sofort gespeichert und im gesamten System übernommen.
         </div>
@@ -122,7 +127,7 @@ export default function Ubersetzung() {
 
       {/* Controls */}
       <div style={{ background: "#FFFFFF", borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
-        <div style={{ maxWidth: 1400, margin: "0 auto", padding: "12px 24px", display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
+        <div style={{ maxWidth: 1400, margin: "0 auto", padding: "12px 24px", display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }} className="mobile-px-12">
           <div style={{ position: "relative", flex: "1 1 300px" }}>
             <Search size={14} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#8E8E93" }} />
             <input
@@ -149,7 +154,7 @@ export default function Ubersetzung() {
       </div>
 
       {/* Table */}
-      <div style={{ maxWidth: 1400, margin: "0 auto", padding: "24px 24px 48px" }}>
+      <div style={{ maxWidth: 1400, margin: "0 auto", padding: "24px 24px 48px" }} className="mobile-px-12">
         {filtered.length === 0 ? (
           <div style={{ textAlign: "center", padding: "60px 0", color: "#8E8E93", fontSize: 14 }}>
             Keine Einträge gefunden.
@@ -166,7 +171,7 @@ export default function Ubersetzung() {
                 </div>
                 <div style={{ background: "#FFFFFF", borderRadius: 12, border: "1px solid rgba(0,0,0,0.06)", overflow: "hidden", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }}>
                   {/* Head */}
-                  <div style={{ display: "grid", gridTemplateColumns: "180px 1fr 1fr 1fr 1fr", gap: 0, borderBottom: "1px solid rgba(0,0,0,0.08)", background: "#F9F9FB", padding: "0 16px" }}>
+                  <div className="translations-grid translations-grid-head" style={{ display: "grid", gridTemplateColumns: "180px 1fr 1fr 1fr 1fr", gap: 0, borderBottom: "1px solid rgba(0,0,0,0.08)", background: "#F9F9FB", padding: "0 16px" }}>
                     {["Schlüssel", "DE", "EN", "FR", "IT"].map((col, i) => (
                       <div key={col} style={{ padding: "9px 8px", fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.06em", borderRight: i < 4 ? "1px solid rgba(0,0,0,0.06)" : "none" }}>
                         {col}
@@ -178,6 +183,7 @@ export default function Ubersetzung() {
                     <div
                       key={entry.key}
                       data-testid={`row-translation-${entry.key}`}
+                      className="translations-grid"
                       style={{ display: "grid", gridTemplateColumns: "180px 1fr 1fr 1fr 1fr", gap: 0, padding: "0 16px", borderBottom: idx < (grouped[section]?.length ?? 0) - 1 ? "1px solid rgba(0,0,0,0.05)" : "none", background: idx % 2 === 0 ? "#FFFFFF" : "#FAFAFA" }}
                     >
                       {/* Key */}
@@ -291,6 +297,9 @@ function EditableCell({
       title="Klicken zum Bearbeiten"
       data-testid={`cell-${lang}-${value?.slice(0, 10)}`}
     >
+      <span className="mobile-show" style={{ display: "none", fontSize: 10, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.06em", marginRight: 6 }}>
+        {lang}
+      </span>
       {saving ? (
         <span style={{ color: "#8E8E93", display: "flex", alignItems: "center", gap: 4 }}>
           <Loader2 size={11} style={{ animation: "spin 1s linear infinite" }} />

@@ -36,7 +36,7 @@ Preferred communication style: Simple, everyday language.
 -   **UI Components**: shadcn/ui (new-york style) built on Radix UI primitives.
 -   **Styling**: Tailwind CSS with CSS custom properties (light/dark mode).
 -   **Forms**: React Hook Form with Zod resolvers.
--   **UI/UX**: Responsive design (mobile-first), global navigation (with mobile tab bar), consistent use of bioLogic brand colors, specific report layouts (e.g., dark anthrazit header for Entscheidungsbericht), and unified `TeamCheck V4` engine for all team assessments.
+-   **UI/UX**: Responsive design (mobile <768px, tablet 768–1023px, desktop ≥1024px), global navigation (with mobile tab bar), consistent use of bioLogic brand colors, specific report layouts (e.g., dark anthrazit header for Entscheidungsbericht), and unified `TeamCheck V4` engine for all team assessments. Mobile and tablet adaptations use the `useIsMobile()` hook plus targeted CSS helper classes in `client/src/index.css` (e.g. `mobile-px-12`, `tablet-px-16`, `translations-grid`); all desktop branches preserve the original inline styles bit-for-bit.
 
 ### Backend
 -   **Framework**: Express 5 on Node.js with TypeScript.

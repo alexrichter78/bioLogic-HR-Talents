@@ -406,7 +406,7 @@ export default function TeamCheckReportV4() {
               </div>
             </div>
 
-            <div style={{ padding: "28px 32px 0" }}>
+            <div style={{ padding: isMobile ? "20px 16px 0" : "28px 32px 0" }}>
               {result.introText.split("\n\n").map((p, i, arr) => {
                 if (i < arr.length - 1) {
                   return <p key={i} style={{ fontSize: 14.5, color: "#48484A", lineHeight: 1.85, margin: "0 0 8px" }} data-testid={`text-einleitung-v4${i === 0 ? "" : `-${i}`}`}>{p}</p>;
@@ -488,7 +488,7 @@ export default function TeamCheckReportV4() {
             </div>
             </div>
 
-            <div style={{ padding: "0 32px 48px" }}>
+            <div style={{ padding: isMobile ? "0 16px 32px" : "0 32px 48px" }}>
 
               {/* === Section 2: Vergleich der Profile === */}
               {(() => {
@@ -538,14 +538,14 @@ export default function TeamCheckReportV4() {
                   <div style={sectionStyle} data-testid="v4-section-vergleich">
                     <SectionHead num={2} title={ui.teamreport.profileComparison} id="vergleich" />
                     <p style={{ fontSize: 14, color: "#48484A", lineHeight: 1.85, margin: "0 0 20px", textAlign: "justify", textAlignLast: "left" as any, hyphens: "auto", WebkitHyphens: "auto" } as any}>{gapText}</p>
-                    <div data-pdf-block style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginBottom: 14 }}>
-                      <div style={{ borderRadius: 16, border: "1px solid rgba(0,0,0,0.06)", background: "linear-gradient(135deg, #fafbfd, #f5f7fb)", padding: 24, boxShadow: "0 2px 8px rgba(0,0,0,0.02)" }}>
+                    <div data-pdf-block style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 14 : 24, marginBottom: 14 }}>
+                      <div style={{ borderRadius: 16, border: "1px solid rgba(0,0,0,0.06)", background: "linear-gradient(135deg, #fafbfd, #f5f7fb)", padding: isMobile ? 16 : 24, boxShadow: "0 2px 8px rgba(0,0,0,0.02)" }}>
                         <p style={{ fontSize: 15, fontWeight: 600, color: "#1D1D1F", margin: "0 0 20px" }}>{ui.teamreport.teamProfile}</p>
                         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                           {keys.map(k => renderBar(k, Math.round(result.teamTriad[k])))}
                         </div>
                       </div>
-                      <div style={{ borderRadius: 16, border: "1px solid rgba(0,0,0,0.06)", background: "linear-gradient(135deg, #fafbfd, #f5f7fb)", padding: 24, boxShadow: "0 2px 8px rgba(0,0,0,0.02)" }}>
+                      <div style={{ borderRadius: 16, border: "1px solid rgba(0,0,0,0.06)", background: "linear-gradient(135deg, #fafbfd, #f5f7fb)", padding: isMobile ? 16 : 24, boxShadow: "0 2px 8px rgba(0,0,0,0.02)" }}>
                         <p style={{ fontSize: 15, fontWeight: 600, color: "#1D1D1F", margin: "0 0 20px" }}>{ui.teamreport.personProfile}</p>
                         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                           {keys.map(k => renderBar(k, Math.round(result.personTriad[k])))}
@@ -554,7 +554,7 @@ export default function TeamCheckReportV4() {
                     </div>
                     <div data-pdf-block style={{ marginTop: 20, padding: "18px 20px", borderRadius: 12, background: "#F8F9FA", border: "1px solid rgba(0,0,0,0.06)" }}>
                       <p style={{ fontSize: 13, fontWeight: 600, color: "#48484A", margin: "0 0 12px" }}>{ui.teamreport.dimMeaning}</p>
-                      <div style={{ display: "flex", gap: 12 }}>
+                      <div style={{ display: "flex", gap: 12, flexDirection: isMobile ? "column" : "row" }}>
                         {([
                           { key: "impulsiv" as ComponentKey, label: ui.general.labelImpulsiv, color: COMP_HEX.impulsiv, text: ui.teamreport.impulsivDesc },
                           { key: "analytisch" as ComponentKey, label: ui.general.labelAnalytisch, color: COMP_HEX.analytisch, text: ui.teamreport.analytischDesc },
@@ -590,7 +590,7 @@ export default function TeamCheckReportV4() {
               {/* === Section 5: Chancen und Risiken === */}
               <div data-pdf-block style={sectionStyle} data-testid="v4-section-chancen-risiken">
                 <SectionHead num={5} title={ui.teamreport.opportunities} id="chancen-risiken" />
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 24 }}>
+                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 12 : 16, marginBottom: 24 }}>
                   <div style={{ padding: "20px", borderRadius: 12, background: "rgba(52,199,89,0.04)", border: "1px solid rgba(52,199,89,0.15)" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
                       <span style={{ width: 22, height: 22, borderRadius: 11, background: "#1B7A3D", color: "#FFF", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700 }}>+</span>

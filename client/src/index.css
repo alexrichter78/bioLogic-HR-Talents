@@ -44,13 +44,66 @@ input[type="range"].bio-slider::-moz-range-track {
 @media (max-width: 767px) {
   .mobile-stack { flex-direction: column !important; }
   .mobile-gap-16 { gap: 16px !important; }
+  .mobile-gap-8 { gap: 8px !important; }
   .mobile-p-16 { padding: 16px !important; }
   .mobile-p-12 { padding: 12px !important; }
+  .mobile-px-12 { padding-left: 12px !important; padding-right: 12px !important; }
+  .mobile-px-16 { padding-left: 16px !important; padding-right: 16px !important; }
+  .mobile-py-12 { padding-top: 12px !important; padding-bottom: 12px !important; }
   .mobile-grid-1 { grid-template-columns: 1fr !important; }
+  .mobile-grid-2 { grid-template-columns: 1fr 1fr !important; }
   .mobile-hide { display: none !important; }
-  .mobile-full-w { max-width: 100% !important; }
+  .mobile-show { display: block !important; }
+  .mobile-flex { display: flex !important; }
+  .mobile-full-w { width: 100% !important; max-width: 100% !important; }
+  .mobile-min-w-0 { min-width: 0 !important; }
   .mobile-text-sm { font-size: 13px !important; }
+  .mobile-text-xs { font-size: 12px !important; }
   .mobile-h-auto { height: auto !important; }
+  .mobile-w-auto { width: auto !important; }
+  .mobile-text-center { text-align: center !important; }
+  .mobile-flex-wrap { flex-wrap: wrap !important; }
+  .mobile-justify-start { justify-content: flex-start !important; }
+}
+
+/* Tablet adjustments (768px - 1023px): keep desktop layout but reduce side padding/gaps */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .tablet-px-16 { padding-left: 16px !important; padding-right: 16px !important; }
+  .tablet-gap-12 { gap: 12px !important; }
+  .tablet-stack { flex-direction: column !important; }
+  .tablet-grid-1 { grid-template-columns: 1fr !important; }
+  .tablet-grid-2 { grid-template-columns: 1fr 1fr !important; }
+}
+
+/* Universal safety: any element using fixed pixel min-widths inside flex
+   containers can otherwise force horizontal overflow on small screens. */
+@media (max-width: 767px) {
+  .responsive-card,
+  .responsive-card * {
+    max-width: 100%;
+  }
+  /* Translations admin grid becomes a stacked card on small screens */
+  .translations-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 6px !important;
+    padding: 8px 12px !important;
+    grid-template-columns: none !important;
+  }
+  .translations-grid > * {
+    border-right: none !important;
+    padding: 4px 0 !important;
+    min-width: 0 !important;
+    overflow-wrap: anywhere !important;
+    word-break: break-word !important;
+  }
+  .translations-grid code {
+    overflow-wrap: anywhere !important;
+    word-break: break-all !important;
+  }
+  .translations-grid-head {
+    display: none !important;
+  }
 }
 
 /* LIGHT MODE */

@@ -666,7 +666,7 @@ export default function Rollenprofil() {
 
 
   const SectionHead = ({ num, title }: { num: number; title: string; color?: string }) => (
-    <div className="bio-section-head" style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24, marginLeft: -44, marginRight: -44, padding: "0 18px", height: 38, background: "linear-gradient(135deg, #343A48 0%, #3d4455 50%, #464f62 100%)", boxShadow: "0 2px 6px rgba(52,58,72,0.3)" }}>
+    <div className="bio-section-head" style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24, marginLeft: isMobile ? -20 : -44, marginRight: isMobile ? -20 : -44, padding: "0 18px", height: 38, background: "linear-gradient(135deg, #343A48 0%, #3d4455 50%, #464f62 100%)", boxShadow: "0 2px 6px rgba(52,58,72,0.3)" }}>
       <img src={sectionCircleUrls[num as keyof typeof sectionCircleUrls]} alt={String(num).padStart(2, "0")} style={{ width: 28, height: 28, flexShrink: 0, display: "block" }} />
       <span style={{ fontSize: 15, fontWeight: 700, color: "#FFFFFF", letterSpacing: "0.03em", lineHeight: "38px", height: 38, display: "inline-block" }}>{title}</span>
     </div>
@@ -743,7 +743,7 @@ export default function Rollenprofil() {
           </div>
 
           {/* ── BODY ── */}
-          <div style={{ padding: "40px 44px 48px" }}>
+          <div style={{ padding: isMobile ? "24px 20px 32px" : "40px 44px 48px" }}>
 
           {/* ── EINLEITUNG ── */}
           <div style={{ marginBottom: 32 }} data-testid="bericht-section-intro" data-pdf-block>
@@ -814,7 +814,7 @@ export default function Rollenprofil() {
               <div data-pdf-block>
                 <div style={{ padding: "18px 20px", borderRadius: 12, background: "#F8F9FA", border: "1px solid rgba(0,0,0,0.06)", marginBottom: 16 }}>
                   <p style={{ fontSize: 13, fontWeight: 600, color: "#48484A", margin: "0 0 12px" }}>{L.componentMeaning}</p>
-                  <div style={{ display: "flex", gap: 12 }}>
+                  <div style={{ display: "flex", gap: 12, flexDirection: isMobile ? "column" : "row" }}>
                     {komponentenBedeutung.map((kb, i) => (
                       <div key={i} style={{ flex: 1, display: "flex", flexDirection: "column" }}>
                         <div style={{ flex: 1, padding: "14px 16px", borderRadius: 10, background: `linear-gradient(135deg, ${kb.color}12, ${kb.color}06)`, border: `1px solid ${kb.color}20`, display: "flex", flexDirection: "column" }}>
