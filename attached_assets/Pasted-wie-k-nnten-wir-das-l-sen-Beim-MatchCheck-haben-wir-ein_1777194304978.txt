@@ -1,0 +1,262 @@
+wie könnten wir das lösen:
+Beim MatchCheck haben wir eine Bar (Entwicklungsaufwand)
+Viele meine Kunden wundern sich, wenn eine Person bedingt geeignet ist (Die Software rechnet richtig!)
+Ich habe nur 3 Balken (geeignet, bedingt geeignet, nicht geeignet)
+
+Soll
+impulsiv: 36
+Intuitiv: 23
+Analytisch: 41
+
+Ist
+impulsiv: 35
+Intuitiv: 24
+Analytisch: 41
+
+Optisch haben wir 3 Balken. Damit die Kunden hier ein besseres Bild haben könnten wir das nicht mit einer anderen Bar lösen.
+Z.B. mit 12 Punkten. Somit sehen die ah ok. Bedingt geeignet aber ein Strich nach geeignet. Also noch super. Anders verhält es sich, wenn wir schon fast beim Ungeeignet sind. Dann sollen die Punkte noch kurz vor Nicht geeignet stehen. 
+
+Es geht hier rein um die Optik! So dass bedingt geeignet auch nahe am geeignet sind und nahe am ungeeginet sind (Visuell)
+
+Ich würde das nicht an der eigentlichen Berechnung ändern, sondern eine zweite, rein visuelle Feinanzeige ergänzen: Das Ergebnis bleibt „bedingt geeignet“, aber die Nähe zu „geeignet“ oder „nicht geeignet“ wird sichtbar.
+
+Nachgedacht für 19s
+
+Ja. Das ist genau der richtige Ansatz: Die fachliche Bewertung bleibt unverändert, aber die Darstellung bekommt eine feinere visuelle Abstufung.
+
+Der Denkfehler beim Kunden entsteht, weil „bedingt geeignet“ optisch wie eine harte Mittelstufe wirkt. In Wirklichkeit kann „bedingt geeignet“ aber zwei völlig verschiedene Dinge bedeuten:
+
+bedingt geeignet, aber fast geeignet
+Beispiel: minimale Strukturabweichung, praktisch sehr nahe dran.
+bedingt geeignet, aber schon kritisch
+Beispiel: mehrere deutliche Abweichungen, noch nicht „nicht geeignet“, aber mit spürbarem Entwicklungsaufwand.
+
+Deshalb würde ich die 3 Balken nicht ersetzen, sondern ergänzen durch eine 12-Punkte-Feinanzeige.
+
+Lösung: 12-Punkte-Skala „Passungsnähe“
+
+Nicht mehr nur:
+
+Geeignet | Bedingt geeignet | Nicht geeignet
+
+Sondern visuell so:
+
+Geeignet        Bedingt geeignet        Nicht geeignet
+● ● ● ●   |   ● ● ● ●   |   ● ● ● ●
+1 2 3 4       5 6 7 8       9 10 11 12
+
+Die Software zeigt dann einen Marker, zum Beispiel:
+
+Geeignet        Bedingt geeignet        Nicht geeignet
+● ● ● ●   |   ◉ ○ ○ ○   |   ○ ○ ○ ○
+
+Bedeutung:
+
+Bedingt geeignet, aber sehr nah an geeignet.
+
+Oder:
+
+Geeignet        Bedingt geeignet        Nicht geeignet
+○ ○ ○ ○   |   ○ ○ ○ ◉   |   ○ ○ ○ ○
+
+Bedeutung:
+
+Bedingt geeignet, aber fast nicht geeignet.
+
+Für dein Beispiel
+Soll
+Impulsiv:    36
+Intuitiv:    23
+Analytisch:  41
+Ist
+Impulsiv:    35
+Intuitiv:    24
+Analytisch:  41
+
+Die Werte sind extrem nah beieinander:
+
+Impulsiv:    1 Punkt Abweichung
+Intuitiv:    1 Punkt Abweichung
+Analytisch:  0 Punkte Abweichung
+
+Warum kann trotzdem „bedingt geeignet“ entstehen?
+
+Weil bei deiner Logik nicht nur die Prozentabweichung zählt, sondern auch die Strukturrelation.
+
+Beim Soll liegen Impulsiv und Analytisch mit 36 zu 41 noch innerhalb der 5-Punkte-Toleranz. Also strukturell fast gleich.
+
+Beim Ist liegt Analytisch mit 41 zu 35 aber 6 Punkte über Impulsiv. Damit kippt eine Relation knapp aus der Gleichheit heraus.
+
+Das ist fachlich sauber als Soft Conflict bewertbar. Aber optisch muss sichtbar werden:
+
+Das ist kein ernstes Problem. Das ist ein Grenzfall direkt neben „geeignet“.
+
+Also wäre die Anzeige:
+
+Geeignet        Bedingt geeignet        Nicht geeignet
+● ● ● ●   |   ◉ ○ ○ ○   |   ○ ○ ○ ○
+
+Oder als Zahl:
+
+Passungsnähe: 5 von 12
+
+Das heißt:
+
+Bedingt geeignet, aber direkt an der Grenze zu geeignet.
+
+Empfohlene Logik für die 12 Punkte
+
+Ich würde die 12 Punkte fest in 3 Zonen aufteilen:
+
+Punkte	Bedeutung	Ergebnis
+1–4	sehr gute bis gute Passung	Geeignet
+5–8	bedingte Passung	Bedingt geeignet
+9–12	geringe bis kritische Passung	Nicht geeignet
+
+Wichtig:
+Die 12-Punkte-Skala entscheidet nicht über das Ergebnis. Sie visualisiert nur die Nähe innerhalb des Ergebnisses.
+
+Konkrete Mapping-Logik
+Geeignet
+Situation	Punkt
+nahezu perfekte Passung	1
+sehr geringe Abweichung	2
+leichte Abweichung	3
+noch geeignet, aber an der Grenze	4
+Bedingt geeignet
+Situation	Punkt
+bedingt, aber fast geeignet	5
+klar bedingt, aber unkritisch	6
+bedingt mit erkennbarem Entwicklungsaufwand	7
+bedingt, aber fast nicht geeignet	8
+Nicht geeignet
+Situation	Punkt
+nicht geeignet, aber knapp	9
+deutliche Nicht-Passung	10
+starke Nicht-Passung	11
+extreme Nicht-Passung / KO-Nähe	12
+Einfache Formel für deine Software
+
+Du kannst eine zusätzliche Variable bauen:
+
+visualFitPoint
+
+Diese Variable verändert nicht das Ergebnis, sondern nur die Anzeige.
+
+Beispiel-Logik:
+
+function getVisualFitPoint({ fitLabel, structureResult, maxDiff, totalGap }) {
+  // Geeignet
+  if (fitLabel === "Geeignet") {
+    if (maxDiff <= 1 && totalGap <= 3) return 1;
+    if (maxDiff <= 3) return 2;
+    if (maxDiff <= 4) return 3;
+    return 4;
+  }
+
+  // Bedingt geeignet
+  if (fitLabel === "Bedingt geeignet") {
+    // Soft Conflict mit sehr kleinen Abweichungen:
+    // fachlich bedingt, optisch nahe an geeignet
+    if (structureResult === "SOFT_CONFLICT") {
+      if (maxDiff <= 2) return 5;
+      if (maxDiff <= 5) return 6;
+      if (maxDiff <= 8) return 7;
+      return 8;
+    }
+
+    // Exact, aber numerisch über Geeignet-Grenze
+    if (structureResult === "EXACT") {
+      if (maxDiff <= 6) return 5;
+      if (maxDiff <= 7) return 6;
+      if (maxDiff <= 9) return 7;
+      return 8;
+    }
+
+    // Fallback für andere bedingte Fälle
+    if (maxDiff <= 4) return 5;
+    if (maxDiff <= 7) return 6;
+    if (maxDiff <= 10) return 7;
+    return 8;
+  }
+
+  // Nicht geeignet
+  if (fitLabel === "Nicht geeignet") {
+    if (maxDiff <= 12) return 9;
+    if (maxDiff <= 18) return 10;
+    if (maxDiff <= 25) return 11;
+    return 12;
+  }
+
+  return 8;
+}
+
+Für dein Beispiel:
+
+fitLabel = "Bedingt geeignet"
+structureResult = "SOFT_CONFLICT"
+maxDiff = 1
+totalGap = 2
+
+visualFitPoint = 5
+
+Ergebnis:
+
+Bedingt geeignet, aber direkt neben geeignet.
+Darstellung im Bericht
+
+Ich würde die Bar nicht „Entwicklungsaufwand“ nennen, wenn sie die Passung erklärt. Besser wäre:
+
+Variante 1
+
+Passungsnähe
+
+Darunter:
+
+Bedingt geeignet – sehr nahe an geeignet
+Variante 2
+
+Feinbewertung der Passung
+
+Darunter:
+
+Das Ergebnis liegt am oberen Rand von „bedingt geeignet“.
+Variante 3
+
+Visuelle Einordnung
+
+Darunter:
+
+Die rechnerische Bewertung lautet „bedingt geeignet“. Die Detailwerte zeigen jedoch eine sehr geringe Abweichung.
+Textbaustein für genau solche Fälle
+
+Für dein Beispiel würde ich im Bericht schreiben:
+
+Die Bewertung lautet „bedingt geeignet“, liegt jedoch sehr nahe an „geeignet“. Die numerischen Abweichungen zwischen Soll- und Ist-Profil sind minimal. Die Einstufung entsteht vor allem durch eine leichte strukturelle Verschiebung zwischen den Ausprägungen, nicht durch eine deutliche fachliche oder persönliche Nicht-Passung.
+
+Das ist wichtig, weil der Kunde dann versteht:
+
+Die Software widerspricht sich nicht. Sie differenziert nur genauer.
+
+Beste UI-Lösung
+
+Ich würde es so aufbauen:
+
+Gesamtergebnis
+Bedingt geeignet
+
+Passungsnähe
+Geeignet        Bedingt geeignet        Nicht geeignet
+● ● ● ●   |   ◉ ○ ○ ○   |   ○ ○ ○ ○
+
+Einordnung
+Sehr nahe an geeignet
+
+Das ist für Kunden sofort verständlich.
+
+Nicht nur Ampel.
+Nicht nur Balken.
+Sondern eine Lage innerhalb des Ergebnisses.
+
+Damit löst du genau das Problem:
+„Bedingt geeignet“ wirkt nicht mehr automatisch mittelmäßig oder kritisch, sondern wird differenziert sichtbar.
