@@ -61,26 +61,26 @@ export function getVisualFitPoint(input: PassungsnaeheInput): PassungsnaeheResul
   let point: PassungsnaehePoint;
 
   if (fitRating === "GEEIGNET") {
-    if (md <= 1 && tg <= 3) point = 1;
-    else if (md <= 3) point = 2;
-    else if (md <= 5) point = 3;
+    if (tg <= 2 && md <= 1) point = 1;
+    else if (tg <= 5) point = 2;
+    else if (tg <= 9) point = 3;
     else point = 4;
   } else if (fitRating === "BEDINGT") {
-    if (structureType === "EXACT" || structureType === "SOFT_CONFLICT") {
-      if (md <= 5) point = 5;
-      else if (md <= 8) point = 6;
-      else if (md <= 12) point = 7;
+    if (structureType === "HARD_CONFLICT") {
+      if (tg <= 14) point = 5;
+      else if (tg <= 22) point = 6;
+      else if (tg <= 32) point = 7;
       else point = 8;
     } else {
-      if (md <= 4) point = 5;
-      else if (md <= 8) point = 6;
-      else if (md <= 12) point = 7;
+      if (tg <= 10) point = 5;
+      else if (tg <= 18) point = 6;
+      else if (tg <= 28) point = 7;
       else point = 8;
     }
   } else {
-    if (md <= 15) point = 9;
-    else if (md <= 22) point = 10;
-    else if (md <= 30) point = 11;
+    if (tg <= 30) point = 9;
+    else if (tg <= 50) point = 10;
+    else if (tg <= 75) point = 11;
     else point = 12;
   }
 
