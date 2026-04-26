@@ -1329,7 +1329,7 @@ export default function SollIstBericht() {
                             <div style={{ fontSize: 17, fontWeight: 700, color: cCol }} data-testid="status-führungsaufwand">{cLabel}</div>
                           </div>
                         </div>
-                        <div style={{ display: "flex", gap: 16, marginTop: 16 }}>
+                        <div style={{ display: "none", gap: 16, marginTop: 16 }}>
                           <div style={{ flex: 1, padding: "12px 16px", borderRadius: 10, background: `${gapCol}08`, border: `1px solid ${gapCol}25` }}>
                             <div style={{ fontSize: 10.5, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 6 }}>{ui.matchcheck.profileDeviation}</div>
                             <div style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F", lineHeight: 1.5 }} data-testid="status-profilabweichung">{result.gapLevel === "gering" ? ui.matchcheck.gapLow : result.gapLevel === "mittel" ? ui.matchcheck.gapMedium : ui.matchcheck.gapHigh}</div>
