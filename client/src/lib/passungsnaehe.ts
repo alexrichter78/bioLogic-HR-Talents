@@ -17,6 +17,7 @@ export type PassungsnaeheInput = {
 export type PassungsnaeheResult = {
   point: PassungsnaehePoint;
   zone: PassungsnaeheZone;
+  position01: number;
   captionKey:
     | "perfect"
     | "veryGood"
@@ -46,6 +47,42 @@ const ZONE_OF: Record<PassungsnaehePoint, PassungsnaeheZone> = {
   4: "BEDINGT", 5: "BEDINGT", 6: "BEDINGT",
   7: "NICHT_GEEIGNET", 8: "NICHT_GEEIGNET", 9: "NICHT_GEEIGNET",
 };
+
+const ZONE_INDEX: Record<PassungsnaeheZone, number> = {
+  GEEIGNET: 0,
+  BEDINGT: 1,
+  NICHT_GEEIGNET: 2,
+};
+
+function clamp(v: number, lo: number, hi: number): number {
+  return Math.max(lo, Math.min(hi, v));
+}
+
+function computePosInZone(
+  zone: PassungsnaeheZone,
+  structureType: StructureRelationType,
+  md: number,
+  tg: number,
+): number {
+  if (zone === "GEEIGNET") {
+    const a = md / 5.5;
+    const b = tg / 16;
+    return clamp(Math.max(a, b * 0.9), 0.06, 0.94);
+  }
+  if (zone === "BEDINGT") {
+    if (structureType === "EXACT") {
+      return clamp((md - 5.5) / 5.5, 0.06, 0.94);
+    }
+    if (structureType === "SOFT_CONFLICT") {
+      return clamp(md / 10.5, 0.06, 0.94);
+    }
+    return clamp(md / 10.5, 0.06, 0.94);
+  }
+  if (structureType === "HARD_CONFLICT") {
+    return clamp(md / 32, 0.06, 0.94);
+  }
+  return clamp((md - 10) / 25, 0.06, 0.94);
+}
 
 export function getVisualFitPoint(input: PassungsnaeheInput): PassungsnaeheResult {
   const { fitRating, structureType, maxDiff, totalGap } = input;
@@ -84,5 +121,9 @@ export function getVisualFitPoint(input: PassungsnaeheInput): PassungsnaeheResul
     }
   }
 
-  return { point, zone: ZONE_OF[point], captionKey: CAPTIONS[point] };
+  const zone = ZONE_OF[point];
+  const posInZone = computePosInZone(zone, structureType, md, tg);
+  const position01 = (ZONE_INDEX[zone] + posInZone) / 3;
+
+  return { point, zone, captionKey: CAPTIONS[point], position01 };
 }

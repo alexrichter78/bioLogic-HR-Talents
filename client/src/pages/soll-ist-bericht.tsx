@@ -1111,60 +1111,48 @@ export default function SollIstBericht() {
                           extremeMismatch: pn.cap_extremeMismatch,
                         };
                         const markerCol = ZONE_COLORS_S[visual.zone];
-                        const dotSizeS = isMobile ? 11 : 14;
-                        const dotGapS = isMobile ? 6 : 9;
-                        const zonesS: Array<{ key: keyof typeof ZONE_COLORS_S; from: number }> = [
-                          { key: "GEEIGNET", from: 1 },
-                          { key: "BEDINGT", from: 4 },
-                          { key: "NICHT_GEEIGNET", from: 7 },
-                        ];
+                        const greenCol = ZONE_COLORS_S.GEEIGNET;
+                        const yellowCol = ZONE_COLORS_S.BEDINGT;
+                        const redCol = ZONE_COLORS_S.NICHT_GEEIGNET;
+                        const markerLeftPctS = `${(visual.position01 * 100).toFixed(2)}%`;
+                        const markerSizeS = isMobile ? 18 : 20;
+                        const trackHeightS = isMobile ? 8 : 10;
                         return (
                           <div style={{ gridColumn: "1 / -1", padding: "14px 16px", borderRadius: 12, background: "rgba(0,0,0,0.02)" }} data-testid="section-summary-passungsnaehe">
                             <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12, flexWrap: "wrap", marginBottom: 10 }}>
                               <span style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>{pn.title}</span>
                               <span style={{ fontSize: 12, fontWeight: 700, color: markerCol }}>{visual.point} {pn.labelOf}</span>
                             </div>
-                            <div style={{ display: "flex", gap: isMobile ? 5 : 8, alignItems: "stretch" }}>
-                              {zonesS.map((z) => {
-                                const zCol = ZONE_COLORS_S[z.key];
-                                const isActiveZone = visual.zone === z.key;
-                                return (
-                                  <div
-                                    key={z.key}
-                                    style={{
-                                      flex: 1,
-                                      padding: isMobile ? "7px 5px" : "8px 10px",
-                                      borderRadius: 8,
-                                      background: isActiveZone ? `${zCol}10` : "rgba(255,255,255,0.6)",
-                                      border: isActiveZone ? `1px solid ${zCol}40` : "1px solid rgba(0,0,0,0.05)",
-                                    }}
-                                  >
-                                    <div style={{ fontSize: isMobile ? 9 : 10, fontWeight: 700, color: zCol, textTransform: "uppercase", letterSpacing: "0.05em", textAlign: "center", marginBottom: 6, lineHeight: 1.2 }}>
-                                      {ZONE_LABELS_S[z.key]}
-                                    </div>
-                                    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: dotGapS }}>
-                                      {[z.from, z.from + 1, z.from + 2].map((p) => {
-                                        const isActive = visual.point === p;
-                                        return (
-                                          <div
-                                            key={p}
-                                            style={{
-                                              width: dotSizeS,
-                                              height: dotSizeS,
-                                              borderRadius: "50%",
-                                              background: isActive ? zCol : "transparent",
-                                              border: isActive ? `2px solid ${zCol}` : `1.5px solid ${zCol}55`,
-                                              boxShadow: isActive ? `0 0 0 2.5px ${zCol}25` : "none",
-                                              flexShrink: 0,
-                                              transition: "all 0.2s ease",
-                                            }}
-                                          />
-                                        );
-                                      })}
-                                    </div>
-                                  </div>
-                                );
-                              })}
+                            <div style={{ display: "flex", gap: 0, marginBottom: 6 }}>
+                              <div style={{ flex: 1, fontSize: isMobile ? 9 : 10, fontWeight: 700, color: greenCol, textTransform: "uppercase", letterSpacing: "0.05em", textAlign: "center", lineHeight: 1.2 }}>{ZONE_LABELS_S.GEEIGNET}</div>
+                              <div style={{ flex: 1, fontSize: isMobile ? 9 : 10, fontWeight: 700, color: yellowCol, textTransform: "uppercase", letterSpacing: "0.05em", textAlign: "center", lineHeight: 1.2 }}>{ZONE_LABELS_S.BEDINGT}</div>
+                              <div style={{ flex: 1, fontSize: isMobile ? 9 : 10, fontWeight: 700, color: redCol, textTransform: "uppercase", letterSpacing: "0.05em", textAlign: "center", lineHeight: 1.2 }}>{ZONE_LABELS_S.NICHT_GEEIGNET}</div>
+                            </div>
+                            <div style={{ position: "relative", height: markerSizeS + 8, paddingTop: (markerSizeS + 8 - trackHeightS) / 2, paddingBottom: (markerSizeS + 8 - trackHeightS) / 2 }} data-testid="track-summary-passungsnaehe">
+                              <div style={{ position: "relative", height: trackHeightS, borderRadius: 999, overflow: "visible", display: "flex", boxShadow: "inset 0 1px 2px rgba(0,0,0,0.06)" }}>
+                                <div style={{ flex: 1, background: `linear-gradient(90deg, ${greenCol}aa, ${greenCol}66)`, borderTopLeftRadius: 999, borderBottomLeftRadius: 999 }} />
+                                <div style={{ flex: 1, background: `linear-gradient(90deg, ${yellowCol}66, ${yellowCol}aa, ${yellowCol}66)` }} />
+                                <div style={{ flex: 1, background: `linear-gradient(90deg, ${redCol}66, ${redCol}aa)`, borderTopRightRadius: 999, borderBottomRightRadius: 999 }} />
+                                <div style={{ position: "absolute", top: -3, bottom: -3, left: "33.333%", width: 1, background: "rgba(0,0,0,0.12)" }} />
+                                <div style={{ position: "absolute", top: -3, bottom: -3, left: "66.666%", width: 1, background: "rgba(0,0,0,0.12)" }} />
+                                <div
+                                  data-testid="marker-summary-passungsnaehe"
+                                  style={{
+                                    position: "absolute",
+                                    top: "50%",
+                                    left: markerLeftPctS,
+                                    width: markerSizeS,
+                                    height: markerSizeS,
+                                    marginLeft: -markerSizeS / 2,
+                                    marginTop: -markerSizeS / 2,
+                                    borderRadius: "50%",
+                                    background: markerCol,
+                                    border: "2.5px solid #FFFFFF",
+                                    boxShadow: `0 0 0 1.5px ${markerCol}, 0 2px 6px rgba(0,0,0,0.18)`,
+                                    transition: "left 600ms cubic-bezier(0.4, 0, 0.2, 1), background 350ms ease, box-shadow 350ms ease",
+                                  }}
+                                />
+                              </div>
                             </div>
                             <div style={{ marginTop: 10, fontSize: 12.5, color: markerCol, fontWeight: 600 }}>
                               {pn.captionPrefix} <span style={{ color: markerCol }}>{captionMapS[visual.captionKey]}</span>
@@ -1415,14 +1403,12 @@ export default function SollIstBericht() {
                           extremeMismatch: pn.cap_extremeMismatch,
                         };
                         const markerColor = ZONE_COLORS[visual.zone];
-                        const dotSize = isMobile ? 12 : 16;
-                        const dotGap = isMobile ? 8 : 12;
-                        const zonePad = isMobile ? "8px 6px" : "10px 12px";
-                        const zones: Array<{ key: keyof typeof ZONE_COLORS; from: number; to: number }> = [
-                          { key: "GEEIGNET", from: 1, to: 3 },
-                          { key: "BEDINGT", from: 4, to: 6 },
-                          { key: "NICHT_GEEIGNET", from: 7, to: 9 },
-                        ];
+                        const greenColR = ZONE_COLORS.GEEIGNET;
+                        const yellowColR = ZONE_COLORS.BEDINGT;
+                        const redColR = ZONE_COLORS.NICHT_GEEIGNET;
+                        const markerLeftPct = `${(visual.position01 * 100).toFixed(2)}%`;
+                        const markerSize = isMobile ? 22 : 26;
+                        const trackHeight = isMobile ? 10 : 12;
                         return (
                           <div
                             data-pdf-block
@@ -1443,49 +1429,36 @@ export default function SollIstBericht() {
                               </span>
                             </div>
                             <p style={{ fontSize: 12, color: "#6E6E73", lineHeight: 1.55, margin: "0 0 14px" }}>{pn.intro}</p>
-                            <div style={{ display: "flex", gap: isMobile ? 6 : 10, alignItems: "stretch" }}>
-                              {zones.map((z, zi) => {
-                                const zCol = ZONE_COLORS[z.key];
-                                return (
-                                  <div
-                                    key={z.key}
-                                    style={{
-                                      flex: 1,
-                                      padding: zonePad,
-                                      borderRadius: 8,
-                                      background: visual.zone === z.key ? `${zCol}10` : "rgba(0,0,0,0.025)",
-                                      border: visual.zone === z.key ? `1px solid ${zCol}40` : "1px solid rgba(0,0,0,0.06)",
-                                      transition: "all 0.2s ease",
-                                    }}
-                                  >
-                                    <div style={{ fontSize: isMobile ? 9.5 : 10.5, fontWeight: 700, color: zCol, textTransform: "uppercase", letterSpacing: "0.05em", textAlign: "center", marginBottom: 8, lineHeight: 1.2 }}>
-                                      {ZONE_LABELS[z.key]}
-                                    </div>
-                                    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: dotGap }}>
-                                      {[z.from, z.from + 1, z.from + 2].map((p) => {
-                                        const isActive = visual.point === p;
-                                        return (
-                                          <div
-                                            key={p}
-                                            data-testid={`dot-passungsnaehe-${p}`}
-                                            data-active={isActive ? "true" : "false"}
-                                            style={{
-                                              width: dotSize,
-                                              height: dotSize,
-                                              borderRadius: "50%",
-                                              background: isActive ? zCol : "transparent",
-                                              border: isActive ? `2px solid ${zCol}` : `1.5px solid ${zCol}55`,
-                                              boxShadow: isActive ? `0 0 0 3px ${zCol}25` : "none",
-                                              flexShrink: 0,
-                                              transition: "all 0.2s ease",
-                                            }}
-                                          />
-                                        );
-                                      })}
-                                    </div>
-                                  </div>
-                                );
-                              })}
+                            <div style={{ display: "flex", gap: 0, marginBottom: 8 }}>
+                              <div style={{ flex: 1, fontSize: isMobile ? 9.5 : 10.5, fontWeight: 700, color: greenColR, textTransform: "uppercase", letterSpacing: "0.05em", textAlign: "center", lineHeight: 1.2 }}>{ZONE_LABELS.GEEIGNET}</div>
+                              <div style={{ flex: 1, fontSize: isMobile ? 9.5 : 10.5, fontWeight: 700, color: yellowColR, textTransform: "uppercase", letterSpacing: "0.05em", textAlign: "center", lineHeight: 1.2 }}>{ZONE_LABELS.BEDINGT}</div>
+                              <div style={{ flex: 1, fontSize: isMobile ? 9.5 : 10.5, fontWeight: 700, color: redColR, textTransform: "uppercase", letterSpacing: "0.05em", textAlign: "center", lineHeight: 1.2 }}>{ZONE_LABELS.NICHT_GEEIGNET}</div>
+                            </div>
+                            <div style={{ position: "relative", height: markerSize + 12, paddingTop: (markerSize + 12 - trackHeight) / 2, paddingBottom: (markerSize + 12 - trackHeight) / 2 }} data-testid="track-passungsnaehe">
+                              <div style={{ position: "relative", height: trackHeight, borderRadius: 999, overflow: "visible", display: "flex", boxShadow: "inset 0 1px 2px rgba(0,0,0,0.07)" }}>
+                                <div style={{ flex: 1, background: `linear-gradient(90deg, ${greenColR}cc, ${greenColR}66)`, borderTopLeftRadius: 999, borderBottomLeftRadius: 999 }} />
+                                <div style={{ flex: 1, background: `linear-gradient(90deg, ${yellowColR}66, ${yellowColR}cc, ${yellowColR}66)` }} />
+                                <div style={{ flex: 1, background: `linear-gradient(90deg, ${redColR}66, ${redColR}cc)`, borderTopRightRadius: 999, borderBottomRightRadius: 999 }} />
+                                <div style={{ position: "absolute", top: -4, bottom: -4, left: "33.333%", width: 1, background: "rgba(0,0,0,0.14)" }} />
+                                <div style={{ position: "absolute", top: -4, bottom: -4, left: "66.666%", width: 1, background: "rgba(0,0,0,0.14)" }} />
+                                <div
+                                  data-testid="marker-passungsnaehe"
+                                  style={{
+                                    position: "absolute",
+                                    top: "50%",
+                                    left: markerLeftPct,
+                                    width: markerSize,
+                                    height: markerSize,
+                                    marginLeft: -markerSize / 2,
+                                    marginTop: -markerSize / 2,
+                                    borderRadius: "50%",
+                                    background: markerColor,
+                                    border: "3px solid #FFFFFF",
+                                    boxShadow: `0 0 0 1.5px ${markerColor}, 0 3px 8px rgba(0,0,0,0.18)`,
+                                    transition: "left 600ms cubic-bezier(0.4, 0, 0.2, 1), background 350ms ease, box-shadow 350ms ease",
+                                  }}
+                                />
+                              </div>
                             </div>
                             <div style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
                               <span style={{ fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.05em" }}>{pn.captionPrefix}</span>
