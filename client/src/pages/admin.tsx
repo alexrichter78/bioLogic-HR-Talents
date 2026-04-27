@@ -3,7 +3,7 @@ import { useAuth } from "@/lib/auth";
 import { useLocation } from "wouter";
 import GlobalNav from "@/components/global-nav";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Plus, Trash2, Pencil, X, Save, Users, CalendarDays, Shield, Building2, Search, ChevronUp, ChevronDown, Database, KeyRound, Copy, Check, ThumbsUp, ThumbsDown, BookOpen, FileText, MessageSquare, RotateCcw, Languages, AlertCircle } from "lucide-react";
+import { Plus, Trash2, Pencil, X, Save, Users, CalendarDays, Shield, Building2, Search, ChevronUp, ChevronDown, Database, KeyRound, Copy, Check, ThumbsUp, ThumbsDown, BookOpen, FileText, MessageSquare, RotateCcw, Languages, AlertCircle, Mail } from "lucide-react";
 
 interface UserWithSub {
   id: number;
@@ -43,6 +43,7 @@ interface UserForm {
   isActive: boolean;
   courseAccess: boolean;
   coachOnly: boolean;
+  preferredLanguage: string;
   accessUntil: string;
   plan: string;
   notes: string;
@@ -64,6 +65,7 @@ const emptyForm: UserForm = {
   isActive: true,
   courseAccess: false,
   coachOnly: false,
+  preferredLanguage: "de",
   accessUntil: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
   plan: "trial",
   notes: "",
@@ -96,6 +98,8 @@ export default function Admin() {
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
   const [resetLink, setResetLink] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [showEmailTemplate, setShowEmailTemplate] = useState(false);
+  const [emailCopied, setEmailCopied] = useState<"subject" | "body" | "all" | null>(null);
   const [activeTab, setActiveTab] = useState<"users" | "feedback" | "knowledge" | "golden" | "topics" | "prompt" | "orgs">("users");
   const [feedbackList, setFeedbackList] = useState<any[]>([]);
   const [feedbackLoading, setFeedbackLoading] = useState(false);
@@ -402,6 +406,7 @@ export default function Admin() {
       isActive: u.isActive,
       courseAccess: u.courseAccess,
       coachOnly: (u as any).coachOnly ?? false,
+      preferredLanguage: (u as any).preferredLanguage ?? "de",
       accessUntil: u.subscription?.accessUntil ? new Date(u.subscription.accessUntil).toISOString().split("T")[0] : "",
       plan: u.subscription?.plan || "premium",
       notes: u.subscription?.notes || "",
@@ -598,6 +603,15 @@ export default function Admin() {
               <option value="canceled">Gekündigt</option>
             </select>
           </div>
+          <div>
+            <label style={labelStyle}>Sprache</label>
+            <select value={form.preferredLanguage} onChange={e => setForm({ ...form, preferredLanguage: e.target.value })} style={inputStyle} data-testid="select-admin-language">
+              <option value="de">Deutsch</option>
+              <option value="en">English</option>
+              <option value="fr">Français</option>
+              <option value="it">Italiano</option>
+            </select>
+          </div>
           <div style={{ display: "flex", alignItems: "end", gap: 16 }}>
             <label style={{ ...labelStyle, display: "flex", alignItems: "center", gap: 6, cursor: "pointer" }}>
               <input type="checkbox" checked={form.isActive} onChange={e => setForm({ ...form, isActive: e.target.checked })} data-testid="input-admin-active" />
@@ -609,7 +623,7 @@ export default function Admin() {
             </label>
             <label style={{ ...labelStyle, display: "flex", alignItems: "center", gap: 6, cursor: "pointer" }} title="Mitarbeiter-Account: nur Louis (KI-Coach), keine JobCheck/MatchCheck/TeamCheck/Kurs">
               <input type="checkbox" checked={form.coachOnly} onChange={e => setForm({ ...form, coachOnly: e.target.checked })} data-testid="input-admin-coach-only" />
-              Nur KI-Coach (Mitarbeiter)
+              Nur KI-Coach
             </label>
           </div>
           <div style={{ gridColumn: "1 / -1" }}>
@@ -655,14 +669,151 @@ export default function Admin() {
           </div>
         )}
 
-        <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 16 }}>
-          <button onClick={() => { setEditId(null); setShowCreate(false); setResetLink(null); }} style={{ padding: "8px 16px", borderRadius: 8, border: "1px solid rgba(0,0,0,0.1)", background: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer" }} data-testid="button-cancel">
-            Abbrechen
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, marginTop: 16, flexWrap: "wrap" }}>
+          <button
+            onClick={() => { setEmailCopied(null); setShowEmailTemplate(true); }}
+            data-testid="button-email-template"
+            style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 14px", borderRadius: 8, border: "1px solid rgba(59,130,246,0.25)", background: "rgba(59,130,246,0.06)", color: "#3B82F6", fontSize: 13, fontWeight: 600, cursor: "pointer" }}
+          >
+            <Mail style={{ width: 14, height: 14 }} />
+            Emailvorlage erstellen
           </button>
-          <button onClick={handleSave} disabled={saving} data-testid="button-save-user" style={{ padding: "8px 20px", borderRadius: 8, border: "none", background: "#1D1D1F", color: "#fff", fontSize: 13, fontWeight: 600, cursor: saving ? "wait" : "pointer", display: "flex", alignItems: "center", gap: 6 }}>
-            <Save style={{ width: 14, height: 14 }} />
-            {saving ? "Speichern..." : "Speichern"}
-          </button>
+          <div style={{ display: "flex", gap: 8 }}>
+            <button onClick={() => { setEditId(null); setShowCreate(false); setResetLink(null); }} style={{ padding: "8px 16px", borderRadius: 8, border: "1px solid rgba(0,0,0,0.1)", background: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer" }} data-testid="button-cancel">
+              Abbrechen
+            </button>
+            <button onClick={handleSave} disabled={saving} data-testid="button-save-user" style={{ padding: "8px 20px", borderRadius: 8, border: "none", background: "#1D1D1F", color: "#fff", fontSize: 13, fontWeight: 600, cursor: saving ? "wait" : "pointer", display: "flex", alignItems: "center", gap: 6 }}>
+              <Save style={{ width: 14, height: 14 }} />
+              {saving ? "Speichern..." : "Speichern"}
+            </button>
+          </div>
+        </div>
+        {showEmailTemplate && renderEmailTemplateModal()}
+      </div>
+    );
+  }
+
+  function buildEmailTemplate() {
+    const fullName = [form.firstName, form.lastName].filter(Boolean).join(" ").trim() || "(Vorname Nachname)";
+    const passwordLine = form.password.trim() || '(bitte unten „Link generieren" nutzen und den Reset-Link beifügen)';
+    const subject = "bioLogic HR-Talents Software";
+    const body = `Hallo ${fullName},
+
+vielen Dank für deine Bestellung und dein Vertrauen.
+
+Dein Zugang zur bioLogic HR-Talents Software ist eingerichtet und du kannst direkt starten.
+
+**Zugangsdaten:**
+
+Software-Webadresse:
+https://www.my-biologic.de/
+
+Benutzername:
+${form.username || "(Benutzername)"}
+
+Passwort:
+${passwordLine}
+
+Wir empfehlen dir, dein Passwort nach dem ersten Login direkt zu ändern. Das kannst du einfach über die Anmeldemaske der Software machen.
+
+Wenn du Fragen hast, kannst du jederzeit das Hilfetool unten rechts in der Software nutzen oder uns direkt per E-Mail kontaktieren:
+
+[support@foresmind.de](mailto:support@foresmind.de)
+
+Viel Erfolg beim Start mit bioLogic.
+
+Viele Grüße
+Dein bioLogic-Team`;
+    return { subject, body };
+  }
+
+  async function copyEmailPart(part: "subject" | "body" | "all") {
+    const { subject, body } = buildEmailTemplate();
+    const txt = part === "subject" ? subject : part === "body" ? body : `Betreff: ${subject}\n\n${body}`;
+    try {
+      await navigator.clipboard.writeText(txt);
+      setEmailCopied(part);
+      setTimeout(() => setEmailCopied(null), 1500);
+    } catch {
+      setEmailCopied(null);
+    }
+  }
+
+  function openMailto() {
+    const { subject, body } = buildEmailTemplate();
+    const to = form.email || "";
+    window.location.href = `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  }
+
+  function renderEmailTemplateModal() {
+    const { subject, body } = buildEmailTemplate();
+    return (
+      <div
+        onClick={() => setShowEmailTemplate(false)}
+        style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: 16 }}
+        data-testid="modal-email-template"
+      >
+        <div
+          onClick={e => e.stopPropagation()}
+          style={{ background: "#fff", borderRadius: 14, maxWidth: 640, width: "100%", maxHeight: "90vh", display: "flex", flexDirection: "column", boxShadow: "0 12px 40px rgba(0,0,0,0.18)" }}
+        >
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 20px", borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <Mail style={{ width: 18, height: 18, color: "#3B82F6" }} />
+              <h3 style={{ fontSize: 16, fontWeight: 700, color: "#1D1D1F", margin: 0 }}>E-Mail-Vorlage</h3>
+            </div>
+            <button onClick={() => setShowEmailTemplate(false)} style={{ background: "none", border: "none", cursor: "pointer", padding: 4 }} data-testid="button-close-email-template">
+              <X style={{ width: 18, height: 18, color: "#8E8E93" }} />
+            </button>
+          </div>
+
+          <div style={{ padding: 20, overflowY: "auto", display: "flex", flexDirection: "column", gap: 14 }}>
+            <div>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+                <label style={labelStyle}>Betreff</label>
+                <button onClick={() => copyEmailPart("subject")} data-testid="button-copy-email-subject" style={{ display: "flex", alignItems: "center", gap: 4, padding: "4px 10px", borderRadius: 6, border: "1px solid rgba(0,0,0,0.1)", background: emailCopied === "subject" ? "#ECFDF5" : "#fff", cursor: "pointer", fontSize: 12, fontWeight: 500, color: emailCopied === "subject" ? "#059669" : "#374151" }}>
+                  {emailCopied === "subject" ? <Check style={{ width: 12, height: 12 }} /> : <Copy style={{ width: 12, height: 12 }} />}
+                  {emailCopied === "subject" ? "Kopiert" : "Kopieren"}
+                </button>
+              </div>
+              <input type="text" value={subject} readOnly style={{ ...inputStyle, background: "#F9FAFB" }} data-testid="input-email-subject" />
+            </div>
+
+            <div>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+                <label style={labelStyle}>Nachricht</label>
+                <button onClick={() => copyEmailPart("body")} data-testid="button-copy-email-body" style={{ display: "flex", alignItems: "center", gap: 4, padding: "4px 10px", borderRadius: 6, border: "1px solid rgba(0,0,0,0.1)", background: emailCopied === "body" ? "#ECFDF5" : "#fff", cursor: "pointer", fontSize: 12, fontWeight: 500, color: emailCopied === "body" ? "#059669" : "#374151" }}>
+                  {emailCopied === "body" ? <Check style={{ width: 12, height: 12 }} /> : <Copy style={{ width: 12, height: 12 }} />}
+                  {emailCopied === "body" ? "Kopiert" : "Kopieren"}
+                </button>
+              </div>
+              <textarea value={body} readOnly rows={18} style={{ ...inputStyle, background: "#F9FAFB", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: 12, lineHeight: 1.55, resize: "vertical", minHeight: 280 }} data-testid="textarea-email-body" />
+              {!form.password.trim() && (
+                <div style={{ display: "flex", alignItems: "flex-start", gap: 6, marginTop: 6, padding: "6px 10px", borderRadius: 6, background: "rgba(245,158,11,0.08)", border: "1px solid rgba(245,158,11,0.2)" }}>
+                  <AlertCircle style={{ width: 13, height: 13, color: "#D97706", flexShrink: 0, marginTop: 2 }} />
+                  <span style={{ fontSize: 12, color: "#92400E", lineHeight: 1.4 }}>
+                    Kein Passwort eingegeben — fülle oben das Feld „Neues Passwort" aus oder generiere unten einen Reset-Link, dann erscheint es in der Vorlage.
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, padding: "14px 20px", borderTop: "1px solid rgba(0,0,0,0.06)" }}>
+            <button onClick={() => copyEmailPart("all")} data-testid="button-copy-email-all" style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 14px", borderRadius: 8, border: "1px solid rgba(0,0,0,0.1)", background: emailCopied === "all" ? "#ECFDF5" : "#fff", cursor: "pointer", fontSize: 13, fontWeight: 600, color: emailCopied === "all" ? "#059669" : "#374151" }}>
+              {emailCopied === "all" ? <Check style={{ width: 14, height: 14 }} /> : <Copy style={{ width: 14, height: 14 }} />}
+              {emailCopied === "all" ? "Alles kopiert" : "Alles kopieren"}
+            </button>
+            <div style={{ display: "flex", gap: 8 }}>
+              <button onClick={() => setShowEmailTemplate(false)} style={{ padding: "8px 14px", borderRadius: 8, border: "1px solid rgba(0,0,0,0.1)", background: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer" }} data-testid="button-email-close">
+                Schließen
+              </button>
+              <button onClick={openMailto} data-testid="button-email-open-mailto" style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 14px", borderRadius: 8, border: "none", background: "#1D1D1F", color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+                <Mail style={{ width: 14, height: 14 }} />
+                Im E-Mail-Programm öffnen
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     );

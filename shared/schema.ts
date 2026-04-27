@@ -50,6 +50,7 @@ export const users = pgTable("users", {
   isActive: boolean("is_active").notNull().default(true),
   courseAccess: boolean("course_access").notNull().default(false),
   coachOnly: boolean("coach_only").notNull().default(false),
+  preferredLanguage: text("preferred_language").notNull().default("de"),
   bioCheckSecret: text("bio_check_secret"),
   bioCheckEingeloest: text("bio_check_eingeloest"),
   emailVerified: boolean("email_verified").notNull().default(false),

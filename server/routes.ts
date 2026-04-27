@@ -1372,7 +1372,7 @@ export async function registerRoutes(
 
   app.post("/api/admin/users", requireAdmin, async (req, res) => {
     try {
-      const { username, email, password, firstName, lastName, companyName, role, isActive, courseAccess, coachOnly, accessUntil, plan, notes, organizationId, aiRequestLimit } = req.body;
+      const { username, email, password, firstName, lastName, companyName, role, isActive, courseAccess, coachOnly, preferredLanguage, accessUntil, plan, notes, organizationId, aiRequestLimit } = req.body;
       if (!username || !password) {
         return res.status(400).json({ error: "Benutzername und Passwort erforderlich" });
       }
@@ -1392,6 +1392,7 @@ export async function registerRoutes(
         isActive: isActive !== false,
         courseAccess: courseAccess === true,
         coachOnly: coachOnly === true,
+        preferredLanguage: typeof preferredLanguage === "string" && ["de", "en", "fr", "it"].includes(preferredLanguage) ? preferredLanguage : "de",
         emailVerified: false,
         organizationId: organizationId ?? null,
         aiRequestLimit: aiRequestLimit !== undefined && aiRequestLimit !== null && aiRequestLimit !== "" ? parseInt(aiRequestLimit) : 1000,
@@ -1528,7 +1529,7 @@ export async function registerRoutes(
   app.patch("/api/admin/users/:id", requireAdmin, async (req, res) => {
     try {
       const id = parseInt(req.params.id as string);
-      const { username, email, password, firstName, lastName, companyName, role, isActive, courseAccess, coachOnly, accessUntil, plan, notes, subscriptionStatus, organizationId, aiRequestLimit, bioCheckSecret, bioCheckEingeloest } = req.body;
+      const { username, email, password, firstName, lastName, companyName, role, isActive, courseAccess, coachOnly, preferredLanguage, accessUntil, plan, notes, subscriptionStatus, organizationId, aiRequestLimit, bioCheckSecret, bioCheckEingeloest } = req.body;
       const updateData: any = {};
       if (username !== undefined) updateData.username = username;
       if (email !== undefined) updateData.email = email;
@@ -1539,6 +1540,9 @@ export async function registerRoutes(
       if (isActive !== undefined) updateData.isActive = isActive;
       if (courseAccess !== undefined) updateData.courseAccess = courseAccess;
       if (coachOnly !== undefined) updateData.coachOnly = coachOnly;
+      if (preferredLanguage !== undefined && typeof preferredLanguage === "string" && ["de", "en", "fr", "it"].includes(preferredLanguage)) {
+        updateData.preferredLanguage = preferredLanguage;
+      }
       if (bioCheckSecret !== undefined) updateData.bioCheckSecret = bioCheckSecret || null;
       if (bioCheckEingeloest !== undefined) updateData.bioCheckEingeloest = bioCheckEingeloest || null;
       if (organizationId !== undefined) updateData.organizationId = organizationId;
