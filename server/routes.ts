@@ -1413,8 +1413,14 @@ export async function registerRoutes(
         });
       }
       res.json({ id: user.id });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Create user error:", error);
+      if (error?.code === "23505") {
+        const field = error?.constraint?.includes("email") ? "E-Mail-Adresse"
+          : error?.constraint?.includes("username") ? "Benutzername"
+          : "Eintrag";
+        return res.status(409).json({ error: `Diese ${field} ist bereits vergeben.` });
+      }
       res.status(500).json({ error: "Benutzer konnte nicht erstellt werden" });
     }
   });
@@ -1583,8 +1589,18 @@ export async function registerRoutes(
         }
       }
       res.json({ ok: true });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Update user error:", error);
+      if (error?.code === "23505") {
+        const field = error?.constraint?.includes("email") ? "E-Mail-Adresse"
+          : error?.constraint?.includes("username") ? "Benutzername"
+          : "Eintrag";
+        const detail = error?.detail?.match(/=\(([^)]+)\)/)?.[1];
+        const msg = detail
+          ? `Diese ${field} ist bereits einem anderen Benutzer zugeordnet: ${detail}`
+          : `Diese ${field} ist bereits vergeben.`;
+        return res.status(409).json({ error: msg });
+      }
       res.status(500).json({ error: "Benutzer konnte nicht aktualisiert werden" });
     }
   });
