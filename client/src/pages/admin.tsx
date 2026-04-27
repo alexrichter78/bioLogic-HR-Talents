@@ -57,7 +57,7 @@ interface UserForm {
 const emptyForm: UserForm = {
   username: "",
   email: "",
-  password: "",
+  password: "bio1!",
   firstName: "",
   lastName: "",
   companyName: "",
