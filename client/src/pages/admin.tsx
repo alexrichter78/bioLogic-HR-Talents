@@ -695,7 +695,7 @@ export default function Admin() {
 
   function buildEmailTemplate() {
     const fullName = [form.firstName, form.lastName].filter(Boolean).join(" ").trim() || "(Vorname Nachname)";
-    const passwordLine = form.password.trim() || '(bitte unten „Link generieren" nutzen und den Reset-Link beifügen)';
+    const passwordLine = form.password.trim() || "bio1!";
     const subject = "bioLogic HR-Talents Software";
     const body = `Hallo ${fullName},
 
@@ -790,10 +790,10 @@ Dein bioLogic-Team`;
               </div>
               <textarea value={body} readOnly rows={18} style={{ ...inputStyle, background: "#F9FAFB", fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace", fontSize: 12, lineHeight: 1.55, resize: "vertical", minHeight: 280 }} data-testid="textarea-email-body" />
               {!form.password.trim() && (
-                <div style={{ display: "flex", alignItems: "flex-start", gap: 6, marginTop: 6, padding: "6px 10px", borderRadius: 6, background: "rgba(245,158,11,0.08)", border: "1px solid rgba(245,158,11,0.2)" }}>
-                  <AlertCircle style={{ width: 13, height: 13, color: "#D97706", flexShrink: 0, marginTop: 2 }} />
-                  <span style={{ fontSize: 12, color: "#92400E", lineHeight: 1.4 }}>
-                    Kein Passwort eingegeben — fülle oben das Feld „Neues Passwort" aus oder generiere unten einen Reset-Link, dann erscheint es in der Vorlage.
+                <div style={{ display: "flex", alignItems: "flex-start", gap: 6, marginTop: 6, padding: "6px 10px", borderRadius: 6, background: "rgba(59,130,246,0.06)", border: "1px solid rgba(59,130,246,0.18)" }}>
+                  <AlertCircle style={{ width: 13, height: 13, color: "#3B82F6", flexShrink: 0, marginTop: 2 }} />
+                  <span style={{ fontSize: 12, color: "#1E40AF", lineHeight: 1.4 }}>
+                    Es wird das Standardpasswort <strong>bio1!</strong> verwendet. Falls du ein anderes Passwort willst, trag es oben im Feld „Neues Passwort" ein.
                   </span>
                 </div>
               )}
