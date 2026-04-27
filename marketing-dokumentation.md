@@ -33,9 +33,9 @@ Die wichtigsten Nutzen-Versprechen, sortiert nach Aussagekraft auf der Landingpa
 
 3. **Visueller Match-Score (Passungsnähe), den jede Führungskraft sofort versteht.** Ein einziger gleitender Indikator zwischen „GEEIGNET" und „NICHT GEEIGNET" — keine Diagramm-Akrobatik, keine Interpretation nötig.
 
-4. **Eingebauter KI-Coach (Louis) mit 20 Jahren HR-Erfahrung, 24/7 verfügbar.** Beantwortet Führungsfragen, erstellt Gesprächsleitfäden, simuliert schwierige Gespräche, analysiert Marketingmaterial nach bioLogic-Wirkung. Kein generisches ChatGPT — sondern ein auf das eigene Modell trainierter Berater.
+4. **Eingebauter KI-Coach (Louis) mit 20 Jahren HR-Erfahrung, 24/7 verfügbar.** Beantwortet Führungsfragen, erstellt Gesprächsleitfäden, simuliert schwierige Gespräche und liefert konkrete Empfehlungen zu jeder Person und Rolle im System. Kein generisches ChatGPT — sondern ein auf das eigene Modell trainierter Berater.
 
-5. **Eine Software, viele Anwendungsfälle.** Recruiting, Teamentwicklung, Führungskräfte-Coaching, Konfliktlösung, Stellenanzeigen, Kündigungsgespräche, Gehaltsverhandlungen, Marketing-Persona-Arbeit — alles im selben System, mit demselben Modell.
+5. **Eine Software, viele HR-Anwendungsfälle.** Recruiting, Teamentwicklung, Führungskräfte-Coaching, Konfliktlösung, Stellenanzeigen, Kündigungsgespräche, Gehaltsverhandlungen — alles im selben System, mit demselben Modell.
 
 6. **Skalierbar von Einzelanwender bis Konzern.** Mehrmandanten-Architektur, organisationsweite Auswertungen, Admin-Steuerung, KI-Kontingent-Management pro Organisation.
 
@@ -107,11 +107,7 @@ Wenn die Persönlichkeit zur Rolle passt, ist Onboarding kürzer und die Fluktua
 
 Wenn alle im Unternehmen wissen, was „impulsiv geprägt" oder „dominant analytischer Anteil" konkret bedeutet, wird die Diskussion über Menschen sachlicher und schneller. Statt „Der ist halt schwierig" sagt man „Der hat einen sehr hohen analytischen Anteil und braucht klare Daten, bevor er sich bewegt." Das ist Erwachsenen-Sprache.
 
-### Hebel 5: Marketing- und Vertriebs-Kommunikation auf demselben Modell
-
-Der versteckte Hebel: Das gleiche Modell, das HR für Personalentscheidungen einsetzt, kann Marketing für Persona-Arbeit und Vertrieb für Kundenanalysen einsetzen. Eine Software, die zur internen Sprache des Unternehmens wird — nicht nur zum Werkzeug einer Abteilung.
-
-### Hebel 6: Aufbau einer eigenen, datenbasierten HR-Wissensbasis
+### Hebel 5: Aufbau einer eigenen, datenbasierten HR-Wissensbasis
 
 Jede Profilauswertung, jede Stellenvermessung, jede Persönlichkeitsanalyse bleibt im Unternehmen erhalten. Über die Zeit entsteht eine organisationsspezifische Wissensbasis, die mit jedem neuen Vorgang wertvoller wird.
 
@@ -158,7 +154,6 @@ Diese Sektion ist die **Wettbewerbsabgrenzung**. Sie kann auf der Landingpage al
 | **Recruiting-Plattformen** (LinkedIn, Indeed, StepStone) liefern Reichweite und Kandidaten. | bioLogic HR-Talents liefert die **richtigen** Kandidaten, weil die Stellenanzeige zielgruppenpsychologisch optimiert ist. |
 | **HR-Analytics-Tools** liefern Kennzahlen über Belegschaft, Fluktuation, Diversität. | bioLogic HR-Talents liefert die **Erklärung** für diese Kennzahlen und konkrete Handlungsempfehlungen pro Person. |
 | **AI-Chat-Tools** (ChatGPT, Copilot) beantworten allgemeine HR-Fragen. | Louis ist auf das bioLogic-Modell trainiert, kennt den Kontext jeder Person und Rolle im System und liefert **modellkonsistente** Empfehlungen — nicht generische Ratschläge. |
-| **Marketing-Persona-Tools** (HubSpot, Sparktoro) erstellen Käufer-Personas. | bioLogic HR-Talents nutzt **dasselbe Modell** für Personalentscheidungen UND Käufer-Personas — die einzige Software, die HR und Marketing-Psychologie auf einer Sprache verbindet. |
 
 ### Die einzigartigen Säulen
 
@@ -168,11 +163,9 @@ Diese Sektion ist die **Wettbewerbsabgrenzung**. Sie kann auf der Landingpage al
 
 3. **Der KI-Coach Louis ist kein Add-on, sondern integriert.** Louis sieht alle Profile, alle Rollen, alle Match-Ergebnisse im System und kann auf dieser Basis konkret beraten — nicht abstrakt. Kein generischer Chatbot kann das.
 
-4. **HR-Software, die auch Marketing kann.** Der versteckte zweite Anwendungsfall: Käufer-Personas, Wirkungsanalyse von Werbematerial, Verkaufsargumentationen — auf dem gleichen Modell. Das gibt es nirgendwo sonst.
+4. **Visualisierung, die jede Führungskraft sofort versteht.** Der gleitende Passungsnähe-Indikator ersetzt komplexe Tortendiagramme — und das ist kein Detail, sondern die Voraussetzung dafür, dass die Software auch von Nicht-HR-Profis genutzt wird.
 
-5. **Visualisierung, die jede Führungskraft sofort versteht.** Der gleitende Passungsnähe-Indikator ersetzt komplexe Tortendiagramme — und das ist kein Detail, sondern die Voraussetzung dafür, dass die Software auch von Nicht-HR-Profis genutzt wird.
-
-6. **Made in Germany, geistiges Eigentum im deutschsprachigen Raum.** Das bioLogic-Modell wurde im deutschsprachigen Raum entwickelt, ist hier verankert und unterscheidet sich grundlegend von amerikanischen Persönlichkeitsmodellen, die kulturell oft nicht passen.
+5. **Made in Germany, geistiges Eigentum im deutschsprachigen Raum.** Das bioLogic-Modell wurde im deutschsprachigen Raum entwickelt, ist hier verankert und unterscheidet sich grundlegend von amerikanischen Persönlichkeitsmodellen, die kulturell oft nicht passen.
 
 ---
 
@@ -186,8 +179,8 @@ Drei kurze, plakative Sätze für Hero-Bereich, Social-Media-Snippets, Pitch-Fol
 ### USP 2 (KI-Coach)
 **„Ein eingebauter HR-Berater mit 20 Jahren Erfahrung — verfügbar Tag und Nacht, modellkonsistent, mit Zugriff auf jeden Vorgang im System."**
 
-### USP 3 (Doppelnutzen HR + Marketing)
-**„Eine Software, zwei Wertschöpfungsbereiche: Personalentscheidungen UND Käufer-Personas auf demselben psychologischen Fundament — von der Recruiting-Anzeige bis zur Verkaufsargumentation."**
+### USP 3 (Sofort verständlich)
+**„Ein einziger gleitender Match-Score zwischen GEEIGNET und NICHT GEEIGNET — keine Diagramm-Akrobatik, keine Interpretation. Auch eine Führungskraft ohne HR-Hintergrund versteht die Aussage in Sekunden."**
 
 ---
 
@@ -198,8 +191,8 @@ Empfohlener Aufbau, von oben nach unten:
 1. **Hero-Block:** Eine der drei Headline-Varianten aus Kapitel 1 + Sub-Headline („Schluss mit Bauchgefühl-Personalentscheidungen") + ein Demo-Button.
 2. **Sozialer Beweis-Streifen:** Logos von Pilotkunden, kurze Zitate (sofern verfügbar).
 3. **Problem-Block:** „Die wahren Kosten falscher Personalentscheidungen" — mit der Zahl 200 % und der Kostenkalkulation aus Kapitel 5.
-4. **Lösungs-Block (3 Spalten):** Soll-Ist-Vergleich · KI-Coach Louis · Marketing-Persona-Werkzeug.
-5. **Hebel-Block:** Drei der sechs Kunden-Hebel aus Kapitel 4 als emotionale Argumente.
+4. **Lösungs-Block (3 Spalten):** Soll-Ist-Vergleich · KI-Coach Louis · Visueller Match-Score.
+5. **Hebel-Block:** Drei der fünf Kunden-Hebel aus Kapitel 4 als emotionale Argumente.
 6. **Vergleichstabelle:** Die Tabelle aus Kapitel 6 leicht gekürzt — sie ist visuell stark und sehr überzeugend.
 7. **Business Case-Block:** Die Tabelle und der konservativ gerechnete Einspar-Wert aus Kapitel 5.
 8. **USP-Wiederholung:** Die drei USP-Sätze aus Kapitel 7 als Trio in großer Schrift.
