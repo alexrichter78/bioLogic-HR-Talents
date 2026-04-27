@@ -897,15 +897,15 @@ const FUEHRUNG_OPTIONS: DescOption[] = [
 ];
 
 const SECTION_SUBTITLES: Record<string, string> = {
-  aufgabencharakter: "Welche Art von Aufgaben prägt diese Stelle hauptsächlich?",
-  arbeitslogik: "Was prägt die tägliche Arbeit dieser Stelle am stärksten?",
+  aufgabencharakter: "Was tut die Person auf dieser Stelle inhaltlich?",
+  arbeitslogik: "Wie entstehen die Ergebnisse – über welchen Arbeitsstil?",
   erfolgsfokus: "Woran wird der Erfolg dieser Stelle hauptsächlich gemessen?",
   fuehrung: "Welche Führungsrolle gehört zu dieser Stelle?",
 };
 
 const SECTION_SUBTITLES_EN: Record<string, string> = {
-  aufgabencharakter: "What kind of tasks mainly characterise this role?",
-  arbeitslogik: "What shapes the daily work of this role most?",
+  aufgabencharakter: "What does the person actually do in this role?",
+  arbeitslogik: "How are results achieved — through which working style?",
   erfolgsfokus: "How is the success of this role mainly measured?",
   fuehrung: "What leadership role belongs to this position?",
 };
@@ -941,8 +941,8 @@ const FUEHRUNG_OPTIONS_EN: DescOption[] = [
 ];
 
 const SECTION_SUBTITLES_FR: Record<string, string> = {
-  aufgabencharakter: "Quel type de tâches caractérise principalement ce poste ?",
-  arbeitslogik: "Qu'est-ce qui marque le plus le travail quotidien de ce poste ?",
+  aufgabencharakter: "Que fait concrètement la personne dans ce poste ?",
+  arbeitslogik: "Comment les résultats sont-ils obtenus — par quel style de travail ?",
   erfolgsfokus: "Sur quoi repose principalement le succès de ce poste ?",
   fuehrung: "Quel rôle de management est associé à ce poste ?",
 };
@@ -979,8 +979,8 @@ const FUEHRUNG_OPTIONS_FR: DescOption[] = [
 
 
   const SECTION_SUBTITLES_IT: Record<string, string> = {
-    aufgabencharakter: "Che tipo di compiti caratterizza principalmente questo ruolo?",
-    arbeitslogik: "Cosa influenza maggiormente il lavoro quotidiano di questo ruolo?",
+    aufgabencharakter: "Cosa fa concretamente la persona in questo ruolo?",
+    arbeitslogik: "Come si ottengono i risultati — attraverso quale stile lavorativo?",
     erfolgsfokus: "In base a cosa viene misurato principalmente il successo di questo ruolo?",
     fuehrung: "Quale ruolo di leadership appartiene a questa posizione?",
   };
@@ -2827,39 +2827,28 @@ export default function RollenDNA() {
                 >
                   <MiniProgressBar filled={sectionsFilled} total={4} region={region} />
 
+                  <div
+                    data-testid="text-dimensions-explainer"
+                    style={{
+                      margin: isMobile ? "12px 0 20px 0" : "16px 0 28px 0",
+                      padding: isMobile ? "12px 14px" : "14px 18px",
+                      background: "linear-gradient(135deg, #F0F9FF 0%, #F0FDF4 100%)",
+                      border: "1px solid rgba(52, 199, 89, 0.20)",
+                      borderRadius: 12,
+                      fontSize: isMobile ? 13 : 13.5,
+                      color: "#0F172A",
+                      lineHeight: 1.5,
+                    }}
+                    className="dark:!bg-none dark:!bg-card/40 dark:!text-foreground/85 dark:!border-foreground/10"
+                  >
+                    {ui.rollendna.dimensionsExplainer}
+                  </div>
+
                   <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
 
                     <FadeInSection delay={0}>
-                      <div data-testid="section-aufgabencharakter" className="relative">
-                        <SectionNumber num={1} isComplete={aufgabencharakter.length > 0} />
-                        <div className="flex items-center gap-3">
-                          <Layers style={{ width: 20, height: 20, color: "#34C759", strokeWidth: 1.5 }} />
-                          <h3 style={{ fontSize: 22, fontWeight: 600, color: "#34C759" }} className="dark:text-foreground/90">
-                            {ui.rollendna.taskType}
-                          </h3>
-                        </div>
-                        <p style={{ fontSize: 14, color: "#6E6E73", marginTop: 6, paddingLeft: 32 }}>
-                          {getRegionOptions(region).subtitles.aufgabencharakter}
-                        </p>
-                        <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", marginTop: 4, paddingLeft: 32 }}>
-                          {ui.rollendna.selectOne}
-                        </p>
-                        <div style={{ marginTop: 20 }}>
-                          <DescriptiveOptionGroup
-                            options={getRegionOptions(region).aufgaben}
-                            selectedValue={aufgabencharakter}
-                            onSelect={handleAufgabencharakter}
-                            accentColor="#34C759"
-                          />
-                        </div>
-                      </div>
-                    </FadeInSection>
-
-                    <SectionDivider />
-
-                    <FadeInSection delay={100}>
                       <div data-testid="section-arbeitslogik" className="relative">
-                        <SectionNumber num={2} isComplete={arbeitslogik.length > 0} />
+                        <SectionNumber num={1} isComplete={arbeitslogik.length > 0} />
                         <div className="flex items-center gap-3">
                           <Activity style={{ width: 20, height: 20, color: "#34C759", strokeWidth: 1.5 }} />
                           <h3 style={{ fontSize: 22, fontWeight: 600, color: "#34C759" }} className="dark:text-foreground/90">
@@ -2877,6 +2866,34 @@ export default function RollenDNA() {
                             options={getRegionOptions(region).arbeit}
                             selectedValue={arbeitslogik}
                             onSelect={handleArbeitslogik}
+                            accentColor="#34C759"
+                          />
+                        </div>
+                      </div>
+                    </FadeInSection>
+
+                    <SectionDivider />
+
+                    <FadeInSection delay={100}>
+                      <div data-testid="section-aufgabencharakter" className="relative">
+                        <SectionNumber num={2} isComplete={aufgabencharakter.length > 0} />
+                        <div className="flex items-center gap-3">
+                          <Layers style={{ width: 20, height: 20, color: "#34C759", strokeWidth: 1.5 }} />
+                          <h3 style={{ fontSize: 22, fontWeight: 600, color: "#34C759" }} className="dark:text-foreground/90">
+                            {ui.rollendna.taskType}
+                          </h3>
+                        </div>
+                        <p style={{ fontSize: 14, color: "#6E6E73", marginTop: 6, paddingLeft: 32 }}>
+                          {getRegionOptions(region).subtitles.aufgabencharakter}
+                        </p>
+                        <p style={{ fontSize: 13, fontWeight: 700, color: "#1D1D1F", marginTop: 4, paddingLeft: 32 }}>
+                          {ui.rollendna.selectOne}
+                        </p>
+                        <div style={{ marginTop: 20 }}>
+                          <DescriptiveOptionGroup
+                            options={getRegionOptions(region).aufgaben}
+                            selectedValue={aufgabencharakter}
+                            onSelect={handleAufgabencharakter}
                             accentColor="#34C759"
                           />
                         </div>
