@@ -47,10 +47,10 @@ title = "bioLogic HR Talents -- Software-Übersicht"
 id = "toK0qpre8pvppR2OOannn"
 uri = "file://marketing-dokumentation.md"
 type = "text"
-title = "Marketing-Dokumentation bioLogic RoleDynamics"
+title = "Marketing-Dokumentation bioLogic HR-Talents"
 
 [[outputs]]
 id = "D3ACE_WAQWtjVzV6VXMJ6"
 uri = "file://exports/marketing-dokumentation.pdf"
 type = "pdf"
-title = "Marketing-Dokumentation bioLogic RoleDynamics (PDF)"
+title = "Marketing-Dokumentation bioLogic HR-Talents (PDF)"

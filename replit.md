@@ -1,8 +1,8 @@
-# bioLogic RoleDynamics - Strukturanalyse
+# bioLogic HR-Talents - Strukturanalyse
 
 ## Overview
 
-bioLogic RoleDynamics is a German-language web application for structural analysis, focused on optimizing staffing and team structures through precision in role definition and team composition. It offers an AI-powered platform for defining role requirements, analyzing team dynamics, and generating dynamic reports for strategic decision-making. The project aims to provide comprehensive tools for HR and leadership to enhance organizational efficiency and employee fit.
+bioLogic HR-Talents is a German-language web application for structural analysis, focused on optimizing staffing and team structures through precision in role definition and team composition. It offers an AI-powered platform for defining role requirements, analyzing team dynamics, and generating dynamic reports for strategic decision-making. The project aims to provide comprehensive tools for HR and leadership to enhance organizational efficiency and employee fit.
 
 Key capabilities include:
 -   **Rollen-DNA (Role DNA)**: A guided process for defining detailed role requirements.
