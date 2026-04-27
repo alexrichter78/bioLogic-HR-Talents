@@ -79,6 +79,32 @@ function formatDate(d: string | null) {
   return new Date(d).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" });
 }
 
+function daysUntil(dateStr: string | null | undefined): number | null {
+  if (!dateStr) return null;
+  const target = new Date(dateStr).getTime();
+  const now = Date.now();
+  return Math.floor((target - now) / (1000 * 60 * 60 * 24));
+}
+
+function expiryBadge(days: number | null): { label: string; bg: string; color: string; border: string } {
+  if (days === null) return { label: "Unbegrenzt", bg: "#F2F2F7", color: "#3C3C43", border: "rgba(0,0,0,0.08)" };
+  if (days < 0) return { label: `Abgelaufen (vor ${Math.abs(days)} T.)`, bg: "#7F1D1D", color: "#FFFFFF", border: "#7F1D1D" };
+  if (days < 30) return { label: `${days} Tage`, bg: "#FEE2E2", color: "#991B1B", border: "#FCA5A5" };
+  if (days < 90) return { label: `${days} Tage`, bg: "#FEF3C7", color: "#92400E", border: "#FCD34D" };
+  return { label: `${days} Tage`, bg: "#DCFCE7", color: "#166534", border: "#86EFAC" };
+}
+
+function aiUsagePercent(used: number, limit: number): number {
+  if (limit <= 0) return 0;
+  return Math.min(100, Math.round((used / limit) * 100));
+}
+
+function aiUsageColor(percent: number): string {
+  if (percent >= 90) return "#DC2626";
+  if (percent >= 70) return "#D97706";
+  return "#16A34A";
+}
+
 export default function Admin() {
   const { user } = useAuth();
   const [, setLocation] = useLocation();
@@ -92,7 +118,7 @@ export default function Admin() {
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
   const [search, setSearch] = useState("");
-  const [sortField, setSortField] = useState<"name" | "username" | "company" | "accessUntil" | "status">("name");
+  const [sortField, setSortField] = useState<"name" | "username" | "company" | "role" | "createdAt" | "accessUntil" | "daysLeft" | "lastLoginAt" | "aiUsage" | "status">("name");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
   const [resetLink, setResetLink] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
@@ -331,21 +357,47 @@ export default function Admin() {
     list = [...list].sort((a, b) => {
       let cmp = 0;
       switch (sortField) {
-        case "name":
-          cmp = `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`, "de");
+        case "name": {
+          const an = `${a.lastName} ${a.firstName}`.trim().toLowerCase() || a.username.toLowerCase();
+          const bn = `${b.lastName} ${b.firstName}`.trim().toLowerCase() || b.username.toLowerCase();
+          cmp = an.localeCompare(bn, "de");
           break;
+        }
         case "username":
           cmp = a.username.localeCompare(b.username, "de");
           break;
         case "company":
           cmp = (a.companyName || "").localeCompare(b.companyName || "", "de");
           break;
+        case "role":
+          cmp = (a.role || "").localeCompare(b.role || "");
+          break;
+        case "createdAt":
+          cmp = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+          break;
         case "accessUntil": {
-          const da = a.subscription?.accessUntil ? new Date(a.subscription.accessUntil).getTime() : 0;
-          const db2 = b.subscription?.accessUntil ? new Date(b.subscription.accessUntil).getTime() : 0;
+          const da = a.subscription?.accessUntil ? new Date(a.subscription.accessUntil).getTime() : Number.MAX_SAFE_INTEGER;
+          const db2 = b.subscription?.accessUntil ? new Date(b.subscription.accessUntil).getTime() : Number.MAX_SAFE_INTEGER;
           cmp = da - db2;
           break;
         }
+        case "daysLeft": {
+          const ad = a.subscription?.accessUntil ? daysUntil(a.subscription.accessUntil) : null;
+          const bd = b.subscription?.accessUntil ? daysUntil(b.subscription.accessUntil) : null;
+          const av = ad === null ? Number.MAX_SAFE_INTEGER : ad;
+          const bv = bd === null ? Number.MAX_SAFE_INTEGER : bd;
+          cmp = av - bv;
+          break;
+        }
+        case "lastLoginAt": {
+          const av = a.lastLoginAt ? new Date(a.lastLoginAt).getTime() : 0;
+          const bv = b.lastLoginAt ? new Date(b.lastLoginAt).getTime() : 0;
+          cmp = av - bv;
+          break;
+        }
+        case "aiUsage":
+          cmp = aiUsagePercent(a.aiRequestsUsed, a.aiRequestLimit) - aiUsagePercent(b.aiRequestsUsed, b.aiRequestLimit);
+          break;
         case "status": {
           const sa = a.isActive && a.subscription?.status === "active" ? 1 : 0;
           const sb = b.isActive && b.subscription?.status === "active" ? 1 : 0;
@@ -754,90 +806,147 @@ export default function Admin() {
               style={{ width: "100%", padding: "9px 12px 9px 36px", borderRadius: 10, border: "1px solid rgba(0,0,0,0.08)", fontSize: 13, outline: "none", background: "#fff", color: "#1D1D1F", boxSizing: "border-box" }}
             />
           </div>
-          {(["name", "username", "company", "accessUntil", "status"] as const).map(f => {
-            const labels: Record<string, string> = { name: "Name", username: "Benutzer", company: "Firma", accessUntil: "Zugang", status: "Status" };
-            const active = sortField === f;
-            return (
-              <button
-                key={f}
-                onClick={() => toggleSort(f)}
-                data-testid={`sort-${f}`}
-                style={{
-                  display: "flex", alignItems: "center", gap: 3,
-                  padding: "7px 10px", borderRadius: 8,
-                  border: active ? "1px solid rgba(0,113,227,0.2)" : "1px solid rgba(0,0,0,0.06)",
-                  background: active ? "rgba(0,113,227,0.06)" : "#fff",
-                  cursor: "pointer", fontSize: 12, fontWeight: active ? 600 : 500,
-                  color: active ? "#0071E3" : "#636366",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                {labels[f]}
-                {active ? (sortDir === "asc" ? <ChevronUp style={{ width: 12, height: 12 }} /> : <ChevronDown style={{ width: 12, height: 12 }} />) : null}
-              </button>
-            );
-          })}
         </div>
 
         {loading ? (
-          <p style={{ textAlign: "center", color: "#8E8E93", padding: 40 }}>Laden...</p>
+          <p style={{ textAlign: "center", color: "#8E8E93", padding: 40 }} data-testid="text-loading">Laden...</p>
         ) : filteredUsers.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "48px 20px", color: "#8E8E93" }}>
+          <div style={{ textAlign: "center", padding: "48px 20px", color: "#8E8E93" }} data-testid="text-empty">
             <Search style={{ width: 32, height: 32, color: "#D1D1D6", margin: "0 auto 12px" }} />
             <p style={{ fontSize: 14, margin: 0 }}>Keine Benutzer gefunden für &laquo;{search}&raquo;</p>
           </div>
         ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {filteredUsers.map(u => {
-              const isExpired = u.subscription ? new Date(u.subscription.accessUntil) < new Date() : true;
-              const subActive = u.subscription?.status === "active" && !isExpired;
-              return (
-                <div key={u.id} style={{ background: "#fff", borderRadius: 14, padding: isMobile ? "12px 14px" : "16px 20px", border: "1px solid rgba(0,0,0,0.05)", display: "flex", alignItems: isMobile ? "flex-start" : "center", gap: isMobile ? 10 : 16, boxShadow: "0 1px 4px rgba(0,0,0,0.02)", flexWrap: isMobile ? "wrap" : "nowrap" }} data-testid={`admin-user-row-${u.id}`}>
-                  <div style={{ width: 36, height: 36, borderRadius: 10, background: u.role === "admin" ? "linear-gradient(135deg, #1A5DAB, #0071E3)" : u.role === "subadmin" ? "linear-gradient(135deg, #AF52DE, #DA70D6)" : "linear-gradient(135deg, #E5E5EA, #D1D1D6)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                    {u.role === "admin" ? <Shield style={{ width: 16, height: 16, color: "#fff" }} /> : u.role === "subadmin" ? <Building2 style={{ width: 16, height: 16, color: "#fff" }} /> : <Users style={{ width: 16, height: 16, color: "#636366" }} />}
-                  </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
-                      <span style={{ fontSize: 14, fontWeight: 600, color: "#1D1D1F" }}>{u.firstName} {u.lastName}</span>
-                      {!u.isActive && <span style={{ fontSize: 11, padding: "1px 6px", borderRadius: 4, background: "rgba(255,59,48,0.08)", color: "#C41E3A", fontWeight: 600 }}>Deaktiviert</span>}
-                      {u.role === "admin" && <span style={{ fontSize: 11, padding: "1px 6px", borderRadius: 4, background: "rgba(0,113,227,0.08)", color: "#0071E3", fontWeight: 600 }}>Admin</span>}
-                      {u.role === "subadmin" && <span style={{ fontSize: 11, padding: "1px 6px", borderRadius: 4, background: "rgba(175,82,222,0.08)", color: "#AF52DE", fontWeight: 600 }}>Subadmin</span>}
-                    </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 12, fontSize: 12, color: "#8E8E93" }}>
-                      <span style={{ fontWeight: 500 }}>@{u.username}</span>
-                      {u.companyName && <span style={{ display: "flex", alignItems: "center", gap: 3 }}><Building2 style={{ width: 11, height: 11 }} />{u.companyName}</span>}
-                      {u.organizationId && (() => { const org = orgsList.find((o: any) => o.id === u.organizationId); return org ? <span style={{ fontSize: 11, padding: "1px 6px", borderRadius: 4, background: "rgba(0,113,227,0.06)", color: "#0071E3", fontWeight: 500 }}>{org.name}</span> : null; })()}
-                      <span style={{ fontSize: 11, padding: "1px 6px", borderRadius: 4, background: u.aiRequestsUsed >= u.aiRequestLimit ? "rgba(255,59,48,0.08)" : "rgba(52,199,89,0.08)", color: u.aiRequestsUsed >= u.aiRequestLimit ? "#FF3B30" : "#34C759", fontWeight: 500 }}>KI: {u.aiRequestsUsed}/{u.aiRequestLimit}</span>
-                    </div>
-                  </div>
-                  <div style={{ textAlign: isMobile ? "left" : "right", minWidth: isMobile ? 0 : 120, marginLeft: isMobile ? 46 : 0 }}>
-                    {u.subscription ? (
-                      <>
-                        <div style={{ display: "flex", alignItems: "center", gap: 4, justifyContent: "flex-end", marginBottom: 2 }}>
-                          <CalendarDays style={{ width: 12, height: 12, color: subActive ? "#34C759" : "#FF3B30" }} />
-                          <span style={{ fontSize: 12, fontWeight: 600, color: subActive ? "#1B7A3D" : "#C41E3A" }}>
-                            {formatDate(u.subscription.accessUntil)}
+          <div style={{ background: "#FFFFFF", borderRadius: 14, border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 3px rgba(0,0,0,0.04)", overflow: "hidden" }}>
+            <div style={{ overflowX: "auto" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, minWidth: 1200 }}>
+                <thead>
+                  <tr style={{ background: "#F9F9FB", borderBottom: "1px solid rgba(0,0,0,0.08)" }}>
+                    {([
+                      { f: "name", l: "Name" },
+                      { f: "company", l: "Firma" },
+                      { f: "role", l: "Rolle" },
+                      { f: "createdAt", l: "Beginn" },
+                      { f: "accessUntil", l: "Ablauf" },
+                      { f: "daysLeft", l: "Tage bis Ablauf" },
+                      { f: "lastLoginAt", l: "Letzter Login" },
+                      { f: "aiUsage", l: "KI-Verbrauch" },
+                      { f: "status", l: "Status" },
+                    ] as const).map(({ f, l }) => {
+                      const active = sortField === f;
+                      return (
+                        <th key={f} style={{ padding: "12px 14px", textAlign: "left" }}>
+                          <button
+                            onClick={() => toggleSort(f)}
+                            data-testid={`sort-${f}`}
+                            style={{
+                              display: "flex", alignItems: "center", gap: 4,
+                              width: "100%", background: "transparent", border: "none", padding: 0,
+                              cursor: "pointer", fontSize: 11, fontWeight: 700,
+                              color: active ? "#1D1D1F" : "#8E8E93",
+                              textTransform: "uppercase", letterSpacing: "0.06em", textAlign: "left",
+                            }}
+                          >
+                            {l}
+                            {active ? (
+                              sortDir === "asc" ? <ChevronUp style={{ width: 12, height: 12 }} /> : <ChevronDown style={{ width: 12, height: 12 }} />
+                            ) : (
+                              <span style={{ width: 12, height: 12, opacity: 0.3 }}><ChevronUp style={{ width: 12, height: 12 }} /></span>
+                            )}
+                          </button>
+                        </th>
+                      );
+                    })}
+                    <th style={{ padding: "12px 14px", textAlign: "right", fontSize: 11, fontWeight: 700, color: "#8E8E93", textTransform: "uppercase", letterSpacing: "0.06em" }}>Aktionen</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredUsers.map((u, idx) => {
+                    const d = u.subscription?.accessUntil ? daysUntil(u.subscription.accessUntil) : null;
+                    const badge = expiryBadge(d);
+                    const aiPct = aiUsagePercent(u.aiRequestsUsed, u.aiRequestLimit);
+                    const aiClr = aiUsageColor(aiPct);
+                    const fullName = `${u.firstName} ${u.lastName}`.trim() || u.username;
+                    const org = u.organizationId ? orgsList.find((o: any) => o.id === u.organizationId) : null;
+                    const roleStyle = u.role === "admin"
+                      ? { bg: "#1D1D1F", color: "#FFFFFF", label: "Admin" }
+                      : u.role === "subadmin"
+                      ? { bg: "rgba(175,82,222,0.12)", color: "#AF52DE", label: "Subadmin" }
+                      : { bg: "#F2F2F7", color: "#3C3C43", label: "Benutzer" };
+                    return (
+                      <tr key={u.id} data-testid={`admin-user-row-${u.id}`} style={{ borderBottom: idx === filteredUsers.length - 1 ? "none" : "1px solid rgba(0,0,0,0.05)" }}>
+                        <td style={{ padding: "12px 14px" }}>
+                          <div style={{ fontWeight: 600, color: "#1D1D1F" }}>{fullName}</div>
+                          <div style={{ fontSize: 11, color: "#8E8E93", marginTop: 2, display: "flex", alignItems: "center", gap: 6 }}>
+                            <span>@{u.username}</span>
+                            {!u.isActive && <span style={{ padding: "1px 6px", borderRadius: 4, background: "rgba(255,59,48,0.08)", color: "#C41E3A", fontWeight: 600 }}>Deaktiviert</span>}
+                          </div>
+                        </td>
+                        <td style={{ padding: "12px 14px", color: "#3C3C43" }}>
+                          <div>{u.companyName || "—"}</div>
+                          {org && (
+                            <div style={{ fontSize: 11, marginTop: 2, padding: "1px 6px", borderRadius: 4, background: "rgba(0,113,227,0.06)", color: "#0071E3", fontWeight: 500, display: "inline-block" }}>{org.name}</div>
+                          )}
+                        </td>
+                        <td style={{ padding: "12px 14px" }}>
+                          <span style={{ display: "inline-block", padding: "2px 8px", borderRadius: 6, fontSize: 11, fontWeight: 600, background: roleStyle.bg, color: roleStyle.color }}>
+                            {roleStyle.label}
                           </span>
-                        </div>
-                        <span style={{ fontSize: 11, color: "#8E8E93" }}>{u.subscription.plan}</span>
-                      </>
-                    ) : (
-                      <span style={{ fontSize: 12, color: "#8E8E93" }}>Kein Abo</span>
-                    )}
-                  </div>
-                  <div style={{ display: "flex", gap: 4 }}>
-                    <button onClick={() => startEdit(u)} style={{ width: 32, height: 32, borderRadius: 8, border: "1px solid rgba(0,0,0,0.06)", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} data-testid={`button-edit-user-${u.id}`}>
-                      <Pencil style={{ width: 14, height: 14, color: "#636366" }} />
-                    </button>
-                    {u.id !== user?.id && (
-                      <button onClick={() => handleDelete(u.id)} style={{ width: 32, height: 32, borderRadius: 8, border: "1px solid rgba(255,59,48,0.1)", background: "rgba(255,59,48,0.03)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} data-testid={`button-delete-user-${u.id}`}>
-                        <Trash2 style={{ width: 14, height: 14, color: "#FF3B30" }} />
-                      </button>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
+                        </td>
+                        <td style={{ padding: "12px 14px", color: "#3C3C43" }}>
+                          {formatDate(u.createdAt)}
+                        </td>
+                        <td style={{ padding: "12px 14px", color: "#3C3C43" }}>
+                          {u.subscription?.accessUntil ? (
+                            <>
+                              <div>{formatDate(u.subscription.accessUntil)}</div>
+                              <div style={{ fontSize: 11, color: "#8E8E93", marginTop: 2 }}>{u.subscription.plan}</div>
+                            </>
+                          ) : (
+                            <span style={{ color: "#8E8E93" }}>Kein Abo</span>
+                          )}
+                        </td>
+                        <td style={{ padding: "12px 14px" }}>
+                          <span style={{ display: "inline-block", padding: "3px 8px", borderRadius: 6, fontSize: 11, fontWeight: 600, background: badge.bg, color: badge.color, border: `1px solid ${badge.border}`, whiteSpace: "nowrap" }}>
+                            {badge.label}
+                          </span>
+                        </td>
+                        <td style={{ padding: "12px 14px", color: "#3C3C43" }}>
+                          {formatDate(u.lastLoginAt)}
+                        </td>
+                        <td style={{ padding: "12px 14px" }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                            <div style={{ flex: 1, minWidth: 60, height: 6, background: "#F2F2F7", borderRadius: 3, overflow: "hidden" }}>
+                              <div style={{ width: `${aiPct}%`, height: "100%", background: aiClr, transition: "width 200ms ease" }} />
+                            </div>
+                            <span style={{ fontSize: 11, color: "#3C3C43", whiteSpace: "nowrap", minWidth: 80, textAlign: "right" }}>
+                              {u.aiRequestsUsed} / {u.aiRequestLimit}
+                            </span>
+                          </div>
+                        </td>
+                        <td style={{ padding: "12px 14px" }}>
+                          <span style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "2px 8px", borderRadius: 6, fontSize: 11, fontWeight: 600, background: u.isActive ? "#DCFCE7" : "#F2F2F7", color: u.isActive ? "#166534" : "#8E8E93" }}>
+                            <span style={{ width: 6, height: 6, borderRadius: "50%", background: u.isActive ? "#16A34A" : "#8E8E93" }} />
+                            {u.isActive ? "Aktiv" : "Inaktiv"}
+                          </span>
+                        </td>
+                        <td style={{ padding: "12px 14px", textAlign: "right" }}>
+                          <div style={{ display: "inline-flex", gap: 4 }}>
+                            <button onClick={() => startEdit(u)} style={{ width: 32, height: 32, borderRadius: 8, border: "1px solid rgba(0,0,0,0.06)", background: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} data-testid={`button-edit-user-${u.id}`} title="Bearbeiten">
+                              <Pencil style={{ width: 14, height: 14, color: "#636366" }} />
+                            </button>
+                            {u.id !== user?.id && (
+                              <button onClick={() => handleDelete(u.id)} style={{ width: 32, height: 32, borderRadius: 8, border: "1px solid rgba(255,59,48,0.1)", background: "rgba(255,59,48,0.03)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} data-testid={`button-delete-user-${u.id}`} title="Löschen">
+                                <Trash2 style={{ width: 14, height: 14, color: "#FF3B30" }} />
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
         </>
