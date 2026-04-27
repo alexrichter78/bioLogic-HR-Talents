@@ -79,32 +79,6 @@ function formatDate(d: string | null) {
   return new Date(d).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" });
 }
 
-function daysUntil(dateStr: string | null | undefined): number | null {
-  if (!dateStr) return null;
-  const target = new Date(dateStr).getTime();
-  const now = Date.now();
-  return Math.floor((target - now) / (1000 * 60 * 60 * 24));
-}
-
-function expiryBadge(days: number | null): { label: string; bg: string; color: string; border: string } {
-  if (days === null) return { label: "Unbegrenzt", bg: "#F2F2F7", color: "#3C3C43", border: "rgba(0,0,0,0.08)" };
-  if (days < 0) return { label: `Abgelaufen (vor ${Math.abs(days)} T.)`, bg: "#7F1D1D", color: "#FFFFFF", border: "#7F1D1D" };
-  if (days < 30) return { label: `${days} Tage`, bg: "#FEE2E2", color: "#991B1B", border: "#FCA5A5" };
-  if (days < 90) return { label: `${days} Tage`, bg: "#FEF3C7", color: "#92400E", border: "#FCD34D" };
-  return { label: `${days} Tage`, bg: "#DCFCE7", color: "#166534", border: "#86EFAC" };
-}
-
-function aiUsagePercent(used: number, limit: number): number {
-  if (limit <= 0) return 0;
-  return Math.min(100, Math.round((used / limit) * 100));
-}
-
-function aiUsageColor(percent: number): string {
-  if (percent >= 90) return "#DC2626";
-  if (percent >= 70) return "#D97706";
-  return "#16A34A";
-}
-
 export default function Admin() {
   const { user } = useAuth();
   const [, setLocation] = useLocation();
@@ -118,7 +92,7 @@ export default function Admin() {
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
   const [search, setSearch] = useState("");
-  const [sortField, setSortField] = useState<"name" | "username" | "company" | "role" | "createdAt" | "accessUntil" | "daysLeft" | "lastLoginAt" | "aiUsage" | "status">("name");
+  const [sortField, setSortField] = useState<"name" | "company" | "aiUsage" | "accessUntil">("name");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
   const [resetLink, setResetLink] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
@@ -363,45 +337,19 @@ export default function Admin() {
           cmp = an.localeCompare(bn, "de");
           break;
         }
-        case "username":
-          cmp = a.username.localeCompare(b.username, "de");
-          break;
         case "company":
           cmp = (a.companyName || "").localeCompare(b.companyName || "", "de");
           break;
-        case "role":
-          cmp = (a.role || "").localeCompare(b.role || "");
+        case "aiUsage": {
+          const ap = a.aiRequestLimit > 0 ? a.aiRequestsUsed / a.aiRequestLimit : 0;
+          const bp = b.aiRequestLimit > 0 ? b.aiRequestsUsed / b.aiRequestLimit : 0;
+          cmp = ap - bp;
           break;
-        case "createdAt":
-          cmp = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
-          break;
+        }
         case "accessUntil": {
           const da = a.subscription?.accessUntil ? new Date(a.subscription.accessUntil).getTime() : Number.MAX_SAFE_INTEGER;
           const db2 = b.subscription?.accessUntil ? new Date(b.subscription.accessUntil).getTime() : Number.MAX_SAFE_INTEGER;
           cmp = da - db2;
-          break;
-        }
-        case "daysLeft": {
-          const ad = a.subscription?.accessUntil ? daysUntil(a.subscription.accessUntil) : null;
-          const bd = b.subscription?.accessUntil ? daysUntil(b.subscription.accessUntil) : null;
-          const av = ad === null ? Number.MAX_SAFE_INTEGER : ad;
-          const bv = bd === null ? Number.MAX_SAFE_INTEGER : bd;
-          cmp = av - bv;
-          break;
-        }
-        case "lastLoginAt": {
-          const av = a.lastLoginAt ? new Date(a.lastLoginAt).getTime() : 0;
-          const bv = b.lastLoginAt ? new Date(b.lastLoginAt).getTime() : 0;
-          cmp = av - bv;
-          break;
-        }
-        case "aiUsage":
-          cmp = aiUsagePercent(a.aiRequestsUsed, a.aiRequestLimit) - aiUsagePercent(b.aiRequestsUsed, b.aiRequestLimit);
-          break;
-        case "status": {
-          const sa = a.isActive && a.subscription?.status === "active" ? 1 : 0;
-          const sb = b.isActive && b.subscription?.status === "active" ? 1 : 0;
-          cmp = sa - sb;
           break;
         }
       }
@@ -818,19 +766,14 @@ export default function Admin() {
         ) : (
           <div style={{ background: "#FFFFFF", borderRadius: 14, border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 3px rgba(0,0,0,0.04)", overflow: "hidden" }}>
             <div style={{ overflowX: "auto" }}>
-              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, minWidth: 1200 }}>
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, minWidth: 720 }}>
                 <thead>
                   <tr style={{ background: "#F9F9FB", borderBottom: "1px solid rgba(0,0,0,0.08)" }}>
                     {([
                       { f: "name", l: "Name" },
                       { f: "company", l: "Firma" },
-                      { f: "role", l: "Rolle" },
-                      { f: "createdAt", l: "Beginn" },
-                      { f: "accessUntil", l: "Ablauf" },
-                      { f: "daysLeft", l: "Tage bis Ablauf" },
-                      { f: "lastLoginAt", l: "Letzter Login" },
                       { f: "aiUsage", l: "KI-Verbrauch" },
-                      { f: "status", l: "Status" },
+                      { f: "accessUntil", l: "Ablauf" },
                     ] as const).map(({ f, l }) => {
                       const active = sortField === f;
                       return (
@@ -861,73 +804,55 @@ export default function Admin() {
                 </thead>
                 <tbody>
                   {filteredUsers.map((u, idx) => {
-                    const d = u.subscription?.accessUntil ? daysUntil(u.subscription.accessUntil) : null;
-                    const badge = expiryBadge(d);
-                    const aiPct = aiUsagePercent(u.aiRequestsUsed, u.aiRequestLimit);
-                    const aiClr = aiUsageColor(aiPct);
+                    const isExpired = u.subscription ? new Date(u.subscription.accessUntil) < new Date() : true;
+                    const subActive = u.subscription?.status === "active" && !isExpired;
                     const fullName = `${u.firstName} ${u.lastName}`.trim() || u.username;
                     const org = u.organizationId ? orgsList.find((o: any) => o.id === u.organizationId) : null;
-                    const roleStyle = u.role === "admin"
-                      ? { bg: "#1D1D1F", color: "#FFFFFF", label: "Admin" }
-                      : u.role === "subadmin"
-                      ? { bg: "rgba(175,82,222,0.12)", color: "#AF52DE", label: "Subadmin" }
-                      : { bg: "#F2F2F7", color: "#3C3C43", label: "Benutzer" };
+                    const aiOver = u.aiRequestsUsed >= u.aiRequestLimit;
                     return (
                       <tr key={u.id} data-testid={`admin-user-row-${u.id}`} style={{ borderBottom: idx === filteredUsers.length - 1 ? "none" : "1px solid rgba(0,0,0,0.05)" }}>
                         <td style={{ padding: "12px 14px" }}>
-                          <div style={{ fontWeight: 600, color: "#1D1D1F" }}>{fullName}</div>
-                          <div style={{ fontSize: 11, color: "#8E8E93", marginTop: 2, display: "flex", alignItems: "center", gap: 6 }}>
-                            <span>@{u.username}</span>
-                            {!u.isActive && <span style={{ padding: "1px 6px", borderRadius: 4, background: "rgba(255,59,48,0.08)", color: "#C41E3A", fontWeight: 600 }}>Deaktiviert</span>}
+                          <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                            <span style={{ fontWeight: 600, color: "#1D1D1F" }}>{fullName}</span>
+                            {!u.isActive && <span style={{ fontSize: 11, padding: "1px 6px", borderRadius: 4, background: "rgba(255,59,48,0.08)", color: "#C41E3A", fontWeight: 600 }}>Deaktiviert</span>}
+                            {u.role === "admin" && <span style={{ fontSize: 11, padding: "1px 6px", borderRadius: 4, background: "rgba(0,113,227,0.08)", color: "#0071E3", fontWeight: 600 }}>Admin</span>}
+                            {u.role === "subadmin" && <span style={{ fontSize: 11, padding: "1px 6px", borderRadius: 4, background: "rgba(175,82,222,0.08)", color: "#AF52DE", fontWeight: 600 }}>Subadmin</span>}
                           </div>
-                        </td>
-                        <td style={{ padding: "12px 14px", color: "#3C3C43" }}>
-                          <div>{u.companyName || "—"}</div>
-                          {org && (
-                            <div style={{ fontSize: 11, marginTop: 2, padding: "1px 6px", borderRadius: 4, background: "rgba(0,113,227,0.06)", color: "#0071E3", fontWeight: 500, display: "inline-block" }}>{org.name}</div>
-                          )}
+                          <div style={{ fontSize: 12, color: "#8E8E93", marginTop: 2 }}>@{u.username}</div>
                         </td>
                         <td style={{ padding: "12px 14px" }}>
-                          <span style={{ display: "inline-block", padding: "2px 8px", borderRadius: 6, fontSize: 11, fontWeight: 600, background: roleStyle.bg, color: roleStyle.color }}>
-                            {roleStyle.label}
+                          <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+                            {u.companyName && (
+                              <span style={{ display: "inline-flex", alignItems: "center", gap: 3, color: "#3C3C43", fontSize: 13 }}>
+                                <Building2 style={{ width: 12, height: 12, color: "#8E8E93" }} />
+                                {u.companyName}
+                              </span>
+                            )}
+                            {org && (
+                              <span style={{ fontSize: 11, padding: "1px 6px", borderRadius: 4, background: "rgba(0,113,227,0.06)", color: "#0071E3", fontWeight: 500 }}>{org.name}</span>
+                            )}
+                            {!u.companyName && !org && <span style={{ color: "#8E8E93" }}>—</span>}
+                          </div>
+                        </td>
+                        <td style={{ padding: "12px 14px" }}>
+                          <span style={{ display: "inline-block", padding: "2px 8px", borderRadius: 6, fontSize: 11, fontWeight: 500, background: aiOver ? "rgba(255,59,48,0.08)" : "rgba(52,199,89,0.08)", color: aiOver ? "#FF3B30" : "#34C759" }}>
+                            KI: {u.aiRequestsUsed}/{u.aiRequestLimit}
                           </span>
                         </td>
-                        <td style={{ padding: "12px 14px", color: "#3C3C43" }}>
-                          {formatDate(u.createdAt)}
-                        </td>
-                        <td style={{ padding: "12px 14px", color: "#3C3C43" }}>
-                          {u.subscription?.accessUntil ? (
+                        <td style={{ padding: "12px 14px" }}>
+                          {u.subscription ? (
                             <>
-                              <div>{formatDate(u.subscription.accessUntil)}</div>
-                              <div style={{ fontSize: 11, color: "#8E8E93", marginTop: 2 }}>{u.subscription.plan}</div>
+                              <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 2 }}>
+                                <CalendarDays style={{ width: 12, height: 12, color: subActive ? "#34C759" : "#FF3B30" }} />
+                                <span style={{ fontSize: 13, fontWeight: 600, color: subActive ? "#1B7A3D" : "#C41E3A" }}>
+                                  {formatDate(u.subscription.accessUntil)}
+                                </span>
+                              </div>
+                              <span style={{ fontSize: 11, color: "#8E8E93" }}>{u.subscription.plan}</span>
                             </>
                           ) : (
-                            <span style={{ color: "#8E8E93" }}>Kein Abo</span>
+                            <span style={{ fontSize: 12, color: "#8E8E93" }}>Kein Abo</span>
                           )}
-                        </td>
-                        <td style={{ padding: "12px 14px" }}>
-                          <span style={{ display: "inline-block", padding: "3px 8px", borderRadius: 6, fontSize: 11, fontWeight: 600, background: badge.bg, color: badge.color, border: `1px solid ${badge.border}`, whiteSpace: "nowrap" }}>
-                            {badge.label}
-                          </span>
-                        </td>
-                        <td style={{ padding: "12px 14px", color: "#3C3C43" }}>
-                          {formatDate(u.lastLoginAt)}
-                        </td>
-                        <td style={{ padding: "12px 14px" }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                            <div style={{ flex: 1, minWidth: 60, height: 6, background: "#F2F2F7", borderRadius: 3, overflow: "hidden" }}>
-                              <div style={{ width: `${aiPct}%`, height: "100%", background: aiClr, transition: "width 200ms ease" }} />
-                            </div>
-                            <span style={{ fontSize: 11, color: "#3C3C43", whiteSpace: "nowrap", minWidth: 80, textAlign: "right" }}>
-                              {u.aiRequestsUsed} / {u.aiRequestLimit}
-                            </span>
-                          </div>
-                        </td>
-                        <td style={{ padding: "12px 14px" }}>
-                          <span style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "2px 8px", borderRadius: 6, fontSize: 11, fontWeight: 600, background: u.isActive ? "#DCFCE7" : "#F2F2F7", color: u.isActive ? "#166534" : "#8E8E93" }}>
-                            <span style={{ width: 6, height: 6, borderRadius: "50%", background: u.isActive ? "#16A34A" : "#8E8E93" }} />
-                            {u.isActive ? "Aktiv" : "Inaktiv"}
-                          </span>
                         </td>
                         <td style={{ padding: "12px 14px", textAlign: "right" }}>
                           <div style={{ display: "inline-flex", gap: 4 }}>
