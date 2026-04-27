@@ -8,48 +8,8 @@ import {
 } from "@/lib/help-content";
 import {
   Search, BookOpen,
-  Lightbulb, AlertTriangle, ChevronRight, Image as ImageIcon, ChevronUp,
+  Lightbulb, AlertTriangle, ChevronRight, ChevronUp,
 } from "lucide-react";
-
-
-function HelpImage({ src, caption, mock, previewLabel }: { src: string; caption: string; mock?: { title: string; bullets: string[] }; previewLabel: string }) {
-  const [errored, setErrored] = useState(false);
-  return (
-    <figure style={{ margin: "12px 0 18px", padding: 0 }}>
-      <div style={{ borderRadius: 12, border: "1px solid rgba(0,0,0,0.08)", background: "#FAFAFC", overflow: "hidden" }}>
-        {!errored ? (
-          <img
-            src={src}
-            alt={caption}
-            onError={() => setErrored(true)}
-            style={{ display: "block", width: "100%", height: "auto" }}
-          />
-        ) : (
-          <div style={{ padding: "20px 24px", display: "flex", flexDirection: "column", gap: 12 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#86868B", fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>
-              <ImageIcon style={{ width: 14, height: 14 }} />
-              {previewLabel}
-            </div>
-            {mock && (
-              <>
-                <div style={{ fontSize: 14, fontWeight: 700, color: "#1D1D1F" }}>{mock.title}</div>
-                <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 6 }}>
-                  {mock.bullets.map((b, i) => (
-                    <li key={i} style={{ fontSize: 13, color: "#48484A", display: "flex", alignItems: "flex-start", gap: 8 }}>
-                      <span style={{ width: 6, height: 6, borderRadius: 3, background: "#0071E3", marginTop: 7, flexShrink: 0 }} />
-                      {b}
-                    </li>
-                  ))}
-                </ul>
-              </>
-            )}
-          </div>
-        )}
-      </div>
-      <figcaption style={{ marginTop: 6, fontSize: 12, color: "#8E8E93", fontStyle: "italic" }}>{caption}</figcaption>
-    </figure>
-  );
-}
 
 function StepsList({ items }: { items: { title: string; text: string }[] }) {
   return (
@@ -107,8 +67,6 @@ function renderBlock(block: Block, key: number, ui: HelpUi) {
       return <TipBox key={key} kind="tip" text={block.text} prefix={ui.tipPrefix} />;
     case "warn":
       return <TipBox key={key} kind="warn" text={block.text} prefix={ui.warnPrefix} />;
-    case "image":
-      return <HelpImage key={key} src={block.src} caption={block.caption} mock={block.mock} previewLabel={ui.previewLabel} />;
     case "list":
       return <PlainList key={key} items={block.items} />;
   }
@@ -118,7 +76,6 @@ function blockText(b: Block): string {
   switch (b.type) {
     case "p": case "tip": case "warn": return b.text;
     case "steps": return b.items.map(s => `${s.title} ${s.text}`).join(" ");
-    case "image": return `${b.caption} ${b.mock ? b.mock.title + " " + b.mock.bullets.join(" ") : ""}`;
     case "list": return b.items.join(" ");
   }
 }
