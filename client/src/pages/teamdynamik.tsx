@@ -1220,22 +1220,6 @@ export default function Teamdynamik() {
 
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }} data-testid="leadership-levers-section">
               {(() => {
-                const leverTitleMap: Record<string, string> = {
-                  "timebox": ui.teamdynamik.leverTimebox,
-                  "8020": ui.teamdynamik.lever8020,
-                  "weekly_review": ui.teamdynamik.leverWeekly,
-                  "role_boundaries": ui.teamdynamik.leverRoleBoundaries,
-                  "comm_rules": ui.teamdynamik.leverCommRules,
-                  "pulse_check": ui.teamdynamik.leverPulseCheck,
-                };
-                const leverDescMap: Record<string, string> = {
-                  "timebox": ui.teamdynamik.leverTimeboxDesc,
-                  "8020": ui.teamdynamik.lever8020Desc,
-                  "weekly_review": ui.teamdynamik.leverWeeklyDesc,
-                  "role_boundaries": ui.teamdynamik.leverRoleBoundariesDesc,
-                  "comm_rules": ui.teamdynamik.leverCommRulesDesc,
-                  "pulse_check": ui.teamdynamik.leverPulseCheckDesc,
-                };
                 const prioLabelMap: Record<string, string> = {
                   hoch: ui.teamdynamik.prioHigh,
                   mittel: ui.teamdynamik.prioMedium,
@@ -1243,8 +1227,9 @@ export default function Teamdynamik() {
                 };
                 return result.leadershipContext.leadershipLevers.map((lever, i) => {
                   const prioColor = lever.priority === "hoch" ? "#FF3B30" : lever.priority === "mittel" ? "#FF9500" : "#34C759";
-                  const displayTitle = leverTitleMap[lever.id] || lever.title;
-                  const displayDesc = leverDescMap[lever.id] || lever.description;
+                  // lever.title / lever.description sind bereits durch localizeDeep für die aktive Region übersetzt
+                  const displayTitle = lever.title;
+                  const displayDesc = lever.description;
                   const displayPrio = prioLabelMap[lever.priority] || lever.priority;
                   return (
                     <div key={i} style={{ display: "flex", borderRadius: 14, overflow: "hidden", background: "#fff", border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 1px 4px rgba(0,0,0,0.04)" }} data-testid={`lever-${i}`}>

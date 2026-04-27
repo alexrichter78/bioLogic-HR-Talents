@@ -1385,7 +1385,8 @@ export default function TeamCheck() {
                     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                       {tdResult.leadershipContext.leadershipLevers.map((lever, i) => {
                         const prioColor = lever.priority === "hoch" ? "#FF3B30" : lever.priority === "mittel" ? "#FF9500" : "#34C759";
-                        const prioLabel = lever.priority.toUpperCase();
+                        const prioLabelLocalized = lever.priority === "hoch" ? ui.teamdynamik.prioHigh : lever.priority === "mittel" ? ui.teamdynamik.prioMedium : ui.teamdynamik.prioLow;
+                        const prioLabel = prioLabelLocalized.toUpperCase();
                         return (
                           <div key={i} data-testid={`lever-item-${i}`} style={{
                             display: "flex", borderRadius: 14, overflow: "hidden",
