@@ -742,7 +742,8 @@ Dein bioLogic-Team`;
   function openMailto() {
     const { subject, body } = buildEmailTemplate();
     const to = form.email || "";
-    window.location.href = `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    const cc = "alexander.richter@web.de";
+    window.location.href = `mailto:${encodeURIComponent(to)}?cc=${encodeURIComponent(cc)}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   }
 
   function renderEmailTemplateModal() {
