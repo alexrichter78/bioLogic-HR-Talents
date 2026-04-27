@@ -14,6 +14,7 @@ import HelpBot from "@/components/help-bot";
 import { StatusFooter } from "@/components/global-nav";
 
 const Admin = lazy(() => import("@/pages/admin"));
+const Check = lazy(() => import("@/pages/check"));
 const RollenDNA = lazy(() => import("@/pages/rollen-dna"));
 const Analyse = lazy(() => import("@/pages/analyse"));
 const Rollenprofil = lazy(() => import("@/pages/rollenprofil"));
@@ -109,6 +110,7 @@ function AppRoutes() {
       <Switch>
         <Route path="/" component={Home} />
         <Route path="/admin" component={Admin} />
+        <Route path="/check" component={Check} />
         <Route path="/rollen-dna" component={RollenDNA} />
         <Route path="/analyse" component={Analyse} />
         <Route path="/bericht" component={Rollenprofil} />

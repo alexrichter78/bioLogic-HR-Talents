@@ -3,7 +3,7 @@ import { useAuth } from "@/lib/auth";
 import { useLocation } from "wouter";
 import GlobalNav from "@/components/global-nav";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Plus, Trash2, Pencil, X, Save, Users, CalendarDays, Shield, Building2, Search, ChevronUp, ChevronDown, Database, KeyRound, Copy, Check, ThumbsUp, ThumbsDown, BookOpen, FileText, MessageSquare, RotateCcw, Languages } from "lucide-react";
+import { Plus, Trash2, Pencil, X, Save, Users, CalendarDays, Shield, Building2, Search, ChevronUp, ChevronDown, Database, KeyRound, Copy, Check, ThumbsUp, ThumbsDown, BookOpen, FileText, MessageSquare, RotateCcw, Languages, AlertCircle } from "lucide-react";
 
 interface UserWithSub {
   id: number;
@@ -721,6 +721,10 @@ export default function Admin() {
             ? { display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", width: "100%" }
             : { display: "flex", alignItems: "center", gap: 8 }
           }>
+            <button onClick={() => setLocation("/check")} data-testid="button-check" title="Check – Übersicht aller Benutzer" style={{ display: "flex", alignItems: "center", gap: 6, padding: "10px 18px", borderRadius: 10, border: "1px solid rgba(0,0,0,0.1)", background: "#fff", color: "#1D1D1F", fontSize: 14, fontWeight: 600, cursor: "pointer", transition: "all 200ms ease" }}>
+              <AlertCircle style={{ width: 16, height: 16 }} />
+              Check
+            </button>
             <button onClick={() => setLocation("/analyse")} data-testid="button-stammdaten" title="Stammdaten" style={{ display: "flex", alignItems: "center", gap: 6, padding: "10px 18px", borderRadius: 10, border: "1px solid rgba(0,0,0,0.1)", background: "#fff", color: "#1D1D1F", fontSize: 14, fontWeight: 600, cursor: "pointer", transition: "all 200ms ease" }}>
               <Database style={{ width: 16, height: 16 }} />
               Stammdaten
