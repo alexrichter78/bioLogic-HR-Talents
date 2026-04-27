@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useMemo } from "react";
 import { useLocation } from "wouter";
-import { Home, Briefcase, GitCompareArrows, Users, Bot, GraduationCap, Settings, LogOut, Globe, Building2 } from "lucide-react";
+import { Home, Briefcase, GitCompareArrows, Users, Bot, GraduationCap, Settings, LogOut, Globe, Building2, HelpCircle } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { useRegion, type Region } from "@/lib/region";
 import { useUI } from "@/lib/ui-texts";
@@ -145,6 +145,20 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
                   </div>
                 )}
               </div>
+              <button
+                onClick={() => setLocation("/hilfe")}
+                data-testid="nav-help-mobile"
+                title="Hilfe & Benutzerhandbuch"
+                style={{
+                  width: 32, height: 32, borderRadius: 8,
+                  border: "none", cursor: "pointer",
+                  background: location === "/hilfe" ? "rgba(0,113,227,0.08)" : "transparent",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  transition: "all 200ms ease",
+                }}
+              >
+                <HelpCircle style={{ width: 15, height: 15, color: location === "/hilfe" ? "#0071E3" : "#86868B", strokeWidth: 1.8 }} />
+              </button>
               {!user?.coachOnly && (user?.role === "admin" || user?.role === "subadmin") && (
                 <button
                   onClick={() => setLocation("/firma-dashboard")}
@@ -374,6 +388,22 @@ export default function GlobalNav({ rightSlot }: { rightSlot?: React.ReactNode }
                 </div>
               )}
             </div>
+            <button
+              onClick={() => setLocation("/hilfe")}
+              data-testid="nav-help"
+              title="Hilfe & Benutzerhandbuch"
+              style={{
+                width: 32, height: 32, borderRadius: 8,
+                border: "none", cursor: "pointer",
+                background: location === "/hilfe" ? "rgba(0,113,227,0.08)" : "transparent",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                transition: "all 200ms ease",
+              }}
+              onMouseEnter={(e) => { if (location !== "/hilfe") e.currentTarget.style.background = "rgba(0,113,227,0.05)"; }}
+              onMouseLeave={(e) => { if (location !== "/hilfe") e.currentTarget.style.background = "transparent"; }}
+            >
+              <HelpCircle style={{ width: 15, height: 15, color: location === "/hilfe" ? "#0071E3" : "#86868B", strokeWidth: 1.8 }} />
+            </button>
             {!user?.coachOnly && (user?.role === "admin" || user?.role === "subadmin") && (
               <button
                 onClick={() => setLocation("/firma-dashboard")}

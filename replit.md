@@ -11,6 +11,7 @@ Key capabilities include:
 -   **bioLogic JobCheck (MatchCheck)**: Assesses candidate-role fit, including dominance shift and risk assessments, using a unified engine.
 -   **Teamdynamik (Team Dynamics)**: A dashboard providing 13 deterministic system variants for team-person constellations, with steering levers and stress simulation.
 -   **KI-Coach (AI Coach)**: A conversational AI for leadership, HR, and assessment, featuring context-aware interactions and structured interview guide generation.
+-   **Hilfe / Benutzerhandbuch**: In-app user manual at `/hilfe` (page `client/src/pages/hilfe.tsx`) with sticky sidebar, search, and 10 chapters (Erste Schritte, Startseite, JobCheck, MatchCheck, TeamCheck, KI-Coach, Kurs, Profil, FAQ, Support). Reachable via HelpCircle icon in `GlobalNav` (visible to all roles, including coachOnly). Screenshot containers fall back to mock-bullet boxes when no image is present in `client/public/help/` (filenames `01-anmeldung.png`, `02-startseite.png`, `03-jobcheck.png`, `04-rollenprofil.png`, `05-matchcheck.png`, `06-teamcheck.png`, `07-ki-coach.png`, `08-kurs.png`).
 
 ## Localization
 

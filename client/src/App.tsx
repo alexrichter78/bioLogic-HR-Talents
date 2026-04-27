@@ -33,6 +33,7 @@ const Ubersetzung = lazy(() => import("@/pages/ubersetzung"));
 const Impressum = lazy(() => import("@/pages/impressum"));
 const Datenschutz = lazy(() => import("@/pages/datenschutz"));
 const Disclaimer = lazy(() => import("@/pages/disclaimer"));
+const Hilfe = lazy(() => import("@/pages/hilfe"));
 
 function PageFallback() {
   return (
@@ -96,6 +97,7 @@ function AppRoutes() {
       <Suspense fallback={<PageFallback />}>
         <Switch>
           <Route path="/ki-coach" component={KICoach} />
+          <Route path="/hilfe" component={Hilfe} />
           <Route path="/impressum" component={Impressum} />
           <Route path="/datenschutz" component={Datenschutz} />
           <Route path="/disclaimer" component={Disclaimer} />
@@ -128,6 +130,7 @@ function AppRoutes() {
         <Route path="/impressum" component={Impressum} />
         <Route path="/datenschutz" component={Datenschutz} />
         <Route path="/disclaimer" component={Disclaimer} />
+        <Route path="/hilfe" component={Hilfe} />
         <Route component={NotFound} />
       </Switch>
     </Suspense>
