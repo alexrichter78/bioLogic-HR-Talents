@@ -42,3 +42,9 @@ id = "25Qy9AZ0ehtFZnbzFo_BP"
 uri = "file://bioLogic-Software-Uebersicht.md"
 type = "text"
 title = "bioLogic HR Talents -- Software-Übersicht"
+
+[[outputs]]
+id = "toK0qpre8pvppR2OOannn"
+uri = "file://marketing-dokumentation.md"
+type = "text"
+title = "Marketing-Dokumentation bioLogic RoleDynamics"
