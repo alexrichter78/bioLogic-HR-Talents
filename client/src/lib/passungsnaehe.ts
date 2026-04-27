@@ -65,23 +65,28 @@ function computePosInZone(
   tg: number,
 ): number {
   if (zone === "GEEIGNET") {
-    const a = md / 5.5;
-    const b = tg / 16;
-    return clamp(Math.max(a, b * 0.9), 0.06, 0.94);
+    const mdScore = clamp(md / 5.5, 0, 1);
+    const tgScore = clamp(tg / 16, 0, 1);
+    const combined = Math.max(mdScore, tgScore * 0.6);
+    return clamp(Math.pow(combined, 1.9), 0.03, 0.94);
   }
   if (zone === "BEDINGT") {
+    let raw: number;
     if (structureType === "EXACT") {
-      return clamp((md - 5.5) / 5.5, 0.06, 0.94);
+      raw = clamp((md - 5.5) / 4.5, 0, 1);
+    } else if (structureType === "SOFT_CONFLICT") {
+      raw = clamp(md / 10, 0, 1);
+    } else {
+      raw = clamp(md / 10, 0, 1);
     }
-    if (structureType === "SOFT_CONFLICT") {
-      return clamp(md / 10.5, 0.06, 0.94);
-    }
-    return clamp(md / 10.5, 0.06, 0.94);
+    return clamp(Math.pow(raw, 1.4), 0.04, 0.94);
   }
   if (structureType === "HARD_CONFLICT") {
-    return clamp(md / 32, 0.06, 0.94);
+    const raw = clamp(md / 30, 0, 1);
+    return clamp(Math.pow(raw, 1.3), 0.04, 0.94);
   }
-  return clamp((md - 10) / 25, 0.06, 0.94);
+  const raw = clamp((md - 10) / 25, 0, 1);
+  return clamp(Math.pow(raw, 1.3), 0.04, 0.94);
 }
 
 export function getVisualFitPoint(input: PassungsnaeheInput): PassungsnaeheResult {
