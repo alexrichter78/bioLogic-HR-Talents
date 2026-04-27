@@ -215,7 +215,7 @@ export function getSystemwirkung(teamProfile: Triad, personProfile: Triad): stri
     const personSecTerGap = personSorted[1].value - personSorted[2].value;
     const sameTop2 = teamSecTerGap >= 3 && personSecTerGap >= 3 &&
       teamTop2Keys.size === personTop2Keys.size &&
-      [...teamTop2Keys].every(k => personTop2Keys.has(k));
+      Array.from(teamTop2Keys).every(k => personTop2Keys.has(k));
     if (sameTop2 && distance <= 50) return "Verstärkung";
   }
 

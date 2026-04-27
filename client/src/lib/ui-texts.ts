@@ -3443,7 +3443,7 @@ export function useUI(): UIDict {
     }
   }
 
-  for (const [key, entry] of translations) {
+  for (const [key, entry] of Array.from(translations)) {
     const parts = key.split(".");
     if (parts.length !== 2) continue;
     const [sectionName, fieldName] = parts;

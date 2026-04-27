@@ -1,4 +1,6 @@
+// @ts-expect-error - no type definitions available for hypher
 import Hypher from "hypher";
+// @ts-expect-error - no type definitions available for hyphenation.de
 import german from "hyphenation.de";
 
 const hypher = new (Hypher as any)(german);

@@ -9,7 +9,7 @@ import { apiRequest } from "@/lib/queryClient";
 const LANG_COLS = ["DE", "EN", "FR", "IT"] as const;
 type Lang = "de" | "en" | "fr" | "it";
 
-const SECTIONS = [...new Set(ALL_TRANSLATIONS.map(e => e.section))];
+const SECTIONS = Array.from(new Set(ALL_TRANSLATIONS.map(e => e.section)));
 
 export default function Ubersetzung() {
   const [, setLocation] = useLocation();

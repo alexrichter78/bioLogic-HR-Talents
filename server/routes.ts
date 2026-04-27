@@ -1115,7 +1115,7 @@ async function trackUsageEvent(userId: number, eventType: string): Promise<void>
   try {
     const user = await storage.getUserById(userId);
     const orgId = user?.organizationId ?? undefined;
-    await storage.createUsageEvent({ userId, organizationId: orgId ?? null, eventType });
+    await storage.createUsageEvent({ userId, organizationId: orgId ?? null, eventType: eventType as any });
     await storage.incrementUserAiUsage(userId);
     if (orgId) {
       await storage.incrementOrgAiUsage(orgId);
@@ -1346,7 +1346,7 @@ export async function registerRoutes(
 
   app.patch("/api/translations/:key", requireAdmin, async (req, res) => {
     try {
-      const key = decodeURIComponent(req.params.key);
+      const key = decodeURIComponent(req.params.key as string);
       const { lang, value } = req.body;
       if (!["de", "en", "fr", "it"].includes(lang)) {
         return res.status(400).json({ error: "Invalid lang" });
@@ -1420,7 +1420,7 @@ export async function registerRoutes(
 
   app.post("/api/admin/users/:id/reset-link", requireAdmin, async (req, res) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(req.params.id as string);
       const user = await storage.getUserById(id);
       if (!user) return res.status(404).json({ error: "Benutzer nicht gefunden" });
       const token = crypto.randomBytes(32).toString("hex");
@@ -1527,7 +1527,7 @@ export async function registerRoutes(
 
   app.patch("/api/admin/users/:id", requireAdmin, async (req, res) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(req.params.id as string);
       const { username, email, password, firstName, lastName, companyName, role, isActive, courseAccess, coachOnly, accessUntil, plan, notes, subscriptionStatus, organizationId, aiRequestLimit, bioCheckSecret, bioCheckEingeloest } = req.body;
       const updateData: any = {};
       if (username !== undefined) updateData.username = username;
@@ -1587,7 +1587,7 @@ export async function registerRoutes(
 
   app.delete("/api/admin/users/:id", requireAdmin, async (req, res) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(req.params.id as string);
       if (req.session.userId === id) {
         return res.status(400).json({ error: "Eigenen Account kann nicht gelöscht werden" });
       }
@@ -1753,7 +1753,7 @@ export async function registerRoutes(
 
   app.patch("/api/admin/organizations/:id", requireAuth, requireAdmin, async (req, res) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(req.params.id as string);
       if (isNaN(id)) return res.status(400).json({ error: "Ungültige ID" });
       const { name, aiRequestLimit } = req.body;
       const updates: any = {};
@@ -1770,7 +1770,7 @@ export async function registerRoutes(
 
   app.delete("/api/admin/organizations/:id", requireAuth, requireAdmin, async (req, res) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(req.params.id as string);
       if (isNaN(id)) return res.status(400).json({ error: "Ungültige ID" });
       await storage.deleteOrganization(id);
       res.json({ ok: true });
@@ -1782,7 +1782,7 @@ export async function registerRoutes(
 
   app.post("/api/admin/organizations/:id/reset-usage", requireAuth, requireAdmin, async (req, res) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(req.params.id as string);
       if (isNaN(id)) return res.status(400).json({ error: "Ungültige ID" });
       await storage.resetOrgAiUsage(id);
       const org = await storage.getOrganizationById(id);
@@ -1795,12 +1795,12 @@ export async function registerRoutes(
 
   app.get("/api/admin/organizations/:id/usage", requireAuth, requireAdmin, async (req, res) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(req.params.id as string);
       if (isNaN(id)) return res.status(400).json({ error: "Ungültige ID" });
       const since = req.query.since ? new Date(req.query.since as string) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
       const totals = await storage.getUsageStatsByOrg(id, since);
       const perUserRaw = await storage.getUsageBreakdownByOrg(id, since);
-      const userIds = [...new Set(perUserRaw.map(p => p.userId))];
+      const userIds = Array.from(new Set(perUserRaw.map(p => p.userId)));
       const userCache = new Map<number, { username: string; firstName: string; lastName: string }>();
       for (const uid of userIds) {
         const u = await storage.getUserById(uid);
@@ -1824,7 +1824,7 @@ export async function registerRoutes(
       const totals = await storage.getUsageStatsByOrg(user.organizationId, since);
       const perUserRaw = await storage.getUsageBreakdownByOrg(user.organizationId, since);
       const org = await storage.getOrganizationById(user.organizationId);
-      const userIds = [...new Set(perUserRaw.map(p => p.userId))];
+      const userIds = Array.from(new Set(perUserRaw.map(p => p.userId)));
       const userCache = new Map<number, { username: string; firstName: string; lastName: string }>();
       for (const uid of userIds) {
         const u = await storage.getUserById(uid);
@@ -6013,7 +6013,7 @@ WICHTIGE REGELN:
   app.get("/api/coach-conversations/:id", requireAuth, async (req: Request, res: Response) => {
     try {
       if (!req.session.userId) return res.status(401).json({ error: "Nicht eingeloggt" });
-      const id = parseInt(req.params.id);
+      const id = parseInt(req.params.id as string);
       if (isNaN(id)) return res.status(400).json({ error: "Ungültige ID" });
       const conv = await storage.getCoachConversation(id, req.session.userId);
       if (!conv) return res.status(404).json({ error: "Nicht gefunden" });
@@ -6045,7 +6045,7 @@ WICHTIGE REGELN:
   app.patch("/api/coach-conversations/:id", requireAuth, async (req: Request, res: Response) => {
     try {
       if (!req.session.userId) return res.status(401).json({ error: "Nicht eingeloggt" });
-      const id = parseInt(req.params.id);
+      const id = parseInt(req.params.id as string);
       if (isNaN(id)) return res.status(400).json({ error: "Ungültige ID" });
       const { title, messages, pinned } = req.body;
       const data: { title?: string; messages?: unknown; pinned?: boolean } = {};
@@ -6067,7 +6067,7 @@ WICHTIGE REGELN:
   app.delete("/api/coach-conversations/:id", requireAuth, async (req: Request, res: Response) => {
     try {
       if (!req.session.userId) return res.status(401).json({ error: "Nicht eingeloggt" });
-      const id = parseInt(req.params.id);
+      const id = parseInt(req.params.id as string);
       if (isNaN(id)) return res.status(400).json({ error: "Ungültige ID" });
       await storage.deleteCoachConversation(id, req.session.userId);
       res.json({ success: true });
@@ -6109,7 +6109,7 @@ WICHTIGE REGELN:
 
   app.patch("/api/knowledge-documents/:id", requireAuth, requireAdmin, async (req: Request, res: Response) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(req.params.id as string);
       const doc = await storage.updateKnowledgeDocument(id, req.body);
       if (!doc) return res.status(404).json({ error: "Dokument nicht gefunden" });
       res.json(doc);
@@ -6120,7 +6120,7 @@ WICHTIGE REGELN:
 
   app.delete("/api/knowledge-documents/:id", requireAuth, requireAdmin, async (req: Request, res: Response) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(req.params.id as string);
       await storage.deleteKnowledgeDocument(id);
       res.json({ success: true });
     } catch (error) {
@@ -6164,7 +6164,7 @@ WICHTIGE REGELN:
 
   app.delete("/api/golden-answers/:id", requireAuth, requireAdmin, async (req: Request, res: Response) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(req.params.id as string);
       if (isNaN(id)) return res.status(400).json({ error: "Ungültige ID" });
       await storage.deleteGoldenAnswer(id);
       res.json({ success: true });

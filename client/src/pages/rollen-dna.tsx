@@ -1115,7 +1115,7 @@ function CollapsedStep({
   title: string;
   summary: string;
   onEdit: () => void;
-  icon?: React.ComponentType<{ style?: React.CSSProperties; strokeWidth?: number }>;
+  icon?: React.ComponentType<any>;
 }) {
   const ui = useUI();
   return (
@@ -1898,7 +1898,7 @@ export default function RollenDNA() {
 
   const [activeTab, setActiveTab] = useState<TaetigkeitKategorie>(saved.current?.activeTab ?? "haupt");
   const [taetigkeiten, setTaetigkeiten] = useState<Taetigkeit[]>(saved.current?.taetigkeiten ?? []);
-  const [nextId, setNextId] = useState(saved.current?.nextId ?? 1);
+  const [nextId, setNextId] = useState<number>(saved.current?.nextId ?? 1);
   const [generatedRegion, setGeneratedRegion] = useState<string>(saved.current?.generatedRegion ?? "");
 
   const fileInputRef = useRef<HTMLInputElement>(null);

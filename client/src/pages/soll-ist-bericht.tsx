@@ -420,7 +420,7 @@ export default function SollIstBericht() {
     if (!roleTriad || !reportIsValid) return null;
     const raw = computeSollIst(roleName, candidateName || "Person", roleTriad, candidateProfile, fuehrungsArt, roleAnalysisObj, region === "IT" ? "it" : region === "FR" ? "fr" : region === "EN" ? "en" : "de");
     const base = localizeDeep(raw, region);
-    return aiNarrative ? { ...base, ...aiNarrative } : base;
+    return (aiNarrative ? { ...base, ...aiNarrative } : base) as SollIstResult;
   }, [roleTriad, roleName, candidateName, candidateProfile.impulsiv, candidateProfile.intuitiv, candidateProfile.analytisch, reportIsValid, fuehrungsArt, region, roleAnalysisObj, aiNarrative]);
 
   const exportPdf = useCallback(async () => {

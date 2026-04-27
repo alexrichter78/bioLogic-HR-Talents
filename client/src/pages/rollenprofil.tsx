@@ -305,7 +305,7 @@ export default function Rollenprofil() {
         gesamt, haupt, neben, fuehrung, rahmen, profileType, intensity,
         dom, sec, wk, taetigkeiten, erfolgsfokusIndices,
       };
-      setData(newData);
+      setData(newData as unknown as ReportData);
 
       const hauptNamen = (taetigkeiten || [])
         .filter((t: any) => t.kategorie === "haupt")
