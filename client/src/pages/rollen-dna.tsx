@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useLocation } from "wouter";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -2129,17 +2129,23 @@ export default function RollenDNA() {
     e.target.value = "";
   };
 
-  const filteredTaetigkeiten = taetigkeiten.filter(t => t.kategorie === activeTab);
-  const hauptCount = taetigkeiten.filter(t => t.kategorie === "haupt").length;
-  const nebenCount = taetigkeiten.filter(t => t.kategorie === "neben").length;
-  const fuehrungCount = taetigkeiten.filter(t => t.kategorie === "fuehrung").length;
-  const highCount = taetigkeiten.filter(t => t.niveau === "Hoch").length;
+  const haupt = useMemo(() => taetigkeiten.filter(t => t.kategorie === "haupt"), [taetigkeiten]);
+  const neben = useMemo(() => taetigkeiten.filter(t => t.kategorie === "neben"), [taetigkeiten]);
+  const fuehrungTaetigkeiten = useMemo(() => taetigkeiten.filter(t => t.kategorie === "fuehrung"), [taetigkeiten]);
+  const filteredTaetigkeiten = useMemo(
+    () => activeTab === "haupt" ? haupt : activeTab === "neben" ? neben : fuehrungTaetigkeiten,
+    [activeTab, haupt, neben, fuehrungTaetigkeiten]
+  );
+  const hauptCount = haupt.length;
+  const nebenCount = neben.length;
+  const fuehrungCount = fuehrungTaetigkeiten.length;
+  const highCount = useMemo(() => taetigkeiten.filter(t => t.niveau === "Hoch").length, [taetigkeiten]);
 
-  const bioGramHaupt = calcBioGram(taetigkeiten.filter(t => t.kategorie === "haupt"));
-  const bioGramNeben = calcBioGram(taetigkeiten.filter(t => t.kategorie === "neben"));
-  const bioGramFuehrung = calcBioGram(taetigkeiten.filter(t => t.kategorie === "fuehrung"));
+  const bioGramHaupt = useMemo(() => calcBioGram(haupt), [haupt]);
+  const bioGramNeben = useMemo(() => calcBioGram(neben), [neben]);
+  const bioGramFuehrung = useMemo(() => calcBioGram(fuehrungTaetigkeiten), [fuehrungTaetigkeiten]);
 
-  const bioGramRahmen = (() => {
+  const bioGramRahmen = useMemo<BioGram>(() => {
     let sImp = 0, sInt = 0, sAna = 0;
 
     if (fuehrung === "Fachliche Führung") sAna += 1.0;
@@ -2163,12 +2169,12 @@ export default function RollenDNA() {
     else if (arbeitslogik === "Ausgewogen") { sImp += 1.0; sInt += 1.0; sAna += 1.0; }
 
     const total = sImp + sInt + sAna;
-    if (total <= 0) return { imp: 33.3, int: 33.3, ana: 33.4 } as BioGram;
+    if (total <= 0) return { imp: 33.3, int: 33.3, ana: 33.4 };
     const [imp, int, ana] = roundPercentages((sImp / total) * 100, (sInt / total) * 100, (sAna / total) * 100);
-    return { imp, int, ana } as BioGram;
-  })();
+    return { imp, int, ana };
+  }, [fuehrung, erfolgsfokusIndices, aufgabencharakter, arbeitslogik]);
 
-  const bioGramGesamt = (() => {
+  const bioGramGesamt = useMemo<BioGram>(() => {
     const all = [bioGramHaupt, bioGramNeben, bioGramFuehrung, bioGramRahmen];
     let vals = [
       all.reduce((s, g) => s + g.imp, 0) / all.length,
@@ -2182,8 +2188,8 @@ export default function RollenDNA() {
       vals = vals.map(v => v * scale);
     }
     const [imp, int, ana] = roundPercentages(vals[0], vals[1], vals[2]);
-    return { imp, int, ana } as BioGram;
-  })();
+    return { imp, int, ana };
+  }, [bioGramHaupt, bioGramNeben, bioGramFuehrung, bioGramRahmen]);
 
   useEffect(() => {
     const state = {
@@ -2211,9 +2217,9 @@ export default function RollenDNA() {
   const currentTabMax = MAX_ITEMS[activeTab];
   const canAddMore = currentTabCount < currentTabMax;
 
-  const hauptHighCount = taetigkeiten.filter(t => t.kategorie === "haupt" && t.niveau === "Hoch").length;
-  const nebenHighCount = taetigkeiten.filter(t => t.kategorie === "neben" && t.niveau === "Hoch").length;
-  const fuehrungHighCount = taetigkeiten.filter(t => t.kategorie === "fuehrung" && t.niveau === "Hoch").length;
+  const hauptHighCount = useMemo(() => haupt.filter(t => t.niveau === "Hoch").length, [haupt]);
+  const nebenHighCount = useMemo(() => neben.filter(t => t.niveau === "Hoch").length, [neben]);
+  const fuehrungHighCount = useMemo(() => fuehrungTaetigkeiten.filter(t => t.niveau === "Hoch").length, [fuehrungTaetigkeiten]);
   const MAX_HIGH = 5;
   const currentTabHighCount = activeTab === "haupt" ? hauptHighCount : activeTab === "neben" ? nebenHighCount : fuehrungHighCount;
 
@@ -3040,7 +3046,7 @@ export default function RollenDNA() {
               <CollapsedStep
                 step={3}
                 title={ui.rollendna.tasksAndCompetences}
-                summary={`${taetigkeiten.filter(t => t.kategorie === "haupt").length} ${ui.rollendna.tasks} · ${taetigkeiten.filter(t => t.kategorie === "neben").length} ${ui.rollendna.humanCompetences}${taetigkeiten.filter(t => t.kategorie === "fuehrung").length > 0 ? ` · ${taetigkeiten.filter(t => t.kategorie === "fuehrung").length} ${ui.rollendna.leadershipCompetences}` : ""}`}
+                summary={`${hauptCount} ${ui.rollendna.tasks} · ${nebenCount} ${ui.rollendna.humanCompetences}${fuehrungCount > 0 ? ` · ${fuehrungCount} ${ui.rollendna.leadershipCompetences}` : ""}`}
                 onEdit={() => goToStep(3)}
                 icon={Layers}
               />

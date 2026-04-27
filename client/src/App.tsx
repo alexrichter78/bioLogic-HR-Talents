@@ -1,4 +1,5 @@
 import { Switch, Route } from "wouter";
+import { Suspense, lazy } from "react";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -9,27 +10,37 @@ import { TranslationProvider } from "@/lib/translations-context";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import Login from "@/pages/login";
-import Admin from "@/pages/admin";
-import RollenDNA from "@/pages/rollen-dna";
-import Analyse from "@/pages/analyse";
-import Rollenprofil from "@/pages/rollenprofil";
-import JobCheck from "@/pages/jobcheck";
-import KICoach from "@/pages/ki-coach";
-import TeamCheck from "@/pages/teamcheck";
-import SollIstBericht from "@/pages/soll-ist-bericht";
-import TeamReport from "@/pages/team-report";
-import TeamCheckReportV2 from "@/pages/teamcheck-report-v2";
-import TeamCheckReportV3 from "@/pages/teamcheck-report-v3";
-import TeamCheckReportV4 from "@/pages/teamcheck-report-v4";
-import FirmaDashboard from "@/pages/firma-dashboard";
-import Kurs from "@/pages/kurs";
-import ResetPassword from "@/pages/reset-password";
-import Ubersetzung from "@/pages/ubersetzung";
-import Impressum from "@/pages/impressum";
-import Datenschutz from "@/pages/datenschutz";
-import Disclaimer from "@/pages/disclaimer";
 import HelpBot from "@/components/help-bot";
 import { StatusFooter } from "@/components/global-nav";
+
+const Admin = lazy(() => import("@/pages/admin"));
+const RollenDNA = lazy(() => import("@/pages/rollen-dna"));
+const Analyse = lazy(() => import("@/pages/analyse"));
+const Rollenprofil = lazy(() => import("@/pages/rollenprofil"));
+const JobCheck = lazy(() => import("@/pages/jobcheck"));
+const KICoach = lazy(() => import("@/pages/ki-coach"));
+const TeamCheck = lazy(() => import("@/pages/teamcheck"));
+const SollIstBericht = lazy(() => import("@/pages/soll-ist-bericht"));
+const TeamReport = lazy(() => import("@/pages/team-report"));
+const TeamCheckReportV2 = lazy(() => import("@/pages/teamcheck-report-v2"));
+const TeamCheckReportV3 = lazy(() => import("@/pages/teamcheck-report-v3"));
+const TeamCheckReportV4 = lazy(() => import("@/pages/teamcheck-report-v4"));
+const FirmaDashboard = lazy(() => import("@/pages/firma-dashboard"));
+const Kurs = lazy(() => import("@/pages/kurs"));
+const ResetPassword = lazy(() => import("@/pages/reset-password"));
+const Ubersetzung = lazy(() => import("@/pages/ubersetzung"));
+const Impressum = lazy(() => import("@/pages/impressum"));
+const Datenschutz = lazy(() => import("@/pages/datenschutz"));
+const Disclaimer = lazy(() => import("@/pages/disclaimer"));
+
+function PageFallback() {
+  return (
+    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "#f5f7fb", fontFamily: "Inter, Arial, Helvetica, sans-serif", gap: 14 }}>
+      <div className="bio-spinner" />
+      <p style={{ color: "#8E8E93", fontSize: 13, fontWeight: 500 }}>Laden...</p>
+    </div>
+  );
+}
 
 function AppRoutes() {
   const { user, loading } = useAuth();
@@ -44,19 +55,35 @@ function AppRoutes() {
   }
 
   if (window.location.pathname === "/reset-password") {
-    return <ResetPassword />;
+    return (
+      <Suspense fallback={<PageFallback />}>
+        <ResetPassword />
+      </Suspense>
+    );
   }
 
   if (window.location.pathname === "/impressum") {
-    return <Impressum />;
+    return (
+      <Suspense fallback={<PageFallback />}>
+        <Impressum />
+      </Suspense>
+    );
   }
 
   if (window.location.pathname === "/datenschutz") {
-    return <Datenschutz />;
+    return (
+      <Suspense fallback={<PageFallback />}>
+        <Datenschutz />
+      </Suspense>
+    );
   }
 
   if (window.location.pathname === "/disclaimer") {
-    return <Disclaimer />;
+    return (
+      <Suspense fallback={<PageFallback />}>
+        <Disclaimer />
+      </Suspense>
+    );
   }
 
   if (!user) {
@@ -65,18 +92,21 @@ function AppRoutes() {
 
   if (user.coachOnly) {
     return (
-      <Switch>
-        <Route path="/ki-coach" component={KICoach} />
-        <Route path="/impressum" component={Impressum} />
-        <Route path="/datenschutz" component={Datenschutz} />
-        <Route path="/disclaimer" component={Disclaimer} />
-        <Route component={KICoach} />
-      </Switch>
+      <Suspense fallback={<PageFallback />}>
+        <Switch>
+          <Route path="/ki-coach" component={KICoach} />
+          <Route path="/impressum" component={Impressum} />
+          <Route path="/datenschutz" component={Datenschutz} />
+          <Route path="/disclaimer" component={Disclaimer} />
+          <Route component={KICoach} />
+        </Switch>
+      </Suspense>
     );
   }
 
   return (
-    <Switch>
+    <Suspense fallback={<PageFallback />}>
+      <Switch>
         <Route path="/" component={Home} />
         <Route path="/admin" component={Admin} />
         <Route path="/rollen-dna" component={RollenDNA} />
@@ -98,6 +128,7 @@ function AppRoutes() {
         <Route path="/disclaimer" component={Disclaimer} />
         <Route component={NotFound} />
       </Switch>
+    </Suspense>
   );
 }
 
