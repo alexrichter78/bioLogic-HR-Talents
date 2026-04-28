@@ -3805,8 +3805,7 @@ export default function RollenDNA() {
                         return (
                           <div style={{ background: "#F0F0F2", borderRadius: 16, padding: "16px 18px", display: "flex", flexDirection: "column", gap: 14 }}>
                             {bars.map((bar) => {
-                              const gesamtMax = Math.max(bars[0].value, bars[1].value, bars[2].value, 1);
-                              const widthPct = bar.value === 0 ? 0 : (bar.value / gesamtMax) * 100;
+                              const widthPct = bar.value === 0 ? 0 : (bar.value / bioGramAreaMax) * 100;
                               const labelInside = widthPct >= 22;
                               return (
                                 <div key={bar.label} style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -4314,8 +4313,7 @@ export default function RollenDNA() {
                         return (
                           <div style={{ background: "#F0F0F2", borderRadius: 16, padding: "16px 18px", display: "flex", flexDirection: "column", gap: 14 }}>
                             {bars.map((bar) => {
-                              const gesamtMax = Math.max(bars[0].value, bars[1].value, bars[2].value, 1);
-                              const widthPct = bar.value === 0 ? 0 : (bar.value / gesamtMax) * 100;
+                              const widthPct = bar.value === 0 ? 0 : (bar.value / bioGramAreaMax) * 100;
                               const labelInside = widthPct >= 22;
                               return (
                                 <div key={bar.label} style={{ display: "flex", alignItems: "center", gap: 12 }}>
