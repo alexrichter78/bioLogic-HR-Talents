@@ -10,6 +10,7 @@ import { BERUFE, type BerufLand } from "@/data/berufe";
 import { useRegion, localizeStr } from "@/lib/region";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useUI } from "@/lib/ui-texts";
+import { applyJobcheckBaseline } from "@/lib/jobcheck-engine";
 
 type KompetenzTyp = "Impulsiv" | "Intuitiv" | "Analytisch";
 type Niveau = "Niedrig" | "Mittel" | "Hoch";
@@ -66,8 +67,11 @@ function calcBioGram(items: Taetigkeit[]): BioGram {
   }
   const total = sImp + sInt + sAna;
   if (total <= 0) return { imp: 33.3, int: 33.3, ana: 33.4 };
-  const [imp, int, ana] = roundPercentages((sImp / total) * 100, (sInt / total) * 100, (sAna / total) * 100);
-  return { imp, int, ana };
+  return applyJobcheckBaseline({
+    imp: (sImp / total) * 100,
+    int: (sInt / total) * 100,
+    ana: (sAna / total) * 100,
+  });
 }
 
 type ResultKey =
@@ -2170,8 +2174,11 @@ export default function RollenDNA() {
 
     const total = sImp + sInt + sAna;
     if (total <= 0) return { imp: 33.3, int: 33.3, ana: 33.4 };
-    const [imp, int, ana] = roundPercentages((sImp / total) * 100, (sInt / total) * 100, (sAna / total) * 100);
-    return { imp, int, ana };
+    return applyJobcheckBaseline({
+      imp: (sImp / total) * 100,
+      int: (sInt / total) * 100,
+      ana: (sAna / total) * 100,
+    });
   }, [fuehrung, erfolgsfokusIndices, aufgabencharakter, arbeitslogik]);
 
   const bioGramGesamt = useMemo<BioGram>(() => {

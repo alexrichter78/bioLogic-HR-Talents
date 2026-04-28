@@ -1198,8 +1198,8 @@ export function computeCoreFit(roleTriad: Triad, candTriad: Triad, externalKo?: 
   const reasons: FitReason[] = [];
 
   const EQ_TOL = 5;
-  const GOOD_TOL = 5;
-  const COND_TOL = 10;
+  const GOOD_TOL = 3;
+  const COND_TOL = 7;
 
   const ko = externalKo === true;
   if (ko) {
@@ -1433,6 +1433,23 @@ function roundPct(p1: number, p2: number, p3: number): [number, number, number] 
   return [flo[0] / factor, flo[1] / factor, flo[2] / factor];
 }
 
+export const JOBCHECK_BASELINE_MIX = 0.5;
+
+function blendWithBaseline(imp: number, int: number, ana: number, mix = JOBCHECK_BASELINE_MIX): [number, number, number] {
+  const b = 100 / 3;
+  return [
+    mix * b + (1 - mix) * imp,
+    mix * b + (1 - mix) * int,
+    mix * b + (1 - mix) * ana,
+  ];
+}
+
+export function applyJobcheckBaseline<T extends { imp: number; int: number; ana: number }>(triad: T, mix = JOBCHECK_BASELINE_MIX): T {
+  const [bI, bN, bA] = blendWithBaseline(triad.imp, triad.int, triad.ana, mix);
+  const [imp, int, ana] = roundPct(bI, bN, bA);
+  return { ...triad, imp, int, ana };
+}
+
 function calcBG(taetigkeiten: any[]): BG {
   if (!taetigkeiten.length) return { imp: 33.3, int: 33.3, ana: 33.4 };
   const weights: Record<string, number> = { Niedrig: 0.6, Mittel: 1.0, Hoch: 1.8 };
@@ -1445,7 +1462,11 @@ function calcBG(taetigkeiten: any[]): BG {
   }
   const total = sI + sN + sA;
   if (total <= 0) return { imp: 33.3, int: 33.3, ana: 33.4 };
-  const [imp, int, ana] = roundPct((sI / total) * 100, (sN / total) * 100, (sA / total) * 100);
+  const rawI = (sI / total) * 100;
+  const rawN = (sN / total) * 100;
+  const rawA = (sA / total) * 100;
+  const [bI, bN, bA] = blendWithBaseline(rawI, rawN, rawA);
+  const [imp, int, ana] = roundPct(bI, bN, bA);
   return { imp, int, ana };
 }
 
@@ -1468,7 +1489,11 @@ function calcRahmen(state: RoleDnaStateInput): BG {
   else if (state.arbeitslogik === "Daten-/prozessorientiert") sA += 1;
   const total = sI + sN + sA;
   if (total <= 0) return { imp: 33.3, int: 33.3, ana: 33.4 };
-  const [imp, int, ana] = roundPct((sI / total) * 100, (sN / total) * 100, (sA / total) * 100);
+  const rawI = (sI / total) * 100;
+  const rawN = (sN / total) * 100;
+  const rawA = (sA / total) * 100;
+  const [bI, bN, bA] = blendWithBaseline(rawI, rawN, rawA);
+  const [imp, int, ana] = roundPct(bI, bN, bA);
   return { imp, int, ana };
 }
 
