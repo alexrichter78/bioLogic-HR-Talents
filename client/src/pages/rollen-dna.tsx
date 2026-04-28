@@ -3805,7 +3805,9 @@ export default function RollenDNA() {
                         return (
                           <div style={{ background: "#F0F0F2", borderRadius: 16, padding: "16px 18px", display: "flex", flexDirection: "column", gap: 14 }}>
                             {bars.map((bar) => {
-                              const widthPct = bar.value;
+                              const gesamtMax = Math.max(bars[0].value, bars[1].value, bars[2].value, 1);
+                              const widthPct = bar.value === 0 ? 0 : (bar.value / gesamtMax) * 100;
+                              const labelInside = widthPct >= 22;
                               return (
                                 <div key={bar.label} style={{ display: "flex", alignItems: "center", gap: 12 }}>
                                   <span style={{ fontSize: 14, color: "#48484A", width: 72, flexShrink: 0 }}>
@@ -3819,11 +3821,11 @@ export default function RollenDNA() {
                                       borderRadius: 13, background: bar.color,
                                       transition: "width 600ms ease",
                                       display: "flex", alignItems: "center", paddingLeft: 10,
-                                      minWidth: bar.value === 0 ? 0 : (bar.value < 13 ? 8 : 50),
+                                      minWidth: bar.value === 0 ? 0 : (labelInside ? 50 : 8),
                                     }}>
-                                      {bar.value > 0 && bar.value >= 13 && <span style={{ fontSize: 14, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap" }}>{Math.round(bar.value)} %</span>}
+                                      {bar.value > 0 && labelInside && <span style={{ fontSize: 14, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap" }}>{Math.round(bar.value)} %</span>}
                                     </div>
-                                    {bar.value < 13 && <span style={{ position: "absolute", left: `calc(${bar.value === 0 ? 0 : Math.min(Math.max(widthPct, 4), 100)}% + 8px)`, top: "50%", transform: "translateY(-50%)", fontSize: 14, fontWeight: 700, color: "#48484A", whiteSpace: "nowrap" }}>{Math.round(bar.value)} %</span>}
+                                    {!labelInside && <span style={{ position: "absolute", left: `calc(${bar.value === 0 ? 0 : Math.min(Math.max(widthPct, 4), 100)}% + 8px)`, top: "50%", transform: "translateY(-50%)", fontSize: 14, fontWeight: 700, color: "#48484A", whiteSpace: "nowrap" }}>{Math.round(bar.value)} %</span>}
                                   </div>
                                 </div>
                               );
@@ -4312,7 +4314,9 @@ export default function RollenDNA() {
                         return (
                           <div style={{ background: "#F0F0F2", borderRadius: 16, padding: "16px 18px", display: "flex", flexDirection: "column", gap: 14 }}>
                             {bars.map((bar) => {
-                              const widthPct = bar.value;
+                              const gesamtMax = Math.max(bars[0].value, bars[1].value, bars[2].value, 1);
+                              const widthPct = bar.value === 0 ? 0 : (bar.value / gesamtMax) * 100;
+                              const labelInside = widthPct >= 22;
                               return (
                                 <div key={bar.label} style={{ display: "flex", alignItems: "center", gap: 12 }}>
                                   <span style={{ fontSize: 14, color: "#48484A", width: 72, flexShrink: 0 }}>
@@ -4326,11 +4330,11 @@ export default function RollenDNA() {
                                       borderRadius: 13, background: bar.color,
                                       transition: "width 600ms ease",
                                       display: "flex", alignItems: "center", paddingLeft: 10,
-                                      minWidth: bar.value === 0 ? 0 : (bar.value < 13 ? 8 : 50),
+                                      minWidth: bar.value === 0 ? 0 : (labelInside ? 50 : 8),
                                     }}>
-                                      {bar.value > 0 && bar.value >= 13 && <span style={{ fontSize: 14, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap" }}>{Math.round(bar.value)} %</span>}
+                                      {bar.value > 0 && labelInside && <span style={{ fontSize: 14, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap" }}>{Math.round(bar.value)} %</span>}
                                     </div>
-                                    {bar.value < 13 && <span style={{ position: "absolute", left: `calc(${bar.value === 0 ? 0 : Math.min(Math.max(widthPct, 4), 100)}% + 8px)`, top: "50%", transform: "translateY(-50%)", fontSize: 14, fontWeight: 700, color: "#48484A", whiteSpace: "nowrap" }}>{Math.round(bar.value)} %</span>}
+                                    {!labelInside && <span style={{ position: "absolute", left: `calc(${bar.value === 0 ? 0 : Math.min(Math.max(widthPct, 4), 100)}% + 8px)`, top: "50%", transform: "translateY(-50%)", fontSize: 14, fontWeight: 700, color: "#48484A", whiteSpace: "nowrap" }}>{Math.round(bar.value)} %</span>}
                                   </div>
                                 </div>
                               );
