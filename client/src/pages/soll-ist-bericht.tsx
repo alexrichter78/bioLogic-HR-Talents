@@ -853,7 +853,8 @@ export default function SollIstBericht() {
                               border: "3px solid #F0F0F2",
                               transition: "left 80ms ease",
                               zIndex: 3,
-                              cursor: "default",
+                              cursor: "grab",
+                              touchAction: "none",
                             }}
                           />
                           {isSmall && (
