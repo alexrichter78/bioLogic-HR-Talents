@@ -70,6 +70,8 @@ async function ensureSchema() {
     await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS ai_period_start TIMESTAMP NOT NULL DEFAULT NOW();`);
     await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS bio_check_secret TEXT;`);
     await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS bio_check_eingeloest TEXT;`);
+    await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS preferred_language TEXT NOT NULL DEFAULT 'de';`);
+    await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS email_verified BOOLEAN NOT NULL DEFAULT false;`);
     await client.query(`
       CREATE TABLE IF NOT EXISTS password_reset_tokens (
         id SERIAL PRIMARY KEY,
