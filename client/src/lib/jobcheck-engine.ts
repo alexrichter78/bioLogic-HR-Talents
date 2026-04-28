@@ -1190,16 +1190,18 @@ function getStructureFromPairs(sollRel: PairRelations, istRel: PairRelations): S
   return "HARD_CONFLICT";
 }
 
-export function computeCoreFit(roleTriad: Triad, candTriad: Triad, externalKo?: boolean): CoreFitResult {
+export type CoreFitTolerances = { eq?: number; good?: number; cond?: number };
+
+export function computeCoreFit(roleTriad: Triad, candTriad: Triad, externalKo?: boolean, tolerances?: CoreFitTolerances): CoreFitResult {
   const rN = normalizeTriad(roleTriad);
   const cN = normalizeTriad(candTriad);
   const roleDom = dominanceModeOf(rN);
   const candDom = dominanceModeOf(cN);
   const reasons: FitReason[] = [];
 
-  const EQ_TOL = 5;
-  const GOOD_TOL = 3;
-  const COND_TOL = 7;
+  const EQ_TOL = tolerances?.eq ?? 3;
+  const GOOD_TOL = tolerances?.good ?? 5;
+  const COND_TOL = tolerances?.cond ?? 10;
 
   const ko = externalKo === true;
   if (ko) {
@@ -1279,21 +1281,30 @@ export function computeCoreFit(roleTriad: Triad, candTriad: Triad, externalKo?: 
 }
 
 export function runEngine(role: RoleAnalysis, cand: CandidateInput): EngineResult {
-  const roleDom = dominanceModeOf(role.role_profile);
-  const candDom = dominanceModeOf(cand.candidate_profile);
+  // Person-Profil auf dieselbe Match-Skala bringen wie das (bereits gestauchte) Stellenprofil.
+  // Damit ist der Vergleich symmetrisch und das Person-Profil im JobCheck-UI bleibt mit den vom
+  // User eingegebenen Roh-Werten sichtbar.
+  const candAdjustedProfile: Triad = (() => {
+    const blended = applyJobcheckBaseline({ imp: cand.candidate_profile.impulsiv, int: cand.candidate_profile.intuitiv, ana: cand.candidate_profile.analytisch });
+    return { impulsiv: blended.imp, intuitiv: blended.int, analytisch: blended.ana };
+  })();
+  const candAdjusted: CandidateInput = { ...cand, candidate_profile: candAdjustedProfile };
 
-  const ko = koRuleTriggered(role, cand);
-  const coreFit = computeCoreFit(role.role_profile, cand.candidate_profile, ko);
+  const roleDom = dominanceModeOf(role.role_profile);
+  const candDom = dominanceModeOf(candAdjusted.candidate_profile);
+
+  const ko = koRuleTriggered(role, candAdjusted);
+  const coreFit = computeCoreFit(role.role_profile, candAdjusted.candidate_profile, ko);
   const { overallFit, mismatchScore: mismatch, flags } = coreFit;
   const { sameDom, equalDistConflict, dualConflict, roleKeyInDual, secondaryFlipped } = flags;
 
   const t = resolveRoleTerms(role);
-  const ctrl = calcControlIntensity(role, cand);
-  const matrix = buildMatrix(role, cand, t);
+  const ctrl = calcControlIntensity(role, candAdjusted);
+  const matrix = buildMatrix(role, candAdjusted, t);
   const critical = criticalAreaFromMatrix(matrix);
 
   const rN = normalizeTriad(role.role_profile);
-  const cN = normalizeTriad(cand.candidate_profile);
+  const cN = normalizeTriad(candAdjusted.candidate_profile);
   const rL = labelComponent(roleDom.top1.key);
   const cL = labelComponent(candDom.top1.key);
   const mainDiff = Math.abs(rN[roleDom.top1.key] - cN[roleDom.top1.key]);

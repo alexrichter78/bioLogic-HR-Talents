@@ -1,4 +1,4 @@
-import { normalizeTriad, dominanceModeOf, dominanceLabel, labelComponent, computeCoreFit, calcControlIntensity, koRuleTriggered } from "./jobcheck-engine";
+import { normalizeTriad, dominanceModeOf, dominanceLabel, labelComponent, computeCoreFit, calcControlIntensity, koRuleTriggered, applyJobcheckBaseline } from "./jobcheck-engine";
 import type { Triad, ComponentKey, RoleAnalysis, CandidateInput } from "./jobcheck-engine";
 import { buildMatchTexts, getVariant as getTextVariant } from "./matchcheck-texts";
 import type { TriadKey, MatchTextInput, FitLabel as TextFitLabel, PairRelations as TextPairRelations } from "./matchcheck-texts";
@@ -366,8 +366,20 @@ export function computeSollIst(
   lang: 'de' | 'en' | 'fr' | 'it' = 'de'
 ): SollIstResult {
   resetVariants();
+  // Personen-Profil einmalig auf JobCheck-Baseline-Skala stauchen, damit der
+  // Vergleich mit dem (bereits in calcBG/calcRahmen gestauchten) Stellen-Profil
+  // symmetrisch passiert. UI zeigt weiterhin die Roh-Werte (candProfile bleibt unverändert).
+  const candProfileAdjusted: Triad = (() => {
+    const blended = applyJobcheckBaseline({
+      imp: candProfile.impulsiv,
+      int: candProfile.intuitiv,
+      ana: candProfile.analytisch,
+    });
+    return { impulsiv: blended.imp, intuitiv: blended.int, analytisch: blended.ana };
+  })();
+
   const rt = normalizeTriad(roleProfile);
-  const ct = normalizeTriad(candProfile);
+  const ct = normalizeTriad(candProfileAdjusted);
   const rDom = dominanceModeOf(rt);
   const cDom = dominanceModeOf(ct);
 
@@ -376,12 +388,12 @@ export function computeSollIst(
   let externalKo = false;
   let effectiveControlLevel: "LOW" | "MEDIUM" | "HIGH" | undefined;
   if (roleAnalysis) {
-    const candInput: CandidateInput = { candidate_name: candidateName, candidate_profile: candProfile };
+    const candInput: CandidateInput = { candidate_name: candidateName, candidate_profile: candProfileAdjusted };
     externalKo = koRuleTriggered(roleAnalysis, candInput);
     effectiveControlLevel = calcControlIntensity(roleAnalysis, candInput).level;
   }
 
-  const coreFit = computeCoreFit(roleProfile, candProfile, externalKo);
+  const coreFit = computeCoreFit(roleProfile, candProfileAdjusted, externalKo);
   const baseControlLevel = coreFit.controlIntensity;
   if (!effectiveControlLevel) effectiveControlLevel = coreFit.controlIntensity;
 
