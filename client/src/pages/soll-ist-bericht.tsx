@@ -8,6 +8,7 @@ import { useUI } from "@/lib/ui-texts";
 import { dominanceModeOf, labelComponent, buildRoleAnalysisFromState } from "@/lib/jobcheck-engine";
 import { computeSollIst, mapFuehrungsArt } from "@/lib/soll-ist-engine";
 import { getVisualFitPoint } from "@/lib/passungsnaehe";
+import { capRoleProfile, capRoleAnalysis } from "@/lib/profile-cap";
 import type { Triad, ComponentKey, RoleAnalysis } from "@/lib/jobcheck-engine";
 import type { SollIstResult, Severity, FuehrungsArt } from "@/lib/soll-ist-engine";
 import logoPath from "@assets/LOGO_bio_1773853681939.png";
@@ -418,7 +419,9 @@ export default function SollIstBericht() {
 
   const result: SollIstResult | null = useMemo(() => {
     if (!roleTriad || !reportIsValid) return null;
-    const raw = computeSollIst(roleName, candidateName || "Person", roleTriad, candidateProfile, fuehrungsArt, roleAnalysisObj, region === "IT" ? "it" : region === "FR" ? "fr" : region === "EN" ? "en" : "de");
+    const cappedRoleTriad = capRoleProfile(roleTriad);
+    const cappedRoleAnalysis = roleAnalysisObj ? capRoleAnalysis(roleAnalysisObj) : roleAnalysisObj;
+    const raw = computeSollIst(roleName, candidateName || "Person", cappedRoleTriad, candidateProfile, fuehrungsArt, cappedRoleAnalysis, region === "IT" ? "it" : region === "FR" ? "fr" : region === "EN" ? "en" : "de");
     const base = localizeDeep(raw, region);
     return (aiNarrative ? { ...base, ...aiNarrative } : base) as SollIstResult;
   }, [roleTriad, roleName, candidateName, candidateProfile.impulsiv, candidateProfile.intuitiv, candidateProfile.analytisch, reportIsValid, fuehrungsArt, region, roleAnalysisObj, aiNarrative]);
@@ -909,11 +912,13 @@ export default function SollIstBericht() {
                   setAiError(null);
                   setAiNarrative(null);
                   try {
-                    const computed = computeSollIst(roleName, candidateName || "Person", roleTriad, candidateProfile, fuehrungsArt, roleAnalysisObj, region === "IT" ? "it" : region === "FR" ? "fr" : region === "EN" ? "en" : "de");
+                    const cappedRoleTriad = capRoleProfile(roleTriad);
+                    const cappedRoleAnalysis = roleAnalysisObj ? capRoleAnalysis(roleAnalysisObj) : roleAnalysisObj;
+                    const computed = computeSollIst(roleName, candidateName || "Person", cappedRoleTriad, candidateProfile, fuehrungsArt, cappedRoleAnalysis, region === "IT" ? "it" : region === "FR" ? "fr" : region === "EN" ? "en" : "de");
                     const payload: Record<string, unknown> = {
                       context: { roleName: roleName || "Rolle", candidateName: candidateName || "Person" },
                       profiles: {
-                        role:      { impulsiv: Math.round(roleTriad.impulsiv), intuitiv: Math.round(roleTriad.intuitiv), analytisch: Math.round(roleTriad.analytisch) },
+                        role:      { impulsiv: Math.round(cappedRoleTriad.impulsiv), intuitiv: Math.round(cappedRoleTriad.intuitiv), analytisch: Math.round(cappedRoleTriad.analytisch) },
                         candidate: { impulsiv: Math.round(candidateProfile.impulsiv), intuitiv: Math.round(candidateProfile.intuitiv), analytisch: Math.round(candidateProfile.analytisch) },
                       },
                       calculated: {
@@ -989,7 +994,7 @@ export default function SollIstBericht() {
           </div>
 
           {(() => {
-            const effective = result || (roleTriad ? localizeDeep(computeSollIst(roleName, candidateName || "Person", roleTriad, candidateProfile, fuehrungsArt, roleAnalysisObj, region === "IT" ? "it" : region === "FR" ? "fr" : region === "EN" ? "en" : "de"), region) : null);
+            const effective = result || (roleTriad ? localizeDeep(computeSollIst(roleName, candidateName || "Person", capRoleProfile(roleTriad), candidateProfile, fuehrungsArt, roleAnalysisObj ? capRoleAnalysis(roleAnalysisObj) : roleAnalysisObj, region === "IT" ? "it" : region === "FR" ? "fr" : region === "EN" ? "en" : "de"), region) : null);
             if (!effective) return null;
 
             const fitLabel = effective.fitLabel;

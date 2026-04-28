@@ -11,6 +11,7 @@ import {
   type RoleAnalysis, type CandidateInput, type Triad, type FitStatus, type ControlIntensity, type EngineResult, type MatrixRow as EngineMatrixRow, type ComponentKey,
   runEngine, normalizeTriad, dominanceModeOf, dominanceLabel, labelComponent, buildRoleAnalysisFromState,
 } from "@/lib/jobcheck-engine";
+import { capRoleAnalysis } from "@/lib/profile-cap";
 
 type BG = { imp: number; int: number; ana: number };
 
@@ -528,7 +529,7 @@ export default function JobCheck() {
       candidate_name: snapshotName || "Person",
       candidate_profile: snapshotCand,
     };
-    return localizeDeep(runEngine(roleAnalysis, cand), region);
+    return localizeDeep(runEngine(capRoleAnalysis(roleAnalysis), cand), region);
   }, [roleAnalysis, snapshotCand, snapshotName, reportGenerated, reportKey, region]);
 
   useEffect(() => {
