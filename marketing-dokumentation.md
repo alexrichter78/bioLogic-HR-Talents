@@ -31,7 +31,7 @@ Die wichtigsten Nutzen-Versprechen, sortiert nach Aussagekraft auf der Landingpa
 
 2. **Rollen werden vermessen, nicht beschrieben.** Statt „Wir suchen einen Teamplayer mit Hands-On-Mentalität" entsteht ein präzises Soll-Profil der Stelle. Das macht Vergleichbarkeit zwischen Person und Rolle überhaupt erst möglich.
 
-3. **Klarer Match-Score auf drei Stufen, den jede Führungskraft sofort versteht.** Eine eindeutige Bewertung — **GEEIGNET**, **BEDINGT** oder **NICHT GEEIGNET** — mit farblicher Visualisierung. Die mittlere Stufe „BEDINGT" ist dabei besonders wertvoll: Sie zeigt Kandidaten, bei denen sich ein zweiter Blick lohnt, und verhindert, dass passende Menschen vorschnell aussortiert werden.
+3. **Klarer Match-Score auf drei Stufen, den jede Führungskraft sofort versteht.** Eine eindeutige Bewertung — **GEEIGNET**, **BEDINGT** oder **NICHT GEEIGNET** — mit farblicher Visualisierung. Die mittlere Stufe „BEDINGT" ist dabei besonders wertvoll: Sie zeigt Kandidaten, bei denen sich ein zweiter Blick lohnt, und verhindert, dass passende Menschen vorschnell aussortiert werden. Soll- und Ist-Werte werden bewusst auf demselben realistischen Korridor abgebildet (typischer Wertebereich pro Persönlichkeitsanteil ca. 25 – 50 %), in dem auch reale Persönlichkeitsprofile liegen — so sind Stelle und Person eins zu eins vergleichbar.
 
 4. **Eingebauter KI-Coach (Louis) mit dem Erfahrungsschatz langjähriger HR-Praxis, 24/7 verfügbar.** Beantwortet Führungsfragen, erstellt Gesprächsleitfäden, simuliert schwierige Gespräche und liefert konkrete Empfehlungen zu jeder Person und Rolle im System. Kein generisches ChatGPT — sondern ein auf das eigene Modell trainierter Berater.
 
@@ -171,7 +171,9 @@ Diese Sektion ist die **Wettbewerbsabgrenzung**. Sie kann auf der Landingpage al
 
 4. **Visualisierung, die jede Führungskraft sofort versteht.** Drei klare Bewertungsstufen — GEEIGNET, BEDINGT, NICHT GEEIGNET — mit eindeutigen Farben ersetzen komplexe Tortendiagramme. Das ist kein Detail, sondern die Voraussetzung dafür, dass die Software auch von Nicht-HR-Profis genutzt wird.
 
-5. **Im deutschsprachigen Raum entwickelt.** Das bioLogic-Modell wurde im deutschsprachigen Raum entwickelt, ist hier verankert und unterscheidet sich grundlegend von amerikanischen Persönlichkeitsmodellen, die kulturell oft nicht passen.
+5. **Realistische, vergleichbare Skala.** Stellenanforderung und Persönlichkeitsprofil werden auf demselben Wertekorridor abgebildet, in dem auch reale Menschen liegen (typischerweise 25 – 50 % je Persönlichkeitsanteil). Die Stellenanforderung wird damit nicht künstlich überzeichnet, sondern bleibt im realen Vergleichsbereich des Kandidaten. Dadurch fühlt sich der Match-Score für Anwender stimmig an — und Bewertungen wie „bedingt geeignet" oder „nicht geeignet" sind nachvollziehbar begründet.
+
+6. **Im deutschsprachigen Raum entwickelt.** Das bioLogic-Modell wurde im deutschsprachigen Raum entwickelt, ist hier verankert und unterscheidet sich grundlegend von amerikanischen Persönlichkeitsmodellen, die kulturell oft nicht passen.
 
 ---
 
