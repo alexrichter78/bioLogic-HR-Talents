@@ -192,17 +192,29 @@ export async function seedAdmin() {
     const existing = await storage.getUserByUsername(adminUsername);
 
     if (existing) {
+      console.log(`[seed] Admin account found: ${adminUsername} (id=${existing.id}, role=${existing.role}, hash_len=${existing.passwordHash?.length ?? 0}, isActive=${existing.isActive})`);
       if (process.env.ADMIN_PASSWORD) {
-        const matches = await bcrypt.compare(adminPassword, existing.passwordHash);
+        let matches = false;
+        try {
+          matches = existing.passwordHash ? await bcrypt.compare(adminPassword, existing.passwordHash) : false;
+        } catch (cmpErr: any) {
+          console.error(`[seed] bcrypt.compare failed during sync check:`, cmpErr?.message);
+        }
         if (!matches) {
-          const newHash = await bcrypt.hash(adminPassword, 10);
-          await storage.updateUser(existing.id, { passwordHash: newHash });
-          console.log(`[seed] Admin password synced from ADMIN_PASSWORD env for ${adminUsername} (id=${existing.id})`);
+          try {
+            const newHash = await bcrypt.hash(adminPassword, 10);
+            await storage.updateUser(existing.id, { passwordHash: newHash });
+            const verify = await storage.getUserByUsername(adminUsername);
+            const okNow = verify?.passwordHash ? await bcrypt.compare(adminPassword, verify.passwordHash) : false;
+            console.log(`[seed] Admin password synced for ${adminUsername} (id=${existing.id}). Verify: hash_len=${verify?.passwordHash?.length ?? 0}, password_now_valid=${okNow}`);
+          } catch (updErr: any) {
+            console.error(`[seed] Failed to update admin password:`, updErr?.message, updErr?.stack);
+          }
         } else {
-          console.log(`[seed] Admin account already exists: ${adminUsername} (id=${existing.id}, role=${existing.role}) — password matches env, no changes made`);
+          console.log(`[seed] Admin password already matches ADMIN_PASSWORD env — no changes`);
         }
       } else {
-        console.log(`[seed] Admin account already exists: ${adminUsername} (id=${existing.id}, role=${existing.role}) — no ADMIN_PASSWORD env, no changes made`);
+        console.log(`[seed] No ADMIN_PASSWORD env set — leaving stored password as-is`);
       }
     } else {
       const passwordHash = await bcrypt.hash(adminPassword, 10);

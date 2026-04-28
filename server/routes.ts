@@ -1191,33 +1191,64 @@ export async function registerRoutes(
         return res.status(400).json({ error: "Benutzername und Passwort erforderlich" });
       }
 
-      let user = await storage.getUserByUsername(username);
-      if (!user) {
-        user = await storage.getUserByUsername(username.toLowerCase());
+      let user;
+      try {
+        user = await storage.getUserByUsername(username);
+        if (!user) {
+          user = await storage.getUserByUsername(username.toLowerCase());
+        }
+      } catch (lookupErr: any) {
+        console.error(`[login] DB lookup failed for "${username}":`, lookupErr?.message, lookupErr?.stack);
+        return res.status(500).json({ error: "Anmeldung fehlgeschlagen", detail: "lookup" });
       }
+
       if (!user) {
+        console.log(`[login] No user found for "${username}"`);
         return res.status(401).json({ error: "Ungültige Anmeldedaten" });
       }
 
       if (!user.isActive) {
+        console.log(`[login] User "${user.username}" is inactive`);
         return res.status(403).json({ error: "Konto deaktiviert" });
       }
 
-      const valid = await bcrypt.compare(password, user.passwordHash);
+      if (!user.passwordHash) {
+        console.error(`[login] User "${user.username}" (id=${user.id}) has empty passwordHash in DB`);
+        return res.status(500).json({ error: "Anmeldung fehlgeschlagen", detail: "no_hash" });
+      }
+
+      let valid = false;
+      try {
+        valid = await bcrypt.compare(password, user.passwordHash);
+      } catch (bcryptErr: any) {
+        console.error(`[login] bcrypt.compare failed for "${user.username}":`, bcryptErr?.message);
+        return res.status(500).json({ error: "Anmeldung fehlgeschlagen", detail: "bcrypt" });
+      }
       if (!valid) {
-        console.log(`Login failed for user "${user.username}" – password mismatch`);
+        console.log(`[login] Password mismatch for "${user.username}" (id=${user.id}, hash_len=${user.passwordHash.length}, given_len=${password.length})`);
         return res.status(401).json({ error: "Ungültige Anmeldedaten" });
       }
 
-      const sub = await storage.getSubscriptionByUserId(user.id);
+      let sub;
+      try {
+        sub = await storage.getSubscriptionByUserId(user.id);
+      } catch (subErr: any) {
+        console.error(`[login] getSubscriptionByUserId failed for "${user.username}":`, subErr?.message);
+        sub = undefined;
+      }
       if (sub && sub.status === "active" && new Date(sub.accessUntil) < new Date() && user.role !== "admin") {
         return res.status(403).json({ error: "Zugang abgelaufen. Bitte wenden Sie sich an Ihren Administrator." });
       }
 
-      await storage.updateLastLogin(user.id);
+      try {
+        await storage.updateLastLogin(user.id);
+      } catch (lastLoginErr: any) {
+        console.error(`[login] updateLastLogin failed for "${user.username}":`, lastLoginErr?.message);
+      }
 
       req.session.userId = user.id;
       req.session.userRole = user.role;
+      console.log(`[login] OK for "${user.username}" (id=${user.id}, role=${user.role})`);
 
       let accessUntil: string | null = null;
       if (user.role !== "admin" && sub && sub.status === "active") {
@@ -1250,6 +1281,38 @@ export async function registerRoutes(
 
   app.get("/api/debug/version", (_req, res) => {
     res.json({ version: "2026-03-27-v3", node_env: process.env.NODE_ENV });
+  });
+
+  app.get("/api/debug/admin-status", async (req, res) => {
+    const token = req.query.token as string | undefined;
+    const expected = process.env.ADMIN_PASSWORD || "";
+    if (!expected || token !== expected) {
+      return res.status(401).json({ error: "Token erforderlich" });
+    }
+    try {
+      const adminUsername = (process.env.ADMIN_USERNAME || "admin").toLowerCase();
+      const u = await storage.getUserByUsername(adminUsername);
+      if (!u) {
+        return res.json({
+          adminUsername,
+          existsInDb: false,
+          envPasswordLength: expected.length,
+        });
+      }
+      const valid = u.passwordHash ? await bcrypt.compare(expected, u.passwordHash) : false;
+      res.json({
+        adminUsername: u.username,
+        existsInDb: true,
+        userId: u.id,
+        role: u.role,
+        isActive: u.isActive,
+        hashLength: u.passwordHash?.length ?? 0,
+        envPasswordLength: expected.length,
+        envPasswordMatchesStoredHash: valid,
+      });
+    } catch (err: any) {
+      res.status(500).json({ error: "diag failed", detail: err?.message });
+    }
   });
 
   app.post("/api/auth/logout", (req, res) => {
