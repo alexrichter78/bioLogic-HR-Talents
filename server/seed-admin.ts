@@ -192,7 +192,18 @@ export async function seedAdmin() {
     const existing = await storage.getUserByUsername(adminUsername);
 
     if (existing) {
-      console.log(`[seed] Admin account already exists: ${adminUsername} (id=${existing.id}, role=${existing.role}) — no changes made`);
+      if (process.env.ADMIN_PASSWORD) {
+        const matches = await bcrypt.compare(adminPassword, existing.passwordHash);
+        if (!matches) {
+          const newHash = await bcrypt.hash(adminPassword, 10);
+          await storage.updateUser(existing.id, { passwordHash: newHash });
+          console.log(`[seed] Admin password synced from ADMIN_PASSWORD env for ${adminUsername} (id=${existing.id})`);
+        } else {
+          console.log(`[seed] Admin account already exists: ${adminUsername} (id=${existing.id}, role=${existing.role}) — password matches env, no changes made`);
+        }
+      } else {
+        console.log(`[seed] Admin account already exists: ${adminUsername} (id=${existing.id}, role=${existing.role}) — no ADMIN_PASSWORD env, no changes made`);
+      }
     } else {
       const passwordHash = await bcrypt.hash(adminPassword, 10);
       await storage.createUser({
