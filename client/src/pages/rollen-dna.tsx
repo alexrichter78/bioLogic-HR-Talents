@@ -2181,6 +2181,19 @@ export default function RollenDNA() {
     });
   }, [fuehrung, erfolgsfokusIndices, aufgabencharakter, arbeitslogik]);
 
+  // Gemeinsame Referenzlänge für alle 4 Bereichs-Karten: der größte Wert
+  // über ALLE Bereiche hinweg = 100 % Balkenlänge. So sind die Karten direkt
+  // miteinander vergleichbar.
+  const bioGramAreaMax = useMemo<number>(() => {
+    const vals = [
+      bioGramHaupt.imp, bioGramHaupt.int, bioGramHaupt.ana,
+      bioGramNeben.imp, bioGramNeben.int, bioGramNeben.ana,
+      bioGramRahmen.imp, bioGramRahmen.int, bioGramRahmen.ana,
+      bioGramFuehrung.imp, bioGramFuehrung.int, bioGramFuehrung.ana,
+    ];
+    return Math.max(...vals, 1);
+  }, [bioGramHaupt, bioGramNeben, bioGramRahmen, bioGramFuehrung]);
+
   const bioGramGesamt = useMemo<BioGram>(() => {
     const all = [bioGramHaupt, bioGramNeben, bioGramFuehrung, bioGramRahmen];
     let vals = [
@@ -3692,7 +3705,7 @@ export default function RollenDNA() {
                             </p>
                           </div>
                           {(() => {
-                            const sectionMax = Math.max(section.data.imp, section.data.int, section.data.ana, 1);
+                            const sectionMax = bioGramAreaMax;
                             return [
                               { label: ui.general.labelImpulsiv, color: "#C41E3A", value: section.data.imp },
                               { label: ui.general.labelIntuitiv, color: "#F39200", value: section.data.int },
@@ -4199,7 +4212,7 @@ export default function RollenDNA() {
                             </p>
                           </div>
                           {(() => {
-                            const sectionMax = Math.max(section.data.imp, section.data.int, section.data.ana, 1);
+                            const sectionMax = bioGramAreaMax;
                             return [
                               { label: ui.general.labelImpulsiv, color: "#C41E3A", value: section.data.imp },
                               { label: ui.general.labelIntuitiv, color: "#F39200", value: section.data.int },
