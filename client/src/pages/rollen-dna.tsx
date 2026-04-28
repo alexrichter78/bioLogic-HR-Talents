@@ -3691,71 +3691,78 @@ export default function RollenDNA() {
                               {section.title}
                             </p>
                           </div>
-                          {[
-                            { label: ui.general.labelImpulsiv, color: "#C41E3A", value: section.data.imp },
-                            { label: ui.general.labelIntuitiv, color: "#F39200", value: section.data.int },
-                            { label: ui.general.labelAnalytisch, color: "#1A5DAB", value: section.data.ana },
-                          ].map((bar) => (
-                            <div
-                              key={bar.label}
-                              style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: 10,
-                                marginBottom: 10,
-                              }}
-                            >
-                              <span style={{
-                                fontSize: 12,
-                                color: "#48484A",
-                                width: 62,
-                                flexShrink: 0,
-                              }}>
-                                {bar.label}
-                              </span>
-                              <div style={{
-                                flex: 1,
-                                height: 24,
-                                borderRadius: 12,
-                                background: "rgba(0,0,0,0.04)",
-                                position: "relative",
-                                overflow: "visible",
-                              }}>
-                                <div style={{
-                                  position: "absolute", left: 0, top: 0, bottom: 0,
-                                  width: bar.value === 0 ? "0%" : `${Math.max(bar.value, 4)}%`,
-                                  borderRadius: 12,
-                                  background: bar.color,
-                                  transition: "width 600ms ease",
-                                  display: "flex",
-                                  alignItems: "center",
-                                  paddingLeft: 8,
-                                  minWidth: bar.value === 0 ? 0 : (bar.value < 13 ? 8 : 44),
-                                }}>
-                                  {bar.value >= 13 && <span style={{
+                          {(() => {
+                            const sectionMax = Math.max(section.data.imp, section.data.int, section.data.ana, 1);
+                            return [
+                              { label: ui.general.labelImpulsiv, color: "#C41E3A", value: section.data.imp },
+                              { label: ui.general.labelIntuitiv, color: "#F39200", value: section.data.int },
+                              { label: ui.general.labelAnalytisch, color: "#1A5DAB", value: section.data.ana },
+                            ].map((bar) => {
+                              const widthPct = bar.value === 0 ? 0 : (bar.value / sectionMax) * 100;
+                              const labelInside = widthPct >= 22;
+                              return (
+                                <div
+                                  key={bar.label}
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 10,
+                                    marginBottom: 10,
+                                  }}
+                                >
+                                  <span style={{
                                     fontSize: 12,
-                                    fontWeight: 700,
-                                    color: "#FFFFFF",
-                                    whiteSpace: "nowrap",
+                                    color: "#48484A",
+                                    width: 62,
+                                    flexShrink: 0,
                                   }}>
-                                    {Math.round(bar.value)}%
-                                  </span>}
+                                    {bar.label}
+                                  </span>
+                                  <div style={{
+                                    flex: 1,
+                                    height: 24,
+                                    borderRadius: 12,
+                                    background: "rgba(0,0,0,0.04)",
+                                    position: "relative",
+                                    overflow: "visible",
+                                  }}>
+                                    <div style={{
+                                      position: "absolute", left: 0, top: 0, bottom: 0,
+                                      width: bar.value === 0 ? "0%" : `${Math.max(widthPct, 4)}%`,
+                                      borderRadius: 12,
+                                      background: bar.color,
+                                      transition: "width 600ms ease",
+                                      display: "flex",
+                                      alignItems: "center",
+                                      paddingLeft: 8,
+                                      minWidth: bar.value === 0 ? 0 : (labelInside ? 44 : 8),
+                                    }}>
+                                      {labelInside && <span style={{
+                                        fontSize: 12,
+                                        fontWeight: 700,
+                                        color: "#FFFFFF",
+                                        whiteSpace: "nowrap",
+                                      }}>
+                                        {Math.round(bar.value)}%
+                                      </span>}
+                                    </div>
+                                    {!labelInside && <span style={{
+                                      position: "absolute",
+                                      top: "50%",
+                                      transform: "translateY(-50%)",
+                                      left: bar.value === 0 ? 12 : `calc(${Math.max(widthPct, 4)}% + 8px)`,
+                                      fontSize: 12,
+                                      fontWeight: 700,
+                                      color: "#48484A",
+                                      whiteSpace: "nowrap",
+                                    }}>
+                                      {Math.round(bar.value)}%
+                                    </span>}
+                                  </div>
                                 </div>
-                                {bar.value < 13 && <span style={{
-                                  position: "absolute",
-                                  top: "50%",
-                                  transform: "translateY(-50%)",
-                                  left: bar.value === 0 ? 12 : `calc(${Math.max(bar.value, 4)}% + 8px)`,
-                                  fontSize: 12,
-                                  fontWeight: 700,
-                                  color: "#48484A",
-                                  whiteSpace: "nowrap",
-                                }}>
-                                  {Math.round(bar.value)}%
-                                </span>}
-                              </div>
-                            </div>
-                          ))}
+                              );
+                            });
+                          })()}
                         </div>
                       ))}
                     </div>
@@ -3785,7 +3792,7 @@ export default function RollenDNA() {
                         return (
                           <div style={{ background: "#F0F0F2", borderRadius: 16, padding: "16px 18px", display: "flex", flexDirection: "column", gap: 14 }}>
                             {bars.map((bar) => {
-                              const widthPct = (bar.value / 67) * 100;
+                              const widthPct = bar.value;
                               return (
                                 <div key={bar.label} style={{ display: "flex", alignItems: "center", gap: 12 }}>
                                   <span style={{ fontSize: 14, color: "#48484A", width: 72, flexShrink: 0 }}>
@@ -4191,71 +4198,78 @@ export default function RollenDNA() {
                               {section.title}
                             </p>
                           </div>
-                          {[
-                            { label: ui.general.labelImpulsiv, color: "#C41E3A", value: section.data.imp },
-                            { label: ui.general.labelIntuitiv, color: "#F39200", value: section.data.int },
-                            { label: ui.general.labelAnalytisch, color: "#1A5DAB", value: section.data.ana },
-                          ].map((bar) => (
-                            <div
-                              key={bar.label}
-                              style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: 10,
-                                marginBottom: 10,
-                              }}
-                            >
-                              <span style={{
-                                fontSize: 12,
-                                color: "#48484A",
-                                width: 62,
-                                flexShrink: 0,
-                              }}>
-                                {bar.label}
-                              </span>
-                              <div style={{
-                                flex: 1,
-                                height: 24,
-                                borderRadius: 12,
-                                background: "rgba(0,0,0,0.04)",
-                                position: "relative",
-                                overflow: "visible",
-                              }}>
-                                <div style={{
-                                  position: "absolute", left: 0, top: 0, bottom: 0,
-                                  width: bar.value === 0 ? "0%" : `${Math.max(bar.value, 4)}%`,
-                                  borderRadius: 12,
-                                  background: bar.color,
-                                  transition: "width 600ms ease",
-                                  display: "flex",
-                                  alignItems: "center",
-                                  paddingLeft: 8,
-                                  minWidth: bar.value === 0 ? 0 : (bar.value < 13 ? 8 : 44),
-                                }}>
-                                  {bar.value >= 13 && <span style={{
+                          {(() => {
+                            const sectionMax = Math.max(section.data.imp, section.data.int, section.data.ana, 1);
+                            return [
+                              { label: ui.general.labelImpulsiv, color: "#C41E3A", value: section.data.imp },
+                              { label: ui.general.labelIntuitiv, color: "#F39200", value: section.data.int },
+                              { label: ui.general.labelAnalytisch, color: "#1A5DAB", value: section.data.ana },
+                            ].map((bar) => {
+                              const widthPct = bar.value === 0 ? 0 : (bar.value / sectionMax) * 100;
+                              const labelInside = widthPct >= 22;
+                              return (
+                                <div
+                                  key={bar.label}
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 10,
+                                    marginBottom: 10,
+                                  }}
+                                >
+                                  <span style={{
                                     fontSize: 12,
-                                    fontWeight: 700,
-                                    color: "#FFFFFF",
-                                    whiteSpace: "nowrap",
+                                    color: "#48484A",
+                                    width: 62,
+                                    flexShrink: 0,
                                   }}>
-                                    {Math.round(bar.value)}%
-                                  </span>}
+                                    {bar.label}
+                                  </span>
+                                  <div style={{
+                                    flex: 1,
+                                    height: 24,
+                                    borderRadius: 12,
+                                    background: "rgba(0,0,0,0.04)",
+                                    position: "relative",
+                                    overflow: "visible",
+                                  }}>
+                                    <div style={{
+                                      position: "absolute", left: 0, top: 0, bottom: 0,
+                                      width: bar.value === 0 ? "0%" : `${Math.max(widthPct, 4)}%`,
+                                      borderRadius: 12,
+                                      background: bar.color,
+                                      transition: "width 600ms ease",
+                                      display: "flex",
+                                      alignItems: "center",
+                                      paddingLeft: 8,
+                                      minWidth: bar.value === 0 ? 0 : (labelInside ? 44 : 8),
+                                    }}>
+                                      {labelInside && <span style={{
+                                        fontSize: 12,
+                                        fontWeight: 700,
+                                        color: "#FFFFFF",
+                                        whiteSpace: "nowrap",
+                                      }}>
+                                        {Math.round(bar.value)}%
+                                      </span>}
+                                    </div>
+                                    {!labelInside && <span style={{
+                                      position: "absolute",
+                                      top: "50%",
+                                      transform: "translateY(-50%)",
+                                      left: bar.value === 0 ? 12 : `calc(${Math.max(widthPct, 4)}% + 8px)`,
+                                      fontSize: 12,
+                                      fontWeight: 700,
+                                      color: "#48484A",
+                                      whiteSpace: "nowrap",
+                                    }}>
+                                      {Math.round(bar.value)}%
+                                    </span>}
+                                  </div>
                                 </div>
-                                {bar.value < 13 && <span style={{
-                                  position: "absolute",
-                                  top: "50%",
-                                  transform: "translateY(-50%)",
-                                  left: bar.value === 0 ? 12 : `calc(${Math.max(bar.value, 4)}% + 8px)`,
-                                  fontSize: 12,
-                                  fontWeight: 700,
-                                  color: "#48484A",
-                                  whiteSpace: "nowrap",
-                                }}>
-                                  {Math.round(bar.value)}%
-                                </span>}
-                              </div>
-                            </div>
-                          ))}
+                              );
+                            });
+                          })()}
                         </div>
                       ))}
                     </div>
@@ -4285,7 +4299,7 @@ export default function RollenDNA() {
                         return (
                           <div style={{ background: "#F0F0F2", borderRadius: 16, padding: "16px 18px", display: "flex", flexDirection: "column", gap: 14 }}>
                             {bars.map((bar) => {
-                              const widthPct = (bar.value / 67) * 100;
+                              const widthPct = bar.value;
                               return (
                                 <div key={bar.label} style={{ display: "flex", alignItems: "center", gap: 12 }}>
                                   <span style={{ fontSize: 14, color: "#48484A", width: 72, flexShrink: 0 }}>
