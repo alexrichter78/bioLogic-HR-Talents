@@ -313,6 +313,18 @@ export default function SollIstBericht() {
     } catch {}
     return false;
   });
+  const [bioGramAreaMax, setBioGramAreaMax] = useState<number>(() => {
+    try {
+      const raw = localStorage.getItem("rollenDnaState");
+      if (raw) {
+        const dna = JSON.parse(raw);
+        const bgs = [dna.bioGramHaupt, dna.bioGramNeben, dna.bioGramRahmen, dna.bioGramFuehrung].filter(Boolean);
+        const vals = bgs.flatMap((bg: any) => [bg.imp, bg.int, bg.ana]).filter((v: any) => typeof v === "number");
+        if (vals.length > 0) return Math.max(...vals, 1);
+      }
+    } catch {}
+    return 50;
+  });
   const [reportGenerated, setReportGenerated] = useState(false);
   const [aiLoading, setAiLoading] = useState(false);
   const [aiError, setAiError] = useState<string | null>(null);
@@ -679,7 +691,7 @@ export default function SollIstBericht() {
                     const val = roleTriad[k];
                     const hex = BAR_HEX[k];
                     const pct = val;
-                    const widthPct = (val / 50) * 100;
+                    const widthPct = (val / bioGramAreaMax) * 100;
                     const isSmall = widthPct < 18;
                     return (
                       <div key={k} style={{ display: "flex", alignItems: "center", gap: 12, minHeight: 26 }} data-testid={`slider-row-role-${k}`}>
@@ -775,7 +787,7 @@ export default function SollIstBericht() {
                     const val = candTriad[k];
                     const hex = BAR_HEX[k];
                     const pct = val;
-                    const widthPct = (val / 50) * 100;
+                    const widthPct = (val / bioGramAreaMax) * 100;
                     const isSmall = widthPct < 18;
                     return (
                       <div key={k} style={{ display: "flex", alignItems: "center", gap: 12, minHeight: 26 }} data-testid={`slider-row-${k}`}>
@@ -1540,7 +1552,7 @@ export default function SollIstBericht() {
                       {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
                         const val = Math.round(roleTriad![k]);
                         const hex = BAR_HEX[k];
-                        const widthPct = (val / 50) * 100;
+                        const widthPct = (val / bioGramAreaMax) * 100;
                         const isSmall = widthPct < 18;
                         return (
                           <div key={k} style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -1565,7 +1577,7 @@ export default function SollIstBericht() {
                       {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
                         const val = Math.round(candidateProfile[k]);
                         const hex = BAR_HEX[k];
-                        const widthPct = (val / 50) * 100;
+                        const widthPct = (val / bioGramAreaMax) * 100;
                         const isSmall = widthPct < 18;
                         return (
                           <div key={k} style={{ display: "flex", alignItems: "center", gap: 12 }}>
