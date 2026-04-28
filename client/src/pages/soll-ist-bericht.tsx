@@ -721,7 +721,7 @@ export default function SollIstBericht() {
                               const rect = track.getBoundingClientRect();
                               const move = (ev: MouseEvent) => {
                                 const ratio = Math.max(0, Math.min(1, (ev.clientX - rect.left) / rect.width));
-                                const raw = Math.round(ratio * 50);
+                                const raw = Math.round(ratio * bioGramAreaMax);
                                 updateRoleTriad(k, raw);
                               };
                               const up = () => {
@@ -738,7 +738,7 @@ export default function SollIstBericht() {
                                 ev.preventDefault();
                                 const touch = ev.touches[0];
                                 const ratio = Math.max(0, Math.min(1, (touch.clientX - rect.left) / rect.width));
-                                const raw = Math.round(ratio * 50);
+                                const raw = Math.round(ratio * bioGramAreaMax);
                                 updateRoleTriad(k, raw);
                               };
                               const up = () => {
@@ -817,7 +817,7 @@ export default function SollIstBericht() {
                               const rect = track.getBoundingClientRect();
                               const move = (ev: MouseEvent) => {
                                 const ratio = Math.max(0, Math.min(1, (ev.clientX - rect.left) / rect.width));
-                                const raw = Math.round(ratio * 50);
+                                const raw = Math.round(ratio * bioGramAreaMax);
                                 updateCandTriad(k, raw);
                               };
                               const up = () => {
@@ -833,7 +833,7 @@ export default function SollIstBericht() {
                               const move = (ev: TouchEvent) => {
                                 const touch = ev.touches[0];
                                 const ratio = Math.max(0, Math.min(1, (touch.clientX - rect.left) / rect.width));
-                                const raw = Math.round(ratio * 50);
+                                const raw = Math.round(ratio * bioGramAreaMax);
                                 updateCandTriad(k, raw);
                               };
                               const up = () => {
