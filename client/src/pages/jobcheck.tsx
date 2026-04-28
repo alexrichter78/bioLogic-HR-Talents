@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { useLocation } from "wouter";
 import { FileText, AlertTriangle, Check, TrendingUp, Zap, Scale, ChevronRight, ChevronDown, CircleAlert, CircleCheck, CircleMinus, Lightbulb, CalendarDays, ClipboardCheck, BarChart3, CheckCircle2, Briefcase, LayoutGrid, Wrench, Target, UserCheck, Hash, Compass, Shield, Gauge, Award, ArrowUpRight, Layers, Printer } from "lucide-react";
 import GlobalNav from "@/components/global-nav";
@@ -121,7 +121,7 @@ function computeGesamt(haupt: BG, neben: BG, fuehrung: BG, rahmen: BG): BG {
     all.reduce((s, g) => s + g.int, 0) / 4,
     all.reduce((s, g) => s + g.ana, 0) / 4,
   ];
-  const MAX = 67;
+  const MAX = 50;
   const peak = Math.max(...vals);
   if (peak > MAX) {
     const scale = MAX / peak;
@@ -225,7 +225,7 @@ function SoftBar({ items, region }: { items: { label: string; value: number; col
   return (
     <div style={{ background: "#F0F0F2", borderRadius: 16, padding: "16px 18px", display: "flex", flexDirection: "column", gap: 14 }}>
       {items.map(bar => {
-        const widthPct = (bar.value / 67) * 100;
+        const widthPct = (bar.value / 50) * 100;
         const isSmall = widthPct < 18;
         return (
           <div key={bar.label} style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -263,8 +263,63 @@ function SoftBar({ items, region }: { items: { label: string; value: number; col
   );
 }
 
+// ──────────────────────────────────────────────────────────────────────────────
+// Triad-Solver: garantiert Summe = 100 und jeder Wert in [5..50].
+// Wird sowohl für Live-Updates der Slider als auch für die Migration alter
+// localStorage-Werte verwendet.
+// ──────────────────────────────────────────────────────────────────────────────
+type TriadKey = "impulsiv" | "intuitiv" | "analytisch";
+type CandTriadT = { impulsiv: number; intuitiv: number; analytisch: number };
+
+function solveTriad(prev: CandTriadT, key: TriadKey, newVal: number): CandTriadT {
+  const all: TriadKey[] = ["impulsiv", "intuitiv", "analytisch"];
+  const others = all.filter(k => k !== key) as [TriadKey, TriadKey];
+  const clamped = Math.max(5, Math.min(50, Math.round(newVal)));
+  const remaining = 100 - clamped; // ∈ [50..95]
+
+  const otherSum = prev[others[0]] + prev[others[1]];
+  let o1Raw: number, o2Raw: number;
+  if (otherSum <= 0) {
+    o1Raw = remaining / 2;
+    o2Raw = remaining - o1Raw;
+  } else {
+    o1Raw = (prev[others[0]] / otherSum) * remaining;
+    o2Raw = remaining - o1Raw;
+  }
+
+  // o1 zuerst clampen, o2 als Komplement zur Summe = remaining
+  let o1 = Math.max(5, Math.min(50, Math.round(o1Raw)));
+  let o2 = remaining - o1;
+
+  // Falls Komplement außerhalb [5..50]: o2 fixieren, o1 nachziehen
+  if (o2 < 5) { o2 = 5; o1 = remaining - 5; }
+  else if (o2 > 50) { o2 = 50; o1 = remaining - 50; }
+
+  // Letzte Sicherheit (sollte bei clamped ∈ [5..50] nie greifen, da remaining ∈ [50..95])
+  o1 = Math.max(5, Math.min(50, o1));
+  o2 = remaining - o1;
+  if (o2 < 5) { o2 = 5; o1 = remaining - 5; }
+  if (o2 > 50) { o2 = 50; o1 = remaining - 50; }
+
+  return { [key]: clamped, [others[0]]: o1, [others[1]]: o2 } as CandTriadT;
+}
+
+function migrateLegacyTriad(impRaw: number, intRaw: number, anaRaw: number): CandTriadT {
+  const sum = (impRaw || 0) + (intRaw || 0) + (anaRaw || 0);
+  if (!isFinite(sum) || sum <= 0) return { impulsiv: 33, intuitiv: 34, analytisch: 33 };
+  // Auf Summe = 100 normalisieren
+  const i = (impRaw / sum) * 100;
+  const n = (intRaw / sum) * 100;
+  const a = (anaRaw / sum) * 100;
+  // Dominanten Wert als Anker nehmen, damit der Solver konsistent löst
+  const triad: CandTriadT = { impulsiv: i, intuitiv: n, analytisch: a };
+  const keys: TriadKey[] = ["impulsiv", "intuitiv", "analytisch"];
+  const dominant = keys.reduce((best, k) => (triad[k] > triad[best] ? k : best), keys[0]);
+  return solveTriad(triad, dominant, triad[dominant]);
+}
+
 function BarSlider({ label, value, color, onChange, region }: { label: string; value: number; color: string; onChange: (v: number) => void; region?: string }) {
-  const widthPct = (value / 67) * 100;
+  const widthPct = (value / 50) * 100;
   const isSmall = widthPct < 18;
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -285,7 +340,7 @@ function BarSlider({ label, value, color, onChange, region }: { label: string; v
           {!isSmall && <span style={{ fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap" }}>{Math.round(value)} %</span>}
         </div>
         <input
-          type="range" min={0} max={67} value={value}
+          type="range" min={5} max={50} value={value}
           onChange={e => onChange(Number(e.target.value))}
           className="bio-slider"
           data-testid={`slider-${label.toLowerCase()}`}
@@ -467,14 +522,16 @@ export default function JobCheck() {
   const [berichtOpen, setBerichtOpen] = useState(false);
   const [roleAnalysis, setRoleAnalysis] = useState<RoleAnalysis | null>(null);
   const [dnaSummary, setDnaSummary] = useState<RollenDnaSummary | null>(null);
-  const [candImp, setCandImp] = useState(() => {
-    try { const s = localStorage.getItem("jobcheckCandSliders"); if (s) { const p = JSON.parse(s); return p.impulsiv ?? 33; } } catch {} return 33;
-  });
-  const [candInt, setCandInt] = useState(() => {
-    try { const s = localStorage.getItem("jobcheckCandSliders"); if (s) { const p = JSON.parse(s); return p.intuitiv ?? 34; } } catch {} return 34;
-  });
-  const [candAna, setCandAna] = useState(() => {
-    try { const s = localStorage.getItem("jobcheckCandSliders"); if (s) { const p = JSON.parse(s); return p.analytisch ?? 33; } } catch {} return 33;
+  // Auto-balancierte Triade (Summe = 100 garantiert, jeder Wert in [5..50])
+  const [candTriad, setCandTriad] = useState<{ impulsiv: number; intuitiv: number; analytisch: number }>(() => {
+    try {
+      const s = localStorage.getItem("jobcheckCandSliders");
+      if (s) {
+        const p = JSON.parse(s);
+        return migrateLegacyTriad(Number(p.impulsiv ?? 33), Number(p.intuitiv ?? 34), Number(p.analytisch ?? 33));
+      }
+    } catch {}
+    return { impulsiv: 33, intuitiv: 34, analytisch: 33 };
   });
   const [candidateName, setCandidateName] = useState(() => {
     try { const s = localStorage.getItem("jobcheckCandSliders"); if (s) { const p = JSON.parse(s); return p.name ?? ""; } } catch {} return "";
@@ -504,20 +561,19 @@ export default function JobCheck() {
     } catch {}
   }, []);
 
-  const normalizedCand = useMemo(() => {
-    const sum = candImp + candInt + candAna;
-    if (sum === 0) return { impulsiv: 33, intuitiv: 34, analytisch: 33 };
-    return {
-      impulsiv: Math.round((candImp / sum) * 100),
-      intuitiv: Math.round((candInt / sum) * 100),
-      analytisch: Math.round((candAna / sum) * 100),
-    };
-  }, [candImp, candInt, candAna]);
+  // Slider-Werte sind bereits normalisiert (Summe = 100, jeder in [5..50])
+  const normalizedCand = candTriad;
+
+  // Auto-Balance: wenn ein Slider verändert wird, andere proportional anpassen.
+  // Garantiert: jeder Wert in [5..50] und Summe = 100.
+  const updateCandTriad = useCallback((key: "impulsiv" | "intuitiv" | "analytisch", newVal: number) => {
+    setCandTriad(prev => solveTriad(prev, key, newVal));
+  }, []);
 
   useEffect(() => {
     localStorage.setItem("jobcheckCandProfile", JSON.stringify({ ...normalizedCand, name: candidateName }));
-    localStorage.setItem("jobcheckCandSliders", JSON.stringify({ impulsiv: candImp, intuitiv: candInt, analytisch: candAna, name: candidateName }));
-  }, [normalizedCand, candidateName, candImp, candInt, candAna]);
+    localStorage.setItem("jobcheckCandSliders", JSON.stringify({ ...candTriad, name: candidateName }));
+  }, [normalizedCand, candidateName, candTriad]);
 
   const [snapshotCand, setSnapshotCand] = useState(normalizedCand);
   const [snapshotName, setSnapshotName] = useState(candidateName);
@@ -705,9 +761,9 @@ export default function JobCheck() {
                   <p style={{ fontSize: 14, color: "#48484A", marginBottom: 16 }}>{jc.istDescription}</p>
 
                   <div style={{ background: "#F0F0F2", borderRadius: 16, padding: "16px 18px", display: "flex", flexDirection: "column", gap: 14 }}>
-                    <BarSlider label={ui.general.labelImpulsiv} value={candImp} color={COLORS.imp} onChange={setCandImp} region={region} />
-                    <BarSlider label={ui.general.labelIntuitiv} value={candInt} color={COLORS.int} onChange={setCandInt} region={region} />
-                    <BarSlider label={ui.general.labelAnalytisch} value={candAna} color={COLORS.ana} onChange={setCandAna} region={region} />
+                    <BarSlider label={ui.general.labelImpulsiv} value={candTriad.impulsiv} color={COLORS.imp} onChange={(v) => updateCandTriad("impulsiv", v)} region={region} />
+                    <BarSlider label={ui.general.labelIntuitiv} value={candTriad.intuitiv} color={COLORS.int} onChange={(v) => updateCandTriad("intuitiv", v)} region={region} />
+                    <BarSlider label={ui.general.labelAnalytisch} value={candTriad.analytisch} color={COLORS.ana} onChange={(v) => updateCandTriad("analytisch", v)} region={region} />
                   </div>
                   <p style={{ fontSize: 11, color: "#6E6E73", marginTop: 8, textAlign: "center" }}>{jc.normalizedNote}</p>
                   {(() => {
@@ -841,8 +897,8 @@ export default function JobCheck() {
                                   </span>
                                 </div>
                                 <div style={{ position: "relative", height: 28, borderRadius: 8, background: "rgba(0,0,0,0.04)", overflow: "hidden" }}>
-                                  <div style={{ position: "absolute", top: 0, left: 0, height: "50%", width: `${(Math.min(sollVal, 67) / 67) * 100}%`, background: `${d.color}40`, borderRadius: "8px 8px 0 0", transition: "width 0.4s ease" }} />
-                                  <div style={{ position: "absolute", bottom: 0, left: 0, height: "50%", width: `${(Math.min(istVal, 67) / 67) * 100}%`, background: d.color, borderRadius: "0 0 8px 8px", transition: "width 0.4s ease" }} />
+                                  <div style={{ position: "absolute", top: 0, left: 0, height: "50%", width: `${(Math.min(sollVal, 50) / 50) * 100}%`, background: `${d.color}40`, borderRadius: "8px 8px 0 0", transition: "width 0.4s ease" }} />
+                                  <div style={{ position: "absolute", bottom: 0, left: 0, height: "50%", width: `${(Math.min(istVal, 50) / 50) * 100}%`, background: d.color, borderRadius: "0 0 8px 8px", transition: "width 0.4s ease" }} />
                                   <div style={{ position: "absolute", top: 0, left: 8, height: "50%", display: "flex", alignItems: "center" }}>
                                     <span style={{ fontSize: 10, fontWeight: 700, color: "#1D1D1F" }}>{ui.jobcheck.sollHeader} {sollVal}%</span>
                                   </div>

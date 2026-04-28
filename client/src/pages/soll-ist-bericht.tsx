@@ -175,7 +175,7 @@ function TriangleChart({ role, candidate }: { role: Triad; candidate: Triad }) {
   const w = 360, h = 330;
   const cx = w / 2, cy = 178;
   const R = 110;
-  const MAX_VAL = 67;
+  const MAX_VAL = 50;
   const angles = [-Math.PI / 2, Math.PI / 2 - Math.PI / 3, Math.PI / 2 + Math.PI / 3];
   const verts = angles.map(a => ({ x: cx + R * Math.cos(a), y: cy + R * Math.sin(a) }));
   const labelR = R + 22;
@@ -237,7 +237,7 @@ export default function SollIstBericht() {
   const [candTriad, setCandTriad] = useState<{impulsiv: number; intuitiv: number; analytisch: number}>({ impulsiv: 33, intuitiv: 34, analytisch: 33 });
 
   const rebalanceTriad = useCallback((prev: {impulsiv: number; intuitiv: number; analytisch: number}, key: ComponentKey, newVal: number) => {
-    const clamped = Math.max(5, Math.min(67, Math.round(newVal)));
+    const clamped = Math.max(5, Math.min(50, Math.round(newVal)));
     const others = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).filter(k => k !== key);
     const remaining = 100 - clamped;
     const otherSum = prev[others[0]] + prev[others[1]];
@@ -249,12 +249,12 @@ export default function SollIstBericht() {
       o1 = Math.round((prev[others[0]] / otherSum) * remaining);
       o2 = remaining - o1;
     }
-    o1 = Math.max(5, Math.min(67, o1));
-    o2 = Math.max(5, Math.min(67, o2));
+    o1 = Math.max(5, Math.min(50, o1));
+    o2 = Math.max(5, Math.min(50, o2));
     const total = clamped + o1 + o2;
     if (total !== 100) {
       const diff = 100 - total;
-      if (o1 + diff >= 5 && o1 + diff <= 67) o1 += diff;
+      if (o1 + diff >= 5 && o1 + diff <= 50) o1 += diff;
       else o2 += diff;
     }
     return { ...prev, [key]: clamped, [others[0]]: o1, [others[1]]: o2 };
@@ -262,7 +262,7 @@ export default function SollIstBericht() {
 
   const updateCandTriad = useCallback((key: ComponentKey, newVal: number) => {
     setCandTriad(prev => {
-      const clamped = Math.max(5, Math.min(67, Math.round(newVal)));
+      const clamped = Math.max(5, Math.min(50, Math.round(newVal)));
       const others = (["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).filter(k => k !== key);
       const remaining = 100 - clamped;
       const otherSum = prev[others[0]] + prev[others[1]];
@@ -274,13 +274,13 @@ export default function SollIstBericht() {
         o1 = Math.round((prev[others[0]] / otherSum) * remaining);
         o2 = remaining - o1;
       }
-      o1 = Math.max(5, Math.min(67, o1));
-      o2 = Math.max(5, Math.min(67, o2));
+      o1 = Math.max(5, Math.min(50, o1));
+      o2 = Math.max(5, Math.min(50, o2));
       const total = clamped + o1 + o2;
       if (total !== 100) {
         const diff = 100 - total;
-        if (o2 + diff >= 5 && o2 + diff <= 67) o2 += diff;
-        else if (o1 + diff >= 5 && o1 + diff <= 67) o1 += diff;
+        if (o2 + diff >= 5 && o2 + diff <= 50) o2 += diff;
+        else if (o1 + diff >= 5 && o1 + diff <= 50) o1 += diff;
       }
       return { [key]: clamped, [others[0]]: o1, [others[1]]: o2 } as typeof prev;
     });
@@ -679,7 +679,7 @@ export default function SollIstBericht() {
                     const val = roleTriad[k];
                     const hex = BAR_HEX[k];
                     const pct = val;
-                    const widthPct = (val / 67) * 100;
+                    const widthPct = (val / 50) * 100;
                     const isSmall = widthPct < 18;
                     return (
                       <div key={k} style={{ display: "flex", alignItems: "center", gap: 12, minHeight: 26 }} data-testid={`slider-row-role-${k}`}>
@@ -709,7 +709,7 @@ export default function SollIstBericht() {
                               const rect = track.getBoundingClientRect();
                               const move = (ev: MouseEvent) => {
                                 const ratio = Math.max(0, Math.min(1, (ev.clientX - rect.left) / rect.width));
-                                const raw = Math.round(ratio * 67);
+                                const raw = Math.round(ratio * 50);
                                 updateRoleTriad(k, raw);
                               };
                               const up = () => {
@@ -726,7 +726,7 @@ export default function SollIstBericht() {
                                 ev.preventDefault();
                                 const touch = ev.touches[0];
                                 const ratio = Math.max(0, Math.min(1, (touch.clientX - rect.left) / rect.width));
-                                const raw = Math.round(ratio * 67);
+                                const raw = Math.round(ratio * 50);
                                 updateRoleTriad(k, raw);
                               };
                               const up = () => {
@@ -775,7 +775,7 @@ export default function SollIstBericht() {
                     const val = candTriad[k];
                     const hex = BAR_HEX[k];
                     const pct = val;
-                    const widthPct = (val / 67) * 100;
+                    const widthPct = (val / 50) * 100;
                     const isSmall = widthPct < 18;
                     return (
                       <div key={k} style={{ display: "flex", alignItems: "center", gap: 12, minHeight: 26 }} data-testid={`slider-row-${k}`}>
@@ -805,7 +805,7 @@ export default function SollIstBericht() {
                               const rect = track.getBoundingClientRect();
                               const move = (ev: MouseEvent) => {
                                 const ratio = Math.max(0, Math.min(1, (ev.clientX - rect.left) / rect.width));
-                                const raw = Math.round(ratio * 67);
+                                const raw = Math.round(ratio * 50);
                                 updateCandTriad(k, raw);
                               };
                               const up = () => {
@@ -821,7 +821,7 @@ export default function SollIstBericht() {
                               const move = (ev: TouchEvent) => {
                                 const touch = ev.touches[0];
                                 const ratio = Math.max(0, Math.min(1, (touch.clientX - rect.left) / rect.width));
-                                const raw = Math.round(ratio * 67);
+                                const raw = Math.round(ratio * 50);
                                 updateCandTriad(k, raw);
                               };
                               const up = () => {
@@ -1540,7 +1540,7 @@ export default function SollIstBericht() {
                       {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
                         const val = Math.round(roleTriad![k]);
                         const hex = BAR_HEX[k];
-                        const widthPct = (val / 67) * 100;
+                        const widthPct = (val / 50) * 100;
                         const isSmall = widthPct < 18;
                         return (
                           <div key={k} style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -1565,7 +1565,7 @@ export default function SollIstBericht() {
                       {(["impulsiv", "intuitiv", "analytisch"] as ComponentKey[]).map(k => {
                         const val = Math.round(candidateProfile[k]);
                         const hex = BAR_HEX[k];
-                        const widthPct = (val / 67) * 100;
+                        const widthPct = (val / 50) * 100;
                         const isSmall = widthPct < 18;
                         return (
                           <div key={k} style={{ display: "flex", alignItems: "center", gap: 12 }}>

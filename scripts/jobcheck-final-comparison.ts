@@ -70,23 +70,44 @@ function expectedRating(role: Triad, person: Triad): "GE" | "BE" | "NI" {
 // Drei Szenarien für die Person-Eingabe
 // ============================================================================
 
-// Szenario A: Person kommt aus dem Persönlichkeitstest mit ROH-Werten
-// (so wie im JobCheck-Slider eingegeben, ohne Stauchung).
+// Szenario A (LEGACY): Person kommt aus dem Persönlichkeitstest mit ROH-Werten.
+// Vor Slider-Cap noch möglich; nach Slider-Cap (5–50) nicht mehr eingebbar.
 function inputA_PersonRoh(p: Triad): Triad {
   return p;
 }
 
-// Szenario B: User stellt die Person-Slider VISUELL zur (gestauchten) Stelle
-// ein. Heißt: Person ist bereits ungefähr in der gestauchten Skala der Stelle.
+// Szenario B (LEGACY): User stellt die Person-Slider VISUELL zur (gestauchten)
+// Stelle ein. Person ist bereits ungefähr in der gestauchten Skala der Stelle.
 function inputB_PersonAusgerichtet(p: Triad, _role: Triad): Triad {
-  // Simulation: Person wird auf gestauchte Skala "übersetzt", als ob der User
-  // die Slider visuell parallel zur Stelle gestellt hätte.
   const blended = applyJobcheckBaseline({
     imp: p.impulsiv,
     int: p.intuitiv,
     ana: p.analytisch,
   });
   return { impulsiv: blended.imp, intuitiv: blended.int, analytisch: blended.ana };
+}
+
+// Szenario C (NEU NACH SLIDER-CAP 5–50):
+// Egal woher der User die Werte hat — die Slider erzwingen die gestauchte
+// Skala. Roh-Werte (z. B. 60/25/15) werden auf [5..50] geclampt und auf
+// Summe 100 normalisiert (analog zu updateCandTriad in jobcheck.tsx).
+function inputC_SliderCap50(p: Triad): Triad {
+  // Simuliert die State-Initialisierung in jobcheck.tsx (Migration alter Werte)
+  const sum = p.impulsiv + p.intuitiv + p.analytisch;
+  let i = Math.round((p.impulsiv / sum) * 100);
+  let n = Math.round((p.intuitiv / sum) * 100);
+  let a = 100 - i - n;
+  i = Math.max(5, Math.min(50, i));
+  n = Math.max(5, Math.min(50, n));
+  a = Math.max(5, Math.min(50, a));
+  const total = i + n + a;
+  if (total !== 100) {
+    const diff = 100 - total;
+    if (i >= n && i >= a) i = Math.max(5, Math.min(50, i + diff));
+    else if (n >= i && n >= a) n = Math.max(5, Math.min(50, n + diff));
+    else a = Math.max(5, Math.min(50, a + diff));
+  }
+  return { impulsiv: i, intuitiv: n, analytisch: a };
 }
 
 // ============================================================================
@@ -175,16 +196,22 @@ const scenarios: Array<{
   buildPerson: (pRoh: Triad, rRoh: Triad) => Triad;
 }> = [
   {
-    id: "A_PersonRoh",
-    description: "Person ist ROH (aus Persönlichkeitstest, max ~60 %)",
+    id: "A_PersonRoh_LEGACY",
+    description: "LEGACY (vor Slider-Cap): Person ist ROH (aus Persönlichkeitstest, max ~60 %)",
     buildRole: stellenGestaucht,
     buildPerson: (p) => inputA_PersonRoh(p),
   },
   {
-    id: "B_PersonAusgerichtet",
-    description: "User stellt Person VISUELL zur Stelle (Person bereits gestaucht)",
+    id: "B_PersonAusgerichtet_LEGACY",
+    description: "LEGACY: User stellt Person VISUELL zur Stelle (Person bereits gestaucht)",
     buildRole: stellenGestaucht,
     buildPerson: (p, r) => inputB_PersonAusgerichtet(p, r),
+  },
+  {
+    id: "C_SliderCap50_NEU",
+    description: "NEU NACH SLIDER-CAP 5–50: Eingabe wird zwangsweise in [5..50] gemappt",
+    buildRole: stellenGestaucht,
+    buildPerson: (p) => inputC_SliderCap50(p),
   },
 ];
 
@@ -194,9 +221,10 @@ for (const sc of scenarios) {
     let geC = 0, geT = 0, beC = 0, beT = 0, niC = 0, niT = 0;
     for (const r of ROLES_ROH) {
       for (const p of PERSONS_ROH) {
-        const exp = expectedRating(r.profile, p.profile);
         const role = sc.buildRole(r.profile);
         const person = sc.buildPerson(p.profile, r.profile);
+        // Heuristik auf den TATSÄCHLICH eingegebenen Werten (was der Berater sieht)
+        const exp = expectedRating(role, person);
         const got = runEngineLike(role, person, eng);
         total++;
         if (got === exp) hits++;
