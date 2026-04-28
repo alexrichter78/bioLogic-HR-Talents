@@ -325,6 +325,8 @@ export default function SollIstBericht() {
     } catch {}
     return 50;
   });
+  const [editingField, setEditingField] = useState<{ profile: "role" | "cand"; key: ComponentKey } | null>(null);
+  const editCancelledRef = useRef(false);
   const [reportGenerated, setReportGenerated] = useState(false);
   const [aiLoading, setAiLoading] = useState(false);
   const [aiError, setAiError] = useState<string | null>(null);
@@ -693,6 +695,17 @@ export default function SollIstBericht() {
                     const pct = val;
                     const widthPct = (val / bioGramAreaMax) * 100;
                     const isSmall = widthPct < 18;
+                    const isEditing = editingField?.profile === "role" && editingField.key === k;
+                    const commitRole = (value: string) => {
+                      if (editCancelledRef.current) {
+                        editCancelledRef.current = false;
+                        setEditingField(null);
+                        return;
+                      }
+                      const num = parseInt(value, 10);
+                      if (Number.isFinite(num)) updateRoleTriad(k, Math.max(0, Math.min(100, num)));
+                      setEditingField(null);
+                    };
                     return (
                       <div key={k} style={{ display: "flex", alignItems: "center", gap: 12, minHeight: 26 }} data-testid={`slider-row-role-${k}`}>
                         <span style={{ fontSize: 14, color: "#48484A", width: region === "FR" || region === "IT" ? 115 : 72, flexShrink: 0, lineHeight: "1.35" }}>
@@ -711,7 +724,27 @@ export default function SollIstBericht() {
                             display: "flex", alignItems: "center", paddingLeft: 10,
                             minWidth: isSmall ? 8 : 50,
                           }}>
-                            {!isSmall && <span style={{ fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap", lineHeight: "26px" }}>{pct} %</span>}
+                            {!isSmall && (isEditing ? (
+                              <input
+                                type="number"
+                                autoFocus
+                                defaultValue={pct}
+                                min={0}
+                                max={100}
+                                onBlur={(e) => commitRole(e.currentTarget.value)}
+                                onKeyDown={(e) => { if (e.key === "Enter") e.currentTarget.blur(); if (e.key === "Escape") { editCancelledRef.current = true; e.currentTarget.blur(); } }}
+                                onClick={(e) => e.stopPropagation()}
+                                onMouseDown={(e) => e.stopPropagation()}
+                                style={{ width: 56, fontSize: 13, fontWeight: 700, color: "#FFF", background: "rgba(255,255,255,0.18)", border: "1px solid rgba(255,255,255,0.5)", borderRadius: 6, padding: "1px 6px", outline: "none", textAlign: "center" }}
+                                data-testid={`input-role-${k}`}
+                              />
+                            ) : (
+                              <span
+                                onClick={(e) => { e.stopPropagation(); setEditingField({ profile: "role", key: k }); }}
+                                style={{ fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap", lineHeight: "26px", cursor: "text" }}
+                                data-testid={`text-role-${k}`}
+                              >{pct} %</span>
+                            ))}
                           </div>
                           <div
                             data-testid={`slider-role-${k}`}
@@ -765,13 +798,40 @@ export default function SollIstBericht() {
                             }}
                           />
                           {isSmall && (
-                            <span style={{
-                              position: "absolute", top: "50%", transform: "translateY(-50%)",
-                              left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 20px)`,
-                              fontSize: 13, fontWeight: 600, color: "#8E8E93", whiteSpace: "nowrap",
-                              transition: "left 150ms ease",
-                              zIndex: 4,
-                            }}>{pct} %</span>
+                            isEditing ? (
+                              <input
+                                type="number"
+                                autoFocus
+                                defaultValue={pct}
+                                min={0}
+                                max={100}
+                                onBlur={(e) => commitRole(e.currentTarget.value)}
+                                onKeyDown={(e) => { if (e.key === "Enter") e.currentTarget.blur(); if (e.key === "Escape") { editCancelledRef.current = true; e.currentTarget.blur(); } }}
+                                onClick={(e) => e.stopPropagation()}
+                                onMouseDown={(e) => e.stopPropagation()}
+                                style={{
+                                  position: "absolute", top: "50%", transform: "translateY(-50%)",
+                                  left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 20px)`,
+                                  width: 56, fontSize: 13, fontWeight: 700, color: "#48484A",
+                                  background: "#FFF", border: "1px solid rgba(0,0,0,0.2)", borderRadius: 6,
+                                  padding: "1px 6px", outline: "none", textAlign: "center", zIndex: 5,
+                                }}
+                                data-testid={`input-role-${k}`}
+                              />
+                            ) : (
+                              <span
+                                onClick={(e) => { e.stopPropagation(); setEditingField({ profile: "role", key: k }); }}
+                                style={{
+                                  position: "absolute", top: "50%", transform: "translateY(-50%)",
+                                  left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 20px)`,
+                                  fontSize: 13, fontWeight: 600, color: "#8E8E93", whiteSpace: "nowrap",
+                                  transition: "left 150ms ease",
+                                  zIndex: 4,
+                                  cursor: "text",
+                                }}
+                                data-testid={`text-role-${k}`}
+                              >{pct} %</span>
+                            )
                           )}
                         </div>
                       </div>
@@ -789,6 +849,17 @@ export default function SollIstBericht() {
                     const pct = val;
                     const widthPct = (val / bioGramAreaMax) * 100;
                     const isSmall = widthPct < 18;
+                    const isEditing = editingField?.profile === "cand" && editingField.key === k;
+                    const commitCand = (value: string) => {
+                      if (editCancelledRef.current) {
+                        editCancelledRef.current = false;
+                        setEditingField(null);
+                        return;
+                      }
+                      const num = parseInt(value, 10);
+                      if (Number.isFinite(num)) updateCandTriad(k, Math.max(0, Math.min(100, num)));
+                      setEditingField(null);
+                    };
                     return (
                       <div key={k} style={{ display: "flex", alignItems: "center", gap: 12, minHeight: 26 }} data-testid={`slider-row-${k}`}>
                         <span style={{ fontSize: 14, color: "#48484A", width: region === "FR" || region === "IT" ? 115 : 72, flexShrink: 0, lineHeight: "1.35" }}>
@@ -807,7 +878,27 @@ export default function SollIstBericht() {
                             display: "flex", alignItems: "center", paddingLeft: 10,
                             minWidth: isSmall ? 8 : 50,
                           }}>
-                            {!isSmall && <span style={{ fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap", lineHeight: "26px" }}>{pct} %</span>}
+                            {!isSmall && (isEditing ? (
+                              <input
+                                type="number"
+                                autoFocus
+                                defaultValue={pct}
+                                min={0}
+                                max={100}
+                                onBlur={(e) => commitCand(e.currentTarget.value)}
+                                onKeyDown={(e) => { if (e.key === "Enter") e.currentTarget.blur(); if (e.key === "Escape") { editCancelledRef.current = true; e.currentTarget.blur(); } }}
+                                onClick={(e) => e.stopPropagation()}
+                                onMouseDown={(e) => e.stopPropagation()}
+                                style={{ width: 56, fontSize: 13, fontWeight: 700, color: "#FFF", background: "rgba(255,255,255,0.18)", border: "1px solid rgba(255,255,255,0.5)", borderRadius: 6, padding: "1px 6px", outline: "none", textAlign: "center" }}
+                                data-testid={`input-cand-${k}`}
+                              />
+                            ) : (
+                              <span
+                                onClick={(e) => { e.stopPropagation(); setEditingField({ profile: "cand", key: k }); }}
+                                style={{ fontSize: 13, fontWeight: 700, color: "#FFF", whiteSpace: "nowrap", lineHeight: "26px", cursor: "text" }}
+                                data-testid={`text-cand-${k}`}
+                              >{pct} %</span>
+                            ))}
                           </div>
                           <div
                             data-testid={`slider-${k}`}
@@ -858,13 +949,40 @@ export default function SollIstBericht() {
                             }}
                           />
                           {isSmall && (
-                            <span style={{
-                              position: "absolute", top: "50%", transform: "translateY(-50%)",
-                              left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 20px)`,
-                              fontSize: 13, fontWeight: 600, color: "#8E8E93", whiteSpace: "nowrap",
-                              transition: "left 150ms ease",
-                              zIndex: 4,
-                            }}>{pct} %</span>
+                            isEditing ? (
+                              <input
+                                type="number"
+                                autoFocus
+                                defaultValue={pct}
+                                min={0}
+                                max={100}
+                                onBlur={(e) => commitCand(e.currentTarget.value)}
+                                onKeyDown={(e) => { if (e.key === "Enter") e.currentTarget.blur(); if (e.key === "Escape") { editCancelledRef.current = true; e.currentTarget.blur(); } }}
+                                onClick={(e) => e.stopPropagation()}
+                                onMouseDown={(e) => e.stopPropagation()}
+                                style={{
+                                  position: "absolute", top: "50%", transform: "translateY(-50%)",
+                                  left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 20px)`,
+                                  width: 56, fontSize: 13, fontWeight: 700, color: "#48484A",
+                                  background: "#FFF", border: "1px solid rgba(0,0,0,0.2)", borderRadius: 6,
+                                  padding: "1px 6px", outline: "none", textAlign: "center", zIndex: 5,
+                                }}
+                                data-testid={`input-cand-${k}`}
+                              />
+                            ) : (
+                              <span
+                                onClick={(e) => { e.stopPropagation(); setEditingField({ profile: "cand", key: k }); }}
+                                style={{
+                                  position: "absolute", top: "50%", transform: "translateY(-50%)",
+                                  left: `calc(${Math.min(Math.max(widthPct, 4), 100)}% + 20px)`,
+                                  fontSize: 13, fontWeight: 600, color: "#8E8E93", whiteSpace: "nowrap",
+                                  transition: "left 150ms ease",
+                                  zIndex: 4,
+                                  cursor: "text",
+                                }}
+                                data-testid={`text-cand-${k}`}
+                              >{pct} %</span>
+                            )
                           )}
                         </div>
                       </div>
