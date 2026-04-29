@@ -433,25 +433,25 @@ function getRegionInstruction(region?: string, options?: { skipAddress?: boolean
   const addressLine = options?.skipAddress ? "" : `\n- Verwende die formelle Anrede "Sie".`;
   if (region === "CH") {
     return `\n\n## SPRACHREGION: SCHWEIZ
-Schreibe ALLE Texte in Schweizer Hochdeutsch:
+Schreibe ALLE Texte AUSSCHLIESSLICH in Schweizer Hochdeutsch. Antworte niemals teilweise oder ergänzend in einer anderen Sprache. Wenn Inhalte aus der Wissensbasis, aus Stammdaten oder aus Beispielen in einer anderen Sprache (italienisch, französisch, englisch) vorliegen, übersetze sie ins Deutsche oder lasse sie weg. Insbesondere KEINE fremdsprachigen Klammer-Zusätze wie "(Orientato all'azione / Relazionale / Analitico)" oder "(Action-oriented / Relational / Analytical)".
 - Verwende NIEMALS das scharfe S (ß). Ersetze es IMMER durch "ss" (z.B. "Strasse" statt "Straße", "Massnahme" statt "Maßnahme", "regelmässig" statt "regelmäßig", "schliesslich" statt "schließlich").
 - Verwende Schweizer Begriffe wo üblich (z.B. "Mitarbeitende" statt "Mitarbeiter", "Bewerbungsdossier" statt "Bewerbungsmappe").${addressLine}\n`;
   }
   if (region === "AT") {
     return `\n\n## SPRACHREGION: ÖSTERREICH
-Schreibe ALLE Texte in österreichischem Hochdeutsch:
+Schreibe ALLE Texte AUSSCHLIESSLICH in österreichischem Hochdeutsch. Antworte niemals teilweise oder ergänzend in einer anderen Sprache. Wenn Inhalte aus der Wissensbasis, aus Stammdaten oder aus Beispielen in einer anderen Sprache (italienisch, französisch, englisch) vorliegen, übersetze sie ins Deutsche oder lasse sie weg. Insbesondere KEINE fremdsprachigen Klammer-Zusätze wie "(Orientato all'azione / Relazionale / Analitico)" oder "(Action-oriented / Relational / Analytical)".
 - Verwende österreichische Begriffe wo üblich (z.B. "Jänner" statt "Januar", "heuer" statt "dieses Jahr").${addressLine}\n`;
   }
   if (region === "EN") {
     return `\n\n## LANGUAGE REGION: ENGLISH
-Write ALL "name" field values in clear, professional British English.
+Write ALL responses EXCLUSIVELY in clear, professional British English. Never reply partially or in addition in another language. If content from the knowledge base, master data or examples is in another language (German, Italian, French), translate it into English or leave it out. In particular, do NOT add foreign-language parenthetical glosses such as "(Orientato all'azione / Relazionale / Analitico)" or "(Orienté action / Relationnel / Analytique)".
 - Activity descriptions and competence names must be in English.
 - Keep ALL classification values exactly as specified: kompetenz must be exactly "Impulsiv", "Intuitiv", or "Analytisch" (unchanged); niveau must be exactly "Niedrig", "Mittel", or "Hoch" (unchanged). These are internal codes that must never be translated.
 - Use formal professional English appropriate for HR and recruitment contexts.\n`;
   }
   if (region === "FR") {
     return `\n\n## RÉGION LINGUISTIQUE : FRANÇAIS
-Écris TOUS les textes en français professionnel clair.
+Écris TOUS les textes EXCLUSIVEMENT en français professionnel clair. Ne réponds jamais en partie ou en complément dans une autre langue. Si du contenu provenant de la base de connaissances, des données de référence ou d'exemples est rédigé dans une autre langue (allemand, italien, anglais), traduis-le en français ou omets-le. En particulier, n'ajoute PAS de glose entre parenthèses dans une langue étrangère, comme "(Orientato all'azione / Relazionale / Analitico)" ou "(Action-oriented / Relational / Analytical)".
 - Tu tutois l'utilisateur (« tu »), sauf s'il te demande le vouvoiement.
 - Sois direct, chaleureux et concret — comme un expert RH expérimenté.
 - N'utilise jamais les termes du modèle (« impulsif », « intuitif », « analytique » comme étiquette de personnalité). À la place : « Orienté action » pour la dimension action, « Relationnel » pour la dimension humaine, « Analytique » pour la dimension processus.
@@ -459,14 +459,15 @@ Write ALL "name" field values in clear, professional British English.
   }
   if (region === "IT") {
     return `\n\n## REGIONE LINGUISTICA: ITALIANO
-Scrivi TUTTI i testi in italiano professionale chiaro.
+Scrivi TUTTI i testi ESCLUSIVAMENTE in italiano professionale chiaro. Non rispondere mai in parte o in aggiunta in un'altra lingua. Se contenuti provenienti dalla base di conoscenza, dai dati di riferimento o dagli esempi sono in un'altra lingua (tedesco, francese, inglese), traducili in italiano oppure ometterli. In particolare, NON aggiungere glosse tra parentesi in lingua straniera come "(Action-oriented / Relational / Analytical)" o "(Orienté action / Relationnel / Analytique)".
 - Usa il "tu" informale con l'utente.
 - Sii diretto, caldo e concreto — come un esperto HR di lunga esperienza.
 - Non usare mai i termini del modello ("impulsivo", "intuitivo", "analitico" come etichette di personalità). Usa invece: "Orientato all'azione" per la dimensione azione, "Relazionale" per la dimensione umana, "Analitico" per la dimensione processo — ma solo nei testi narrativi, MAI nei campi JSON.
 - Evita i trattini em. Usa virgole, due punti o punti.
 - Non usare il simbolo percentuale (%) nei testi narrativi. Scrivi le percentuali in lettere (es. "un terzo" invece di "33%").\n`;
   }
-  return "";
+  return `\n\n## SPRACHREGION: DEUTSCHLAND
+Schreibe ALLE Texte AUSSCHLIESSLICH in klarem, professionellem Hochdeutsch. Antworte niemals teilweise oder ergänzend in einer anderen Sprache. Wenn Inhalte aus der Wissensbasis, aus Stammdaten oder aus Beispielen in einer anderen Sprache (italienisch, französisch, englisch) vorliegen, übersetze sie ins Deutsche oder lasse sie weg. Insbesondere KEINE fremdsprachigen Klammer-Zusätze wie "(Orientato all'azione / Relazionale / Analitico)" oder "(Action-oriented / Relational / Analytical)".${addressLine}\n`;
 }
 
 function getDefaultCoachPrompt(): string {
