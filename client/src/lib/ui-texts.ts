@@ -719,6 +719,8 @@ export const UI = {
       networkErrorDescription: "Die Spracherkennung benötigt eine stabile Verbindung. Bitte versuche es erneut.",
       errorTitle: "Spracheingabe-Fehler",
       errorDescription: "Die Spracherkennung konnte nicht gestartet werden.",
+      notStartingTitle: "Mikrofon startet nicht",
+      notStartingDescription: "Die Spracheingabe reagiert nicht. Möglicherweise blockiert eine Browser-Erweiterung (z.B. Brave Shields, Privacy Badger, AdBlocker) den Zugriff auf den Spracherkennungs-Dienst. Bitte teste in Chrome oder Edge ohne aktive Erweiterungen.",
     },
     analyse: {
       title: "Stammdaten (Analysehilfe)",
@@ -1589,6 +1591,8 @@ export const UI = {
       networkErrorDescription: "Voice recognition needs a stable connection. Please try again.",
       errorTitle: "Voice input error",
       errorDescription: "Voice recognition could not be started.",
+      notStartingTitle: "Microphone won't start",
+      notStartingDescription: "Voice input is not responding. A browser extension (e.g. Brave Shields, Privacy Badger, ad blocker) may be blocking access to the speech recognition service. Please try Chrome or Edge without active extensions.",
     },
     analyse: {
       title: "Master data (analysis helper)",
@@ -2459,6 +2463,8 @@ export const UI = {
       networkErrorDescription: "La reconnaissance vocale nécessite une connexion stable. Merci de réessayer.",
       errorTitle: "Erreur de saisie vocale",
       errorDescription: "La reconnaissance vocale n'a pas pu démarrer.",
+      notStartingTitle: "Le microphone ne démarre pas",
+      notStartingDescription: "La saisie vocale ne répond pas. Une extension du navigateur (par ex. Brave Shields, Privacy Badger, bloqueur de publicités) peut empêcher l'accès au service de reconnaissance vocale. Essayez Chrome ou Edge sans extensions actives.",
     },
     analyse: {
       title: "Données de base (aide à l'analyse)",
@@ -3329,6 +3335,8 @@ export const UI = {
       networkErrorDescription: "Il riconoscimento vocale richiede una connessione stabile. Riprova.",
       errorTitle: "Errore di inserimento vocale",
       errorDescription: "Il riconoscimento vocale non è stato avviato.",
+      notStartingTitle: "Il microfono non si avvia",
+      notStartingDescription: "L'inserimento vocale non risponde. Un'estensione del browser (ad es. Brave Shields, Privacy Badger, ad blocker) potrebbe bloccare l'accesso al servizio di riconoscimento vocale. Prova Chrome o Edge senza estensioni attive.",
     },
     analyse: {
       title: "Dati di base (aiuto all'analisi)",

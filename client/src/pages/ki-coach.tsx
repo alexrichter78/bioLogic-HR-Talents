@@ -1141,6 +1141,8 @@ export default function KICoach() {
   const baseTextRef = useRef("");
   const accumulatedFinalRef = useRef("");
   const lastMicErrorAtRef = useRef(0);
+  const startedRef = useRef(false);
+  const startTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const cleanDictation = useCallback((raw: string): string => {
     return cleanDictationByRegion(raw, region);
@@ -1171,6 +1173,16 @@ export default function KICoach() {
     recognition.lang = regionToBcp47Lang(region);
     recognition.continuous = true;
     recognition.interimResults = true;
+    console.log("[Mic][Coach] startRecognition() lang=", recognition.lang, "ua=", navigator.userAgent);
+
+    recognition.onstart = () => {
+      startedRef.current = true;
+      console.log("[Mic][Coach] onstart fired");
+      if (startTimeoutRef.current) { clearTimeout(startTimeoutRef.current); startTimeoutRef.current = null; }
+    };
+    recognition.onaudiostart = () => console.log("[Mic][Coach] onaudiostart");
+    recognition.onsoundstart = () => console.log("[Mic][Coach] onsoundstart");
+    recognition.onspeechstart = () => console.log("[Mic][Coach] onspeechstart");
 
     recognition.onresult = (event: any) => {
       let interim = "";
@@ -1222,7 +1234,9 @@ export default function KICoach() {
 
     recognition.onerror = (event: any) => {
       const kind = classifySpeechError(event.error);
+      console.warn("[Mic][Coach] onerror code=", event.error, "kind=", kind, "message=", event.message);
       if (kind === "ignored") return;
+      if (startTimeoutRef.current) { clearTimeout(startTimeoutRef.current); startTimeoutRef.current = null; }
       userStoppedRef.current = true;
       setIsListening(false);
       recognitionRef.current = null;
@@ -1233,25 +1247,44 @@ export default function KICoach() {
       } else if (kind === "network") {
         showMicErrorToast(ui.mic.networkErrorTitle, ui.mic.networkErrorDescription);
       } else {
-        showMicErrorToast(ui.mic.errorTitle, ui.mic.errorDescription);
+        showMicErrorToast(ui.mic.errorTitle, `${ui.mic.errorDescription} [${event.error}]`);
       }
     };
 
     recognitionRef.current = recognition;
+    startedRef.current = false;
     try {
       recognition.start();
-    } catch {
+      console.log("[Mic][Coach] recognition.start() called — waiting for onstart…");
+      if (startTimeoutRef.current) clearTimeout(startTimeoutRef.current);
+      startTimeoutRef.current = setTimeout(() => {
+        if (!startedRef.current && recognitionRef.current === recognition) {
+          console.warn("[Mic][Coach] onstart did NOT fire within 4s — likely blocked by browser extension or speech service unreachable");
+          userStoppedRef.current = true;
+          try { recognition.abort?.(); } catch {}
+          try { recognition.stop(); } catch {}
+          recognitionRef.current = null;
+          setIsListening(false);
+          showMicErrorToast(ui.mic.notStartingTitle, ui.mic.notStartingDescription);
+        }
+      }, 4000);
+    } catch (e: any) {
+      console.error("[Mic][Coach] recognition.start() THREW:", e?.name, e?.message, e);
       recognitionRef.current = null;
       setIsListening(false);
-      showMicErrorToast(ui.mic.errorTitle, ui.mic.errorDescription);
+      showMicErrorToast(ui.mic.errorTitle, `${ui.mic.errorDescription} [${e?.name || "exception"}]`);
     }
   }, [cleanDictation, region, showMicErrorToast, ui.mic]);
 
   const toggleListening = useCallback(() => {
-    if (!speechSupported) return;
+    console.log("[Mic][Coach] toggleListening clicked — supported=", speechSupported, "isListening=", isListening, "region=", region, "secureContext=", typeof window !== "undefined" ? window.isSecureContext : "n/a");
+    if (!speechSupported) {
+      console.warn("[Mic][Coach] SpeechRecognition not available in window");
+      return;
+    }
     if (isListening) {
       userStoppedRef.current = true;
-      recognitionRef.current?.stop();
+      try { recognitionRef.current?.stop(); } catch (e) { console.warn("[Mic][Coach] stop() threw", e); }
       setIsListening(false);
       return;
     }
@@ -1260,7 +1293,7 @@ export default function KICoach() {
     accumulatedFinalRef.current = "";
     setIsListening(true);
     startRecognition();
-  }, [isListening, speechSupported, startRecognition]);
+  }, [isListening, speechSupported, region, startRecognition]);
 
   useEffect(() => {
     return () => {
