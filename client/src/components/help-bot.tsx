@@ -409,7 +409,7 @@ export default function HelpBot() {
                 onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(0,0,0,0.08)"; }}
                 data-testid="input-help-message"
               />
-              {speechSupported && (
+              {speechSupported ? (
                 <button
                   onClick={toggleListening}
                   title={isListening ? ui.mic.stop : ui.mic.start}
@@ -430,6 +430,23 @@ export default function HelpBot() {
                     ? <MicOff style={{ width: 16, height: 16, color: "#FFF" }} />
                     : <Mic style={{ width: 16, height: 16, color: "#8E8E93" }} />
                   }
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  disabled
+                  title={ui.mic.notSupported}
+                  aria-label={ui.mic.notSupported}
+                  style={{
+                    width: 38, height: 38, borderRadius: 10, border: "none",
+                    background: "rgba(0,0,0,0.04)",
+                    cursor: "not-allowed",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    flexShrink: 0, opacity: 0.5,
+                  }}
+                  data-testid="button-help-mic-unsupported"
+                >
+                  <MicOff style={{ width: 16, height: 16, color: "#8E8E93" }} />
                 </button>
               )}
               <button
