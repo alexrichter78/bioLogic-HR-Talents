@@ -1,9 +1,11 @@
-import { useState, useRef, useEffect } from "react";
-import { HelpCircle, X, Send, Loader2, Mail, CheckCircle2 } from "lucide-react";
+import { useState, useRef, useEffect, useCallback } from "react";
+import { HelpCircle, X, Send, Loader2, Mail, CheckCircle2, Mic, MicOff } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { apiRequest } from "@/lib/queryClient";
 import { useRegion } from "@/lib/region";
 import { useUI } from "@/lib/ui-texts";
+import { useToast } from "@/hooks/use-toast";
+import { regionToBcp47Lang, cleanDictation, classifySpeechError, isSpeechRecognitionAvailable } from "@/lib/speech-input";
 
 type Message = { role: "assistant" | "user"; content: string; isWelcome?: boolean };
 
@@ -18,8 +20,134 @@ export default function HelpBot() {
   const [emailSent, setEmailSent] = useState(false);
   const [showEscalate, setShowEscalate] = useState(false);
   const [escalateLoading, setEscalateLoading] = useState(false);
+  const [isListening, setIsListening] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const recognitionRef = useRef<any>(null);
+  const userStoppedRef = useRef(false);
+  const baseTextRef = useRef("");
+  const accumulatedFinalRef = useRef("");
+  const lastMicErrorAtRef = useRef(0);
+  const { toast } = useToast();
+  const speechSupported = isSpeechRecognitionAvailable();
+
+  const showMicErrorToast = useCallback((title: string, description: string) => {
+    const now = Date.now();
+    if (now - lastMicErrorAtRef.current < 3000) return;
+    lastMicErrorAtRef.current = now;
+    toast({ title, description, variant: "destructive" });
+  }, [toast]);
+
+  useEffect(() => {
+    if (recognitionRef.current) {
+      userStoppedRef.current = true;
+      try { recognitionRef.current.stop(); } catch {}
+      try { recognitionRef.current.abort?.(); } catch {}
+      recognitionRef.current = null;
+      setIsListening(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [region]);
+
+  const startRecognition = useCallback(() => {
+    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SR) return;
+    const recognition = new SR();
+    recognition.lang = regionToBcp47Lang(region);
+    recognition.continuous = true;
+    recognition.interimResults = true;
+
+    recognition.onresult = (event: any) => {
+      let interim = "";
+      let newFinal = "";
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const transcript = event.results[i][0].transcript;
+        if (event.results[i].isFinal) newFinal += transcript;
+        else interim += transcript;
+      }
+      if (newFinal) {
+        accumulatedFinalRef.current += (accumulatedFinalRef.current && !accumulatedFinalRef.current.endsWith(" ") ? " " : "") + newFinal;
+      }
+      const composed = accumulatedFinalRef.current + (interim ? " " + interim : "");
+      const cleaned = cleanDictation(composed, region);
+      const prefix = baseTextRef.current ? baseTextRef.current + (baseTextRef.current.endsWith(" ") || baseTextRef.current.endsWith("\n") ? "" : " ") : "";
+      setInput(prefix + cleaned);
+    };
+
+    recognition.onend = () => {
+      if (userStoppedRef.current) {
+        recognitionRef.current = null;
+        setIsListening(false);
+        return;
+      }
+      try {
+        const next = new SR();
+        next.lang = regionToBcp47Lang(region);
+        next.continuous = true;
+        next.interimResults = true;
+        next.onresult = recognition.onresult;
+        next.onend = recognition.onend;
+        next.onerror = recognition.onerror;
+        baseTextRef.current = baseTextRef.current + (accumulatedFinalRef.current ? (baseTextRef.current.endsWith(" ") ? "" : " ") + cleanDictation(accumulatedFinalRef.current, region) : "");
+        accumulatedFinalRef.current = "";
+        recognitionRef.current = next;
+        next.start();
+      } catch {
+        recognitionRef.current = null;
+        setIsListening(false);
+      }
+    };
+
+    recognition.onerror = (event: any) => {
+      const kind = classifySpeechError(event.error);
+      if (kind === "ignored") return;
+      userStoppedRef.current = true;
+      setIsListening(false);
+      recognitionRef.current = null;
+      if (kind === "permission") showMicErrorToast(ui.mic.permissionDeniedTitle, ui.mic.permissionDeniedDescription);
+      else if (kind === "no-mic") showMicErrorToast(ui.mic.noMicTitle, ui.mic.noMicDescription);
+      else if (kind === "network") showMicErrorToast(ui.mic.networkErrorTitle, ui.mic.networkErrorDescription);
+      else showMicErrorToast(ui.mic.errorTitle, ui.mic.errorDescription);
+    };
+
+    recognitionRef.current = recognition;
+    try {
+      recognition.start();
+    } catch {
+      recognitionRef.current = null;
+      setIsListening(false);
+      showMicErrorToast(ui.mic.errorTitle, ui.mic.errorDescription);
+    }
+  }, [region, showMicErrorToast, ui.mic]);
+
+  const toggleListening = useCallback(() => {
+    if (!speechSupported) return;
+    if (isListening) {
+      userStoppedRef.current = true;
+      recognitionRef.current?.stop();
+      setIsListening(false);
+      return;
+    }
+    userStoppedRef.current = false;
+    setInput((prev) => { baseTextRef.current = prev; return prev; });
+    accumulatedFinalRef.current = "";
+    setIsListening(true);
+    startRecognition();
+  }, [isListening, speechSupported, startRecognition]);
+
+  useEffect(() => {
+    return () => {
+      userStoppedRef.current = true;
+      if (recognitionRef.current) {
+        try { recognitionRef.current.onend = null; } catch {}
+        try { recognitionRef.current.onresult = null; } catch {}
+        try { recognitionRef.current.onerror = null; } catch {}
+        try { recognitionRef.current.stop(); } catch {}
+        try { recognitionRef.current.abort?.(); } catch {}
+        recognitionRef.current = null;
+      }
+    };
+  }, []);
 
   useEffect(() => {
     setMessages(prev => {
@@ -47,6 +175,11 @@ export default function HelpBot() {
   const handleSend = async () => {
     const text = input.trim();
     if (!text || loading) return;
+    if (isListening) {
+      userStoppedRef.current = true;
+      try { recognitionRef.current?.stop(); } catch {}
+      setIsListening(false);
+    }
     setInput("");
     setShowEscalate(false);
 
@@ -244,6 +377,29 @@ export default function HelpBot() {
                 onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(0,0,0,0.08)"; }}
                 data-testid="input-help-message"
               />
+              {speechSupported && (
+                <button
+                  onClick={toggleListening}
+                  title={isListening ? ui.mic.stop : ui.mic.start}
+                  aria-label={isListening ? ui.mic.stop : ui.mic.start}
+                  style={{
+                    width: 38, height: 38, borderRadius: 10, border: "none",
+                    background: isListening
+                      ? "linear-gradient(135deg, #FF3B30, #FF6B6B)"
+                      : "rgba(0,0,0,0.06)",
+                    cursor: "pointer",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    transition: "all 200ms ease", flexShrink: 0,
+                    animation: isListening ? "micPulse 1.5s ease-in-out infinite" : "none",
+                  }}
+                  data-testid="button-help-mic"
+                >
+                  {isListening
+                    ? <MicOff style={{ width: 16, height: 16, color: "#FFF" }} />
+                    : <Mic style={{ width: 16, height: 16, color: "#8E8E93" }} />
+                  }
+                </button>
+              )}
               <button
                 onClick={handleSend}
                 disabled={!input.trim() || loading}

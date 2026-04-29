@@ -5,6 +5,8 @@ import { useRegion, useLocalizedText } from "@/lib/region";
 import { useUI } from "@/lib/ui-texts";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth } from "@/lib/auth";
+import { useToast } from "@/hooks/use-toast";
+import { regionToBcp47Lang, cleanDictation as cleanDictationByRegion, classifySpeechError } from "@/lib/speech-input";
 
 type Message = {
   role: "user" | "assistant";
@@ -855,6 +857,7 @@ export default function KICoach() {
   const { user } = useAuth();
   const isAdmin = user?.role === "admin";
   const isMobile = useIsMobile();
+  const { toast } = useToast();
   const LOUIS_STORAGE_KEY = user?.id ? `louis_chat_v1_u${user.id}` : "louis_chat_v1_anon";
   const LOUIS_TTL_MS = 24 * 60 * 60 * 1000;
   const [messages, setMessages] = useState<Message[]>([WELCOME_MSG]);
@@ -1137,28 +1140,35 @@ export default function KICoach() {
   const userStoppedRef = useRef(false);
   const baseTextRef = useRef("");
   const accumulatedFinalRef = useRef("");
+  const lastMicErrorAtRef = useRef(0);
 
   const cleanDictation = useCallback((raw: string): string => {
-    return raw
-      .replace(/\s*[Pp]unkt\s*/g, ". ")
-      .replace(/\s*[Kk]omma\s*/g, ", ")
-      .replace(/\s*[Aa]usrufezeichen\s*/g, "! ")
-      .replace(/\s*[Ff]ragezeichen\s*/g, "? ")
-      .replace(/\s*[Dd]oppelpunkt\s*/g, ": ")
-      .replace(/\s*[Ss]emikolon\s*/g, "; ")
-      .replace(/\s*[Nn]eue [Zz]eile\s*/g, "\n")
-      .replace(/\s*[Aa]bsatz\s*/g, "\n\n")
-      .replace(/([.!?])\s+(\w)/g, (_, p, c) => p + " " + c.toUpperCase())
-      .replace(/\s+([.,!?;:])/g, "$1")
-      .replace(/\s{2,}/g, " ")
-      .trim();
-  }, []);
+    return cleanDictationByRegion(raw, region);
+  }, [region]);
+
+  useEffect(() => {
+    if (recognitionRef.current) {
+      userStoppedRef.current = true;
+      try { recognitionRef.current.stop(); } catch {}
+      try { recognitionRef.current.abort?.(); } catch {}
+      recognitionRef.current = null;
+      setIsListening(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [region]);
+
+  const showMicErrorToast = useCallback((title: string, description: string) => {
+    const now = Date.now();
+    if (now - lastMicErrorAtRef.current < 3000) return;
+    lastMicErrorAtRef.current = now;
+    toast({ title, description, variant: "destructive" });
+  }, [toast]);
 
   const startRecognition = useCallback(() => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognition) return;
     const recognition = new SpeechRecognition();
-    recognition.lang = "de-DE";
+    recognition.lang = regionToBcp47Lang(region);
     recognition.continuous = true;
     recognition.interimResults = true;
 
@@ -1194,7 +1204,7 @@ export default function KICoach() {
       }
       try {
         const next = new ((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition)();
-        next.lang = "de-DE";
+        next.lang = regionToBcp47Lang(region);
         next.continuous = true;
         next.interimResults = true;
         next.onresult = recognition.onresult;
@@ -1211,17 +1221,31 @@ export default function KICoach() {
     };
 
     recognition.onerror = (event: any) => {
-      if (event.error === "no-speech" || event.error === "audio-capture") return;
-      if (event.error !== "aborted") {
-        userStoppedRef.current = true;
-        setIsListening(false);
-        recognitionRef.current = null;
+      const kind = classifySpeechError(event.error);
+      if (kind === "ignored") return;
+      userStoppedRef.current = true;
+      setIsListening(false);
+      recognitionRef.current = null;
+      if (kind === "permission") {
+        showMicErrorToast(ui.mic.permissionDeniedTitle, ui.mic.permissionDeniedDescription);
+      } else if (kind === "no-mic") {
+        showMicErrorToast(ui.mic.noMicTitle, ui.mic.noMicDescription);
+      } else if (kind === "network") {
+        showMicErrorToast(ui.mic.networkErrorTitle, ui.mic.networkErrorDescription);
+      } else {
+        showMicErrorToast(ui.mic.errorTitle, ui.mic.errorDescription);
       }
     };
 
     recognitionRef.current = recognition;
-    recognition.start();
-  }, [cleanDictation]);
+    try {
+      recognition.start();
+    } catch {
+      recognitionRef.current = null;
+      setIsListening(false);
+      showMicErrorToast(ui.mic.errorTitle, ui.mic.errorDescription);
+    }
+  }, [cleanDictation, region, showMicErrorToast, ui.mic]);
 
   const toggleListening = useCallback(() => {
     if (!speechSupported) return;
@@ -2892,10 +2916,12 @@ export default function KICoach() {
               >
                 <FileText style={{ width: 16, height: 16, color: pendingDoc ? "#0071E3" : "#8E8E93" }} />
               </button>
-              {speechSupported && (
+              {speechSupported ? (
                 <button
                   onClick={toggleListening}
                   data-testid="button-mic"
+                  title={isListening ? ui.mic.stop : ui.mic.start}
+                  aria-label={isListening ? ui.mic.stop : ui.mic.start}
                   style={{
                     width: 36, height: 36, borderRadius: 12, border: "none",
                     background: isListening
@@ -2911,6 +2937,23 @@ export default function KICoach() {
                     ? <MicOff style={{ width: 16, height: 16, color: "#FFFFFF" }} />
                     : <Mic style={{ width: 16, height: 16, color: "#8E8E93" }} />
                   }
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  disabled
+                  data-testid="button-mic-unsupported"
+                  title={ui.mic.notSupported}
+                  aria-label={ui.mic.notSupported}
+                  style={{
+                    width: 36, height: 36, borderRadius: 12, border: "none",
+                    background: "rgba(0,0,0,0.04)",
+                    cursor: "not-allowed",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    flexShrink: 0, opacity: 0.5,
+                  }}
+                >
+                  <MicOff style={{ width: 16, height: 16, color: "#8E8E93" }} />
                 </button>
               )}
               <button
