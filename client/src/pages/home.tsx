@@ -8,6 +8,7 @@ import illustrationKiCoach from "@assets/ki_coach_v5.png";
 import GlobalNav from "@/components/global-nav";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useUI } from "@/lib/ui-texts";
+import { useToast } from "@/hooks/use-toast";
 
 function FadeIn({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
   const [visible, setVisible] = useState(false);
@@ -91,8 +92,16 @@ export default function Home() {
   const [, setLocation] = useLocation();
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const redirectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isMobile = useIsMobile();
   const ui = useUI();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    return () => {
+      if (redirectTimeoutRef.current) clearTimeout(redirectTimeoutRef.current);
+    };
+  }, []);
 
   const handleFileLoad = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -101,6 +110,9 @@ export default function Home() {
     reader.onload = (ev) => {
       try {
         const data = JSON.parse(ev.target?.result as string);
+        if (!data || typeof data !== "object" || Array.isArray(data)) {
+          throw new Error("invalid format");
+        }
         const state = {
           currentStep: 3,
           allCollapsed: true,
@@ -116,8 +128,18 @@ export default function Home() {
         localStorage.setItem("rollenDnaState", JSON.stringify(state));
         localStorage.setItem("rollenDnaCompleted", "true");
         window.dispatchEvent(new Event("rollenDnaUpdated"));
+        toast({
+          title: ui.home.fileLoadedTitle,
+          description: ui.home.fileLoadedDescription,
+        });
+        if (redirectTimeoutRef.current) clearTimeout(redirectTimeoutRef.current);
+        redirectTimeoutRef.current = setTimeout(() => setLocation("/rollen-dna"), 900);
       } catch {
-        alert(ui.home.fileError);
+        toast({
+          title: ui.home.fileErrorTitle,
+          description: ui.home.fileError,
+          variant: "destructive",
+        });
       }
     };
     reader.readAsText(file);
