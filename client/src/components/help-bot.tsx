@@ -434,15 +434,18 @@ export default function HelpBot() {
               ) : (
                 <button
                   type="button"
-                  disabled
+                  onClick={() => {
+                    console.warn("[Mic][HelpBot] click on unsupported-mic button — browser does not expose SpeechRecognition (likely Firefox). UA=", navigator.userAgent);
+                    showMicErrorToast(ui.mic.notSupported, ui.mic.notSupported);
+                  }}
                   title={ui.mic.notSupported}
                   aria-label={ui.mic.notSupported}
                   style={{
                     width: 38, height: 38, borderRadius: 10, border: "none",
                     background: "rgba(0,0,0,0.04)",
-                    cursor: "not-allowed",
+                    cursor: "pointer",
                     display: "flex", alignItems: "center", justifyContent: "center",
-                    flexShrink: 0, opacity: 0.5,
+                    flexShrink: 0, opacity: 0.6,
                   }}
                   data-testid="button-help-mic-unsupported"
                 >

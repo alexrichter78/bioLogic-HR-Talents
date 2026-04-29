@@ -2974,16 +2974,19 @@ export default function KICoach() {
               ) : (
                 <button
                   type="button"
-                  disabled
+                  onClick={() => {
+                    console.warn("[Mic][Coach] click on unsupported-mic button — browser does not expose SpeechRecognition (likely Firefox). UA=", navigator.userAgent);
+                    showMicErrorToast(ui.mic.notSupported, ui.mic.notSupported);
+                  }}
                   data-testid="button-mic-unsupported"
                   title={ui.mic.notSupported}
                   aria-label={ui.mic.notSupported}
                   style={{
                     width: 36, height: 36, borderRadius: 12, border: "none",
                     background: "rgba(0,0,0,0.04)",
-                    cursor: "not-allowed",
+                    cursor: "pointer",
                     display: "flex", alignItems: "center", justifyContent: "center",
-                    flexShrink: 0, opacity: 0.5,
+                    flexShrink: 0, opacity: 0.6,
                   }}
                 >
                   <MicOff style={{ width: 16, height: 16, color: "#8E8E93" }} />
