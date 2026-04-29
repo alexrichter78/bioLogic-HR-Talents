@@ -1,9 +1,11 @@
 # MatchCheck – Vollständige Soll-Ist-Logik
 
-> Stand: April 2026
-> Dateien: `client/src/lib/soll-ist-engine.ts`, `client/src/lib/jobcheck-engine.ts`, `client/src/lib/matchcheck-texts.ts`, `client/src/pages/soll-ist-bericht.tsx`
+> Stand: 29. April 2026
+> Dateien: `client/src/lib/soll-ist-engine.ts`, `client/src/lib/jobcheck-engine.ts`, `client/src/lib/matchcheck-texts.ts`, `client/src/lib/text-variants.ts`, `client/src/lib/passungsnaehe.ts`, `client/src/pages/soll-ist-bericht.tsx`, `client/src/lib/pdf-direct-builder.ts`
 >
 > **Hinweis:** Die ältere, vereinfachte Version dieses Dokuments (`MatchCheck_Berechnungslogik.md`) ist überholt und wird nicht mehr aktualisiert. Das vorliegende Dokument ist die massgebliche Referenz.
+>
+> **Abgrenzung:** `client/src/lib/leader-team-match-engine.ts` gehört **nicht** zum klassischen MatchCheck (Stelle ↔ Person), sondern zur Teamdynamik (Führung ↔ Team) und wird in `teamdynamik.tsx` verwendet.
 
 ## Überblick
 
@@ -151,7 +153,7 @@ Der FitSubtype steuert **nur die Textgenerierung**, nicht die Kernbewertung. Er 
 |---|---|---|
 | **PERFECT** | fitLabel === "Geeignet" | "deckungsgleich mit der Stellenanforderung" |
 | **STRUCTURE_MATCH_INTENSITY_OFF** | fitLabel === "Bedingt geeignet" UND EXACT | "in der Grundrichtung stimmig, Gewichtung nicht deckungsgleich" |
-| **PARTIAL_MATCH** | fitLabel === "Bedingt geeignet" UND SOFT_CONFLICT | Teilweise anschlussfähig, mit Abweichung |
+| **PARTIAL_MATCH** | fitLabel === "Bedingt geeignet" UND nicht EXACT (Fallback — typischerweise SOFT_CONFLICT) | Teilweise anschlussfähig, mit Abweichung |
 | **MISMATCH** | fitLabel === "Nicht geeignet" (immer) | Grundpassung nicht gegeben |
 
 ### Wichtige Designentscheidungen
@@ -217,13 +219,13 @@ Die Text-Engine nutzt kontrollierte Variantenrotation (`text-variants.ts`). Pro 
 3. Risiken dürfen keine Maßnahmen enthalten
 4. Impact-Area-Interpretationen dürfen nie positiver klingen als das Gesamturteil
 
-### Doppeldominanz-Sonderregel
+### Doppeldominanz-Sonderregel (Text-Interpretation, keine Bewertungsregel)
 
-Wenn Rolle = TOP_PAIR, Person = TOP_PAIR, gleiches Dual-Paar, aber die 3. Komponente weicht erkennbar ab:
+Wenn Rolle = TOP_PAIR, Person = TOP_PAIR, gleiches Dual-Paar, aber die 3. Komponente weicht erkennbar ab (`thirdDiff ≥ 4`):
 
-- Das ist **kein Strukturbruch**, sondern ein **Balanceproblem innerhalb derselben Logik**.
-- Die Rolle verlangt zwei gleich starke Hauptbereiche, die parallel stabil wirksam sein sollen.
-- Die Person bringt diese Doppellogik ebenfalls mit, aber die 3. Komponente stabilisiert anders oder schwächer. Dadurch wechseln die Hauptbereiche im Alltag leichter, anstatt konstant parallel zu wirken.
+- Das ist **kein Strukturbruch** im Sinne der Kernbewertung — die Kernbewertung selbst ist von dieser Regel nicht betroffen.
+- Die Regel wirkt **rein textlich** (in `matchcheck-texts.ts`, Helfer `buildVariantFamilyText` / `buildDualDominanceText` mit Bedingung `sameDualPair`): Im Bericht wird die Konstellation als **Balanceproblem innerhalb derselben Logik** beschrieben statt als gröbere Abweichung.
+- Inhaltliche Lesart: Die Rolle verlangt zwei gleich starke Hauptbereiche, die parallel stabil wirksam sein sollen. Die Person bringt diese Doppellogik ebenfalls mit, aber die 3. Komponente stabilisiert anders oder schwächer. Dadurch wechseln die Hauptbereiche im Alltag leichter, anstatt konstant parallel zu wirken.
 
 ---
 
@@ -300,27 +302,31 @@ Um sicherzustellen, dass der angezeigte Führungsaufwand zum Gesamturteil passt,
 
 ## Entwicklungsaufwand
 
-| Fit-Ergebnis | Entwicklungsaufwand | devLevel | devScore (UI-Balken) |
-|-------------|---------------------|----------|---------------------|
-| Geeignet | Niedrig | 1 | 3 (grün, 3 Balken) |
-| Bedingt geeignet | Mittel | 2 | 2 (gelb, 2 Balken) |
-| Nicht geeignet | Hoch | 3 | 1 (rot, 1 Balken) |
+| Fit-Ergebnis | Entwicklungsaufwand | devLevel | devScore | UI-Balken (gefüllt) |
+|-------------|---------------------|----------|----------|---------------------|
+| Geeignet | Niedrig | 1 | 3 | 1 von 3 (grün) |
+| Bedingt geeignet | Mittel | 2 | 2 | 2 von 3 (gelb) |
+| Nicht geeignet | Hoch | 3 | 1 | 3 von 3 (rot) |
 
 Direkte 1:1-Zuordnung, keine Sonderfälle.
 
-**devScore-Formel:** `devScore = 4 - devLevel`
+**devScore-Formel:** `devScore = 4 - devLevel` (höherer Wert = bessere Passung)
 
-Diese Formel wird konsistent in zwei Dateien verwendet:
-- `soll-ist-bericht.tsx` (3 Stellen: Anfangswert, Slider-Reset, Profile-Wechsel)
-- `pdf-direct-builder.ts` (2 Stellen: PDF-Report, Balken-Rendering)
+**Balken-Semantik:** Die UI zeigt **Aufwand**, nicht Erfolg — *mehr gefüllte Balken = mehr Aufwand*. Berechnet als `filledBars = 4 - devScore`. Bei Geeignet ist also nur ein Balken gefüllt (wenig Aufwand), bei Nicht geeignet alle drei (viel Aufwand).
 
-### Entwicklungsprognose-Texte
+Diese Formel wird konsistent in `soll-ist-bericht.tsx` und `pdf-direct-builder.ts` verwendet.
 
-| devLevel | Untertitel | scoreText |
+### Entwicklungsprognose-Texte (Untertitel im Bericht)
+
+Die Kurztexte werden lokalisiert über `ui.matchcheck.devShortLow / devShortMedium / devShortHigh` ausgespielt. Beispiel Deutsch:
+
+| devLevel | Kurzlabel (devLow/Medium/High) | Untertitel (devShortLow/Medium/High) |
 |---|---|---|
-| 1 (niedrig) | "3 von 3 Gute Aussichten" | "niedrig" |
-| 2 (mittel) | "2 von 3 Machbar, braucht gezielte Führung" | "mittel" |
-| 3 (hoch) | "1 von 3 Hoher Aufwand" | "hoch" |
+| 1 (niedrig) | „niedrig" | „Gute Aussichten · Wenig Aufwand" |
+| 2 (mittel) | „mittel" | „Machbar · Gezielte Führung nötig" |
+| 3 (hoch) | „hoch" | „Hoher Aufwand · Ergebnis unsicher" |
+
+Alle vier Sprachregionen (DE/EN/FR/IT — CH und AT nutzen die DE-Texte) haben äquivalente Übersetzungen.
 
 ### Individuelle Bereichsbewertung (Impact Areas)
 
@@ -616,9 +622,11 @@ Der **KI-generierte Passungsbericht** (`/api/generate-soll-ist-narrative`) ersch
 | Datei | Inhalt |
 |-------|--------|
 | `client/src/lib/jobcheck-engine.ts` | `getVariantMeta()`, `getPairRelations()`, `getStructureFromPairs()`, `computeCoreFit()`, `koRuleTriggered()`, `calcControlIntensity()`, `buildRoleAnalysisFromState()` |
-| `client/src/lib/soll-ist-engine.ts` | `computeSollIst()` — orchestriert KO + Engine + Berichtsaufbau |
-| `client/src/lib/matchcheck-texts.ts` | `buildMatchTexts()` — Textgenerierung für alle Berichtssektionen inkl. Integrationsplan |
-| `client/src/pages/soll-ist-bericht.tsx` | UI-Komponente mit Slidern, Slider-Sync, Berichtsdarstellung; alle Texte via `useUI()`-Keys i18n-fähig |
+| `client/src/lib/soll-ist-engine.ts` | `computeSollIst()` — orchestriert KO + Engine + Berichtsaufbau, `deriveFitSubtype()`, `capSeverity()`, Stress- und 30-Tage-Plan-Generierung |
+| `client/src/lib/matchcheck-texts.ts` | `buildMatchTexts()` — Textgenerierung für alle Berichtssektionen inkl. Integrationsplan, Doppeldominanz-Textinterpretation |
+| `client/src/lib/text-variants.ts` | Kontrollierte Variantenrotation pro Sektion und FitSubtype-Level (3–4 gleichwertige Formulierungen, stabiler Hash aus Rollen-/Personenname) |
+| `client/src/lib/passungsnaehe.ts` | Visual-Fit-Marker / Passungsnähe-Visualisierung im Bericht |
+| `client/src/pages/soll-ist-bericht.tsx` | UI-Komponente mit Slidern, Slider-Sync, Berichtsdarstellung; **Click-to-Edit** der Prozent-Werte in Soll- und Ist-Profil (Direkt-Eingabe statt nur Slider); alle Texte via `useUI()`-Keys i18n-fähig |
 | `client/src/lib/pdf-direct-builder.ts` | Programmatischer PDF-Export des Soll-Ist-Berichts (hochauflösend, keine Canvas-Umwandlung) |
 | `tests/matchcheck-runner.ts` | Test-Runner für alle 13 Varianten + Grenzfälle |
 | `tests/text-consistency-runner.ts` | 169 Cross-Variant-Tests (13×13 Matrix) + Konsistenz-Checks |
