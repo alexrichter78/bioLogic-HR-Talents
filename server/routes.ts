@@ -4541,6 +4541,8 @@ Persönlichkeit, Typ, Mindset, Potenzial entfalten, wertschätzend, ganzheitlich
           ? "I specialise in leadership, people decisions, assessment, interviews and professional communication. Please ask me a question on one of these topics."
           : region === "FR"
           ? "Je suis spécialisé en leadership, décisions RH, assessment, entretiens et communication professionnelle. Pose-moi une question sur l'un de ces sujets."
+          : region === "IT"
+          ? "Sono specializzato in leadership, decisioni sul personale, assessment, colloqui e comunicazione professionale. Fammi una domanda su uno di questi temi."
           : "Ich bin spezialisiert auf Führung, Personalentscheidungen, Assessment, Bewerbungsgespräche und Kommunikation im beruflichen Kontext. Bitte stelle mir eine Frage zu diesen Themen.";
         return res.json({ reply: filteredReply, filtered: true });
       }

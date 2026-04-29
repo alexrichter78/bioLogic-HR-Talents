@@ -1837,7 +1837,7 @@ export default function KICoach() {
     const chatMessages = messages.filter(m => !isWelcomeMsg(m));
     if (chatMessages.length === 0) return;
     const now = new Date();
-    const locale = region === "EN" ? "en-GB" : region === "FR" ? "fr-FR" : "de-DE";
+    const locale = region === "EN" ? "en-GB" : region === "FR" ? "fr-FR" : region === "IT" ? "it-IT" : "de-DE";
     const dateStr = now.toLocaleDateString(locale, { day: "2-digit", month: "2-digit", year: "numeric" });
     const timeStr = now.toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit" });
     let text = `${ui.coach.exportHeader}\n`;
@@ -1861,7 +1861,7 @@ export default function KICoach() {
   };
 
   return (
-    <div className="page-gradient-bg" style={{ display: "flex", flexDirection: "column" }} lang={region === "FR" ? "fr" : region === "EN" ? "en" : "de"}>
+    <div className="page-gradient-bg" style={{ display: "flex", flexDirection: "column" }} lang={region === "FR" ? "fr" : region === "EN" ? "en" : region === "IT" ? "it" : "de"}>
       <GlobalNav />
 
       {historyOpen && (
